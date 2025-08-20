@@ -1,0 +1,413 @@
+import { colors, media, rm } from "@/styles";
+import { fontGolosText, fontSageGrotesk } from "@/styles/fonts";
+import { heightLvh } from "@/styles/utils";
+import styled from "styled-components"
+import { useEffect, useRef, useState } from "react";
+import { SpringTrigger } from "@/components/Springs/SpringTrigger";
+import { transformRange, lerp } from "@/utils/math";
+import { WhiteButton } from "@/components/Ui/buttons/WhiteButton";
+import Image from "next/image";
+import { getMediaStrapiPath } from "@/utils/getMediaStrapiPath";
+import { useTransition, animated, easings } from "@react-spring/web";
+import { MediaComponent } from "@/components/MediaComponent/MediaComponent";
+
+interface PackagesProps {
+    packagesData: any
+}
+
+export const Packages = ({ packagesData }: PackagesProps) => {
+    const [sizes, setSizes] = useState<string[]>([]);
+    const [activeSize, setActiveSize] = useState<string>('');
+    const [activePackage, setActivePackage] = useState<any>(null);
+    const hasMountedRef = useRef<boolean>(false);
+    const activeSizeRef = useRef<string>('');
+    const progressRef = useRef<number>(0);
+    const prevBarProgressFirst = useRef<number>(0);
+    const prevBarProgressSecond = useRef<number>(0);
+    const prevBarProgressThird = useRef<number>(0);
+
+    // Create transitions for title and description
+    const titleTransitions = useTransition(activePackage?.title, {
+        from: { opacity: 0, transform: 'translateY(30px)' },
+        enter: { opacity: 1, transform: 'translateY(0px)' },
+        leave: { opacity: 0, transform: 'translateY(-30px)' },
+        config: { tension: 300, friction: 30 }
+    });
+
+    const descriptionTransitions = useTransition(activePackage?.description, {
+        from: { opacity: 0, transform: 'translateY(30px)' },
+        enter: { opacity: 1, transform: 'translateY(0px)' },
+        leave: { opacity: 0, transform: 'translateY(-30px)' },
+        config: { tension: 300, friction: 30 }
+    });
+
+  // Image enter/exit transition: wrapper slides fully, image counter-moves slightly
+  // Enter starts after 800ms so the previous image hides by ~80% first (with 1000ms leave)
+  const imageTransitions = useTransition(activePackage?.media, {
+      from: { opacity: 1, wrapperY: 160, imageY: -60 },
+      enter: { opacity: 1, wrapperY: 0, imageY: 0, delay: 200 },
+      leave: { opacity: 1, wrapperY: -160, imageY: 60 },
+      config: { duration: 1000, easing: easings.easeOutCubic }
+  });
+
+    useEffect(() => {
+        const packages = packagesData?.packages;
+        if(packages){
+            const sizes = packages.map((pkg: any) => pkg.size);
+            setSizes(sizes);
+            setActiveSize(sizes[0]);
+            activeSizeRef.current = sizes[0];
+            setActivePackage(packages[0]);
+        }
+    }, [packagesData])
+
+    return (
+        <StyledPackages>
+            <StyledTriggerContainer 
+                onChange={(state) => {
+                    const transformedProgress = transformRange(state?.progress, 0.1, 0.9, 0, 100);
+                    progressRef.current = transformedProgress;
+
+                    const barProgressFirst = transformRange(transformedProgress, 0, 33, 0, 100);
+                    const barProgressSecond = transformRange(transformedProgress, 33, 66, 0, 100);
+                    const barProgressThird = transformRange(transformedProgress, 66, 100, 0, 100);
+
+                    // Apply smooth transitions using lerp
+                    const lerpFactor = 0.1; // Adjust this value for smoother/faster transitions
+                    
+                    // If barProgressSecond > 0, smoothly transition barProgressFirst to 0
+                    const targetFirst = barProgressSecond > 0 ? 0 : barProgressFirst;
+                    const smoothFirst = lerp(prevBarProgressFirst.current, targetFirst, lerpFactor);
+                    prevBarProgressFirst.current = smoothFirst;
+
+                    // If barProgressThird > 0, smoothly transition barProgressSecond to 0
+                    const targetSecond = barProgressThird > 0 ? 0 : barProgressSecond;
+                    const smoothSecond = lerp(prevBarProgressSecond.current, targetSecond, lerpFactor);
+                    prevBarProgressSecond.current = smoothSecond;
+
+                    // Smooth transition for barProgressThird
+                    const smoothThird = lerp(prevBarProgressThird.current, barProgressThird, lerpFactor);
+                    prevBarProgressThird.current = smoothThird;
+
+                    const underlineFirst = document.getElementById('underline-0');
+                    const underlineSecond = document.getElementById('underline-1');
+                    const underlineThird = document.getElementById('underline-2');
+
+                    if(underlineFirst && underlineSecond && underlineThird) {
+                        underlineFirst.style.width = `${smoothFirst}%`;
+                        underlineSecond.style.width = `${smoothSecond}%`;
+                        underlineThird.style.width = `${smoothThird}%`;
+                    }
+
+                    if(transformedProgress > 66) {
+                        if(activeSizeRef.current !== sizes[2]) {
+                            setActiveSize(sizes[2]);
+                            setActivePackage(packagesData?.packages[2]);
+                            activeSizeRef.current = sizes[2];
+                        }
+                    } else if(transformedProgress > 33) {
+                        if(activeSizeRef.current !== sizes[1]) {
+                            setActiveSize(sizes[1]);
+                            setActivePackage(packagesData?.packages[1]);
+                            activeSizeRef.current = sizes[1];
+                        }
+                    } else {
+                        if(activeSizeRef.current !== sizes[0]) {
+                            setActiveSize(sizes[0]);
+                            setActivePackage(packagesData?.packages[0]);
+                            activeSizeRef.current = sizes[0];
+                        }
+                    }
+                }}
+                start='top top'
+                end='bottom bottom'
+            />
+            <StyledStickyContainer>
+                <StyledContentLayout>
+                    <div className="left">
+                        <StyledTopBar>
+                            <p className="title">
+                                {packagesData?.title}
+                            </p>
+                            <div className="sizes">
+                                {sizes.map((size: string, index: number) => (
+                                    <>
+                                        <StyledSizeContainer key={index} isActive={size === activeSize}>
+                                            <p className="text">{size}</p>
+                                            <div className="underline" id={`underline-${index}`}/>
+                                        </StyledSizeContainer>
+                                        {
+                                            index !== sizes.length - 1 && (
+                                                <div className="square"/>
+                                            )
+                                        }
+                                    </>
+                                ))}
+                            </div>
+                        </StyledTopBar>
+                        <StyledMidContent>
+                            <div className="title-container">
+                                {titleTransitions((style, item) => 
+                                    item && (
+                                        <animated.p className="title" style={style}>
+                                            {item}
+                                        </animated.p>
+                                    )
+                                )}
+                            </div>
+                            <div className="description-container">
+                                {descriptionTransitions((style, item) => 
+                                    item && (
+                                        <animated.p className="description" style={style}>
+                                            {item}
+                                        </animated.p>
+                                    )
+                                )}
+                            </div>
+                        </StyledMidContent>
+                        <WhiteButton className="button" link={activePackage?.button?.link} isSvg={true}>
+                            {activePackage?.button?.text}
+                        </WhiteButton>
+                    </div>
+                    <div className="right">
+                        {imageTransitions((styles, item) => (
+                            item ? (
+                                <StyledImageWrapper
+                                    style={{
+                                        opacity: styles.opacity,
+                                        transform: styles.wrapperY.to((y: number) => `translateY(${y}%)`)
+                                    }}
+                                >
+                                    <animated.div
+                                        className="image-shift"
+                                        style={{ transform: styles.imageY.to((y: number) => `translateY(${y}%)`) }}
+                                    >
+                                        <MediaComponent media={item} className="image" />
+                                    </animated.div>
+                                </StyledImageWrapper>
+                            ) : null
+                        ))}
+                    </div>
+                </StyledContentLayout>
+            </StyledStickyContainer>
+        </StyledPackages>
+    )
+}
+
+const StyledPackages = styled.div`
+    width: 100%;
+    ${heightLvh(400)};
+    padding: 0 ${rm(50)};
+    position: relative;
+
+    ${media.md`
+        padding: 0 ${rm(25)};
+    `}
+`
+
+const StyledTriggerContainer = styled(SpringTrigger)`
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+`
+
+const StyledStickyContainer = styled.div`
+    position: sticky;
+    top: 0;
+    left: 0;
+    width: 100%;
+    ${heightLvh(100)};
+`
+
+const StyledContentLayout = styled.div`
+    // height: auto;
+    height: 80%;
+    width: 100%;
+    position: relative;
+    display: flex;
+    border-radius: ${rm(10)};
+    overflow: hidden;
+
+    ${media.md`
+        flex-direction: column;
+        flex-direction: column-reverse;
+        height: 100%;
+        padding: ${rm(100)} 0 ${rm(50)} 0;
+    `}
+
+    .left{
+        width: 42%;
+        background-color: ${colors.blue};
+        padding: ${rm(40)};
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+
+        ${media.md`
+            width: 100%;
+            height: 50%;
+            border-bottom-left-radius: ${rm(10)};
+            border-bottom-right-radius: ${rm(10)};
+            overflow: hidden;
+        `}
+
+
+        .button{
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    }
+
+    .right{
+        width: 58%;
+        position: relative;
+        height: 100%;
+        overflow: hidden;
+
+        ${media.md`
+            width: 100%;
+            height: 50%;
+            border-top-left-radius: ${rm(10)};
+            border-top-right-radius: ${rm(10)};
+        `}
+
+        img{
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    }
+`
+
+const StyledMidContent = styled.div`
+    display: flex;
+    flex-direction: column;
+    gap: ${rm(20)};
+
+    .title-container, .description-container {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .title-container {
+        height: ${rm(52)}; // Approximate height for title text
+        ${media.lg`
+            height: ${rm(44)};
+        `}
+    }
+
+    .description-container {
+        min-height: ${rm(100)}; // Minimum height for description, can grow
+        height: fit-content;
+    }
+
+    .title{
+        ${fontSageGrotesk(400)};
+        line-height: 90%;
+        letter-spacing: -0.02em;
+        color: ${colors.white100};
+        font-size: ${rm(48)};
+        text-transform: uppercase;
+        text-align: center;
+        margin: 0;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+
+        ${media.lg`
+            font-size: ${rm(40)};    
+        `}
+    }
+
+    .description{
+        ${fontGolosText(400)};
+        line-height: 130%;
+        color: ${colors.blue90};
+        font-size: ${rm(20)};
+        text-align: center;
+        margin: 0;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+
+        ${media.lg`
+            font-size: ${rm(16)};    
+        `}
+    }
+`
+
+const StyledTopBar = styled.div`
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+
+    .title{
+        font-size: ${rm(20)};
+        line-height: 110%;
+        ${fontGolosText(400)};
+        color: ${colors.white100};
+        text-transform: uppercase;
+
+        ${media.lg`
+            font-size: ${rm(16)};    
+        `}
+    }
+
+    .sizes{
+        display: flex;
+        align-items: center;
+        gap: ${rm(20)};
+
+        .square{
+            width: ${rm(4)};
+            height: ${rm(4)};
+            background-color: ${colors.white100};
+        }
+    }
+`
+
+const StyledSizeContainer = styled.div<{ isActive: boolean }>`
+    position: relative;
+
+    .text{
+        font-size: ${rm(20)};
+        color: ${({ isActive }) => isActive ? colors.white100 : colors.blue90};
+        ${fontGolosText(400)};
+        text-transform: uppercase;
+        line-height: 110%;
+        
+        transition: color 0.4s ease-in-out;
+
+        ${media.lg`
+            font-size: ${rm(16)};    
+        `}
+    }
+
+    .underline{
+        width: 0%;
+        position: absolute;
+        bottom: ${rm(-4)};
+        background-color: ${colors.white100};
+        height: ${rm(1)};
+    }
+`
+
+const StyledImageWrapper = styled(animated.div)`
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    will-change: transform, opacity;
+
+    .image-shift{
+        position: absolute;
+        inset: 0;
+    }
+`

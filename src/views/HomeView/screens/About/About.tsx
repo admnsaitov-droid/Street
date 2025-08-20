@@ -1,0 +1,151 @@
+import { AnimatedText } from "@/components/animated/AnimatedText/AnimatedText";
+import { MediaComponent } from "@/components/MediaComponent/MediaComponent"
+import { BlueButton } from "@/components/Ui/buttons/BlueButton";
+import { colors, media, rm } from "@/styles"
+import { fontGolosText } from "@/styles/fonts";
+import { getMediaStrapiPath } from "@/utils/getMediaStrapiPath";
+import Image from "next/image";
+import styled from "styled-components"
+
+interface AboutProps {
+    aboutData: any
+}
+
+export const About = ({ aboutData }: AboutProps) => {
+    return (
+        <StyledAbout>
+            <StyledTopContainer>
+                <AnimatedText className="title">{aboutData?.title}</AnimatedText>
+                <div className="right">
+                    <p className="descriptionMain">{aboutData?.description}</p>
+                    <div className="bottom">
+                        <AnimatedText className="descriptionSecondary">{aboutData?.descriptionSecondary}</AnimatedText>
+                        <BlueButton link={aboutData?.button?.link} isSvg className="button">{aboutData?.button?.text}</BlueButton>
+                    </div>
+                </div>
+            </StyledTopContainer>
+            <StyledBottomContainer>
+                <MediaComponent media={aboutData?.media} className="image" />
+            </StyledBottomContainer>
+        </StyledAbout>
+    )
+}
+
+const StyledAbout = styled.div`
+    width: 100%;
+    padding: ${rm(150)} ${rm(50)};
+
+    ${media.md`
+        padding: ${rm(150)} ${rm(25)};
+    `}
+`
+
+const StyledTopContainer = styled.div`
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    
+
+    .title{
+        color: ${colors.gray};
+        font-size: ${rm(20)};
+        line-height: 110%;
+        letter-spacing: -0.01em;
+        ${fontGolosText(400)};
+        text-transform: uppercase;
+        
+        ${media.lg`
+            font-size: ${rm(16)};
+        `}
+    }
+
+    .right{
+        display: flex;
+        flex-direction: column;
+        gap: ${rm(20)};
+        width: ${rm(1100)};
+
+        ${media.lg`
+            width: ${rm(890)};
+        `}
+
+        ${media.md`
+            width: ${rm(475)};
+        `}
+
+        .descriptionMain{
+            color: ${colors.black100};
+            font-size: ${rm(40)};
+            line-height: 100%;
+            text-indent: ${rm(113)};
+            letter-spacing: -0.01em;
+            ${fontGolosText(400)};
+            
+            ${media.lg`
+                font-size: ${rm(32)};
+            `}
+
+            ${media.md`
+                font-size: ${rm(24)};
+                text-indent: 0;
+            `}
+        }
+
+        .bottom{
+            display: flex;
+            justify-content: space-between;
+            padding-left: ${rm(113)};
+            align-items: flex-end;
+
+            ${media.md`
+                padding-left: 0;
+                flex-direction: column;
+                gap: ${rm(30)};
+                align-items: flex-start;
+            `}
+
+            .descriptionSecondary{
+                color: ${colors.gray};
+                font-size: ${rm(20)};
+                line-height: 130%;
+                ${fontGolosText(400)};
+                width: ${rm(600)};
+
+                ${media.lg`
+                    font-size: ${rm(16)};
+                    width: ${rm(455)};
+                `}
+
+                ${media.md`
+                    width: 100%;    
+                `}
+            }
+        }
+    }
+`   
+
+const StyledBottomContainer = styled.div`
+    width: 100%;
+    height: ${rm(800)};
+    border-radius: ${rm(10)};
+    overflow: hidden;
+    position: relative;
+    margin-top: ${rm(40)};
+
+    ${media.md`
+        height: ${rm(576)};
+    `}
+
+    img{
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    ${media.lg`
+        height: ${rm(600)};
+    `}
+`
