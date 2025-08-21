@@ -25,6 +25,11 @@ const StyledDescription = styled.div`
     ${media.lg`
         width: ${rm(440)};
     `}
+
+    ${media.xsm`
+        width: 100%;
+        gap: ${rm(10)};
+    `}
 `
 
 const StyledTitle = styled.h1`
@@ -36,6 +41,10 @@ const StyledTitle = styled.h1`
 
     ${media.lg`
         font-size: ${rm(16)};
+    `}
+
+    ${media.xsm`
+        font-size: ${rm(14)};
     `}
 `
 
@@ -49,5 +58,9 @@ const StyledSubtitle = styled.p`
 
     ${media.lg`
         font-size: ${rm(16)};
+    `}
+
+    ${media.xsm`
+        font-size: ${rm(14)};
     `}
 `

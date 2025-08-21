@@ -92,6 +92,10 @@ const StyledTitle = styled.p`
     ${media.lg`
         font-size: ${rm(18)};
     `}
+
+    ${media.xsm`
+        font-size: ${rm(14)};
+    `}
 `
 
 const StyledButton = styled.button`

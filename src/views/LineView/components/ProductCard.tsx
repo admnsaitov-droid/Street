@@ -31,6 +31,18 @@ const StyledProductCard = styled.div`
     cursor: pointer;
     position: relative;
 
+    ${media.lg`
+        width: ${rm(327.5)};
+    `}
+
+    ${media.md`
+        width: ${rm(233)};
+    `}
+
+    ${media.xsm`
+        width: 100%;
+    `}
+
     &:hover{
         .title{
             color: ${colors.blue};
@@ -44,10 +56,6 @@ const StyledProductCard = styled.div`
             transform: scale(1.01);
         }
     }
-
-    ${media.lg`
-        width: ${rm(327.5)};
-    `}
 `
 
 const StyledWrapper = styled.div`
@@ -64,6 +72,14 @@ const StyledImageContainer = styled.div`
     border-radius: ${rm(4)};
 
     ${media.lg`
+        height: ${rm(246)};    
+    `}
+
+    ${media.md`
+        height: ${rm(175)};    
+    `}
+
+    ${media.xsm`
         height: ${rm(246)};    
     `}
 
@@ -96,6 +112,10 @@ const StyledContent = styled.div`
         ${media.lg`
             font-size: ${rm(18)};
         `}
+
+        ${media.xsm`
+            font-size: ${rm(14)};
+        `}
     }
 
     .subtitle{
@@ -108,6 +128,10 @@ const StyledContent = styled.div`
 
         ${media.lg`
             font-size: ${rm(14)};
+        `}
+
+        ${media.xsm`
+            font-size: ${rm(12)};
         `}
     }
 `

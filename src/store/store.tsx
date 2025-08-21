@@ -23,6 +23,26 @@ interface VideoPlayerStore {
   closePlayer: () => void;
 }
 
+interface ColorStore {
+  activeColor: {
+    name: string
+    color: string
+  } | null
+
+  setActiveColor: (color: {
+    name: string
+    color: string
+  } | null) => void
+}
+
+export const useColorStore = create<ColorStore>((set, get) => ({
+  activeColor: null,
+  setActiveColor: (color: {
+    name: string
+    color: string
+  } | null) => set({ activeColor: color }),
+}));
+
 const useLoadingStore = create<LoadingStore>((set, get) => ({
     isFullyLoaded: false,
     setIsFullyLoaded: (value: boolean) => set({ isFullyLoaded: value }),

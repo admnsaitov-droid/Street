@@ -52,8 +52,21 @@ export const Preview = () => {
     const values = useSpring({
         opacity: url === 'poster-only' && poster ? 1 : 0,
         scale: url === 'poster-only' && poster ? 1 : .5,
-        delay: url === 'poster-only' && poster ? 0 : 300
+        delay: url === 'poster-only' && poster ? 0 : 0,
+        config: { tension: 280, friction: 60 }
     })
+
+    // Debug preview state
+    console.log('Preview component state:', {
+        url,
+        poster: !!poster,
+        index,
+        condition: url === 'poster-only' && poster,
+        opacity: values.opacity.get(),
+        scale: values.scale.get()
+    })
+    
+
     const [moveValues, moveApi] = useSpring(() => ({
         y: 0,
         x: 0
@@ -68,9 +81,9 @@ export const Preview = () => {
     
     // Desktop - smooth positioning that tracks line height changes
     useEffect(() => {
-        if (!ref || !containerRef.current || !innerRef.current) {return}
-        if (window.innerWidth <= 576) { return }
-        if (url !== 'poster-only' || !poster) { return } // Only position when preview is active
+        if (!ref || !containerRef.current || !innerRef.current) return
+        if (window.innerWidth <= 768) return 
+        if (url !== 'poster-only' || !poster) return // Only position when preview is active
 
         const updatePosition = () => {
             if (!containerRef.current || !innerRef.current) return
@@ -83,12 +96,7 @@ export const Preview = () => {
             const y = refRect.top - containerRect.top + refRect.height / 2 - innerRect.height / 2
             const x = window.innerWidth > 1440 ? 300 : 220
             
-            console.log('Positioning preview:', { 
-                y, 
-                x, 
-                refHeight: refRect.height,
-                actualIndex: index
-            })
+
 
             // Smooth animation that follows height changes
             moveApi.start({ 
@@ -115,22 +123,78 @@ export const Preview = () => {
         }
     }, [ref, url, poster, moveApi, index])
 
-    // Mobile
-    useLoop(() => {
-        if (!containerRef.current || !innerRef.current) {return}
-        if (window.innerWidth > 576) { return }
-        const isHome = window.location.pathname === '/'
-        if (isHome) {
-            const y = Math.abs(Math.min(window.scrollY - window.outerHeight + innerRef.current.getBoundingClientRect().height + 200, 0))
-            moveApi.start({ y })
-            return
+    // Mobile positioning based on active line index
+    useEffect(() => {
+        if (!containerRef.current || !innerRef.current) return
+        if (width > 768) return
+        if (index === -1) return
+        
+        const lines = containerRef.current.querySelectorAll('[data-line-index]')
+        if (!lines.length) return
+        
+        const containerRect = containerRef.current.getBoundingClientRect()
+        let targetY = 0
+        
+        if (index === 0) {
+            // First line: position preview above it using the line's height as reference
+            const firstLine = lines[0] as HTMLElement
+            const firstLineRect = firstLine.getBoundingClientRect()
+            const previewHeight = innerRef.current.getBoundingClientRect().height
+            const lineHeight = firstLineRect.height
+            
+            // Position preview above the first line, using line height as spacing reference
+            // Center the preview in the "virtual line space" above the first line
+            const virtualLineTop = firstLineRect.top - lineHeight
+            targetY = virtualLineTop - containerRect.top + (lineHeight / 2) - (previewHeight / 2)
+        } else if (index === 1) {
+            // Second line: center preview on top edge of first line  
+            // (50% of preview above the line, 50% inside the line)
+            const firstLine = lines[0] as HTMLElement
+            const firstLineRect = firstLine.getBoundingClientRect()
+            const previewHeight = innerRef.current.getBoundingClientRect().height
+            
+            targetY = firstLineRect.top - containerRect.top - (previewHeight / 2)
+        } else {
+            // Third line and beyond: center preview on top edge of previous line
+            // (50% of preview above the line, 50% inside the line)
+            const previousLine = lines[index - 1] as HTMLElement
+            
+            if (previousLine) {
+                const previousRect = previousLine.getBoundingClientRect()
+                const previewHeight = innerRef.current.getBoundingClientRect().height
+                
+                // Position preview so its center is on the top edge of the previous line
+                targetY = previousRect.top - containerRect.top - (previewHeight / 2)
+            }
         }
-        moveApi.start({ y: 0 })
+        
+        moveApi.start({ 
+            y: targetY,
+            x: 0,
+            config: { tension: 280, friction: 60 }
+        })
+    }, [index, moveApi, width])
+
+    // Desktop scroll positioning - only for home page when no preview is active
+    useLoop(() => {
+        if (!containerRef.current || !innerRef.current) return
+        if (window.innerWidth <= 768) return // Completely disable on mobile
+        
+        // Only run on home page
+        const isHome = window.location.pathname === '/'
+        if (!isHome) return
+        
+        // Don't interfere when desktop positioning useEffect is active
+        if (ref && url === 'poster-only' && poster) return
+        
+        // Home page fallback positioning when no preview is active
+        const y = Math.abs(Math.min(window.scrollY - window.outerHeight + innerRef.current.getBoundingClientRect().height + 200, 0))
+        moveApi.start({ y })
     })
 
     return (
         <>
-            <StyledContainer as={animated.div} ref={innerRef} style={{...moveValues, pointerEvents: url === 'poster-only' && poster && width <= 576 ? 'all' : 'none'}}>
+            <StyledContainer as={animated.div} ref={innerRef} style={{...moveValues, pointerEvents: url === 'poster-only' && poster && width <= 768 ? 'all' : 'none'}}>
                 <AnimLink href={`/lines/${route}`}>
                     <animated.span style={values}>
                         { allUrls.map((item, idx) => 
@@ -223,13 +287,13 @@ const StyledContainer = styled(animated.div)`
     `} */
 
     ${media.xsm`
-        width: ${rm(390 - 32)};
-        height: ${rm(285 * 0.75)};
-        top: ${rm(48)}; left: ${rm(16)};
-        position: fixed;
+        // width: ${rm(390 - 32)};
+        // height: ${rm(285 * 0.75)};
+        // top: ${rm(48)}; left: ${rm(16)};
+        // position: fixed;
         /* transform: none !important; */
-        z-index: 11;
-        pointer-events: auto;
+        // z-index: 11;
+        // pointer-events: auto;
     `}
 
     &:hover {

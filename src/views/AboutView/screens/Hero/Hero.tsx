@@ -41,6 +41,14 @@ const StyledHero = styled.div`
     position: relative;
     padding: ${rm(50)};
 
+    ${media.md`
+        padding: ${rm(50)} ${rm(25)};    
+    `}
+
+    ${media.xsm`
+        padding: ${rm(40)} ${rm(16)};
+    `}
+
     .image{
         width: 100%;
         height: 100%;
@@ -68,6 +76,10 @@ const StyledContent = styled.div`
         flex-direction: column;
         gap: ${rm(30)};
 
+        ${media.xsm`
+            gap: ${rm(20)};
+        `}
+
         .title{
             color: ${colors.white100};
             margin-top: 0;
@@ -84,6 +96,11 @@ const StyledContent = styled.div`
             ${media.lg`
                 font-size: ${rm(18)};
                 width: ${rm(490)};
+            `}
+
+            ${media.xsm`
+                font-size: ${rm(14)};
+                width: ${rm(287)};
             `}
         }
 

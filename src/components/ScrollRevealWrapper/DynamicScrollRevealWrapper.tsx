@@ -36,7 +36,7 @@ export const DynamicScrollRevealWrapper = ({ children }: ScrollRevealWrapperProp
   const [contentHeight, setContentHeight] = useState(0);
   const [isFooterVisible, setIsFooterVisible] = useState(false);
   const width = useWindowWidth();
-  const isMobile = width <= 576;
+  const isMobile = width <= 768;
 
   useEffect(() => {
     if (!containerRef.current) return;

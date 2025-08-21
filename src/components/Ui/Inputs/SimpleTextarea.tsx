@@ -64,6 +64,12 @@ const Label = styled.label<{ $active: boolean }>`
     transform: ${({ $active }: any) => $active ? `translateY(-${rm(20)})` : "none"};
     top: ${rm(-0.5)};
   `}
+
+  ${media.xsm`
+    font-size: ${({ $active }: any) => $active ? rm(12) : rm(16)};
+    transform: ${({ $active }: any) => $active ? `translateY(-${rm(18)})` : "none"};
+    top: ${rm(1)};
+  `}
 `
 
 const Textarea = styled.textarea`
@@ -98,6 +104,11 @@ const Textarea = styled.textarea`
   ${media.md`
     font-size: ${rm(18)};
     height: ${rm(62)};
+  `}
+
+  ${media.xsm`
+    font-size: ${rm(14)};
+    height: ${rm(44)};
   `}
 `
 

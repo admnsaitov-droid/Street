@@ -25,12 +25,20 @@ const StyledSpecifications = styled.div`
     flex-direction: column;
     gap: ${rm(15)};
     padding-bottom: ${rm(10)};
+
+    ${media.xsm`
+        gap: ${rm(20)};
+    `}
 `
 
 const StyledSpecification = styled.div`
     display: flex;
     gap: ${rm(10)};
     align-items: center;
+
+    ${media.md`
+        align-items: flex-start;
+    `}
 `
 
 const StyledValue = styled.p`
@@ -41,6 +49,15 @@ const StyledValue = styled.p`
 
     ${media.lg`
         font-size: ${rm(16)};
+    `}
+
+    ${media.md`
+        width: ${rm(305)};
+    `}
+
+    ${media.xsm`
+        font-size: ${rm(14)};
+        width: ${rm(189)};
     `}
 `
 
@@ -54,5 +71,14 @@ const StyledParam = styled.p`
 
     ${media.lg`
         font-size: ${rm(16)};
+    `}
+
+    ${media.md`
+        width: ${rm(160)};
+    `}
+
+    ${media.xsm`
+        font-size: ${rm(14)};
+        width: ${rm(124)};
     `}
 `

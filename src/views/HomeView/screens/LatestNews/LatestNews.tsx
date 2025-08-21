@@ -13,7 +13,7 @@ import type { Swiper as SwiperType } from 'swiper';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
-import { useWindowWidth } from "@/hooks/useWindowSize";
+import { useWindowWidth } from "@react-hook/window-size";
 
 interface LatestNewsProps {
     latestNewsData: any
@@ -25,6 +25,8 @@ export const LatestNews = ({ latestNewsData }: LatestNewsProps) => {
     const [isEnd, setIsEnd] = useState(false);
 
     const width = useWindowWidth()
+
+    const newsMobile = latestNewsData?.articles?.slice(0, 3)
 
     const handlePrevClick = () => {
         if (swiperRef.current) {
@@ -69,12 +71,12 @@ export const LatestNews = ({ latestNewsData }: LatestNewsProps) => {
                             </svg>
                         </StyledSwipeButton>
                     </StyledSwipeButtonContainer>
-                    <BlueButton isSvg={false} link={latestNewsData?.button?.link}>
+                    {width > 576 && <BlueButton isSvg={false} link={latestNewsData?.button?.link}>
                         {latestNewsData?.button?.text}
-                    </BlueButton>
+                    </BlueButton>}
                 </div>
             </StyledTopBar>
-            <StyledSwiperContainer>
+            {width > 576 && <StyledSwiperContainer>
                 <Swiper
                     modules={[Navigation]}
                     spaceBetween={20}
@@ -108,7 +110,15 @@ export const LatestNews = ({ latestNewsData }: LatestNewsProps) => {
                         </SwiperSlide>
                     ))}
                 </Swiper>
-            </StyledSwiperContainer>
+            </StyledSwiperContainer>}
+            <StyledNewsMobile>
+                {newsMobile?.map((article: any, index: number) => (
+                    <ArticleCard key={index} article={article} />
+                ))}
+            </StyledNewsMobile>
+            {width <= 576 && <BlueButton isSvg={false} link={latestNewsData?.button?.link} className="mobile-button">
+                {latestNewsData?.button?.text}
+            </BlueButton>}
         </StyledLatestNews>
     )
 }
@@ -120,6 +130,21 @@ const StyledLatestNews = styled.div`
     ${media.md`
         padding: ${rm(150)} ${rm(25)};
     `}
+
+    ${media.xsm`
+        padding: ${rm(70)} ${rm(16)};
+    `}
+
+    .mobile-button{
+        width: 100%;
+        margin-top: ${rm(30)};
+    }
+`
+
+const StyledNewsMobile = styled.div`
+    display: flex;
+    flex-direction: column;
+    width: 100%;
 `
 
 const StyledTopBar = styled.div`
@@ -143,6 +168,10 @@ const StyledTitle = styled.p`
         font-size: ${rm(40)};
     `}
 
+    ${media.xsm`
+        font-size: ${rm(32)};
+    `}
+
     .first{
         ${fontSageGrotesk(400)} !important;
         color: ${colors.red} !important;
@@ -155,6 +184,10 @@ const StyledSwipeButtonContainer = styled.div`
     display: flex;
     gap: ${rm(5)};
     margin-right: ${rm(10)};
+
+    ${media.xsm`
+        display: none;
+    `}
 `
 
 const StyledSwipeButton = styled.button<{ disabled?: boolean }>`

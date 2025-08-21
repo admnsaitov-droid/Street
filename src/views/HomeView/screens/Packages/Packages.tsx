@@ -203,6 +203,10 @@ const StyledPackages = styled.div`
     ${media.md`
         padding: 0 ${rm(25)};
     `}
+
+    ${media.xsm`
+        padding: 0 ${rm(16)};
+    `}
 `
 
 const StyledTriggerContainer = styled(SpringTrigger)`
@@ -219,6 +223,9 @@ const StyledStickyContainer = styled.div`
     left: 0;
     width: 100%;
     ${heightLvh(100)};
+    display: flex;
+    align-items: center;
+    justify-content: center;
 `
 
 const StyledContentLayout = styled.div`
@@ -237,6 +244,10 @@ const StyledContentLayout = styled.div`
         padding: ${rm(100)} 0 ${rm(50)} 0;
     `}
 
+    ${media.xsm`
+        padding: ${rm(80)} 0 ${rm(10)} 0;
+    `}
+
     .left{
         width: 42%;
         background-color: ${colors.blue};
@@ -253,6 +264,10 @@ const StyledContentLayout = styled.div`
             overflow: hidden;
         `}
 
+        ${media.xsm`
+            padding: ${rm(40)} ${rm(20)};
+            height: 65%;
+        `}
 
         .button{
             width: 100%;
@@ -273,6 +288,10 @@ const StyledContentLayout = styled.div`
             height: 50%;
             border-top-left-radius: ${rm(10)};
             border-top-right-radius: ${rm(10)};
+        `}
+
+        ${media.xsm`
+            height: 35%;
         `}
 
         img{
@@ -298,6 +317,10 @@ const StyledMidContent = styled.div`
         ${media.lg`
             height: ${rm(44)};
         `}
+
+        ${media.xsm`
+            height: ${rm(51)};
+        `}
     }
 
     .description-container {
@@ -322,6 +345,10 @@ const StyledMidContent = styled.div`
         ${media.lg`
             font-size: ${rm(40)};    
         `}
+
+        ${media.xsm`
+            font-size: ${rm(32)};
+        `}
     }
 
     .description{
@@ -339,6 +366,10 @@ const StyledMidContent = styled.div`
         ${media.lg`
             font-size: ${rm(16)};    
         `}
+
+        ${media.xsm`
+            font-size: ${rm(14)};
+        `}
     }
 `
 
@@ -346,6 +377,10 @@ const StyledTopBar = styled.div`
     width: 100%;
     display: flex;
     justify-content: space-between;
+
+    ${media.xsm`
+        justify-content: center;
+    `}
 
     .title{
         font-size: ${rm(20)};
@@ -356,6 +391,10 @@ const StyledTopBar = styled.div`
 
         ${media.lg`
             font-size: ${rm(16)};    
+        `}
+
+        ${media.xsm`
+            display: none;
         `}
     }
 

@@ -4,6 +4,7 @@ import { MediaComponent } from "@/components/MediaComponent/MediaComponent"
 import { colors, media, rm } from "@/styles"
 import { fontGolosText } from "@/styles/fonts"
 import { getMediaStrapiPath } from "@/utils/getMediaStrapiPath"
+import { useWindowWidth } from "@react-hook/window-size"
 import Image from "next/image"
 import styled from "styled-components"
 
@@ -13,12 +14,13 @@ interface PackageProps {
 
 export const Package = ({ data }: PackageProps) => {
 
+    const width = useWindowWidth();
     
     return (
         <StyledPackage>
             <StyledContent>
                 <StyledLeft>
-                    <StyledAnnotation>{data?.productsCount} fitness equipment</StyledAnnotation>
+                    {width > 576 && <StyledAnnotation>{data?.productsCount} fitness equipment</StyledAnnotation>}
                     <StyledBottomContainer>
                         <MediaComponent media={data?.previewAboveMedia} className="image"/>
                     </StyledBottomContainer>
@@ -37,6 +39,7 @@ export const Package = ({ data }: PackageProps) => {
                         <MediaComponent media={data?.previewSideMedia} className="image" />
                     </StyledBottomContainer>
                 </StyledRight>
+                {width <= 576 && <StyledAnnotation>{data?.productsCount} fitness equipment</StyledAnnotation>}
             </StyledContent>
         </StyledPackage>
     )
@@ -46,6 +49,10 @@ const StyledPackage = styled.div`
     width: 100%;
     padding: ${rm(50)} 0;
     position: relative;
+
+    ${media.xsm`
+        padding: ${rm(40)} 0;    
+    `}
 
     &::before {
         content: '';
@@ -75,6 +82,11 @@ const StyledContent = styled.div`
     grid-template-columns: 1fr 1fr;
     gap: ${rm(10)};
     align-items: stretch; // This ensures both children stretch to the same height
+
+    ${media.xsm`
+        display: flex;
+        flex-direction: column-reverse;
+    `}
 `
 
 const StyledMainContainer = styled.div`
@@ -92,14 +104,30 @@ const StyledLeft = styled(StyledMainContainer)`
     ${media.lg`
         width: ${rm(553)};
     `}
+
+    ${media.md`
+        width: ${rm(233)};    
+    `}
+
+    ${media.xsm`
+        width: 100%;
+    `}
 `
 
 const StyledRight = styled(StyledMainContainer)`
-    // width: ${rm(999)};
+    width: ${rm(999)};
     height: 100%; // Ensure full height
 
     ${media.lg`
         width: ${rm(777)};
+    `}
+
+    ${media.md`
+        width: ${rm(475)};    
+    `}
+
+    ${media.xsm`
+        width: 100%;
     `}
 `
 
@@ -125,12 +153,22 @@ export const StyledAnnotation = styled.p`
     ${media.lg`
         font-size: ${rm(16)};
     `}
+
+    ${media.xsm`
+        font-size: ${rm(14)};
+        margin-bottom: ${rm(20)};
+    `}
 `
 
 const StyledInfo = styled.div`
     display: flex;
     justify-content: space-between;
     width: 100%;
+
+    ${media.md`
+        flex-direction: column;
+        gap: ${rm(20)};
+    `}
 
     .left{
         display: flex;
@@ -140,6 +178,10 @@ const StyledInfo = styled.div`
 
         ${media.lg`
             width: ${rm(440)};
+        `}
+
+        ${media.md`
+            width: 100%;
         `}
 
         .title{ 
@@ -152,6 +194,10 @@ const StyledInfo = styled.div`
 
             ${media.lg` 
                 font-size: ${rm(40)};
+            `}
+
+            ${media.xsm`
+                font-size: ${rm(32)};
             `}
         }
 
@@ -167,6 +213,10 @@ export const StyledSubtitle = styled.p`
 
     ${media.lg`
         font-size: ${rm(16)};
+    `}
+
+    ${media.xsm`
+        font-size: ${rm(14)};
     `}
 `
 
@@ -187,5 +237,13 @@ const StyledBottomContainer = styled.div`
 
     ${media.lg`
         height: ${rm(448)};
+    `}
+
+    ${media.md`
+        height: ${rm(268)};
+    `}
+
+    ${media.xsm`
+        height: ${rm(185)};
     `}
 `

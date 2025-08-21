@@ -30,7 +30,7 @@ export const Hero = ({ heroData }: HeroProps) => {
                         <span className="second">{heroData?.title?.textSecond}</span>
                     </StyledTitle>
                 </div>
-                <AnimatedTranslate>
+                <AnimatedTranslate className="button">
                     <WhiteButton isSvg={true} onClick={() => {}}>
                         {heroData?.button?.text}
                     </WhiteButton>
@@ -51,6 +51,10 @@ const StyledHero = styled.div`
         padding: ${rm(50)} ${rm(25)};              
     `}
 
+    ${media.xsm`
+        padding: ${rm(40)} ${rm(16)};              
+    `}
+
     .hero-media {
         position: absolute;
         top: 0;
@@ -60,6 +64,16 @@ const StyledHero = styled.div`
         border-bottom-left-radius: ${rm(10)};
         border-bottom-right-radius: ${rm(10)};
         overflow: hidden;
+    }
+
+    .button{
+        ${media.xsm`
+            width: 100%;
+
+            >:nth-child(1){
+                width: 100%;
+            }
+        `}
     }
 `
 
@@ -80,10 +94,18 @@ const StyledContent = styled.div`
         align-items: flex-start;
     `}
 
+    ${media.xsm`
+        gap: ${rm(30)};
+    `}
+
     .left{
         display: flex;
         flex-direction: column;
         gap: ${rm(30)};
+
+        ${media.xsm`
+            gap: ${rm(20)};
+        `}
 
         .description{
             font-size: ${rm(20)};
@@ -96,6 +118,11 @@ const StyledContent = styled.div`
             ${media.lg`
                 font-size: ${rm(18)};
                 width: ${rm(490)};
+            `}
+
+            ${media.xsm`
+                font-size: ${rm(14)};
+                width: ${rm(287)};
             `}
         }
 
@@ -119,10 +146,14 @@ const StyledTitle = styled.div`
         width: ${rm(924)};
     `}
 
-
     ${media.md`
         font-size: ${rm(56)};
         width: ${rm(718)};
+    `}
+
+    ${media.xsm`
+        font-size: ${rm(40)};
+        width: 100%;
     `}
 
     .first{

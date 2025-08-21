@@ -16,9 +16,6 @@ interface LineViewProps {
 }
 
 export const LineView = ({ data }: LineViewProps) => {
-    console.log('data', data)
-
-    const extendedProducts = [...data?.line?.products, ...data?.line?.products, ...data?.line?.products, ...data?.line?.products]
 
     return (
         <StyledLineView>
@@ -44,7 +41,7 @@ export const LineView = ({ data }: LineViewProps) => {
                 our products
             </StyledProductsTitle>
             <StyledProductsGrid>
-                {extendedProducts?.map((product: any) => (
+                {data?.line?.products?.map((product: any) => (
                     <ProductCard key={product?.id} data={product} />
                 ))}
             </StyledProductsGrid>
@@ -55,23 +52,49 @@ export const LineView = ({ data }: LineViewProps) => {
 const StyledLineView = styled.div`
     width: 100%;
     padding: ${rm(100)} ${rm(50)};
+
+    ${media.md`
+        padding: ${rm(100)} ${rm(25)};
+    `}
+
+    ${media.xsm`
+        padding: ${rm(90)} ${rm(16)};
+    `}
 `
 
 const StyledHero = styled.div`
     display: flex;
     flex-direction: column;
     gap: ${rm(40)};
+
+    ${media.xsm`
+        gap: ${rm(30)};
+    `}
 `
 
 const StyledTop = styled.div`
     display: flex;
     justify-content: space-between;
+    margin-top: ${rm(20)};
+
+    ${media.md`
+        flex-direction: column;
+        gap: ${rm(20)};
+    `}
 
     >:last-child {
         width: ${rm(550)};
 
         ${media.lg`
             width: ${rm(440)};
+        `}
+
+        ${media.md`
+            width: ${rm(417)};
+        `}
+
+        ${media.xsm`
+            width: 100%;
         `}
     }
 `
@@ -91,10 +114,22 @@ const StyledTopImageContainer = styled.div`
     ${media.lg`
         height: ${rm(600)};
     `}
+
+    ${media.md`
+        height: ${rm(539)};
+    `}
+
+    ${media.xsm`
+        height: ${rm(246)};
+    `}
 `
 
 const StyledProductsTitle = styled(StyledExploreHeader)`
     margin-top: ${rm(150)};
+
+    ${media.xsm`
+        margin-top: ${rm(70)};
+    `}
 `
 
 const StyledProductsGrid = styled.div`
@@ -103,4 +138,14 @@ const StyledProductsGrid = styled.div`
     column-gap: ${rm(10)};
     flex-wrap: wrap;
     margin-top: ${rm(50)};
+
+    ${media.md`
+        column-gap: ${rm(9.4)};
+        row-gap: ${rm(20)};
+    `}
+
+    ${media.xsm`
+        column-gap: ${rm(0)};
+        row-gap: ${rm(30)};
+    `}
 `

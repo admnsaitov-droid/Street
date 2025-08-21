@@ -86,9 +86,22 @@ const StyledTop = styled.div`
     padding: ${rm(0)} ${rm(50)};
     margin-bottom: ${rm(50)};
 
+    ${media.md`
+        padding: ${rm(0)} ${rm(25)};
+    `}
+
+    ${media.xsm`
+        padding: ${rm(0)} ${rm(16)};
+        margin-bottom: ${rm(30)};
+    `}
+
     .buttonsBlock{
         display: flex;
         gap: ${rm(5)};
+
+        ${media.xsm`
+            display: none;
+        `}
     }
 `
 
@@ -119,6 +132,12 @@ const StyledTitle = styled.p`
     
     ${media.lg`
         width: ${rm(550)};
+        font-size: ${rm(40)};
+    `}
+
+    ${media.xsm`
+        font-size: ${rm(32)};
+        width: 100%;
     `}
 
     line-height: 90%;
@@ -127,10 +146,6 @@ const StyledTitle = styled.p`
     text-transform: uppercase;
     ${fontGolosText(600)};
     color: ${colors.black100};
-
-    ${media.lg`
-        font-size: ${rm(40)};
-    `}
 
     .first{
         ${fontSageGrotesk(400)} !important;
@@ -151,6 +166,16 @@ const StyledSwiperSlideContainer = styled.div`
     position: relative;
     scroll-snap-align: start;
     margin-bottom: ${rm(150)};
+
+    ${media.md`
+        width: ${rm(354)};
+        height: ${rm(266)};
+    `}
+
+    ${media.xsm`
+        height: ${rm(328)};
+        width: ${rm(246)};
+    `}
 
     .image{
         width: 100%;

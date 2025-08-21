@@ -40,6 +40,10 @@ const StyledSubtitle = styled.p`
     ${media.lg`
         font-size: ${rm(16)};
     `}
+
+    ${media.xsm`
+        font-size: ${rm(14)};
+    `}
 `
 
 const StyledImageContainer = styled.div`
@@ -50,6 +54,14 @@ const StyledImageContainer = styled.div`
 
     ${media.lg`
         height: ${rm(375)};
+    `}
+
+    ${media.md`
+        height: ${rm(404)};
+    `}
+
+    ${media.xsm`
+        height: ${rm(280)};
     `}
 
     .image{

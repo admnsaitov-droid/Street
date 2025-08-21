@@ -46,6 +46,14 @@ const StyledContent = styled.div`
     gap: ${rm(20)};
     position: relative;
     z-index: 1;
+
+    ${media.md`
+        padding: ${rm(100)} ${rm(25)};
+    `}
+
+    ${media.xsm`
+        padding: ${rm(90)} ${rm(16)};
+    `}
 `
 
 const StyledBackgroundImage = styled(Image)`
@@ -66,5 +74,15 @@ const StyledDescription = styled.p`
     ${media.lg`
         font-size: ${rm(16)};
         width: ${rm(420)};
+    `}
+
+    ${media.md`
+        font-size: ${rm(16)};
+        width: ${rm(354)};
+    `}
+
+    ${media.xsm`
+        font-size: ${rm(14)};
+        width: 100%;
     `}
 `

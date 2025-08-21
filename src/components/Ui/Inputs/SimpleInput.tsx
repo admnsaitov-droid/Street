@@ -70,6 +70,12 @@ const Label = styled.label<{ $active: boolean }>`
     transform: ${({ $active }: any) => $active ? `translateY(-${rm(20)})` : "none"};
     top: ${rm(1.5)};
   `}
+
+  ${media.xsm`
+    font-size: ${({ $active }: any) => $active ? rm(12) : rm(16)};
+    transform: ${({ $active }: any) => $active ? `translateY(-${rm(18)})` : "none"};
+    top: ${rm(1)};
+  `}
 `
 
 const Input = styled.input`
@@ -103,6 +109,11 @@ const Input = styled.input`
   ${media.md`
     font-size: ${rm(18)};
     height: ${rm(24)};
+  `}
+
+  ${media.xsm`
+    font-size: ${rm(14)};
+    height: ${rm(20)};
   `}
 `
 

@@ -19,10 +19,10 @@ const {
         xlg: 1920,
         lg: 1440,
         md: 768,
-        xsm: 360,
+        xsm: 576,
     },
     related: {
-        xsm: 390
+        xsm: 360
     }
 })
 
