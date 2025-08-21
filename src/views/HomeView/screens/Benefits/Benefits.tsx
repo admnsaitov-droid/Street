@@ -63,6 +63,10 @@ const StyledBenefits = styled.div`
             height: ${rm(576)};
         `}
 
+        ${media.xsm`
+            height: ${rm(370)};
+        `}
+
         .image-container{
             position: relative;
             width: 100%;
@@ -92,6 +96,10 @@ const StyledBenefits = styled.div`
             padding: ${rm(100)} ${rm(25)};
         `}
 
+        ${media.xsm`
+            padding: ${rm(70)} ${rm(16)};
+        `}
+
         .main{
             display: flex;
             flex-direction: column;
@@ -108,6 +116,10 @@ const StyledBenefits = styled.div`
                 ${media.lg`
                     font-size: ${rm(40)};    
                 `}
+
+                ${media.xsm`
+                    font-size: ${rm(32)};
+                `}
             }
 
             .description{
@@ -122,6 +134,11 @@ const StyledBenefits = styled.div`
 
                 ${media.md`
                     width: ${rm(340)};    
+                `}
+
+                ${media.xsm`
+                    font-size: ${rm(14)};
+                    width: 100%;
                 `}
             }
         }
@@ -139,6 +156,11 @@ const StyledBenefitsContainer = styled.div`
         row-gap: ${rm(40)};
         column-gap: ${rm(130)};
     `}
+
+    ${media.xsm`
+        row-gap: ${rm(30)};
+        column-gap: ${rm(8)};
+    `}
 `
 
 const StyledBenefit = styled.div`
@@ -149,6 +171,10 @@ const StyledBenefit = styled.div`
 
     ${media.md`
         width: ${rm(233)};
+    `}
+
+    ${media.xsm`
+        width: 48.7%;
     `}
 
     .dividerMain{
@@ -175,6 +201,10 @@ const StyledBenefit = styled.div`
         ${media.lg`
             font-size: ${rm(40)};
         `}
+
+        ${media.xsm`
+            font-size: ${rm(32)};
+        `}
     }
 
     .divider{
@@ -194,6 +224,11 @@ const StyledBenefit = styled.div`
 
        ${media.lg`
             font-size: ${rm(16)};
+       `}
+
+       ${media.xsm`
+            font-size: ${rm(14)};
+            width: 95%;
        `}
     }
 `

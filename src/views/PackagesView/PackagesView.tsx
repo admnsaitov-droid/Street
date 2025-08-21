@@ -25,7 +25,7 @@ export const PackagesView = ({ data }: PackagesViewProps) => {
             </StyledTop>
             <StyledPackages>
                 {data?.package?.map((item: any, index: number) => (
-                    <Package data={item} />
+                    <Package key={index} data={item} />
                 ))}
             </StyledPackages>
         </StyledPackagesView>
@@ -36,6 +36,16 @@ const StyledPackagesView = styled.div`
     width: 100%;
     padding: ${rm(100)} ${rm(50)};
     padding-bottom: ${rm(150)};
+
+    ${media.md`
+        padding: ${rm(100)} ${rm(25)};
+        padding-bottom: ${rm(150)};
+    `}
+
+    ${media.xsm`
+        padding: ${rm(90)} ${rm(16)};
+        padding-bottom: ${rm(70)};
+    `}
 `
 
 const StyledTop = styled.div`
@@ -44,6 +54,18 @@ const StyledTop = styled.div`
     justify-content: space-between;
     margin-bottom: ${rm(80)};
     margin-top: ${rm(40)};
+
+    ${media.md`
+        flex-direction: column;
+        gap: ${rm(20)};
+        justify-content: flex-start;
+    `}
+    
+    ${media.xsm`
+        margin-top: ${rm(30)};
+        gap: ${rm(15)};
+        margin-bottom: ${rm(70)};
+    `}
 `
 
 export const StyledTitle = styled.p`
@@ -53,10 +75,17 @@ export const StyledTitle = styled.p`
     letter-spacing: -0.02em;
     ${fontGolosText(600)};
     color: ${colors.black100};
-    margin-top: ${rm(40)};
     
     ${media.lg`
         font-size: ${rm(80)};
+    `}
+
+    ${media.md`
+        font-size: ${rm(56)};
+    `}
+
+    ${media.xsm`
+        font-size: ${rm(40)};
     `}
 `
 
@@ -68,10 +97,21 @@ const StyledDescription = styled.p`
     text-indent: ${rm(113)};
     width: ${rm(1007)};
 
-
     ${media.lg`
         font-size: ${rm(32)};
         width: ${rm(777)};
+    `}
+
+    ${media.md`
+        font-size: ${rm(24)};
+        text-indent: 0;
+        width: ${rm(475)};
+        letter-spacing: -0.01em;
+    `}
+
+    ${media.xsm`
+        font-size: ${rm(20)};
+        width: 100%;
     `}
 `
 

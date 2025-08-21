@@ -19,8 +19,7 @@ const useLvh = () => {
 
     const render = () => {
       if (typeof window === "undefined") return;
-      const bottomMenuOffset = 0; //px
-      const vh = (window.outerHeight + bottomMenuOffset) * 0.01;
+      const vh = window.innerHeight * 0.01;
 
       if (window.innerWidth > 576) {
         document.documentElement.style.removeProperty("--vh");
@@ -44,10 +43,12 @@ const useLvh = () => {
 
     render(); // Initial render
     window.addEventListener("resize", handleResize);
+    window.addEventListener("orientationchange", render); // Add orientation change listener
 
     return () => {
       clearTimeout(timeoutId);
       window.removeEventListener("resize", handleResize);
+      window.removeEventListener("orientationchange", render); // Clean up orientation change listener
     };
   }, []);
 };

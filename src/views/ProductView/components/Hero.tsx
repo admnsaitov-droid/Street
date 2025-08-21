@@ -3,12 +3,18 @@ import { colors, media, rm } from "@/styles"
 import { fontGolosText } from "@/styles/fonts"
 import { heightLvh } from "@/styles/utils"
 import styled from "styled-components"
+import { ProductScene } from "./Scene/ProductScene"
+import { ColorPaletre } from "./ColorPaletre/ColoPaletre"
 
 interface HeroProps {
     data: any
+    colors: {
+        name: string
+        color: string
+    }[]
 }
 
-export const Hero = ({ data }: HeroProps) => {
+export const Hero = ({ data, colors }: HeroProps) => {
     return (
         <StyledHero>
             <StyledContent>
@@ -24,6 +30,8 @@ export const Hero = ({ data }: HeroProps) => {
                     <StyledSubtitle>{data?.model}</StyledSubtitle>
                 </div>
             </StyledContent>
+            <ProductScene />
+            <ColorPaletre colors={colors} />
         </StyledHero>
     )
 }
@@ -31,17 +39,38 @@ export const Hero = ({ data }: HeroProps) => {
 const StyledHero = styled.div`
     width: 100%;
     ${heightLvh(100)};
-    background-color:rgb(20, 37, 51);
+    background-color:#F8F9FC;
+    position: relative;
+
+    ${media.xsm`
+        overflow: hidden;
+    `}
 `
 
 const StyledContent = styled.div`
     padding: ${rm(100)} ${rm(50)};
+    position: relative;
+    z-index: 2;
+
+    ${media.md`
+        padding: ${rm(100)} ${rm(25)};
+        padding-bottom: ${rm(50)};
+    `}
+
+    ${media.xsm`
+        padding: ${rm(90)} ${rm(16)};
+        padding-bottom: ${rm(20)};
+    `}
 
     .top{
         display: flex;
         flex-direction: column;
         gap: ${rm(20)};
         margin-top: ${rm(40)};
+
+        ${media.xsm`
+            margin-top: ${rm(30)};
+        `}
     }
 `
 
@@ -67,5 +96,9 @@ const StyledSubtitle = styled.p`
 
     ${media.lg`
         font-size: ${rm(16)};
+    `}
+
+    ${media.xsm`
+        font-size: ${rm(14)};
     `}
 `

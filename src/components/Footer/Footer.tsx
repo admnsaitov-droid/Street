@@ -164,6 +164,10 @@ const StyledFooter = styled.div`
     ${media.md`
         padding: ${rm(70)} ${rm(25)} ${rm(30)} ${rm(25)};
     `}
+
+    ${media.xsm`
+        padding: ${rm(70)} ${rm(16)} ${rm(15)} ${rm(16)};
+    `}
 `
 
 const StyledTitle = styled.p`
@@ -185,6 +189,12 @@ const StyledTitle = styled.p`
         width: ${rm(563)};
     `}
 
+    ${media.xsm`
+        font-size: ${rm(32)};
+        width: 100%;
+        margin-bottom: ${rm(50)};
+    `}
+
     .first{
         ${fontGolosText(600)}; !important;
         color: ${colors.red} !important;
@@ -202,6 +212,10 @@ const StyledTopContainer = styled.div`
     ${media.md`
         flex-direction: column;
         gap: ${rm(100)};
+    `}
+
+    ${media.xsm`
+        gap: ${rm(70)};
     `}
 
     .left{
@@ -224,6 +238,12 @@ const StyledTopContainer = styled.div`
             width: 100%;
             row-gap: ${rm(10)};
             column-gap: ${rm(10)};
+        `}
+
+        ${media.xsm`
+            width: 100%;
+            row-gap: ${rm(30)};
+            column-gap: ${rm(8)};
         `}
     }
 `
@@ -253,6 +273,11 @@ const StyledInfoText = styled.p`
     ${media.md`
         width: 100%;
     `}
+
+    ${media.xsm`
+        margin-bottom: ${rm(20)};
+        font-size: ${rm(14)};
+    `}
 `
 
 const StyledSection = styled.div`
@@ -262,6 +287,10 @@ const StyledSection = styled.div`
 
     ${media.md`
         width: ${rm(172)};
+    `}
+
+    ${media.xsm`
+        width: ${rm(160)};
     `}
 
     .title{
@@ -274,6 +303,10 @@ const StyledSection = styled.div`
 
         ${media.lg`
             font-size: ${rm(16)};
+        `}
+
+        ${media.xsm`
+            font-size: ${rm(14)};
         `}
     }
 
@@ -292,6 +325,10 @@ const StyledSection = styled.div`
             ${media.lg`
                 font-size: ${rm(14)};
             `}
+
+            ${media.xsm`
+                font-size: ${rm(14)};
+            `}
         }
     }
 `
@@ -306,7 +343,14 @@ const StyledBottomContainer = styled.div`
         flex-wrap: wrap;
         justify-content: space-between;
         gap: ${rm(30)};
-        padding-bottom: ${rm(25)};
+    `}
+
+    ${media.xsm`
+        flex-direction: column;
+        gap: ${rm(15)};
+        padding-top: ${rm(15)};
+        align-items: flex-start;
+        justify-content: flex-start;
     `}
 
     .dividerMain{
@@ -335,9 +379,18 @@ const StyledBottomContainer = styled.div`
             width: ${rm(275)};
         `}
 
+        ${media.xsm`
+            width: 100%;
+        `}
+
         svg{
             width: ${rm(275)};
             height: ${rm(25)};
+
+            ${media.xsm`
+                width: ${rm(209)};
+                height: ${rm(19)};
+            `}
         }
     }
 
@@ -356,6 +409,14 @@ const StyledBottomContainer = styled.div`
             width: auto;
         `}
 
+        ${media.xsm`
+            width: 100%;
+            flex-direction: column;
+            gap: ${rm(4)};
+            align-items: flex-start;
+            justify-content: flex-start;
+        `}
+
         .link{
             color: #6F7685;
             font-size: ${rm(16)};
@@ -364,6 +425,10 @@ const StyledBottomContainer = styled.div`
 
             ${media.lg`
                 font-size: ${rm(14)};
+            `}
+
+            ${media.xsm`
+                font-size: ${rm(12)};
             `}
         }
     }
@@ -379,6 +444,11 @@ const StyledBottomContainer = styled.div`
         ${media.lg`
             font-size: ${rm(14)};
             width: 50%;
+        `}
+
+        ${media.xsm`
+            font-size: ${rm(12)};
+            width: 100%;
         `}
     }
 `

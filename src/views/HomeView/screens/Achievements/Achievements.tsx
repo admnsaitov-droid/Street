@@ -57,6 +57,10 @@ const StyledAchievements = styled.div`
         padding: ${rm(150)} ${rm(25)};
     `}
 
+    ${media.xsm`
+        padding: ${rm(70)} ${rm(16)};
+        gap: ${rm(30)};
+    `}
 
     .leftAchievements{
         ${media.md`
@@ -64,12 +68,22 @@ const StyledAchievements = styled.div`
             display: flex;
             justify-content: flex-end;
         `}
+
+        ${media.xsm`
+            padding-left: ${rm(0)};
+            justify-content: flex-start;
+            width: 100%;
+        `}
     }
 
     .right{
         display: flex;
         flex-direction: column;
         gap: ${rm(40)};
+
+        ${media.xsm`
+            gap: ${rm(30)};
+        `}
 
         .rightAchievements{
             width: 100%;
@@ -79,11 +93,6 @@ const StyledAchievements = styled.div`
 
 const StyledTitle = styled.p`
     width: ${rm(700)};
-    
-    ${media.lg`
-        width: ${rm(553)};
-    `}
-
     line-height: 90%;
     letter-spacing: -0.02em;
     font-size: ${rm(48)};
@@ -92,7 +101,13 @@ const StyledTitle = styled.p`
     color: ${colors.black100};
 
     ${media.lg`
+        width: ${rm(553)};
         font-size: ${rm(40)};
+    `}
+
+    ${media.xsm`
+        width: 100%;
+        font-size: ${rm(32)};
     `}
 
     .first{
@@ -124,6 +139,10 @@ const StyledAchievement = styled.div`
         width: 33%;    
     `}
 
+    ${media.xsm`
+        width: 50%;
+    `}
+
     .dividerMain{
         margin-bottom: ${rm(15)};
         width: 100%;
@@ -148,6 +167,10 @@ const StyledAchievement = styled.div`
         ${media.lg`
             font-size: ${rm(40)};
         `}
+
+        ${media.xsm`
+            font-size: ${rm(32)};
+        `}
     }
 
     .divider{
@@ -167,6 +190,10 @@ const StyledAchievement = styled.div`
 
        ${media.lg`
             font-size: ${rm(16)};
+       `}
+
+       ${media.xsm`
+            font-size: ${rm(14)};
        `}
     }
 `

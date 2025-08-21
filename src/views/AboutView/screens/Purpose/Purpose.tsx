@@ -3,12 +3,15 @@ import { StyledAnnotation, StyledSubtitle } from "@/views/PackagesView/screens/P
 import { colors, media, rm } from "@/styles"
 import { fontGolosText, fontSageGrotesk } from "@/styles/fonts"
 import { MediaComponent } from "@/components/MediaComponent/MediaComponent"
+import { useWindowWidth } from "@react-hook/window-size"
 
 interface PurposeProps {
     data: any
 }
 
 export const Purpose = ({ data }: PurposeProps) => {
+    const width = useWindowWidth();
+
     return (
         <StyledPurpose>
             <StyledTop>
@@ -16,20 +19,20 @@ export const Purpose = ({ data }: PurposeProps) => {
                 <StyledRightTop>
                     <StyledPurposeTitle>
                         <span>{data?.title?.firstWord}</span>
-                        <div style={{width: "100px"}}></div>
+                        {<div style={{width: "100px"}}></div>}
                         <span>{data?.title?.secondWord}</span>
                         <span className="first">{data?.title?.thirdWord}</span>
                     </StyledPurposeTitle>
                     <div className="bottom">
                         <StyledSubtitle>{data?.description}</StyledSubtitle>
-                        <StyledSubtitle>{data?.descriptionSecondary}</StyledSubtitle>
+                        {width > 768 && <StyledSubtitle>{data?.descriptionSecondary}</StyledSubtitle>}
                     </div>
                 </StyledRightTop>
             </StyledTop>
             <StyledBottom>
                 <div className="left">
-                    {data?.mediaSecondary?.map((image: any) => (
-                        <StyledImageContainer className="imageContainer">
+                    {data?.mediaSecondary?.map((image: any, index: number) => (
+                        <StyledImageContainer key={index} className="imageContainer">
                             <MediaComponent media={image} className="image" />
                         </StyledImageContainer>
                     ))}
@@ -47,18 +50,40 @@ export const Purpose = ({ data }: PurposeProps) => {
 const StyledPurpose = styled.div`
     width: 100%;
     padding: ${rm(150)} ${rm(50)};
+
+    ${media.md`
+        padding: ${rm(150)} ${rm(25)};
+    `}
+
+    ${media.xsm`
+        padding: ${rm(70)} ${rm(16)};
+    `}
 `   
 
 const StyledTop = styled.div`
     width: 100%;
     display: flex;
     justify-content: space-between;
+
+    ${media.xsm`
+        flex-direction: column;
+        gap: ${rm(15)};
+    `}
 `
 
 const StyledRightTop = styled.div`
     display: flex;
     flex-direction: column;
     gap: ${rm(20)};
+
+    ${media.md`
+        width: ${rm(475)};    
+    `}
+
+    ${media.xsm`
+        width: 100%;
+        gap: ${rm(15)};
+    `}
 
     .bottom{
         display: flex;
@@ -69,6 +94,10 @@ const StyledRightTop = styled.div`
 
             ${media.lg`
                 width: ${rm(327)};
+            `}
+
+            ${media.md`
+                width: ${rm(354)};
             `}
         }
 
@@ -100,6 +129,16 @@ export const StyledPurposeTitle = styled.p`
         width: ${rm(420)};
     `}
 
+    ${media.md`
+        >:first-child{
+        margin-bottom: ${rm(-8)};
+        }
+    `}
+
+    ${media.xsm`
+        font-size: ${rm(32)};
+        width: ${rm(320)};
+    `}
 
     .first{
         ${fontSageGrotesk(400)} !important;
@@ -115,20 +154,49 @@ const StyledBottom = styled.div`
     justify-content: space-between;
     margin-top: ${rm(40)};
 
+    ${media.xsm`
+        flex-direction: column;
+        gap: ${rm(10)};
+    `}
+
     .left{
         display: flex;
         flex-direction: column;
         justify-content: space-between;
 
+        ${media.md`
+            gap: ${rm(10)};
+        `}
+
         .imageContainer{
             width: ${rm(215)};
             height: ${rm(215)};
+
+            ${media.md`
+                width: ${rm(233)};
+                height: ${rm(175)};
+            `}
+
+            ${media.xsm`
+                width: ${rm(328)};
+                height: ${rm(246)};
+            `}
         }
     }
 
     .right{
         width: ${rm(777)};
         height: ${rm(581)};
+
+        ${media.md`
+            width: ${rm(475)};
+            height: ${rm(360)};
+        `}
+
+        ${media.xsm`
+            width: 100%;
+            height: ${rm(246)};
+        `}
     }
 `
 

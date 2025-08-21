@@ -42,6 +42,14 @@ export const Inspiration = ({ data }: InspirationProps) => {
 const StyledInspiration = styled.div`
     width: 100%;
     padding: ${rm(150)} ${rm(50)};
+
+    ${media.md`
+        padding: ${rm(150)} ${rm(25)};
+    `}
+
+    ${media.xsm`
+        padding: ${rm(70)} ${rm(16)};
+    `}
 `
 
 const StyledTopContainer = styled.div`
@@ -50,15 +58,37 @@ const StyledTopContainer = styled.div`
     justify-content: space-between;
     margin-bottom: ${rm(50)};
 
+    ${media.md`
+        flex-direction: column;
+        gap: ${rm(40)};
+    `}
+
+    ${media.xsm`
+        gap: ${rm(15)};
+        margin-bottom: ${rm(30)};
+    `}
+
     .right{
         display: flex;
         gap: ${rm(10)};
+
+        ${media.xsm`
+            flex-direction: column;
+        `}
 
         >:nth-child(1){
             width: ${rm(540)};
 
             ${media.lg`
                 width: ${rm(420)};
+            `}
+
+            ${media.md`
+                width: ${rm(354)};
+            `}
+
+            ${media.xsm`
+                width: 100%;
             `}
         }
 
@@ -67,6 +97,14 @@ const StyledTopContainer = styled.div`
 
             ${media.lg`
                 width: ${rm(327)};
+            `}
+
+            ${media.md`
+                width: ${rm(354)};
+            `}
+
+            ${media.xsm`
+                width: 100%;
             `}
         }
     }
@@ -90,8 +128,21 @@ export const StyledAboutTitle = styled.p`
         width: ${rm(420)};
     `}
 
+    ${media.md`
+        width: ${rm(536)};
+    `}
+
+    ${media.xsm`
+        font-size: ${rm(32)};
+        width: 100%;
+    `}
+
     >:nth-child(3){
         margin-top: ${rm(-40)};
+
+        ${media.md`
+            margin-top: ${rm(-15)};
+        `}
     }
 
     .first{
@@ -111,6 +162,14 @@ const StyledMediaContainer = styled.div`
 
     ${media.lg`
         height: ${rm(600)};
+    `}
+
+    ${media.md`
+        height: ${rm(539)};
+    `}
+
+    ${media.xsm`
+        height: ${rm(236)};
     `}
 
     .image{

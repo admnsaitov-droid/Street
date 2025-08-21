@@ -41,6 +41,11 @@ const StyledTop = styled.div`
     justify-content: space-between;
     margin-bottom: ${rm(40)};
 
+    ${media.xsm`
+        flex-direction: column;
+        gap: ${rm(30)};
+    `}
+
     .right{
         display: flex;
         flex-direction: column;
@@ -51,9 +56,21 @@ const StyledTop = styled.div`
             width: ${rm(890)};    
         `}
 
+        ${media.md`
+            width: ${rm(475)};
+        `}
+
+        ${media.xsm`
+            width: 100%;
+        `}
+
         .bottom{
             width: 100%;
             padding-left: ${rm(113)};
+
+            ${media.md`
+                padding-left: 0;
+            `}
 
             .accordions{
                 width: 100%;
@@ -81,5 +98,14 @@ const StyledTitle = styled.p`
 
     ${media.lg`
         font-size: ${rm(32)};
+    `}
+
+    ${media.md`
+        font-size: ${rm(24)};
+        text-indent: 0;
+    `}
+
+    ${media.xsm`
+        font-size: ${rm(20)};
     `}
 `

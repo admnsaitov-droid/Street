@@ -1,72 +1,89 @@
-import { useEffect } from "react"
+import { useEffect, forwardRef, useRef } from "react"
 import { AnimatedText } from "@/components/animated/AnimatedText/AnimatedText"
 import { AccordionText } from "@/components/animated/AccordionText/AccordionText"
 import UnderlineLink from "@/components/animated/UnderlineLink/UnderlineLink"
-import { media, rm } from "@/styles"
+import { colors, media, rm } from "@/styles"
 import { fontGolosText } from "@/styles/fonts"
 import styled from "styled-components"
 import { usePreview } from "./Preview"
 import { animated, useInView, useSpring } from "@react-spring/web"
 import { getMediaStrapiPath } from "@/utils/getMediaStrapiPath"
 import { AnimLink } from "@/layouts/AnimatedRouterLayout/AnimatedRouterLayout"
+import { useWindowWidth } from "@react-hook/window-size"
 
 interface LineProps {
     line: any
     index: number
     onMouseEnter?: () => void;
     onMouseLeave?: () => void;
+    activeMobileIndex?: number;
 }
 
-export const Line = ({ line, index, onMouseEnter, onMouseLeave }: LineProps) => {
+export const Line = forwardRef<HTMLDivElement, LineProps>(({ line, index, onMouseEnter, onMouseLeave, activeMobileIndex }, ref) => {
     const setUrl = usePreview(state => state.setUrl)
     const setPoster = usePreview(state => state.setPoster)
     const setRef = usePreview(state => state.setRef)
     const setRoute = usePreview(state => state.setRoute)
     const setIndex = usePreview(state => state.setIndex)
     const activeIndex = usePreview(state => state.index)
+    const width = useWindowWidth()
 
-    const [ref, inView] = useInView()
+    const [inViewRef, inView] = useInView()
+    const internalRef = useRef<any>(null)
 
 
 
     const handleEnter = () => {
-        if (window.innerWidth <= 576) { return }
+        if (window.innerWidth <= 768) { return }
         onMouseEnter?.()
         set()
     }
     const handleLeave = () => {
-        if (window.innerWidth <= 576) { return }
+        if (window.innerWidth <= 768) { return }
         unset()
         onMouseLeave?.()
     }
 
     const set = () => {
-        if (window.innerWidth <= 576) { return }
+        if (window.innerWidth <= 768) { return }
         setTimeout(() => {
             setUrl('poster-only') // Just use a constant to indicate poster mode
             setPoster(getMediaStrapiPath(line?.poster))
-            setRef(ref.current)
+            setRef(internalRef.current)
             setRoute(line?.slug || '')
             setIndex(index)
-            console.log('enter', line?.poster, ref.current)
+
         }, 0)
     }
     const unset = () => {
-        if (window.innerWidth <= 576) { return }
+        if (window.innerWidth <= 768) { return }
         setUrl('')
         setPoster('')
+        setRef(null)
         setRoute('')
         setIndex(-1)
     }
 
     const exploreSpring = useSpring({
-        opacity: index === activeIndex ? 1 : 0,
+        opacity: width > 768 ? (index === activeIndex ? 1 : 0) : (index === activeMobileIndex ? 1 : 0),
         config: { tension: 280, friction: 60 },
     })
 
 
     return (
-        <StyledLine ref={ref} onMouseEnter={handleEnter} onMouseLeave={handleLeave}>
+        <StyledLine 
+            ref={(el) => {
+                internalRef.current = el;
+                if (typeof ref === 'function') {
+                    ref(el);
+                } else if (ref) {
+                    ref.current = el;
+                }
+            }} 
+            onMouseEnter={handleEnter} 
+            onMouseLeave={handleLeave} 
+            data-line-index={index}
+        >
             <StyledHiddenLink href={`/lines/${line.slug}`}></StyledHiddenLink>
             <StyledType>
                 <div className="square"></div>
@@ -74,24 +91,28 @@ export const Line = ({ line, index, onMouseEnter, onMouseLeave }: LineProps) => 
                     {line.type}
                 </div>
             </StyledType>
-            <StyledTitle className="title">{line.name}</StyledTitle>
-            <StyledDescriptionContainer>
-                <AccordionText 
-                    className="description"
-                    enabled={index === activeIndex}
-                    duration={600}
-                    stagger={120}
-                    textClassName="description-text"
-                >
-                    {line.description}
-                </AccordionText>
-            </StyledDescriptionContainer>
+            <div className="line-content">
+                <StyledTitle className="title">{line.name}</StyledTitle>
+                <StyledDescriptionContainer>
+                    <AccordionText 
+                        className="description"
+                        enabled={width > 768 ? index === activeIndex : true} //index === activeMobileIndex
+                        duration={600}
+                        stagger={120}
+                        textClassName="description-text"
+                    >
+                        {line.description}
+                    </AccordionText>
+                </StyledDescriptionContainer>
+            </div>
             <StyledExploreButton style={exploreSpring}>
                 <UnderlineLink href={`/lines/${line.slug}`} lineColor="#0040DD" text="Explore"></UnderlineLink>
             </StyledExploreButton>
         </StyledLine>
     )
-}   
+})   
+
+Line.displayName = "Line"
 
 
 const StyledLine = styled.div`
@@ -103,6 +124,27 @@ const StyledLine = styled.div`
     width: 100%;
 
     transition: border-color 0.3s ease-in-out;
+
+    ${media.xsm`
+        flex-direction: column;
+        gap: ${rm(10)};
+    `}
+
+    .line-content{
+        display: flex;
+
+        ${media.md`
+            flex-direction: column;
+            gap: ${rm(10)};
+            margin-right: ${rm(70)};
+        `}
+
+        ${media.xsm`
+            flex-direction: column;
+            gap: ${rm(10)};
+            margin-right: 0;
+        `}
+    }
 
     &:hover{
         border-color: #0040DD;
@@ -129,7 +171,11 @@ const StyledType = styled.div`
     `}
 
     ${media.md`
-        width: ${rm(340)};
+        width: ${rm(243)};
+    `}
+
+    ${media.xsm`
+        display: none;
     `}
 
     .square{
@@ -176,8 +222,12 @@ const StyledTitle = styled.p`
 
     ${media.md`
         font-size: ${rm(24)};
-        margin-left: ${rm(58)};
-        margin-right: ${rm(10)};
+        margin: 0;
+        color: ${colors.black100};
+    `}
+
+    ${media.xsm`
+        font-size: ${rm(20)};
     `}
 `
 
@@ -192,6 +242,15 @@ const StyledDescriptionContainer = styled.div`
     ${media.lg`
         width: ${rm(328)};
         margin-right: ${rm(60)};
+    `}
+
+    ${media.md`
+        width: ${rm(354)};
+        margin-right: 0;
+    `}
+
+    ${media.xsm`
+        width: 100%;
     `}
 
     .description-text {

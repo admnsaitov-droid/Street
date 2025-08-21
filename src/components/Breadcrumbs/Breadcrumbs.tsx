@@ -99,6 +99,10 @@ const StyledLink = styled(AnimLink)`
   ${media.lg`
     font-size: ${rm(14)};
   `}
+
+  ${media.xsm`
+    font-size: ${rm(12)};
+  `}
 `;
 
 const StyledCurrent = styled.span`
@@ -109,6 +113,10 @@ const StyledCurrent = styled.span`
 
   ${media.lg`
     font-size: ${rm(14)};
+  `}
+
+  ${media.xsm`
+    font-size: ${rm(12)};
   `}
 `;
 

@@ -25,6 +25,11 @@ const StyledTop = styled.div`
     width: 100%;
     display: flex;
     justify-content: space-between;
+
+    ${media.xsm`
+        flex-direction: column;
+        gap: ${rm(15)};
+    `}
     
     .blue80{
         color: #99B3F1;
@@ -33,11 +38,24 @@ const StyledTop = styled.div`
     .right{
         display: flex;
         flex-direction: column;
-        gap: ${rm(40)};
+        gap: ${rm(20)};
         width: ${rm(1100)};
 
         ${media.lg`
             width: ${rm(890)};    
+        `}
+
+        ${media.md`
+            width: ${rm(475)};
+        `}
+
+        ${media.xsm`
+            width: 100%;
+            gap: ${rm(15)};
+
+            >:nth-child(1){
+                letter-spacing: -0.03em !important;
+            }
         `}
 
         .bottom{
@@ -47,11 +65,19 @@ const StyledTop = styled.div`
             justify-content: space-between;
             align-items: flex-end;
 
+            ${media.md`
+                padding-left: 0;
+            `}
+
             >:nth-child(1){
                 width: ${rm(550)};
 
                 ${media.lg`
                     width: ${rm(440)};
+                `}
+
+                ${media.md`
+                    width: 100%;
                 `}
             }
         }
@@ -68,5 +94,14 @@ const StyledTitle = styled.p`
 
     ${media.lg`
         font-size: ${rm(32)};
+    `}
+
+    ${media.md`
+        font-size: ${rm(24)};
+        text-indent: 0;
+    `}
+
+    ${media.xsm`
+        font-size: ${rm(20)};
     `}
 `

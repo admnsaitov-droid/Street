@@ -42,7 +42,7 @@ export const Overview = ({ data }: OverviewProps) => {
                     <StyledTitle>{data?.mainDescription}</StyledTitle>
                     <div className="bottom">
                         <StyledSubtitle>{data?.descriptionSecondary}</StyledSubtitle>
-                        <SimpleButton>
+                        <SimpleButton className="button">
                             {data?.button?.text}
                         </SimpleButton>
                     </div>
@@ -94,12 +94,35 @@ const StyledOverview = styled.div`
     display: flex;
     flex-direction: column;
     position: relative;
+
+    ${media.md`
+        padding: ${rm(100)} ${rm(25)};
+    `}
+
+    ${media.xsm`
+        padding: ${rm(70)} ${rm(16)};
+    `}
+
+    .button{
+        ${media.xsm`
+            width: 100%;
+
+            >*{
+                width: 100%;
+            }
+        `}
+    }
 `
 
 const StyledTop = styled.div`
     width: 100%;
     display: flex;
     justify-content: space-between;
+
+    ${media.xsm`
+        flex-direction: column;
+        gap: ${rm(15)};
+    `}
 
     .right{
         display: flex;
@@ -111,6 +134,15 @@ const StyledTop = styled.div`
             width: ${rm(890)};    
         `}
 
+        ${media.md`
+            width: ${rm(475)};
+            gap: ${rm(20)};
+        `}
+
+        ${media.xsm`
+            width: 100%;
+        `}
+
         .bottom{
             width: 100%;
             padding-left: ${rm(113)};
@@ -118,11 +150,22 @@ const StyledTop = styled.div`
             justify-content: space-between;
             align-items: flex-end;
 
+            ${media.md`
+                padding-left: 0;
+                flex-direction: column;
+                gap: ${rm(30)};
+                align-items: flex-start;
+            `}
+
             >:nth-child(1){
                 width: ${rm(550)};
 
                 ${media.lg`
                     width: ${rm(440)};
+                `}
+
+                ${media.md`
+                    width: 100%;
                 `}
             }
         }
@@ -140,6 +183,16 @@ const StyledTitle = styled.p`
     ${media.lg`
         font-size: ${rm(32)};
     `}
+
+    ${media.md`
+        font-size: ${rm(24)};
+        text-indent: 0;
+        width: 100%;
+    `}
+
+    ${media.xsm`
+        font-size: ${rm(20)};
+    `}
 `
 
 const StyledImagesContainer = styled.div`
@@ -151,14 +204,31 @@ const StyledImagesContainer = styled.div`
 
     >:nth-child(1){
         width: 60%;
+
+        ${media.xsm`
+            width: 100%;
+        `}
     }
 
     >:nth-child(2){
         width: 40%;
+
+        ${media.xsm`
+            width: 100%;
+        `}
     }
 
     ${media.lg`
         height: ${rm(430)};
+    `}
+
+    ${media.md`
+        height: ${rm(268)};
+    `}
+
+    ${media.xsm`
+        height: auto;
+        flex-direction: column;
     `}
 `   
 
@@ -167,6 +237,10 @@ const StyledImageContainer = styled.div`
     border-radius: ${rm(10)};
     overflow: hidden;
     position: relative;
+
+    ${media.xsm`
+        height: ${rm(185)};
+    `}
 
     .image{
         width: 100%;
@@ -195,11 +269,21 @@ export const StyledExploreHeader = styled.p`
         font-size: ${rm(40)};
     `}
 
+    ${media.xsm`
+        font-size: ${rm(32)};
+        flex-direction: column;
+        gap: ${rm(0)};
+    `}
+
     .first{
         ${fontSageGrotesk(400)} !important;
         color: ${colors.red} !important;
         letter-spacing: -0.02em;
         line-height: 105%;
+
+        ${media.xsm`
+            line-height: 90%;
+        `}
     }
 `
 
@@ -215,6 +299,16 @@ const StyledLineGroup = styled.div`
     width: 100%;
     padding: ${rm(0)} 0 ${rm(50)} 0;
     position: relative;
+
+    ${media.md`
+        padding-bottom: ${rm(70)};
+    `}
+
+    ${media.xsm`
+        flex-direction: column;
+        gap: ${rm(30)};
+        padding-bottom: ${rm(0)};
+    `}
 
     &::before {
         content: '';
@@ -234,6 +328,10 @@ const StyledLineGroup = styled.div`
             radial-gradient(circle 1px at 60px 0.5px, #B7BCCA 100%, transparent 100%);
         background-size: 16px 1px;
         background-repeat: repeat-x;
+
+        ${media.xsm`
+            display: none;
+        `}
     }
 `
 
@@ -247,6 +345,14 @@ const StyledLineName = styled.p`
 
     ${media.lg`
         font-size: ${rm(24)};
+    `}
+
+    ${media.md`
+        font-size: ${rm(18)};
+    `}
+
+    ${media.xsm`
+        font-size: ${rm(20)};
     `}
 `
 

@@ -38,12 +38,21 @@ const StyledAbout = styled.div`
     ${media.md`
         padding: ${rm(150)} ${rm(25)};
     `}
+
+    ${media.xsm`
+        padding: ${rm(70)} ${rm(16)};
+    `}
 `
 
 const StyledTopContainer = styled.div`
     width: 100%;
     display: flex;
     justify-content: space-between;
+
+    ${media.xsm`
+        flex-direction: column;
+        gap: ${rm(30)};
+    `}
     
 
     .title{
@@ -56,6 +65,10 @@ const StyledTopContainer = styled.div`
         
         ${media.lg`
             font-size: ${rm(16)};
+        `}
+
+        ${media.xsm`
+            font-size: ${rm(14)};
         `}
     }
 
@@ -71,6 +84,10 @@ const StyledTopContainer = styled.div`
 
         ${media.md`
             width: ${rm(475)};
+        `}
+
+        ${media.xsm`
+            width: 100%;
         `}
 
         .descriptionMain{
@@ -89,6 +106,10 @@ const StyledTopContainer = styled.div`
                 font-size: ${rm(24)};
                 text-indent: 0;
             `}
+
+            ${media.xsm`
+                font-size: ${rm(20)};
+            `}
         }
 
         .bottom{
@@ -103,6 +124,7 @@ const StyledTopContainer = styled.div`
                 gap: ${rm(30)};
                 align-items: flex-start;
             `}
+
 
             .descriptionSecondary{
                 color: ${colors.gray};
@@ -119,6 +141,17 @@ const StyledTopContainer = styled.div`
                 ${media.md`
                     width: 100%;    
                 `}
+
+                ${media.xsm`
+                    font-size: ${rm(14)};
+                `}
+            }
+
+            >:nth-child(2){
+                ${media.xsm`
+                    width: 100%;
+                    margin-top: ${rm(-10)};
+                `}
             }
         }
     }
@@ -132,8 +165,16 @@ const StyledBottomContainer = styled.div`
     position: relative;
     margin-top: ${rm(40)};
 
+    ${media.lg`
+        height: ${rm(600)};
+    `}
+
     ${media.md`
         height: ${rm(576)};
+    `}
+
+    ${media.xsm`
+        height: ${rm(246)};
     `}
 
     img{
@@ -144,8 +185,4 @@ const StyledBottomContainer = styled.div`
         height: 100%;
         object-fit: cover;
     }
-
-    ${media.lg`
-        height: ${rm(600)};
-    `}
 `

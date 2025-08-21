@@ -1,6 +1,6 @@
 'use client'
 
-import { rm } from "@/styles"
+import { media, rm } from "@/styles"
 import { Hero } from "./components/Hero"
 import { ProductOverview } from "./components/ProductOverview"
 import styled from "styled-components"
@@ -10,12 +10,40 @@ interface ProductViewProps {
     data: any
 }
 
+const testColors = [
+    {
+        name: "Red",
+        color: "#FF0000"
+    },
+    
+    {
+        name: "Blue",
+        color: "#0000FF"
+    },
+    
+    {
+        name: "Green",
+        color: "#00FF00"
+    },
+    
+    {
+        name: "Yellow",
+        color: "#FFFF00"
+    },
+    
+    {
+        name: "Purple",
+        color: "#800080"
+    },
+    
+]
+
 export const ProductView = ({ data }: ProductViewProps) => {
     console.log('data', data)
 
     return (
         <StyledProductView>
-            <Hero data={data?.product} />
+            <Hero data={data?.product} colors={testColors} />
             <StyledWrapper>
                 <ProductOverview data={data?.product} />
             </StyledWrapper>
@@ -32,4 +60,12 @@ const StyledProductView = styled.div`
 const StyledWrapper = styled.div`
     width: 100%;
     padding: ${rm(150)} ${rm(50)};
+
+    ${media.md`
+        padding: ${rm(100)} ${rm(25)};
+    `}
+
+    ${media.xsm`
+        padding: ${rm(90)} ${rm(16)};
+    `}
 `

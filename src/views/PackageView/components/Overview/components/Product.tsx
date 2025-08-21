@@ -7,6 +7,7 @@ import { useProductPreview } from "./ProductPreview"
 import { getMediaStrapiPath } from "@/utils/getMediaStrapiPath"
 import { AccordionText } from "@/components/animated/AccordionText/AccordionText"
 import { AnimLink } from "@/layouts/AnimatedRouterLayout/AnimatedRouterLayout"
+import { useWindowWidth } from "@react-hook/window-size"
 
 interface ProductProps {
     product: any
@@ -23,6 +24,8 @@ export const Product = ({ product, index, onMouseEnter, onMouseLeave }: ProductP
     const setRoute = useProductPreview(state => state.setRoute)
     const setIndex = useProductPreview(state => state.setIndex)
     const [ref, inView] = useInView()
+
+    const width = useWindowWidth()
 
 
     const exploreSpring = useSpring({
@@ -68,9 +71,9 @@ export const Product = ({ product, index, onMouseEnter, onMouseLeave }: ProductP
                     <StyledModel>{product?.model}</StyledModel>
                     <StyledProductName>{product?.name}</StyledProductName>
                 </div>
-                <StyledExploreButton style={exploreSpring}>
+                {width > 768 && <StyledExploreButton style={exploreSpring}>
                     <UnderlineLink href={`/products/${product.slug}`} lineColor="#0040DD" text="Explore"></UnderlineLink>
-                </StyledExploreButton>
+                </StyledExploreButton>}
             </StyledTopContainer>
             <StyledDescriptionContainer>
                 <AccordionText 
@@ -82,6 +85,9 @@ export const Product = ({ product, index, onMouseEnter, onMouseLeave }: ProductP
                 >
                     {product?.previewDescription}
                 </AccordionText>
+                {width <= 768 && <StyledExploreButton style={exploreSpring}>
+                    <UnderlineLink href={`/products/${product.slug}`} lineColor="#0040DD" text="Explore"></UnderlineLink>
+                </StyledExploreButton>}
             </StyledDescriptionContainer>
         </StyledProduct>
     )
@@ -93,6 +99,14 @@ const StyledProduct = styled.div`
     cursor: pointer;
     padding: ${rm(20)} 0;
     position: relative;
+
+    ${media.md`
+        padding: ${rm(16)} 0;
+    `}
+
+    ${media.xsm`
+        padding: ${rm(20)} 0;
+    `}
 
         &::before {
             content: '';
@@ -160,9 +174,23 @@ const StyledTopContainer = styled.div`
         gap: ${rm(270)};
     `}
 
+    ${media.md`
+        gap: ${rm(0)};
+    `}
+
+    ${media.xsm`
+        flex-direction: column-reverse;
+        gap: ${rm(4)};
+    `}
+
     .left{
         display: flex;
         gap: ${rm(10)};
+
+        ${media.xsm`
+            gap: ${rm(4)};
+            flex-direction: column-reverse;
+        `}
     }
 `
 
@@ -179,6 +207,15 @@ const StyledModel = styled.p`
         font-size: ${rm(16)};
         width: ${rm(102)};
     `}
+
+    ${media.md`
+        width: ${rm(111)};
+    `}
+
+    ${media.xsm`
+        font-size: ${rm(14)};
+        width: 100%;
+    `}
 `
 
 const StyledProductName = styled.p`
@@ -194,6 +231,16 @@ const StyledProductName = styled.p`
         font-size: ${rm(20)};
         width: ${rm(327)};
     `}
+
+    ${media.md`
+        font-size: ${rm(18)};
+        width: ${rm(354)};
+    `}
+
+    ${media.xsm`
+        font-size: ${rm(14)};
+        width: 100%;
+    `}
 `
 
 const StyledExploreButton = styled(animated.div)`
@@ -206,6 +253,14 @@ const StyledExploreButton = styled(animated.div)`
     ${media.lg`
         font-size: ${rm(14)};
     `}
+
+    ${media.md`
+        margin-top: ${rm(10)};
+    `}
+
+    ${media.xsm`
+        font-size: ${rm(12)};
+    `}
 `
 
 const StyledDescriptionContainer = styled.div`
@@ -213,6 +268,15 @@ const StyledDescriptionContainer = styled.div`
 
     ${media.lg`
         padding-left: ${rm(112)};
+    `}
+
+    ${media.md`
+        padding-left: ${rm(121)};
+        margin-top: ${rm(10)};
+    `}
+
+    ${media.xsm`
+        padding-left: 0;
     `}
 
     .description-text {
@@ -225,6 +289,16 @@ const StyledDescriptionContainer = styled.div`
         ${media.lg`
             font-size: ${rm(14)};
             width: ${rm(327)};
+        `}
+
+        ${media.md`
+            font-size: ${rm(14)};
+            width: 100%;
+        `}
+
+        ${media.xsm`
+            font-size: ${rm(12)};
+            width: 100%;
         `}
     }
 `

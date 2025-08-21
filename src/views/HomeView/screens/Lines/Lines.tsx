@@ -3,8 +3,11 @@ import { Line } from "./components/Line";
 import { colors, media, rm } from "@/styles";
 import { fontGolosText } from "@/styles/fonts";
 import styled from "styled-components";
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AnimatedText } from "@/components/animated/AnimatedText/AnimatedText";
+import { useWindowWidth } from "@react-hook/window-size";
+import { useLoop } from "@/hooks/useLoop";
+import { getMediaStrapiPath } from "@/utils/getMediaStrapiPath";
 
 interface LinesProps {
   linesData: any;
@@ -13,9 +16,89 @@ interface LinesProps {
 export const Lines = ({ linesData }: LinesProps) => {
     const setAllUrls = usePreview(state => state.setAllUrls)
     const containerRef = usePreview(state => state.containerRef)
+    const setUrl = usePreview(state => state.setUrl)
+    const setPoster = usePreview(state => state.setPoster)
+    const setRoute = usePreview(state => state.setRoute)
+    const setIndex = usePreview(state => state.setIndex)
+    const url = usePreview(state => state.url)
+    const poster = usePreview(state => state.poster)
+    
+    const width = useWindowWidth()
+    const [activeMobileIndex, setActiveMobileIndex] = useState(-1)
+    const lineRefs = useRef<(HTMLDivElement | null)[]>([])
+    
     useEffect(() => { setAllUrls(linesData.lines) }, [linesData])
 
+    // Mobile scroll detection to find which line is in center of screen
+    useLoop(() => {
+        if (width > 768) return
+        
+        if (!containerRef.current || !lineRefs.current.length) return
+        
+        const screenCenter = window.innerHeight / 2
+        let closestIndex = -1
+        let closestDistance = Infinity
+        const maxDistance = window.innerHeight * 0.15 // Only activate if line is within 15% of screen height
+        
+        lineRefs.current.forEach((lineRef, index) => {
+            if (!lineRef) return
+            
+            const rect = lineRef.getBoundingClientRect()
+            const lineCenter = rect.top + rect.height / 2
+            const distance = Math.abs(lineCenter - screenCenter)
+            
+            if (distance < closestDistance) {
+                closestDistance = distance
+                closestIndex = index
+            }
+        })
+        
+        // If the closest line is too far away, don't activate any preview
+        if (closestDistance > maxDistance) {
+            closestIndex = -1
+        }
 
+        console.log('Mobile scroll detection:', {
+            closestIndex,
+            closestDistance,
+            maxDistance,
+            activeMobileIndex,
+            shouldClear: closestIndex === -1,
+            currentUrl: url,
+            currentPoster: !!poster
+        })
+        
+
+        
+        if (closestIndex !== activeMobileIndex) {
+            setActiveMobileIndex(closestIndex)
+            
+            if (closestIndex === -1) {
+                // Clear preview state when no line is active
+                setUrl('')
+                setPoster('')
+                setRoute('')
+                setIndex(-1)
+            } else {
+                const line = linesData.lines[closestIndex]
+                
+                // Update preview state
+                setUrl('poster-only')
+                setPoster(getMediaStrapiPath(line?.poster))
+                setRoute(line?.slug || '')
+                setIndex(closestIndex)
+            }
+        }
+        
+        // Always clear preview state if closestIndex is -1 and preview is still active
+        if (closestIndex === -1 && (url !== '' || poster !== '')) {
+            console.log('FORCE CLEARING preview state - closestIndex is -1 but preview is still active')
+            setUrl('')
+            setPoster('')
+            setRoute('')
+            setIndex(-1)
+        }
+    })
 
     console.log('lines', linesData)
 
@@ -34,7 +117,13 @@ export const Lines = ({ linesData }: LinesProps) => {
         </StyledTopContainer>
         <div className="lines">
             {linesData?.lines.map((line: any, index: number) => (
-                <Line key={line.id} line={line} index={index} />
+                <Line 
+                    key={line.id} 
+                    line={line} 
+                    index={index}
+                    ref={(el: HTMLDivElement | null) => { lineRefs.current[index] = el }}
+                    activeMobileIndex={activeMobileIndex}
+                />
             ))}
         </div>
     </StyledLines>
@@ -51,6 +140,10 @@ const StyledLines = styled.div`
   ${media.md`
     padding: ${rm(150)} ${rm(25)};
   `}
+
+  ${media.xsm`
+    padding: ${rm(70)} ${rm(16)};
+  `}
 `;
 
 const StyledTopContainer = styled.div`
@@ -58,6 +151,12 @@ const StyledTopContainer = styled.div`
     display: flex;
     justify-content: space-between;
     margin-bottom: ${rm(50)};
+
+    ${media.xsm`
+        flex-direction: column;
+        gap: ${rm(30)};
+        margin-bottom: ${rm(30)};
+    `}
 
     .title{
         color: ${colors.gray};
@@ -70,6 +169,10 @@ const StyledTopContainer = styled.div`
         ${media.lg`
             font-size: ${rm(16)};
         `}
+
+        ${media.xsm`
+            font-size: ${rm(14)};
+        `}
     }
 
     .right{
@@ -81,6 +184,10 @@ const StyledTopContainer = styled.div`
 
         ${media.md`
             width: ${rm(476)};
+        `}
+
+        ${media.xsm`
+            width: 100%;
         `}
 
         .descriptionMain{
@@ -98,6 +205,10 @@ const StyledTopContainer = styled.div`
             ${media.md`
                 font-size: ${rm(24)};
                 text-indent: 0;
+            `}
+
+            ${media.xsm`
+                font-size: ${rm(20)};
             `}
         }
     }

@@ -27,6 +27,12 @@ const StyledTop = styled.div`
     justify-content: space-between;
     margin-top: ${rm(150)};
 
+    ${media.xsm`
+        margin-top: ${rm(70)};
+        flex-direction: column;
+        gap: ${rm(10)};
+    `}
+
     .right{
         display: flex;
         flex-direction: column;
@@ -37,6 +43,15 @@ const StyledTop = styled.div`
             width: ${rm(890)};    
         `}
 
+        ${media.md`
+            width: ${rm(475)};
+            gap: ${rm(20)};
+        `}
+
+        ${media.xsm`
+            width: 100%;
+        `}
+
         .bottom{
             width: 100%;
             padding-left: ${rm(113)};
@@ -44,11 +59,19 @@ const StyledTop = styled.div`
             justify-content: space-between;
             align-items: flex-end;
 
+            ${media.md`
+                padding-left: 0;
+            `}
+
             >:nth-child(1){
                 width: ${rm(550)};
 
                 ${media.lg`
                     width: ${rm(440)};
+                `}
+
+                ${media.md`
+                    width: 100%;
                 `}
             }
         }
@@ -65,5 +88,14 @@ const StyledTitle = styled.p`
 
     ${media.lg`
         font-size: ${rm(32)};
+    `}
+
+    ${media.md`
+        font-size: ${rm(24)};
+        text-indent: 0;
+    `}
+
+    ${media.xsm`
+        font-size: ${rm(20)};
     `}
 `

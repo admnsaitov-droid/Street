@@ -51,6 +51,7 @@ const StyledGlobe = styled.div`
     background-color: ${colors.black100};
     position: relative;
     ${heightLvh(100)};
+    overflow: hidden;
     
     .button{
         width: fit-content;
@@ -59,6 +60,10 @@ const StyledGlobe = styled.div`
         
         ${media.lg`
             width: ${rm(440 * 0.46)};
+        `}
+
+        ${media.xsm`
+            width: 100%;
         `}
     }
 
@@ -74,6 +79,10 @@ const StyledGlobe = styled.div`
         ${media.md`
             padding: ${rm(100)} ${rm(25)};
         `}
+
+        ${media.xsm`
+            padding: ${rm(70)} ${rm(16)};
+        `}
     }
 `
 
@@ -83,6 +92,12 @@ const StyledTitle = styled.p`
     
     ${media.lg`
         width: ${rm(450)};
+        font-size: ${rm(40)};
+    `}
+
+    ${media.xsm`
+        width: 100%;
+        font-size: ${rm(32)};
     `}
 
     line-height: 90%;
@@ -91,10 +106,6 @@ const StyledTitle = styled.p`
     text-transform: uppercase;
     ${fontGolosText(600)};
     color: ${colors.white100};
-
-    ${media.lg`
-        font-size: ${rm(40)};
-    `}
 
     .first{
         ${fontSageGrotesk(400)} !important;
@@ -115,6 +126,13 @@ const StyledContinents = styled.div`
     ${media.lg`
         width: ${rm(440)};
     `}
+
+    ${media.xsm`
+        width: 100%;
+        margin-bottom: ${rm(30)};
+        row-gap: ${rm(30)};
+        column-gap: ${rm(8)};
+    `}
 `
 
 const StyledDescription = styled(AnimatedText)`
@@ -129,6 +147,11 @@ const StyledDescription = styled(AnimatedText)`
         width: ${rm(440)};
         font-size: ${rm(16)};
     `}
+
+    ${media.xsm`
+        width: ${rm(272)};
+        font-size: ${rm(14)};
+    `}
 `
 
 
@@ -137,6 +160,10 @@ const StyledContinent = styled.div`
     flex-direction: column;
     gap: ${rm(15)};
     width: 46%;
+
+    ${media.xsm`
+        width: 48.7%;
+    `}
 
     .dividerMain{
         margin-bottom: ${rm(30)};
@@ -162,6 +189,10 @@ const StyledContinent = styled.div`
         ${media.lg`
             font-size: ${rm(40)};
         `}
+
+        ${media.xsm`
+            font-size: ${rm(32)};
+        `}
     }
 
     .divider{
@@ -181,6 +212,10 @@ const StyledContinent = styled.div`
 
        ${media.lg`
             font-size: ${rm(16)};
+       `}
+
+       ${media.xsm`
+            font-size: ${rm(14)};
        `}
     }
 `
