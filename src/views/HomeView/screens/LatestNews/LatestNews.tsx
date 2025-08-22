@@ -145,6 +145,11 @@ const StyledNewsMobile = styled.div`
     display: flex;
     flex-direction: column;
     width: 100%;
+    display: none;
+
+    ${media.xsm`
+        display: flex;
+    `}
 `
 
 const StyledTopBar = styled.div`

@@ -12,6 +12,13 @@ interface GlobeProps {
     globeData: any
 }
 
+// const trackers: TrackerData[] = [
+//     { position: [2, 1, 2], label: "Austria", enabled: true },
+//     { position: [-10, 0.5, 0], label: "France", enabled: true },
+//     { position: [0, -1, 2], label: "Brazil", enabled: true },
+//     { position: [1.5, 0, -2], label: "Japan", enabled: true },
+// ]
+
 export const Globe = ({ globeData }: GlobeProps) => {
     return (
         <StyledGlobe>

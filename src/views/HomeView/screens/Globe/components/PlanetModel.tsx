@@ -1,97 +1,144 @@
 "use client"
 
-import { Plane, useGLTF, useTexture } from "@react-three/drei"
+import { useGLTF } from "@react-three/drei"
 import { useFrame } from "@react-three/fiber"
 import { Group } from "three"
-import { useRef, useMemo, useEffect } from "react"
+import { useEffect, useRef } from "react"
 import * as THREE from 'three'
+import { sNoise } from "@/utils/sNoise"
 
-const rotationXSpeed = 0.003
-const rotationZSpeed = 0.003
 
-export const PlanetModel = () => {
+interface PlanetModelProps {
+    scale: number
+}
+
+export const PlanetModel = ({ scale }: PlanetModelProps) => {
     const { scene } = useGLTF('/models/solar.glb')
     const groupRef = useRef<Group>(null)
+    const time = useRef({value: 0})
 
-    // Create atmospheric material
-    const atmosphereMaterial = useMemo(() => {
-        const material = new THREE.ShaderMaterial({
-            transparent: true,
-            side: THREE.FrontSide,
-            blending: THREE.NormalBlending,
-            depthWrite: false,
-            uniforms: {
-                innerColor: { value: new THREE.Color('#7E7DEA') }, // Dodger Blue
-                outerColor: { value: new THREE.Color('#7E7DEA') }, // Slate Blue
-                atmosphereIntensity: { value: 0.5 }
-            },
-            vertexShader: `
-                varying vec3 vViewPosition;
-                varying vec3 vNormal;
-                varying vec3 vWorldPosition;
-                
-                void main() {
-                    vNormal = normalize(normalMatrix * normal);
-                    vec4 worldPosition = modelMatrix * vec4(position, 1.0);
-                    vWorldPosition = worldPosition.xyz;
-                    vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
-                    vViewPosition = -mvPosition.xyz;
-                    gl_Position = projectionMatrix * mvPosition;
-                }
-            `,
-            fragmentShader: `
-                uniform vec3 innerColor;
-                uniform vec3 outerColor;
-                uniform float atmosphereIntensity;
-                varying vec3 vViewPosition;
-                varying vec3 vNormal;
-                varying vec3 vWorldPosition;
-                
-                void main() {
-                    vec3 normalizedNormal = normalize(vNormal);
-                    vec3 viewDir = normalize(vViewPosition);
-                    
-                    // Calculate fresnel for rim lighting
-                    float fresnel = 1.0 - max(dot(viewDir, normalizedNormal), 0.0);
-                    
-                    // Create gradient from center to edge
-                    float distanceFromCenter = length(vWorldPosition);
-                    float normalizedDistance = (distanceFromCenter - 5.0) / 0.4; // Planet scale is 5, atmosphere extends 0.4 units
-                    
-                    // Create smooth gradient that fades from inner edge to outer edge
-                    float gradient = 1.0 - smoothstep(0.0, 1.0, normalizedDistance);
-                    
-                    // Make front/central areas invisible by using stronger fresnel
-                    float centerFade = pow(fresnel, 3.0);
-                    
-                    // Color gradient from blue (inner) to purple (outer)
-                    vec3 atmosphereColor = mix(innerColor, outerColor, normalizedDistance);
-                    
-                    // Combine all effects: fresnel for edge visibility, gradient for distance, centerFade for front invisibility
-                    float atmosphereEffect = centerFade * gradient * atmosphereIntensity;
-                    
-                    gl_FragColor = vec4(atmosphereColor, atmosphereEffect);
-                }
-            `
-        });
-        return material;
-    }, [])
+    // Apply planet shader to model materials
+    useEffect(() => {
+        if (!scene) return
 
-    useFrame(() => {
-        if (groupRef.current) {
-            groupRef.current.rotation.x += rotationXSpeed
-            groupRef.current.rotation.z += rotationZSpeed
-        }
+        scene.traverse((child) => {
+            if (child instanceof THREE.Mesh && child.material) {
+                const materials = Array.isArray(child.material) ? child.material : [child.material]
+                
+                materials.forEach((material) => {
+                    if (material instanceof THREE.MeshStandardMaterial || 
+                        material instanceof THREE.MeshBasicMaterial ||
+                        material instanceof THREE.MeshPhongMaterial ||
+                        material instanceof THREE.MeshLambertMaterial) {
+                        
+                        // Apply the same shader as in your Planet component
+                        material.onBeforeCompile = (shader) => {
+                            shader.uniforms.time = time.current;
+                            shader.uniforms.targetColor = { value: new THREE.Color('#080620') };
+                            shader.uniforms.noiseScale = { value: 800.0 };  
+                            shader.uniforms.colorVariation = { value: .5 };
+                            shader.uniforms.speedX = { value: 2.0 };
+                            shader.uniforms.speedY = { value: 3.0 };
+                            shader.uniforms.speedZ = { value: 5.0 };
+                            shader.uniforms.mixStrength = { value: 0.3 }; 
+                            shader.uniforms.colorThreshold = { value: 0.15 }; 
+                            shader.uniforms.baseTexture = { value: null };
+                            shader.uniforms.rimColor = { value: new THREE.Color('#C1FAFF') };
+                            shader.uniforms.rimPower = { value: 4.0 };
+
+                            shader.vertexShader = `
+                                varying vec2 vUv;
+                                varying vec3 vViewPosition;
+                                varying vec3 vNormal;
+                                varying vec3 vPosition;
+                            ` + shader.vertexShader;
+
+                            shader.vertexShader = shader.vertexShader.replace(
+                                'void main() {',
+                                `void main() {
+                                    vUv = uv;
+                                    vNormal = normalize(normalMatrix * normal);
+                                    vPosition = position;
+                                `
+                            );
+
+                            shader.vertexShader = shader.vertexShader.replace(
+                                `#include <project_vertex>`,
+                                `#include <project_vertex>
+                                vViewPosition = -mvPosition.xyz;`
+                            );
+
+                            shader.fragmentShader = `
+                                uniform float time;
+                                uniform vec3 targetColor;
+                                uniform float noiseScale;
+                                uniform float colorVariation;
+                                uniform float speedX;
+                                uniform float speedY;
+                                uniform float speedZ;
+                                uniform float mixStrength;
+                                uniform float colorThreshold;
+                                varying vec2 vUv;
+                                uniform vec3 rimColor;
+                                uniform float rimPower;
+                                varying vec3 vViewPosition;
+                                varying vec3 vPosition;
+
+                                ${sNoise}
+                            ` + shader.fragmentShader;
+
+                            shader.fragmentShader = shader.fragmentShader.replace(
+                                `#include <dithering_fragment>`,
+                                `#include <dithering_fragment>
+                                
+                                vec3 normalizedNormal = normalize(vNormal);
+                                vec3 viewDir = normalize(vViewPosition);
+                                float rim = 1.0 - max(dot(viewDir, normalizedNormal), 0.0);
+                                rim = pow(rim, rimPower);
+                                rim = pow(rim, 1.5);
+                                rim *= 0.7;
+
+                                vec3 currentColor = gl_FragColor.rgb;
+                                float threshold = 0.03;
+                                
+                                // if (currentColor.r < 0.05 && currentColor.g < 0.1 && currentColor.b > 0.000001 && vPosition.x > 0.44 && vPosition.z < -0.3) {
+                                    
+                                //     float noise = snoise(vec3(
+                                //         vUv.x * noiseScale + time * speedX, 
+                                //         vUv.y * noiseScale - time * speedY, 
+                                //         time * speedZ
+                                //     ));
+                                    
+                                //     vec3 blueBase = vec3(0.0, 0.5, 1.0);
+                                //     vec3 cyanBase = vec3(0.0, 1.0, 1.0);
+                                //     vec3 colorVar = mix(blueBase, cyanBase, noise * colorVariation);
+                                    
+                                //     gl_FragColor.rgb += noise / 23.0;
+                                //     gl_FragColor.b += 0.07;
+                                //     gl_FragColor.g += 0.05;
+                                //     gl_FragColor.rgb -= 0.02;
+                                // }
+
+                                vec3 finalColor = mix(gl_FragColor.rgb, rimColor, rim);
+                                gl_FragColor = vec4(finalColor, 1.0);
+                                `
+                            );
+                        }
+                        material.needsUpdate = true;
+                    }
+                })
+            }
+        })
+    }, [scene])
+
+    useFrame((state, delta) => {
+        // Animate the time uniform for the planet shader
+        time.current.value += delta / 12
     })
 
     return (
-        <group ref={groupRef} position={[4, 0, -1]}>
-            <primitive object={scene} scale={5}/>
-            {/* Atmospheric sphere - creates gradient from planet edge outward */}
-            <mesh scale={5.4}>
-                <sphereGeometry args={[1, 64, 64]} />
-                <primitive object={atmosphereMaterial} />
-            </mesh>
+        <group ref={groupRef}>
+            <primitive object={scene} scale={scale}/>
         </group>
     )
 }
