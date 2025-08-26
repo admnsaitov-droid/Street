@@ -46,32 +46,49 @@ export const LanguageSelect = ({ languages }: LanguageSelectProps) => {
             currentLocale,
             newLocale: localeCode,
             pathname,
-            window_location: typeof window !== 'undefined' ? window.location.href : 'N/A'
+            window_location: typeof window !== 'undefined' ? window.location.href : 'N/A',
+            window_pathname: typeof window !== 'undefined' ? window.location.pathname : 'N/A'
         });
         
-        // Instead of router.push, use window.location to avoid middleware interference
-        const newPath = pathname.replace(`/${currentLocale}`, `/${localeCode}`);
-        
-        console.log('🔄 Path transformation:', {
-            originalPath: pathname,
+        // Debug the replace operation step by step
+        console.log('🔍 Replace operation details:', {
+            pathname,
             currentLocale,
-            newLocale: localeCode,
             searchPattern: `/${currentLocale}`,
-            replacement: `/${localeCode}`,
-            newPath,
-            willChange: pathname !== newPath
+            pathnameStartsWith: pathname.startsWith(`/${currentLocale}`),
+            pathnameIncludes: pathname.includes(`/${currentLocale}`),
+            replaceResult: pathname.replace(`/${currentLocale}`, `/${localeCode}`)
         });
         
-        console.log('🚀 Using window.location.href instead of router.push:', newPath);
+        // Try multiple approaches to build the new path
+        const approach1 = pathname.replace(`/${currentLocale}`, `/${localeCode}`);
+        const approach2 = `/${localeCode}${pathname.substring(currentLocale.length + 1)}`;
+        const approach3 = pathname.split('/').map((segment, index) => 
+            index === 1 && segment === currentLocale ? localeCode : segment
+        ).join('/');
+        
+        console.log('🛠️ Different approaches to path building:', {
+            approach1_replace: approach1,
+            approach2_substring: approach2,
+            approach3_split: approach3,
+            pathSegments: pathname.split('/'),
+            currentLocaleIndex: pathname.split('/').indexOf(currentLocale)
+        });
+        
+        // Use the most explicit approach
+        const newPath = approach3;
+        
+        console.log('🚀 Final newPath chosen:', newPath);
+        console.log('🌐 About to set window.location.href to:', newPath);
         
         // Use window.location to bypass Next.js router and middleware
         if (typeof window !== 'undefined') {
+            console.log('🔄 Before redirect - current URL:', window.location.href);
             window.location.href = newPath;
+            console.log('🔄 After setting href (may not log due to redirect)');
         }
         
         setIsOpen(false);
-        
-        console.log('✅ window.location.href set, dropdown closed');
     }
 
     const toggleDropdown = () => {
