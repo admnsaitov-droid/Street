@@ -4,6 +4,7 @@ import { StyledContactLeft } from "../ContactView"
 import { StyledAnnotation } from "@/views/PackagesView/screens/Package/Package"
 import styled from "styled-components"
 import { fontGolosText } from "@/styles/fonts"
+import { AnimatedText } from "@/components/animated/AnimatedText/AnimatedText"
 
 interface GetInTouchProps {
     data: any
@@ -22,26 +23,26 @@ export const GetInTouch = ({ data }: GetInTouchProps) => {
                 <StyledHelp>
                     <div className="section">
                         <StyledHelpBlock>
-                            <div className="name">Phone</div>
-                            <div className="text">{data?.phone}</div>
+                            <AnimatedText className="name">Phone</AnimatedText>
+                            <AnimatedText className="text">{data?.phone}</AnimatedText>
                         </StyledHelpBlock>
                         <StyledHelpBlock>
-                            <div className="name">General Inquiries</div>
-                            <div className="text">{data?.inquries}</div>
+                            <AnimatedText className="name">General Inquiries</AnimatedText>
+                            <AnimatedText className="text">{data?.inquries}</AnimatedText>
                         </StyledHelpBlock>
                         <StyledHelpBlock>
-                            <div className="name">Customer Support</div>
-                            <div className="text">{data?.support}</div>
+                            <AnimatedText className="name">Customer Support</AnimatedText>
+                            <AnimatedText className="text">{data?.support}</AnimatedText>
                         </StyledHelpBlock>
                     </div>
                     <div className="section">
                         <StyledHelpBlock>
-                            <div className="name">ADDRESS</div>
-                            <div className="text">{data?.address}</div>
+                            <AnimatedText className="name">ADDRESS</AnimatedText>
+                            <AnimatedText className="text">{data?.address}</AnimatedText>
                         </StyledHelpBlock>
                         <StyledHelpBlock>
-                            <div className="name">Open hours</div>
-                            <div className="text">{data?.hours}</div>
+                            <AnimatedText className="name">Open hours</AnimatedText>
+                            <AnimatedText className="text">{data?.hours}</AnimatedText>
                         </StyledHelpBlock>
                     </div>
                 </StyledHelp>

@@ -1,5 +1,6 @@
 import { colors, media, rm } from "@/styles"
 import { fontGolosText } from "@/styles/fonts"
+import { AnimatedText } from "@/components/animated/AnimatedText/AnimatedText"
 import styled from "styled-components"
 
 interface DescriptionProps {
@@ -32,7 +33,7 @@ const StyledDescription = styled.div`
     `}
 `
 
-const StyledTitle = styled.h1`
+const StyledTitle = styled(AnimatedText)`
     font-size: ${rm(20)};
     ${fontGolosText(400)};
     line-height: 110%;
@@ -48,7 +49,7 @@ const StyledTitle = styled.h1`
     `}
 `
 
-const StyledSubtitle = styled.p`
+const StyledSubtitle = styled(AnimatedText)`
     font-size: ${rm(20)};
     color: ${colors.gray};
     ${fontGolosText(400)};

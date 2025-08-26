@@ -19,7 +19,7 @@ export const Hero = ({ data }: HeroProps) => {
     
     return (
         <StyledHero>
-            <MediaComponent media={data?.media} className="image" />
+            <MediaComponent media={data?.media} className="image" parallax={true} />
             <BackgroundProgressiveBlur>
             </BackgroundProgressiveBlur>
             <StyledContent>

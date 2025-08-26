@@ -4,6 +4,7 @@ import { colors, media, rm } from "@/styles"
 import { fontGolosText, fontSageGrotesk } from "@/styles/fonts"
 import { MediaComponent } from "@/components/MediaComponent/MediaComponent"
 import { useWindowWidth } from "@react-hook/window-size"
+import AnimatedGrid from "@/components/animated/AnimatedContent"
 
 interface PurposeProps {
     data: any
@@ -17,12 +18,70 @@ export const Purpose = ({ data }: PurposeProps) => {
             <StyledTop>
                 <StyledAnnotation>{data?.blockName}</StyledAnnotation>
                 <StyledRightTop>
-                    <StyledPurposeTitle>
-                        <span>{data?.title?.firstWord}</span>
-                        {<div style={{width: "100px"}}></div>}
-                        <span>{data?.title?.secondWord}</span>
-                        <span className="first">{data?.title?.thirdWord}</span>
-                    </StyledPurposeTitle>
+                    <StyledPurposeTitleContainer>
+                        <div className="first-row">
+                            <AnimatedGrid
+                                type="words"
+                                animation={{
+                                    from: { opacity: 0, y: '40px' },
+                                    to: { opacity: 1, y: '0px' },
+                                    delayStep: 60
+                                }}
+                                overflow={true}
+                                containerStyle={{ overflow: 'hidden' }}
+                                cellConfigs={{
+                                    'title-first': {
+                                        style: {
+                                            color: colors.black100,
+                                            fontFamily: 'var(--font-golos-text)',
+                                            fontOpticalSizing: 'auto',
+                                            fontWeight: 600,
+                                            fontStyle: 'normal',
+                                        }
+                                    }
+                                }}
+                            >
+                                <span id="title-first">{data?.title?.firstWord}</span>
+                            </AnimatedGrid>
+                        </div>
+                        <div className="second-row">
+                            <AnimatedGrid
+                                type="words"
+                                animation={{
+                                    from: { opacity: 0, y: '40px' },
+                                    to: { opacity: 1, y: '0px' },
+                                    delayStep: 60
+                                }}
+                                overflow={true}
+                                gap={{ horizontal: '0.25em', vertical: '0.25em' }}
+                                containerStyle={{ overflow: 'hidden' }}
+                                cellConfigs={{
+                                    'title-second': {
+                                        style: {
+                                            color: colors.black100,
+                                            fontFamily: 'var(--font-golos-text)',
+                                            fontOpticalSizing: 'auto',
+                                            fontWeight: 600,
+                                            fontStyle: 'normal',
+                                        }
+                                    },
+                                    'title-third': {
+                                        style: {
+                                            color: colors.red,
+                                            fontFamily: 'var(--font-sage-grotesk)',
+                                            fontOpticalSizing: 'auto',
+                                            fontWeight: 400,
+                                            fontStyle: 'normal',
+                                            lineHeight: '105%',
+                                        }
+                                    }
+                                }}
+                            >
+                                <span id="title-second">{data?.title?.secondWord}</span>
+                                <span id="title-third" className="first">{data?.title?.thirdWord}</span>
+                            </AnimatedGrid>
+                        </div>
+                    </StyledPurposeTitleContainer>
                     <div className="bottom">
                         <StyledSubtitle>{data?.description}</StyledSubtitle>
                         {width > 768 && <StyledSubtitle>{data?.descriptionSecondary}</StyledSubtitle>}
@@ -33,13 +92,13 @@ export const Purpose = ({ data }: PurposeProps) => {
                 <div className="left">
                     {data?.mediaSecondary?.map((image: any, index: number) => (
                         <StyledImageContainer key={index} className="imageContainer">
-                            <MediaComponent media={image} className="image" />
+                            <MediaComponent media={image} className="image" parallax={true} />
                         </StyledImageContainer>
                     ))}
                 </div>
                 <div className="right">
                     <StyledImageContainer className="imageContainer">
-                        <MediaComponent media={data?.mainImage} className="image" />
+                        <MediaComponent media={data?.mainImage} className="image" parallax={true} />
                     </StyledImageContainer>
                 </div>
             </StyledBottom>
@@ -111,18 +170,14 @@ const StyledRightTop = styled.div`
     }
 `
 
-export const StyledPurposeTitle = styled.p`
+export const StyledPurposeTitleContainer = styled.div`
     line-height: 90%;
     letter-spacing: -0.01em;
     font-size: ${rm(48)};
     text-transform: uppercase;
-    ${fontGolosText(600)};
-    color: ${colors.black100};
-    gap: ${rm(10)};
-    display: flex;
-    width: ${rm(440)};
-    flex-wrap: wrap;
     width: ${rm(470)};
+    display: flex;
+    flex-direction: column;
     
     ${media.lg`
         font-size: ${rm(40)};
@@ -130,8 +185,8 @@ export const StyledPurposeTitle = styled.p`
     `}
 
     ${media.md`
-        >:first-child{
-        margin-bottom: ${rm(-8)};
+        .first-row {
+            margin-bottom: ${rm(-8)};
         }
     `}
 
@@ -140,11 +195,14 @@ export const StyledPurposeTitle = styled.p`
         width: ${rm(320)};
     `}
 
-    .first{
-        ${fontSageGrotesk(400)} !important;
-        color: ${colors.red} !important;
-        letter-spacing: -0.02em;
-        line-height: 105%;
+    .first-row {
+        width: 100%;
+    }
+
+    .second-row {
+        width: 100%;
+        display: flex;
+        align-items: flex-start;
     }
 `
 

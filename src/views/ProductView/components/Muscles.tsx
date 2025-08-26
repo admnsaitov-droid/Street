@@ -2,6 +2,7 @@ import { colors, media, rm } from "@/styles"
 import { fontGolosText } from "@/styles/fonts"
 import styled from "styled-components"
 import { MediaComponent } from "@/components/MediaComponent/MediaComponent"
+import { AnimatedText } from "@/components/animated/AnimatedText/AnimatedText"
 
 interface MusclesProps {
     muscles: any
@@ -29,7 +30,7 @@ const StyledMuscles = styled.div`
     `}
 `
 
-const StyledSubtitle = styled.p`
+const StyledSubtitle = styled(AnimatedText)`
     font-size: ${rm(20)};
     color: ${colors.gray};
     ${fontGolosText(400)};

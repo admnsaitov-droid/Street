@@ -111,7 +111,9 @@ export const Lines = ({ linesData }: LinesProps) => {
             </AnimatedText>
             <div className="right">
                 <div className="descriptionMain">
-                    {linesData?.description}
+                    <AnimatedText className="description-animated">
+                        {linesData?.description}
+                    </AnimatedText>
                 </div>
             </div>
         </StyledTopContainer>
@@ -165,6 +167,7 @@ const StyledTopContainer = styled.div`
         letter-spacing: -0.01em;
         ${fontGolosText(400)};
         text-transform: uppercase;
+        height: fit-content !important;
         
         ${media.lg`
             font-size: ${rm(16)};
@@ -193,10 +196,13 @@ const StyledTopContainer = styled.div`
         .descriptionMain{
             color: ${colors.black100};
             font-size: ${rm(40)};
-            line-height: 100%;
-            text-indent: ${rm(113)};
+            line-height: 115%;
             letter-spacing: -0.01em;
             ${fontGolosText(400)};
+            
+            span:nth-child(2){
+                padding-left: ${rm(113)} !important;
+            }
             
             ${media.lg`
                 font-size: ${rm(32)};
@@ -204,7 +210,10 @@ const StyledTopContainer = styled.div`
 
             ${media.md`
                 font-size: ${rm(24)};
-                text-indent: 0;
+                
+                span:nth-child(2){
+                    padding-left: ${rm(0)} !important;
+                }
             `}
 
             ${media.xsm`

@@ -6,10 +6,12 @@ import { StyledSubtitle } from "../PackagesView/screens/Package/Package"
 import Image from "next/image"
 import { getMediaStrapiPath } from "@/utils/getMediaStrapiPath"
 import { LineOverview } from "./components/LineOverview"
-import { StyledExploreHeader } from "../PackageView/components/Overview/Overview"
+
 import { ProductCard } from "./components/ProductCard"
 import Breadcrumbs from "@/components/Breadcrumbs/Breadcrumbs"
 import { MediaComponent } from "@/components/MediaComponent/MediaComponent"
+import AnimatedGrid from "@/components/animated/AnimatedContent"
+import { colors } from "@/styles/colors"
 
 interface LineViewProps {
     data: any
@@ -32,14 +34,47 @@ export const LineView = ({ data }: LineViewProps) => {
                     <StyledSubtitle>{data?.line?.lineContent?.description}</StyledSubtitle>
                 </StyledTop>
                 <StyledTopImageContainer>
-                    <MediaComponent media={data?.line?.mainMedia} className="image" />
+                    <MediaComponent media={data?.line?.mainMedia} className="image" parallax={true} />
                 </StyledTopImageContainer>
             </StyledHero>
             <LineOverview data={data?.line?.lineOverview} />
-            <StyledProductsTitle>
-                <span className="first">Explore</span>
-                our products
-            </StyledProductsTitle>
+            <StyledProductsTitleContainer>
+                <AnimatedGrid
+                    type="words"
+                    animation={{
+                        from: { opacity: 0, y: '40px' },
+                        to: { opacity: 1, y: '0px' },
+                        delayStep: 60
+                    }}
+                    overflow={true}
+                    gap={{ horizontal: '0.25em', vertical: '0.25em' }}
+                    containerStyle={{ overflow: 'hidden' }}
+                    cellConfigs={{
+                        'title-first': {
+                            style: {
+                                color: colors.red,
+                                fontFamily: 'var(--font-sage-grotesk)',
+                                fontOpticalSizing: 'auto',
+                                fontWeight: 400,
+                                fontStyle: 'normal',
+                                lineHeight: '105%',
+                            }
+                        },
+                        'title-second': {
+                            style: {
+                                color: colors.black100,
+                                fontFamily: 'var(--font-golos-text)',
+                                fontOpticalSizing: 'auto',
+                                fontWeight: 600,
+                                fontStyle: 'normal',
+                            }
+                        }
+                    }}
+                >
+                    <span id="title-first" className="first">Explore</span>
+                    <span id="title-second">our products</span>
+                </AnimatedGrid>
+            </StyledProductsTitleContainer>
             <StyledProductsGrid>
                 {data?.line?.products?.map((product: any) => (
                     <ProductCard key={product?.id} data={product} />
@@ -124,10 +159,19 @@ const StyledTopImageContainer = styled.div`
     `}
 `
 
-const StyledProductsTitle = styled(StyledExploreHeader)`
+const StyledProductsTitleContainer = styled.div`
     margin-top: ${rm(150)};
+    line-height: 90%;
+    letter-spacing: -0.01em;
+    font-size: ${rm(48)};
+    text-transform: uppercase;
+
+    ${media.lg`
+        font-size: ${rm(40)};
+    `}
 
     ${media.xsm`
+        font-size: ${rm(32)};
         margin-top: ${rm(70)};
     `}
 `

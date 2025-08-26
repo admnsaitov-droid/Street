@@ -7,6 +7,7 @@ import styled from "styled-components"
 import { Scene } from "./components/Scene";
 import { AnimatedText } from "@/components/animated/AnimatedText/AnimatedText";
 import { AnimatedTranslate } from "@/components/animated/AnimatedTranslate/AnimatedTranslate";
+import AnimatedGrid from "@/components/animated/AnimatedContent"
 
 interface GlobeProps {
     globeData: any
@@ -24,10 +25,43 @@ export const Globe = ({ globeData }: GlobeProps) => {
         <StyledGlobe>
             <div className="left">
                 <div>
-                    <StyledTitle>
-                        {globeData?.title?.textFirst}
-                        <span className="first">{globeData?.title?.textSecond}</span>
-                    </StyledTitle>
+                    <StyledTitleContainer>
+                        <AnimatedGrid
+                            type="words"
+                            animation={{
+                                from: { opacity: 0, y: '40px' },
+                                to: { opacity: 1, y: '0px' },
+                                delayStep: 60
+                            }}
+                            overflow={true}
+                            gap={{ horizontal: '0.25em', vertical: '0.25em' }}
+                            containerStyle={{ overflow: 'hidden' }}
+                            cellConfigs={{
+                                'title-first': {
+                                    style: {
+                                        color: colors.white100,
+                                        fontFamily: 'var(--font-golos-text)',
+                                        fontOpticalSizing: 'auto',
+                                        fontWeight: 600,
+                                        fontStyle: 'normal',
+                                    }
+                                },
+                                'title-second': {
+                                    style: {
+                                        color: colors.red,
+                                        fontFamily: 'var(--font-sage-grotesk)',
+                                        fontOpticalSizing: 'auto',
+                                        fontWeight: 400,
+                                        fontStyle: 'normal',
+                                        lineHeight: '105%',
+                                    }
+                                }
+                            }}
+                        >
+                            <span id="title-first">{globeData?.title?.textFirst}</span>
+                            <span id="title-second" className="first">{globeData?.title?.textSecond}</span>
+                        </AnimatedGrid>
+                    </StyledTitleContainer>
                     <StyledDescription>{globeData?.description}</StyledDescription>
                 </div>
                 <div>
@@ -93,7 +127,7 @@ const StyledGlobe = styled.div`
     }
 `
 
-const StyledTitle = styled.p`
+const StyledTitleContainer = styled.div`
     width: ${rm(600)};
     margin-bottom: ${rm(20)};
     
@@ -111,15 +145,6 @@ const StyledTitle = styled.p`
     letter-spacing: -0.01em;
     font-size: ${rm(48)};
     text-transform: uppercase;
-    ${fontGolosText(600)};
-    color: ${colors.white100};
-
-    .first{
-        ${fontSageGrotesk(400)} !important;
-        color: ${colors.red} !important;
-        margin-right: ${rm(10)};
-        letter-spacing: -0.02em;
-    }
 `
 
 const StyledContinents = styled.div`

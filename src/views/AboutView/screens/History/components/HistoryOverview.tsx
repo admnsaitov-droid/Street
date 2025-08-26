@@ -2,6 +2,7 @@ import { StyledAnnotation, StyledSubtitle } from "@/views/PackagesView/screens/P
 import { fontGolosText } from "@/styles/fonts"
 import { colors, media, rm } from "@/styles"
 import styled from "styled-components"
+import { AnimatedText } from "@/components/animated/AnimatedText/AnimatedText"
 
 interface HistoryOverviewProps {
     data: any
@@ -84,13 +85,16 @@ const StyledTop = styled.div`
     }
 `
 
-const StyledTitle = styled.p`
+const StyledTitle = styled(AnimatedText)`
     font-size: ${rm(40)};
-    line-height: 100%;
+    line-height: 115%;
     ${fontGolosText(400)};
-    text-indent: ${rm(113)};
     letter-spacing: -0.01em;
     color: ${colors.white100};
+
+    span:nth-child(2){
+        padding-left: ${rm(113)} !important;
+    }
 
     ${media.lg`
         font-size: ${rm(32)};
@@ -98,7 +102,10 @@ const StyledTitle = styled.p`
 
     ${media.md`
         font-size: ${rm(24)};
-        text-indent: 0;
+
+        span:nth-child(2){
+            padding-left: ${rm(0)} !important;
+        }
     `}
 
     ${media.xsm`

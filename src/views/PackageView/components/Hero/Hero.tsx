@@ -3,6 +3,7 @@ import { fontGolosText } from "@/styles/fonts"
 import { heightLvh } from "@/styles/utils"
 import { StyledTitle } from "@/views/PackagesView/PackagesView"
 import Breadcrumbs from "@/components/Breadcrumbs/Breadcrumbs"
+import { AnimatedText } from "@/components/animated/AnimatedText/AnimatedText"
 import Image from "next/image"
 import styled from "styled-components"
 
@@ -64,7 +65,7 @@ const StyledBackgroundImage = styled(Image)`
     height: 100%;
 `
 
-const StyledDescription = styled.p`
+const StyledDescription = styled(AnimatedText)`
     font-size: ${rm(20)};
     line-height: 130%;
     ${fontGolosText(400)};

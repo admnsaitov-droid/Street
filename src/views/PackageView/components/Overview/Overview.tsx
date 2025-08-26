@@ -11,6 +11,8 @@ import { useEffect, useMemo } from "react"
 import { Product } from "./components/Product"
 import { ProductPreview, useProductPreview } from "./components/ProductPreview"
 import { MediaComponent } from "@/components/MediaComponent/MediaComponent"
+import { AnimatedText } from "@/components/animated/AnimatedText/AnimatedText"
+import AnimatedGrid from "@/components/animated/AnimatedContent"
 
 interface OverviewProps {
     data: any
@@ -59,10 +61,43 @@ export const Overview = ({ data }: OverviewProps) => {
 
             {Array.isArray(linesData) && linesData.length > 0 && (
                 <StyledExplore>
-                    <StyledExploreHeader>
-                        <span className="first">Explore</span>
-                        the line
-                    </StyledExploreHeader>
+                    <StyledExploreHeaderContainer>
+                        <AnimatedGrid
+                            type="words"
+                            animation={{
+                                from: { opacity: 0, y: '40px' },
+                                to: { opacity: 1, y: '0px' },
+                                delayStep: 60
+                            }}
+                            overflow={true}
+                            gap={{ horizontal: '0.25em', vertical: '0.25em' }}
+                            containerStyle={{ overflow: 'hidden' }}
+                            cellConfigs={{
+                                'title-first': {
+                                    style: {
+                                        color: colors.red,
+                                        fontFamily: 'var(--font-sage-grotesk)',
+                                        fontOpticalSizing: 'auto',
+                                        fontWeight: 400,
+                                        fontStyle: 'normal',
+                                        lineHeight: '105%',
+                                    }
+                                },
+                                'title-second': {
+                                    style: {
+                                        color: colors.black100,
+                                        fontFamily: 'var(--font-golos-text)',
+                                        fontOpticalSizing: 'auto',
+                                        fontWeight: 600,
+                                        fontStyle: 'normal',
+                                    }
+                                }
+                            }}
+                        >
+                            <span id="title-first" className="first">Explore</span>
+                            <span id="title-second">the line</span>
+                        </AnimatedGrid>
+                    </StyledExploreHeaderContainer>
                     <StyledLines>
                         {linesData.map((line: any, lineIndex: number) => (
                             <StyledLineGroup key={line?.id || lineIndex}>
@@ -172,13 +207,16 @@ const StyledTop = styled.div`
     }
 `
 
-const StyledTitle = styled.p`
+const StyledTitle = styled(AnimatedText)`
     font-size: ${rm(40)};
-    line-height: 100%;
+    line-height: 115%;
     ${fontGolosText(400)};
-    text-indent: ${rm(113)};
     letter-spacing: -0.01em;
     color: ${colors.black100};
+
+    span:nth-child(2){
+        padding-left: ${rm(113)} !important;
+    }
 
     ${media.lg`
         font-size: ${rm(32)};
@@ -186,8 +224,11 @@ const StyledTitle = styled.p`
 
     ${media.md`
         font-size: ${rm(24)};
-        text-indent: 0;
         width: 100%;
+
+        span:nth-child(2){
+            padding-left: ${rm(0)} !important;
+        }
     `}
 
     ${media.xsm`
@@ -255,15 +296,11 @@ const StyledExplore = styled.div`
     flex-direction: column;
 `
 
-export const StyledExploreHeader = styled.p`
+const StyledExploreHeaderContainer = styled.div`
     line-height: 90%;
     letter-spacing: -0.01em;
     font-size: ${rm(48)};
     text-transform: uppercase;
-    ${fontGolosText(600)};
-    color: ${colors.black100};
-    gap: ${rm(10)};
-    display: flex;
 
     ${media.lg`
         font-size: ${rm(40)};
@@ -271,21 +308,10 @@ export const StyledExploreHeader = styled.p`
 
     ${media.xsm`
         font-size: ${rm(32)};
-        flex-direction: column;
-        gap: ${rm(0)};
     `}
-
-    .first{
-        ${fontSageGrotesk(400)} !important;
-        color: ${colors.red} !important;
-        letter-spacing: -0.02em;
-        line-height: 105%;
-
-        ${media.xsm`
-            line-height: 90%;
-        `}
-    }
 `
+
+
 
 const StyledLines = styled.div`
     display: flex;

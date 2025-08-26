@@ -5,6 +5,7 @@ import { StyledTitle } from "../PackagesView/PackagesView"
 import { fontGolosText } from "@/styles/fonts"
 import { ContactForm } from "./screens/ContactForm"
 import { GetInTouch } from "./screens/GetInTouch"
+import { AnimatedText } from "@/components/animated/AnimatedText/AnimatedText"
 
 interface ContactViewProps {
     data: any
@@ -73,7 +74,7 @@ export const StyledContactLeft = styled.div`
     `}
 `
 
-export const StyledContactDescription = styled.div`
+export const StyledContactDescription = styled(AnimatedText)`
     width: 100%;
     font-size: ${rm(40)};
     color: ${colors.black100};

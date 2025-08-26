@@ -1,3 +1,4 @@
+import AnimatedGrid from "@/components/animated/AnimatedContent"
 import { AnimatedText } from "@/components/animated/AnimatedText/AnimatedText"
 import { AnimatedTranslate } from "@/components/animated/AnimatedTranslate/AnimatedTranslate"
 import { MediaComponent } from "@/components/MediaComponent/MediaComponent"
@@ -25,10 +26,42 @@ export const Hero = ({ heroData }: HeroProps) => {
                 <div className="left">
                     <AnimatedText className="description">{heroData?.description}</AnimatedText>
                     <div className="divider" />
-                    <StyledTitle>
-                        <span className="first">{heroData?.title?.textFirst}</span>
-                        <span className="second">{heroData?.title?.textSecond}</span>
-                    </StyledTitle>
+                    <StyledTitleContainer>
+                        <AnimatedGrid
+                            type="words"
+                            animation={{
+                                from: { opacity: 0, y: '40px' },
+                                to: { opacity: 1, y: '0px' },
+                                delayStep: 60
+                            }}
+                            overflow={true}
+                            gap={{ horizontal: '0.25em', vertical: '0.25em' }}
+                            containerStyle={{ overflow: 'hidden' }}
+                            cellConfigs={{
+                                'title-first': {
+                                    style: {
+                                        color: colors.white100,
+                                        fontFamily: 'var(--font-golos-text)',
+                                        fontOpticalSizing: 'auto',
+                                        fontWeight: 600,
+                                        fontStyle: 'normal',
+                                    }
+                                },
+                                'title-second': {
+                                    style: {
+                                        color: colors.red,
+                                        fontFamily: 'var(--font-sage-grotesk)',
+                                        fontOpticalSizing: 'auto',
+                                        fontWeight: 400,
+                                        fontStyle: 'normal',
+                                    }
+                                }
+                            }}
+                        >
+                            <span id="title-first" className="first">{heroData?.title?.textFirst}</span>
+                            <span id="title-second" className="second">{heroData?.title?.textSecond}</span>
+                        </AnimatedGrid>
+                    </StyledTitleContainer>
                 </div>
                 <AnimatedTranslate className="button">
                     <WhiteButton isSvg={true} onClick={() => {}}>
@@ -75,6 +108,29 @@ const StyledHero = styled.div`
             }
         `}
     }
+`
+
+const StyledTitleContainer = styled.div`
+    font-size: ${rm(100)};
+    line-height: 85%;
+    text-transform: uppercase;
+    letter-spacing: -0.02em;
+    width: ${rm(1300)};
+
+    ${media.lg`
+        font-size: ${rm(80)};
+        width: ${rm(924)};
+    `}
+
+    ${media.md`
+        font-size: ${rm(56)};
+        width: ${rm(718)};
+    `}
+
+    ${media.xsm`
+        font-size: ${rm(40)};
+        width: 100%;
+    `}
 `
 
 const StyledContent = styled.div`
@@ -134,38 +190,7 @@ const StyledContent = styled.div`
     }
 `
 
-const StyledTitle = styled.div`
-    font-size: ${rm(100)};
-    line-height: 85%;
-    text-transform: uppercase;
-    letter-spacing: -0.02em;
-    width: ${rm(1300)};
 
-    ${media.lg`
-        font-size: ${rm(80)};
-        width: ${rm(924)};
-    `}
-
-    ${media.md`
-        font-size: ${rm(56)};
-        width: ${rm(718)};
-    `}
-
-    ${media.xsm`
-        font-size: ${rm(40)};
-        width: 100%;
-    `}
-
-    .first{
-        color: ${colors.white100};
-        ${fontGolosText(600)};
-    }
-
-    .second{
-        color: ${colors.red};
-        ${fontSageGrotesk(400)};
-    }
-`
 
 export const BackgroundProgressiveBlur = styled.div`
     position: absolute;

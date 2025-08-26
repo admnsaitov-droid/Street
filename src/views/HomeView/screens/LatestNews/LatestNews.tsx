@@ -8,6 +8,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination } from 'swiper/modules';
 import { useRef, useState } from 'react';
 import type { Swiper as SwiperType } from 'swiper';
+import AnimatedGrid from "@/components/animated/AnimatedContent"
 
 // Import Swiper styles
 import 'swiper/css';
@@ -48,10 +49,43 @@ export const LatestNews = ({ latestNewsData }: LatestNewsProps) => {
     return (
         <StyledLatestNews>
             <StyledTopBar>
-                <StyledTitle>
-                    <span>{latestNewsData?.title?.textFirst}</span>
-                    <span className="first">{latestNewsData?.title?.textSecond}</span>
-                </StyledTitle>
+                <StyledTitleContainer>
+                    <AnimatedGrid
+                        type="words"
+                        animation={{
+                            from: { opacity: 0, y: '40px' },
+                            to: { opacity: 1, y: '0px' },
+                            delayStep: 60
+                        }}
+                        overflow={true}
+                        gap={{ horizontal: '0.25em', vertical: '0.25em' }}
+                        containerStyle={{ overflow: 'hidden' }}
+                        cellConfigs={{
+                            'title-first': {
+                                style: {
+                                    color: colors.black100,
+                                    fontFamily: 'var(--font-golos-text)',
+                                    fontOpticalSizing: 'auto',
+                                    fontWeight: 600,
+                                    fontStyle: 'normal',
+                                }
+                            },
+                            'title-second': {
+                                style: {
+                                    color: colors.red,
+                                    fontFamily: 'var(--font-sage-grotesk)',
+                                    fontOpticalSizing: 'auto',
+                                    fontWeight: 400,
+                                    fontStyle: 'normal',
+                                    lineHeight: '105%',
+                                }
+                            }
+                        }}
+                    >
+                        <span id="title-first">{latestNewsData?.title?.textFirst}</span>
+                        <span id="title-second" className="first">{latestNewsData?.title?.textSecond}</span>
+                    </AnimatedGrid>
+                </StyledTitleContainer>
                 <div style={{ display: 'flex', alignItems: 'center' }}>
                     <StyledSwipeButtonContainer>
                         <StyledSwipeButton 
@@ -159,15 +193,12 @@ const StyledTopBar = styled.div`
     margin-bottom: ${rm(40)};
 `
 
-const StyledTitle = styled.p`
+const StyledTitleContainer = styled.div`
     line-height: 90%;
     letter-spacing: -0.01em;
     font-size: ${rm(48)};
     text-transform: uppercase;
-    ${fontGolosText(600)};
-    color: ${colors.black100};
-    gap: ${rm(10)};
-    display: flex;
+    width: 100%;
 
     ${media.lg`
         font-size: ${rm(40)};
@@ -176,13 +207,6 @@ const StyledTitle = styled.p`
     ${media.xsm`
         font-size: ${rm(32)};
     `}
-
-    .first{
-        ${fontSageGrotesk(400)} !important;
-        color: ${colors.red} !important;
-        letter-spacing: -0.02em;
-        line-height: 105%;
-    }
 `
 
 const StyledSwipeButtonContainer = styled.div`

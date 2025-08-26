@@ -1,3 +1,19 @@
 export const getMediaStrapiPath = (media: any) => {
-    return `${process.env.NEXT_PUBLIC_IMAGE_URL}${media?.url}`;
+    if (!media?.url) {
+        console.warn('getMediaStrapiPath: No media URL provided', media);
+        return '/placeholder.jpg'; // Fallback image
+    }
+    
+    const baseUrl = process.env.NEXT_PUBLIC_IMAGE_URL;
+    if (!baseUrl) {
+        console.error('getMediaStrapiPath: NEXT_PUBLIC_IMAGE_URL is not defined');
+        return media.url; // Return relative URL as fallback
+    }
+    
+    // Handle cases where media.url already includes the base URL
+    if (media.url.startsWith('http')) {
+        return media.url;
+    }
+    
+    return `${baseUrl}${media.url}`;
 }
