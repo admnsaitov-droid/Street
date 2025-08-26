@@ -15,5 +15,15 @@ export const getMediaStrapiPath = (media: any) => {
         return media.url;
     }
     
-    return `${baseUrl}${media.url}`;
+    const fullUrl = `${baseUrl}${media.url}`;
+    
+    // Debug logging to track image URL generation
+    console.log('Image URL generated:', {
+        mediaUrl: media.url,
+        baseUrl,
+        fullUrl,
+        mediaObject: media
+    });
+    
+    return fullUrl;
 }
