@@ -41,18 +41,33 @@ export const LanguageSelect = ({ languages }: LanguageSelectProps) => {
     }, [])
 
     const handleLanguageChange = (localeCode: string) => {
+        console.log('🔥 LANGUAGE SWITCH STARTED');
+        console.log('📍 Current state:', {
+            currentLocale,
+            newLocale: localeCode,
+            pathname,
+            window_location: typeof window !== 'undefined' ? window.location.href : 'N/A'
+        });
+        
         // Dead simple: just replace /currentLocale with /newLocale
         const newPath = pathname.replace(`/${currentLocale}`, `/${localeCode}`);
         
-        console.log('Language switch:', { 
-            currentLocale, 
-            newLocale: localeCode, 
+        console.log('🔄 Path transformation:', {
             originalPath: pathname,
-            newPath 
+            currentLocale,
+            newLocale: localeCode,
+            searchPattern: `/${currentLocale}`,
+            replacement: `/${localeCode}`,
+            newPath,
+            willChange: pathname !== newPath
         });
+        
+        console.log('🚀 About to call router.push with:', newPath);
         
         router.push(newPath);
         setIsOpen(false);
+        
+        console.log('✅ router.push called, dropdown closed');
     }
 
     const toggleDropdown = () => {

@@ -23,12 +23,12 @@ export const getMediaStrapiPath = (media: any) => {
     
     const fullUrl = `${baseUrl}${media.url}`;
     
-    // In production (HTTPS), use Next.js image proxy to avoid mixed content
+    // In production (HTTPS), use our custom proxy to avoid mixed content
     if (typeof window !== 'undefined' && window.location.protocol === 'https:' && baseUrl.startsWith('http:')) {
-        console.log('🔄 Using Next.js image proxy to avoid mixed content');
-        // Encode the HTTP URL so Next.js can proxy it over HTTPS
+        console.log('🔄 Using custom media proxy for:', media.url);
+        // Use our API proxy that can handle any file type (images, videos, SVGs)
         const encodedUrl = encodeURIComponent(fullUrl);
-        return `/_next/image?url=${encodedUrl}&w=1200&q=75`;
+        return `/api/proxy-media?url=${encodedUrl}`;
     }
     
     // Debug logging
