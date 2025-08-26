@@ -81,10 +81,15 @@ export const LanguageSelect = ({ languages }: LanguageSelectProps) => {
         console.log('🚀 Final newPath chosen:', newPath);
         console.log('🌐 About to set window.location.href to:', newPath);
         
-        // Use window.location to bypass Next.js router and middleware
+        // Use window.location with FULL absolute URL to bypass middleware
         if (typeof window !== 'undefined') {
+            // Build full absolute URL to avoid middleware interception
+            const fullUrl = `${window.location.protocol}//${window.location.host}${newPath}`;
+            
             console.log('🔄 Before redirect - current URL:', window.location.href);
-            window.location.href = newPath;
+            console.log('🌐 Setting full absolute URL:', fullUrl);
+            
+            window.location.href = fullUrl;
             console.log('🔄 After setting href (may not log due to redirect)');
         }
         
