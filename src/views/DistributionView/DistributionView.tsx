@@ -3,6 +3,8 @@ import { media, colors, rm } from "@/styles"
 import { fontGolosText, fontSageGrotesk } from "@/styles/fonts"
 import { heightLvh } from "@/styles/utils"
 import styled from "styled-components"
+import { DistributionScene } from "./components/Scene"
+import AnimatedGrid from "@/components/animated/AnimatedContent"
 
 interface DistributionViewProps {
     data: any
@@ -13,11 +15,44 @@ export const DistributionView = ({ data }: DistributionViewProps) => {
     return (
         <StyledDistributionView>
             <StyledContent>
-                <StyledTitle>
-                    <span>{data?.distributionPage?.title?.textFirst}</span>
-                    <span className="first">{data?.distributionPage?.title?.textSecond}</span>
-                </StyledTitle>
+                <StyledTitleContainer>
+                    <AnimatedGrid
+                        type="words"
+                        animation={{
+                            from: { opacity: 0, y: '40px' },
+                            to: { opacity: 1, y: '0px' },
+                            delayStep: 60
+                        }}
+                        overflow={true}
+                        gap={{ horizontal: '0.25em', vertical: '0.25em' }}
+                        containerStyle={{ overflow: 'hidden' }}
+                        cellConfigs={{
+                            'title-first': {
+                                style: {
+                                    color: colors.red,
+                                    fontFamily: 'var(--font-sage-grotesk)',
+                                    fontOpticalSizing: 'auto',
+                                    fontWeight: 400,
+                                    fontStyle: 'normal',
+                                }
+                            },
+                            'title-second': {
+                                style: {
+                                    color: colors.white100,
+                                    fontFamily: 'var(--font-sage-grotesk)',
+                                    fontOpticalSizing: 'auto',
+                                    fontWeight: 400,
+                                    fontStyle: 'normal',
+                                }
+                            }
+                        }}
+                    >
+                        <span id="title-first">{data?.distributionPage?.title?.textFirst}</span>
+                        <span id="title-second" className="first">{data?.distributionPage?.title?.textSecond}</span>
+                    </AnimatedGrid>
+                </StyledTitleContainer>
             </StyledContent>
+            <DistributionScene />
         </StyledDistributionView>
     )
 }
@@ -26,22 +61,22 @@ const StyledDistributionView = styled.div`
     width: 100%;
     ${heightLvh(100)};
     background-color: ${colors.black100};
+    position: relative;
 `
 
 const StyledContent = styled.div`
     padding: ${rm(110)} ${rm(50)};
     width: 100%;
+    position: relative;
+    z-index: 4;
 `
 
-const StyledTitle = styled.p`
+const StyledTitleContainer = styled.div`
     width: ${rm(1000)};
     margin-bottom: ${rm(20)};
     line-height: 90%;
-    letter-spacing: -0.01em;
     font-size: ${rm(100)};
     text-transform: uppercase;
-    ${fontGolosText(600)};
-    color: ${colors.white100};
 
     ${media.lg`
         font-size: ${rm(80)};
@@ -57,11 +92,4 @@ const StyledTitle = styled.p`
         width: 100%;
         font-size: ${rm(32)};
     `}
-
-    .first{
-        ${fontSageGrotesk(400)} !important;
-        color: ${colors.red} !important;
-        margin-right: ${rm(10)};
-        letter-spacing: -0.02em;
-    }
 `

@@ -26,6 +26,10 @@ export const Packages = ({ packagesData }: PackagesProps) => {
     const prevBarProgressSecond = useRef<number>(0);
     const prevBarProgressThird = useRef<number>(0);
 
+    const firstImageRef = useRef<HTMLDivElement>(null);
+    const secondImageRef = useRef<HTMLDivElement>(null);
+    const thirdImageRef = useRef<HTMLDivElement>(null);
+
     // Create transitions for title and description
     const titleTransitions = useTransition(activePackage?.title, {
         from: { opacity: 0, transform: 'translateY(30px)' },
@@ -41,14 +45,7 @@ export const Packages = ({ packagesData }: PackagesProps) => {
         config: { tension: 300, friction: 30 }
     });
 
-  // Image enter/exit transition: wrapper slides fully, image counter-moves slightly
-  // Enter starts after 800ms so the previous image hides by ~80% first (with 1000ms leave)
-  const imageTransitions = useTransition(activePackage?.media, {
-      from: { opacity: 1, wrapperY: 160, imageY: -60 },
-      enter: { opacity: 1, wrapperY: 0, imageY: 0, delay: 200 },
-      leave: { opacity: 1, wrapperY: -160, imageY: 60 },
-      config: { duration: 1000, easing: easings.easeOutCubic }
-  });
+
 
     useEffect(() => {
         const packages = packagesData?.packages;
@@ -118,6 +115,22 @@ export const Packages = ({ packagesData }: PackagesProps) => {
                             activeSizeRef.current = sizes[0];
                         }
                     }
+
+                    // Create natural scroll effect - each image represents a "page" in a continuous scroll
+                    // As we scroll, we move through the images like scrolling through pages
+                    const scrollOffset = transformRange(transformedProgress, 0, 100, 0, 200); // 200% total scroll range for 3 images
+                    
+                    // Each image is positioned 100% apart (like pages stacked vertically)
+                    const firstImageTransform = scrollOffset; // First image starts at 0, moves to -100%
+                    const secondImageTransform = scrollOffset - 100; // Second image starts at 100%, moves to 0, then -100%
+                    const thirdImageTransform = scrollOffset - 200; // Third image starts at 200%, moves to 100%, then 0%
+
+                    //images - apply the natural scroll transforms
+                    if(firstImageRef.current && secondImageRef.current && thirdImageRef.current) {
+                        firstImageRef.current.style.transform = `translateY(${-firstImageTransform}%)`;
+                        secondImageRef.current.style.transform = `translateY(${-secondImageTransform}%)`;
+                        thirdImageRef.current.style.transform = `translateY(${-thirdImageTransform}%)`;
+                    }
                 }}
                 start='top top'
                 end='bottom bottom'
@@ -170,23 +183,24 @@ export const Packages = ({ packagesData }: PackagesProps) => {
                         </WhiteButton>
                     </div>
                     <div className="right">
-                        {imageTransitions((styles, item) => (
-                            item ? (
-                                <StyledImageWrapper
-                                    style={{
-                                        opacity: styles.opacity,
-                                        transform: styles.wrapperY.to((y: number) => `translateY(${y}%)`)
-                                    }}
-                                >
-                                    <animated.div
-                                        className="image-shift"
-                                        style={{ transform: styles.imageY.to((y: number) => `translateY(${y}%)`) }}
-                                    >
-                                        <MediaComponent media={item} className="image" />
-                                    </animated.div>
-                                </StyledImageWrapper>
-                            ) : null
-                        ))}
+                        {/* First package image */}
+                        {packagesData?.packages?.[0]?.media && (
+                            <div style={{width: '100%', height: '100%', position: 'absolute', top: 0, left: 0}} ref={firstImageRef}>
+                                <MediaComponent media={packagesData.packages[0].media} className="image" parallax />
+                            </div>
+                        )}
+                        {/* Second package image */}
+                        {packagesData?.packages?.[1]?.media && (
+                            <div style={{width: '100%', height: '100%', position: 'absolute', top: 0, left: 0}} ref={secondImageRef}>
+                                <MediaComponent media={packagesData.packages[1].media} className="image" parallax />
+                            </div>
+                        )}
+                        {/* Third package image */}
+                        {packagesData?.packages?.[2]?.media && (
+                            <div style={{width: '100%', height: '100%', position: 'absolute', top: 0, left: 0}} ref={thirdImageRef}>
+                                <MediaComponent media={packagesData.packages[2].media} className="image" parallax />
+                            </div>
+                        )}
                     </div>
                 </StyledContentLayout>
             </StyledStickyContainer>
@@ -437,16 +451,3 @@ const StyledSizeContainer = styled.div<{ isActive: boolean }>`
     }
 `
 
-const StyledImageWrapper = styled(animated.div)`
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    will-change: transform, opacity;
-
-    .image-shift{
-        position: absolute;
-        inset: 0;
-    }
-`

@@ -3,6 +3,7 @@ import { StyledSubtitle } from "@/views/PackagesView/screens/Package/Package"
 import { colors, media, rm } from "@/styles"
 import { fontGolosText, fontSageGrotesk } from "@/styles/fonts"
 import { MediaComponent } from "@/components/MediaComponent/MediaComponent"
+import AnimatedGrid from "@/components/animated/AnimatedContent"
 
 interface InspirationProps {
     data: any
@@ -12,17 +13,53 @@ export const Inspiration = ({ data }: InspirationProps) => {
     return (
         <StyledInspiration>
             <StyledTopContainer>
-                <StyledAboutTitle>
-                    <span>
-                        {data?.title?.firstWord}
-                    </span>
-                    <span className="first">
-                        {data?.title?.secondWord}
-                    </span>
-                    <span>
-                        {data?.title?.thirdWord}
-                    </span>
-                </StyledAboutTitle>
+                <StyledAboutTitleContainer>
+                    <AnimatedGrid
+                        type="words"
+                        animation={{
+                            from: { opacity: 0, y: '40px' },
+                            to: { opacity: 1, y: '0px' },
+                            delayStep: 60
+                        }}
+                        overflow={true}
+                        gap={{ horizontal: '0.25em', vertical: '0.25em' }}
+                        containerStyle={{ overflow: 'hidden' }}
+                        cellConfigs={{
+                            'title-first': {
+                                style: {
+                                    color: colors.black100,
+                                    fontFamily: 'var(--font-golos-text)',
+                                    fontOpticalSizing: 'auto',
+                                    fontWeight: 600,
+                                    fontStyle: 'normal',
+                                }
+                            },
+                            'title-second': {
+                                style: {
+                                    color: colors.red,
+                                    fontFamily: 'var(--font-sage-grotesk)',
+                                    fontOpticalSizing: 'auto',
+                                    fontWeight: 400,
+                                    fontStyle: 'normal',
+                                    lineHeight: '105%',
+                                }
+                            },
+                            'title-third': {
+                                style: {
+                                    color: colors.black100,
+                                    fontFamily: 'var(--font-golos-text)',
+                                    fontOpticalSizing: 'auto',
+                                    fontWeight: 600,
+                                    fontStyle: 'normal',
+                                }
+                            }
+                        }}
+                    >
+                        <span id="title-first">{data?.title?.firstWord}</span>
+                        <span id="title-second" className="first">{data?.title?.secondWord}</span>
+                        <span id="title-third">{data?.title?.thirdWord}</span>
+                    </AnimatedGrid>
+                </StyledAboutTitleContainer>
                 <div className="right">
                     <StyledSubtitle>
                         {data?.descriptionFirst}
@@ -33,7 +70,7 @@ export const Inspiration = ({ data }: InspirationProps) => {
                 </div>
             </StyledTopContainer>
             <StyledMediaContainer>
-                <MediaComponent media={data?.media} className="image" />
+                <MediaComponent media={data?.media} className="image" parallax={true} />
             </StyledMediaContainer>
         </StyledInspiration>
     )
@@ -110,17 +147,11 @@ const StyledTopContainer = styled.div`
     }
 `
 
-export const StyledAboutTitle = styled.p`
+export const StyledAboutTitleContainer = styled.div`
     line-height: 90%;
     letter-spacing: -0.01em;
     font-size: ${rm(48)};
     text-transform: uppercase;
-    ${fontGolosText(600)};
-    color: ${colors.black100};
-    gap: ${rm(10)};
-    display: flex;
-    width: ${rm(440)};
-    flex-wrap: wrap;
     width: ${rm(540)};
     
     ${media.lg`
@@ -143,13 +174,6 @@ export const StyledAboutTitle = styled.p`
         ${media.md`
             margin-top: ${rm(-15)};
         `}
-    }
-
-    .first{
-        ${fontSageGrotesk(400)} !important;
-        color: ${colors.red} !important;
-        letter-spacing: -0.02em;
-        line-height: 105%;
     }
 `
 

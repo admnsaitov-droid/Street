@@ -1,5 +1,6 @@
 import { AnimatedDivider } from "@/components/animated/AnimatedDivider/AnimatedDivider";
 import { AnimatedText } from "@/components/animated/AnimatedText/AnimatedText"
+import AnimatedGrid from "@/components/animated/AnimatedContent"
 import { colors, media, rm } from "@/styles";
 import { fontGolosText, fontSageGrotesk } from "@/styles/fonts";
 import styled from "styled-components"
@@ -24,10 +25,43 @@ export const Achievements = ({ achievementsData }: AchievementsProps) => {
                 ))}
             </StyledAchievementsList>
             <div className="right">
-                <StyledTitle>
-                    <span className="first">{achievementsData?.title?.textFirst}</span>
-                    {achievementsData?.title?.textSecond}
-                </StyledTitle>
+                <StyledTitleContainer>
+                    <AnimatedGrid
+                        type="words"
+                        animation={{
+                            from: { opacity: 0, y: '40px' },
+                            to: { opacity: 1, y: '0px' },
+                            delayStep: 60
+                        }}
+                        overflow={true}
+                        gap={{ horizontal: '0.25em', vertical: '0.25em' }}
+                        containerStyle={{ overflow: 'hidden' }}
+                        cellConfigs={{
+                            'title-first': {
+                                style: {
+                                    color: colors.red,
+                                    fontFamily: 'var(--font-sage-grotesk)',
+                                    fontOpticalSizing: 'auto',
+                                    fontWeight: 400,
+                                    fontStyle: 'normal',
+                                    lineHeight: '105%',
+                                }
+                            },
+                            'title-second': {
+                                style: {
+                                    color: colors.black100,
+                                    fontFamily: 'var(--font-golos-text)',
+                                    fontOpticalSizing: 'auto',
+                                    fontWeight: 600,
+                                    fontStyle: 'normal',
+                                }
+                            }
+                        }}
+                    >
+                        <span id="title-first" className="first">{achievementsData?.title?.textFirst}</span>
+                        <span id="title-second" className="second">{achievementsData?.title?.textSecond}</span>
+                    </AnimatedGrid>
+                </StyledTitleContainer>
                 <StyledAchievementsList className="rightAchievements">
                     {achievementsData?.rightAchievements?.map((achievement: any) => (
                         <StyledAchievement key={achievement.id}>
@@ -91,14 +125,12 @@ const StyledAchievements = styled.div`
     }
 `
 
-const StyledTitle = styled.p`
+const StyledTitleContainer = styled.div`
     width: ${rm(700)};
     line-height: 90%;
+    text-transform: uppercase;
     letter-spacing: -0.02em;
     font-size: ${rm(48)};
-    text-transform: uppercase;
-    ${fontGolosText(600)};
-    color: ${colors.black100};
 
     ${media.lg`
         width: ${rm(553)};
@@ -109,13 +141,6 @@ const StyledTitle = styled.p`
         width: 100%;
         font-size: ${rm(32)};
     `}
-
-    .first{
-        ${fontSageGrotesk(400)} !important;
-        color: ${colors.red} !important;
-        margin-right: ${rm(10)};
-    }
-
 `
 
 const StyledAchievementsList = styled.div`

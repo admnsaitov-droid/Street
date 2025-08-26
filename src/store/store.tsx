@@ -7,6 +7,8 @@ interface LoadingStore {
   setIsSubmitSuccessful: (value: boolean) => void;
   isSubmitError: boolean;
   setIsSubmitError: (value: boolean) => void;
+  contentLoaded: boolean;
+  setContentLoaded: (value: boolean) => void;
 }
 
 interface VideoPlayerStore {
@@ -52,6 +54,9 @@ const useLoadingStore = create<LoadingStore>((set, get) => ({
 
     isSubmitError: false,
     setIsSubmitError: (value: boolean) => set({ isSubmitError: value }),
+
+    contentLoaded: false,
+    setContentLoaded: (value: boolean) => set({ contentLoaded: value }),
 }));
 
 export const useVideoPlayerStore = create<VideoPlayerStore>((set, get) => ({

@@ -1,6 +1,7 @@
 import { colors, media, rm } from "@/styles"
 import { fontGolosText } from "@/styles/fonts"
 import styled from "styled-components"
+import { AnimatedText } from "@/components/animated/AnimatedText/AnimatedText"
 
 interface SpecificationsProps {
     specifications: any
@@ -41,7 +42,7 @@ const StyledSpecification = styled.div`
     `}
 `
 
-const StyledValue = styled.p`
+const StyledValue = styled(AnimatedText)`
     font-size: ${rm(20)};
     ${fontGolosText(400)};
     line-height: 130%;
@@ -61,7 +62,7 @@ const StyledValue = styled.p`
     `}
 `
 
-const StyledParam = styled.p`
+const StyledParam = styled(AnimatedText)`
     font-size: ${rm(20)};
     ${fontGolosText(400)};
     line-height: 110%;

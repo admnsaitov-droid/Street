@@ -1,4 +1,6 @@
 'use client'
+import { AnimatedText } from "@/components/animated/AnimatedText/AnimatedText"
+import { AnimatedTranslate } from "@/components/animated/AnimatedTranslate/AnimatedTranslate"
 import UnderlineLink from "@/components/animated/UnderlineLink/UnderlineLink"
 import { MediaComponent } from "@/components/MediaComponent/MediaComponent"
 import { colors, media, rm } from "@/styles"
@@ -22,13 +24,13 @@ export const Package = ({ data }: PackageProps) => {
                 <StyledLeft>
                     {width > 576 && <StyledAnnotation>{data?.productsCount} fitness equipment</StyledAnnotation>}
                     <StyledBottomContainer>
-                        <MediaComponent media={data?.previewAboveMedia} className="image"/>
+                        <MediaComponent media={data?.previewAboveMedia} className="image" parallax={true}/>
                     </StyledBottomContainer>
                 </StyledLeft>
                 <StyledRight>
                     <StyledInfo>
                         <div className="left">
-                            <p className="title">{data?.title}</p>
+                            <AnimatedText className="title">{data?.title}</AnimatedText>
                             <StyledSubtitle>{data?.previewDescription}</StyledSubtitle>
                         </div>
                         <StyledExploreButton>
@@ -36,7 +38,7 @@ export const Package = ({ data }: PackageProps) => {
                         </StyledExploreButton>
                     </StyledInfo>
                     <StyledBottomContainer>
-                        <MediaComponent media={data?.previewSideMedia} className="image" />
+                        <MediaComponent media={data?.previewSideMedia} className="image" parallax={true} />
                     </StyledBottomContainer>
                 </StyledRight>
                 {width <= 576 && <StyledAnnotation>{data?.productsCount} fitness equipment</StyledAnnotation>}
@@ -131,7 +133,7 @@ const StyledRight = styled(StyledMainContainer)`
     `}
 `
 
-const StyledExploreButton = styled.div`
+const StyledExploreButton = styled(AnimatedTranslate)`
     font-size: ${rm(16)};
     line-height: 130%;
     ${fontGolosText(400)};
@@ -143,12 +145,13 @@ const StyledExploreButton = styled.div`
     `}
 `
 
-export const StyledAnnotation = styled.p`
+export const StyledAnnotation = styled(AnimatedText)`
     color: ${colors.gray};
     font-size: ${rm(20)};
     line-height: 110%;
     ${fontGolosText(400)};
     text-transform: uppercase;
+    height: fit-content !important;
 
     ${media.lg`
         font-size: ${rm(16)};
@@ -204,7 +207,7 @@ const StyledInfo = styled.div`
     }
 `
 
-export const StyledSubtitle = styled.p`
+export const StyledSubtitle = styled(AnimatedText)`
     font-size: ${rm(20)};
     color: ${colors.gray};
     ${fontGolosText(400)};

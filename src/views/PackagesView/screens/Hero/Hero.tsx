@@ -37,13 +37,34 @@ const StyledDescription = styled(AnimatedText)`
     font-size: ${rm(40)};
     ${fontGolosText(400)};
     color: ${colors.black100};
-    line-height: 100%;
-    text-indent: ${rm(113)};
+    line-height: 115%;
     letter-spacing: -0.01em;
     color: ${colors.black100};
+
+    span:nth-child(2){
+        padding-left: ${rm(113)} !important;
+    }
 
     ${media.lg`
         font-size: ${rm(32)};
         width: ${rm(777)};    
     `}
+
+    ${media.md`
+        font-size: ${rm(24)};
+    `}
+
+    ${media.xsm`
+        font-size: ${rm(20)};
+    `}
+
+    span:nth-child(2){
+        ${media.md`
+            padding-left: ${rm(0)} !important;
+        `}
+
+        ${media.xsm`
+            padding-left: ${rm(0)} !important;
+        `}
+    }
 `

@@ -5,6 +5,7 @@ import { heightLvh } from "@/styles/utils"
 import styled from "styled-components"
 import { ProductScene } from "./Scene/ProductScene"
 import { ColorPaletre } from "./ColorPaletre/ColoPaletre"
+import { AnimatedText } from "@/components/animated/AnimatedText/AnimatedText"
 
 interface HeroProps {
     data: any
@@ -74,7 +75,7 @@ const StyledContent = styled.div`
     }
 `
 
-const StyledTitle = styled.p`
+const StyledTitle = styled(AnimatedText)`
     font-size: ${rm(48)};
     ${fontGolosText(600)};
     color: ${colors.black100};
@@ -87,7 +88,7 @@ const StyledTitle = styled.p`
     `}
 `
 
-const StyledSubtitle = styled.p`
+const StyledSubtitle = styled(AnimatedText)`
     font-size: ${rm(20)};
     ${fontGolosText(400)};
     line-height: 110%;

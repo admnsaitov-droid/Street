@@ -32,10 +32,18 @@ const nextConfig = {
         pathname: '/**', // Allow all paths
       },
       {
-        protocol: 'http',
-        hostname: new URL(process.env.NEXT_PUBLIC_IMAGE_URL).hostname,
+        protocol: 'https',
+        hostname: '153.92.1.45',
+        port: '1337',
         pathname: '/**', // Allow all paths
       },
+      // Dynamic hostname from environment variable with error handling
+      ...(process.env.NEXT_PUBLIC_IMAGE_URL ? [{
+        protocol: new URL(process.env.NEXT_PUBLIC_IMAGE_URL).protocol.slice(0, -1),
+        hostname: new URL(process.env.NEXT_PUBLIC_IMAGE_URL).hostname,
+        port: new URL(process.env.NEXT_PUBLIC_IMAGE_URL).port || undefined,
+        pathname: '/**', // Allow all paths
+      }] : []),
     ],
   },
 };

@@ -4,18 +4,24 @@ import { getLocaleCodes, getDefaultLocale } from './utils/locales';
 
 // Create middleware with dynamic locale configuration
 export default async function middleware(request: NextRequest) {
-  // console.log('🔥 MIDDLEWARE RUNNING - incoming request:', request.nextUrl.pathname);
-  // console.log(`🔍 COOKIES: ${request.cookies.get('NEXT_LOCALE')?.value || 'none'}`);
-  // console.log(`🔍 ACCEPT-LANGUAGE: ${request.headers.get('accept-language')}`);
-  // console.log(`🔍 REFERER: ${request.headers.get('referer') || 'none'}`);
+  const pathname = request.nextUrl.pathname;
+  
+  // Enable logging in production to debug Vercel issues
+  console.log('🔥 MIDDLEWARE - incoming request:', pathname);
+  console.log(`🔍 COOKIES: ${request.cookies.get('NEXT_LOCALE')?.value || 'none'}`);
   
   try {
     // Get dynamic locales from Strapi
     const locales = await getLocaleCodes();
     const defaultLocale = await getDefaultLocale();
     
-    // console.log('Middleware - available locales:', locales);
-    // console.log('Middleware - default locale:', defaultLocale);
+    console.log('Middleware - available locales:', locales);
+    console.log('Middleware - default locale:', defaultLocale);
+
+    // Validate that we have locales before proceeding
+    if (!locales || locales.length === 0) {
+      throw new Error('No locales available');
+    }
 
     // Create the middleware with dynamic configuration
     const handleI18nRouting = createMiddleware({
@@ -28,13 +34,10 @@ export default async function middleware(request: NextRequest) {
     
     // Log what the middleware decided to do
     if (response && response.headers.get('x-middleware-rewrite')) {
-      // console.log(`🔄 REWRITE TO: ${response.headers.get('x-middleware-rewrite')}`);
+      console.log(`🔄 REWRITE TO: ${response.headers.get('x-middleware-rewrite')}`);
     }
     if (response && response.headers.get('location')) {
-      // console.log(`🔄 REDIRECT TO: ${response.headers.get('location')}`);
-    }
-    if (response && response.headers.get('set-cookie')) {
-      // console.log(`🍪 SETTING COOKIE: ${response.headers.get('set-cookie')}`);
+      console.log(`🔄 REDIRECT TO: ${response.headers.get('location')}`);
     }
     
     return response;

@@ -17,7 +17,7 @@ export const About = ({ aboutData }: AboutProps) => {
             <StyledTopContainer>
                 <AnimatedText className="title">{aboutData?.title}</AnimatedText>
                 <div className="right">
-                    <p className="descriptionMain">{aboutData?.description}</p>
+                    <AnimatedText className="descriptionMain">{aboutData?.description}</AnimatedText>
                     <div className="bottom">
                         <AnimatedText className="descriptionSecondary">{aboutData?.descriptionSecondary}</AnimatedText>
                         <BlueButton link={aboutData?.button?.link} isSvg className="button">{aboutData?.button?.text}</BlueButton>
@@ -25,7 +25,7 @@ export const About = ({ aboutData }: AboutProps) => {
                 </div>
             </StyledTopContainer>
             <StyledBottomContainer>
-                <MediaComponent media={aboutData?.media} className="image" />
+                <MediaComponent media={aboutData?.media} className="image" parallax={true} />
             </StyledBottomContainer>
         </StyledAbout>
     )
@@ -62,6 +62,7 @@ const StyledTopContainer = styled.div`
         letter-spacing: -0.01em;
         ${fontGolosText(400)};
         text-transform: uppercase;
+        height: fit-content !important;
         
         ${media.lg`
             font-size: ${rm(16)};
@@ -93,10 +94,13 @@ const StyledTopContainer = styled.div`
         .descriptionMain{
             color: ${colors.black100};
             font-size: ${rm(40)};
-            line-height: 100%;
-            text-indent: ${rm(113)};
+            line-height: 115%;
             letter-spacing: -0.01em;
             ${fontGolosText(400)};
+
+            span:nth-child(2){
+                padding-left: ${rm(113)} !important;
+            }
             
             ${media.lg`
                 font-size: ${rm(32)};
@@ -104,7 +108,10 @@ const StyledTopContainer = styled.div`
 
             ${media.md`
                 font-size: ${rm(24)};
-                text-indent: 0;
+                
+                span:nth-child(2){
+                    padding-left: ${rm(0)} !important;
+                }
             `}
 
             ${media.xsm`

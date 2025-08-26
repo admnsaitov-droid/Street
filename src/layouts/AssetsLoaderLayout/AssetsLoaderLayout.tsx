@@ -8,7 +8,7 @@ import styled from "styled-components";
 import React, { useEffect, useState, createContext, useContext } from "react";
 import { useLoadAssets } from "./useLoadAssets";
 // Assets
-import { useSpring, animated, useTransition } from "@react-spring/web";
+import { useSpring, animated, useTransition, easings } from "@react-spring/web";
 import { rm } from '@/styles'
 import { colors } from "@/styles";
 import { Loader } from "./Loader";
@@ -48,7 +48,7 @@ const StyledLoader = styled(animated.div)`
     --size-loader: ${rm(48)};
     transform: translate(0, 0, 0);
     overflow: hidden;
-    color: ${colors.white100};
+    color: ${colors.black100};
     pointer-events: none;
 
     > div {
@@ -97,11 +97,13 @@ export const AssetsLoaderLayout = ({
     }, [])
 
     const transitions = useTransition(!fullyLoaded, {
-        enter: { opacity: 1 },
-        leave: { opacity: 0 },
+        from: { transform: 'translateY(0%)' },
+        enter: { transform: 'translateY(0%)' },
+        leave: { transform: 'translateY(100%)' },
         delay: 2000,
         config: {
-            duration: 0
+            duration: 400,
+            easing: easings.easeInCubic
         }
     })
 

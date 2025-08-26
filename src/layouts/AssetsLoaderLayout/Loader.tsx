@@ -1,10 +1,10 @@
 'use client'
 
 import { rm } from "@/styles"
-import { _colors, colors } from "@/styles/colors"
+import { colors } from "@/styles/colors"
 import { useRef, useEffect, useState } from "react"
 import styled from "styled-components"
-import { LoaderBg } from "./LoaderBg"
+import useLoadingStore from "@/store/store"
 
 interface LoaderProps {
     setFullyLoaded: (value: boolean) => void
@@ -19,7 +19,8 @@ const StyledLoader = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
-    color: ${colors.white100};
+    color: ${colors.black100};
+    background-color: ${colors.black100};
     pointer-events: all;
     padding: ${rm(16)};
 `
@@ -27,9 +28,8 @@ const StyledLoader = styled.div`
 export const Loader = ({ setFullyLoaded, progress }: LoaderProps) => {
     const [isLoaded, setIsLoaded] = useState(false)
     const progressRef = useRef(0)
-    const interpolatedProgress = useRef(0)
-    const isFullyLoadedRef = useRef(false)
-    const loaderBgRef = useRef<any>(null)
+    const setContentLoaded = useLoadingStore(state => state.setContentLoaded)
+
 
     useEffect(() => {
         progressRef.current = progress
@@ -47,15 +47,17 @@ export const Loader = ({ setFullyLoaded, progress }: LoaderProps) => {
     // Replace it with real progress/logic
     useEffect(() => {
         setTimeout(() => {
-            loaderBgRef.current?.hide()
             setIsLoaded(true)
-            setFullyLoaded(true)
+            setTimeout(() => {
+                setFullyLoaded(true)
+                setContentLoaded(true)
+            }, 500)
         }, 0)
     }, [progressRef.current])
 
     return (
         <StyledLoader>
-            <LoaderBg ref={loaderBgRef} />
+            {/* You can add a logo or any content here if needed */}
         </StyledLoader>
     )
 }

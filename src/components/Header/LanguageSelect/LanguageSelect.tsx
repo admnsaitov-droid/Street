@@ -3,6 +3,7 @@ import { fontGolosText } from "@/styles/fonts"
 import { useState, useEffect, useRef } from "react"
 import { useRouter, usePathname } from "next/navigation"
 import { useLocale } from 'next-intl'
+// import { Link } from '@/navigation'
 import styled from "styled-components"
 
 interface Language {
@@ -40,12 +41,29 @@ export const LanguageSelect = ({ languages }: LanguageSelectProps) => {
     }, [])
 
     const handleLanguageChange = (localeCode: string) => {
-        // Remove current locale from pathname and add new one
-        const pathWithoutLocale = pathname.replace(`/${currentLocale}`, '') || '/'
-        const newPath = `/${localeCode}${pathWithoutLocale === '/' ? '' : pathWithoutLocale}`
+        // More robust path manipulation for locale switching
+        let pathWithoutLocale = pathname;
         
-        router.push(newPath)
-        setIsOpen(false)
+        // Remove the current locale from the beginning of the path
+        const localePattern = new RegExp(`^/${currentLocale}(?:/|$)`);
+        if (localePattern.test(pathname)) {
+            pathWithoutLocale = pathname.replace(localePattern, '/');
+        }
+        
+        // Ensure we don't have double slashes and construct the new path
+        const cleanPath = pathWithoutLocale === '/' ? '' : pathWithoutLocale;
+        const newPath = `/${localeCode}${cleanPath}`;
+        
+        console.log('Language switch:', { 
+            currentLocale, 
+            newLocale: localeCode, 
+            originalPath: pathname, 
+            pathWithoutLocale, 
+            newPath 
+        });
+        
+        router.push(newPath);
+        setIsOpen(false);
     }
 
     const toggleDropdown = () => {

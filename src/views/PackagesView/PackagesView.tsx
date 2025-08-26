@@ -4,6 +4,7 @@ import { fontGolosText } from "@/styles/fonts"
 import styled from "styled-components"
 import { Package } from "./screens/Package/Package"
 import Breadcrumbs from "@/components/Breadcrumbs/Breadcrumbs"
+import { AnimatedText } from "@/components/animated/AnimatedText/AnimatedText"
 
 interface PackagesViewProps {
     data: any
@@ -68,13 +69,14 @@ const StyledTop = styled.div`
     `}
 `
 
-export const StyledTitle = styled.p`
+export const StyledTitle = styled(AnimatedText)`
     font-size: ${rm(100)};
     line-height: 85%;
     text-transform: uppercase;
     letter-spacing: -0.02em;
     ${fontGolosText(600)};
     color: ${colors.black100};
+    height: fit-content;
     
     ${media.lg`
         font-size: ${rm(80)};
@@ -89,13 +91,16 @@ export const StyledTitle = styled.p`
     `}
 `
 
-const StyledDescription = styled.p`
+const StyledDescription = styled(AnimatedText)`
     font-size: ${rm(40)};
-    line-height: 100%;
+    line-height: 115%;
     ${fontGolosText(400)};
     color: ${colors.black100};
-    text-indent: ${rm(113)};
     width: ${rm(1007)};
+
+    span:nth-child(2){
+        padding-left: ${rm(113)} !important;
+    }
 
     ${media.lg`
         font-size: ${rm(32)};
@@ -104,9 +109,12 @@ const StyledDescription = styled.p`
 
     ${media.md`
         font-size: ${rm(24)};
-        text-indent: 0;
         width: ${rm(475)};
         letter-spacing: -0.01em;
+
+        span:nth-child(2){
+            padding-left: ${rm(0)} !important;
+        }
     `}
 
     ${media.xsm`

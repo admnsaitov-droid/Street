@@ -13,7 +13,7 @@ export const ProductScene = () => {
             <ProductModel model="/models/productModel.glb" params={{
                 position: [0, 0, 0],
                 rotation: [0, 0, 0],
-                scale: 10
+                scale: 1.4
             }} />
         </StyledCanvas>
     )

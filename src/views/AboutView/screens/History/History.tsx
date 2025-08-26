@@ -18,14 +18,14 @@ export const History = ({ data }: HistoryProps) => {
             <StyledBottom>
                 <StyledLeft>
                     <StyledSecndaryImageContainer>
-                        <MediaComponent media={data?.mediaSecondary} className="image" />
+                        <MediaComponent media={data?.mediaSecondary} className="image" parallax={true} />
                     </StyledSecndaryImageContainer>
                     {width > 768 && <StyledSubtitle className="blue80">
                         {data?.descriptionSecondary}
                     </StyledSubtitle>}
                 </StyledLeft>
                 <StyledMainImageContainer>
-                    <MediaComponent media={data?.mediaMain} className="image" />
+                    <MediaComponent media={data?.mediaMain} className="image" parallax={true} />
                     {width <= 768 && <StyledSubtitle className="blue80">
                         {data?.descriptionSecondary}
                     </StyledSubtitle>}

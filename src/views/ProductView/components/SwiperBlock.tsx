@@ -11,6 +11,7 @@ import { Swiper, SwiperSlide } from 'swiper/react'
 import type { Swiper as SwiperType } from 'swiper'
 import 'swiper/css'
 import { MediaComponent } from "@/components/MediaComponent/MediaComponent"
+import AnimatedGrid from "@/components/animated/AnimatedContent"
 
 interface SwiperBlockProps {
     images?: any[]
@@ -35,10 +36,43 @@ export const SwiperBlock = ({ images }: SwiperBlockProps) => {
     return (
         <StyledSwiperBlock>
             <StyledTop>
-                <StyledTitle>
-                    <span className="first">Built to perform</span>
-                    <span>Show in use</span>
-                </StyledTitle>
+                <StyledTitleContainer>
+                    <AnimatedGrid
+                        type="words"
+                        animation={{
+                            from: { opacity: 0, y: '40px' },
+                            to: { opacity: 1, y: '0px' },
+                            delayStep: 60
+                        }}
+                        overflow={true}
+                        gap={{ horizontal: '0.25em', vertical: '0.25em' }}
+                        containerStyle={{ overflow: 'hidden' }}
+                        cellConfigs={{
+                            'title-first': {
+                                style: {
+                                    color: colors.red,
+                                    fontFamily: 'var(--font-sage-grotesk)',
+                                    fontOpticalSizing: 'auto',
+                                    fontWeight: 400,
+                                    fontStyle: 'normal',
+                                    lineHeight: '105%',
+                                }
+                            },
+                            'title-second': {
+                                style: {
+                                    color: colors.black100,
+                                    fontFamily: 'var(--font-golos-text)',
+                                    fontOpticalSizing: 'auto',
+                                    fontWeight: 600,
+                                    fontStyle: 'normal',
+                                }
+                            }
+                        }}
+                    >
+                        <span id="title-first" className="first">Built to perform</span>
+                        <span id="title-second">Show in use</span>
+                    </AnimatedGrid>
+                </StyledTitleContainer>
                 <div className="buttonsBlock">
                     <StyledSwiperButton side="left" onClick={handlePrev} aria-label="Previous slide">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -126,7 +160,7 @@ const StyledSwiperButton = styled.div<{side: 'left' | 'right'}>`
 `
 
 
-const StyledTitle = styled.p`
+const StyledTitleContainer = styled.div`
     width: ${rm(600)};
     margin-bottom: ${rm(20)};
     
@@ -144,15 +178,6 @@ const StyledTitle = styled.p`
     letter-spacing: -0.01em;
     font-size: ${rm(48)};
     text-transform: uppercase;
-    ${fontGolosText(600)};
-    color: ${colors.black100};
-
-    .first{
-        ${fontSageGrotesk(400)} !important;
-        color: ${colors.red} !important;
-        margin-right: ${rm(10)};
-        letter-spacing: -0.02em;
-    }
 `
 
 const StyledViewport = styled.div`

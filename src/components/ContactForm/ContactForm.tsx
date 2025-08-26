@@ -15,6 +15,7 @@ import { BlueButton } from "../Ui/buttons/BlueButton"
 import { usePathname } from "next/navigation"
 import UnderlineLink from "../animated/UnderlineLink/UnderlineLink"
 import { useWindowWidth } from "@react-hook/window-size"
+import AnimatedGrid from "@/components/animated/AnimatedContent"
 
 export const ContactForm = () => {
     const [data, setData] = useState<any>(null)
@@ -175,10 +176,43 @@ export const ContactForm = () => {
 
     return (    
         !pathname.includes('contact') ? <StyledContactForm>
-            <StyledTitle>
-                <span>{data?.data?.title?.textFirst}</span>
-                <span className="first">{data?.data?.title?.textSecond}</span>
-            </StyledTitle>
+            <StyledTitleContainer>
+                <AnimatedGrid
+                    type="words"
+                    animation={{
+                        from: { opacity: 0, y: '40px' },
+                        to: { opacity: 1, y: '0px' },
+                        delayStep: 60
+                    }}
+                    overflow={true}
+                    gap={{ horizontal: '0.25em', vertical: '0.25em' }}
+                    containerStyle={{ overflow: 'hidden' }}
+                    cellConfigs={{
+                        'title-first': {
+                            style: {
+                                color: colors.black100,
+                                fontFamily: 'var(--font-golos-text)',
+                                fontOpticalSizing: 'auto',
+                                fontWeight: 600,
+                                fontStyle: 'normal',
+                            }
+                        },
+                        'title-second': {
+                            style: {
+                                color: colors.red,
+                                fontFamily: 'var(--font-sage-grotesk)',
+                                fontOpticalSizing: 'auto',
+                                fontWeight: 400,
+                                fontStyle: 'normal',
+                                lineHeight: '105%',
+                            }
+                        }
+                    }}
+                >
+                    <span id="title-first">{data?.data?.title?.textFirst}</span>
+                    <span id="title-second" className="first">{data?.data?.title?.textSecond}</span>
+                </AnimatedGrid>
+            </StyledTitleContainer>
             <StyledNote>{data?.data?.note}</StyledNote>
             <StyledForm onSubmit={handleSubmit}>
                 {width > 576 && <>
@@ -290,16 +324,12 @@ const StyledContactForm = styled.div`
     }
 `
 
-const StyledTitle = styled.p`
+const StyledTitleContainer = styled.div`
     margin-bottom: ${rm(20)};
     line-height: 90%;
     letter-spacing: -0.01em;
     font-size: ${rm(48)};
     text-transform: uppercase;
-    ${fontGolosText(600)};
-    color: ${colors.black100};
-    display: flex;
-    gap: ${rm(10)};
 
     ${media.lg`
         font-size: ${rm(40)};
@@ -307,20 +337,8 @@ const StyledTitle = styled.p`
 
     ${media.xsm`
         font-size: ${rm(32)};
-        flex-direction: column;
         margin-bottom: ${rm(15)};
     `}
-
-    .first{
-        ${fontSageGrotesk(400)} !important;
-        color: ${colors.red} !important;
-        letter-spacing: -0.02em;
-        line-height: 105%;
-
-        ${media.xsm`
-            line-height: 90%;
-        `}
-    }
 `
 
 const StyledNote = styled.p`
