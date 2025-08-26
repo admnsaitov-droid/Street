@@ -4,7 +4,7 @@ export const getMediaStrapiPath = (media: any) => {
         return '/placeholder.jpg'; // Fallback image
     }
     
-    const baseUrl = process.env.NEXT_PUBLIC_IMAGE_URL;
+    let baseUrl = process.env.NEXT_PUBLIC_IMAGE_URL;
     if (!baseUrl) {
         console.error('getMediaStrapiPath: NEXT_PUBLIC_IMAGE_URL is not defined');
         return media.url; // Return relative URL as fallback
@@ -15,14 +15,27 @@ export const getMediaStrapiPath = (media: any) => {
         return media.url;
     }
     
+    // Fix incomplete base URL (missing port)
+    if (baseUrl === 'http://153.92.1.45' || baseUrl === 'https://153.92.1.45') {
+        baseUrl = baseUrl + ':1337';
+    }
+    
+    // Force HTTPS in production to avoid mixed content errors
+    if (typeof window !== 'undefined' && window.location.protocol === 'https:' && baseUrl.startsWith('http:')) {
+        baseUrl = baseUrl.replace('http:', 'https:');
+        console.warn('Converted HTTP to HTTPS for production:', baseUrl);
+    }
+    
     const fullUrl = `${baseUrl}${media.url}`;
     
     // Debug logging to track image URL generation
     console.log('Image URL generated:', {
         mediaUrl: media.url,
-        baseUrl,
+        originalBaseUrl: process.env.NEXT_PUBLIC_IMAGE_URL,
+        correctedBaseUrl: baseUrl,
         fullUrl,
-        mediaObject: media
+        isProduction: typeof window !== 'undefined' && window.location.protocol === 'https:',
+        currentProtocol: typeof window !== 'undefined' ? window.location.protocol : 'unknown'
     });
     
     return fullUrl;

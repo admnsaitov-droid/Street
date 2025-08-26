@@ -44,6 +44,13 @@ const nextConfig = {
         port: new URL(process.env.NEXT_PUBLIC_IMAGE_URL).port || undefined,
         pathname: '/**', // Allow all paths
       }] : []),
+      // Add explicit HTTPS support for production
+      {
+        protocol: 'https',
+        hostname: '153.92.1.45',
+        port: '1337',
+        pathname: '/**',
+      },
     ],
   },
 };
