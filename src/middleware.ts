@@ -15,18 +15,24 @@ export default async function middleware(request: NextRequest) {
     const locales = await getLocaleCodes();
     const defaultLocale = await getDefaultLocale();
     
-    console.log('Middleware - available locales:', locales);
-    console.log('Middleware - default locale:', defaultLocale);
+    console.log('Middleware - available locales from Strapi:', locales);
+    console.log('Middleware - default locale from Strapi:', defaultLocale);
 
-    // Validate that we have locales before proceeding
-    if (!locales || locales.length === 0) {
-      throw new Error('No locales available');
-    }
+    // Get safe locales from environment variable or fallback to Strapi
+    const envLocales = process.env.NEXT_PUBLIC_LOCALES?.split(',').map(l => l.trim()) || [];
+    const envDefaultLocale = process.env.NEXT_PUBLIC_DEFAULT_LOCALE || 'en';
+    
+    // Use env locales if available, otherwise use Strapi locales, with final fallback
+    const safeLocales = envLocales.length > 0 ? envLocales : (locales.length > 0 ? locales : ['en', 'es']);
+    const safeDefaultLocale = envLocales.length > 0 ? envDefaultLocale : (defaultLocale || 'en');
 
-    // Create the middleware with dynamic configuration
+    console.log('Middleware - FORCED locales:', safeLocales);
+    console.log('Middleware - FORCED default locale:', safeDefaultLocale);
+
+    // Create the middleware with forced configuration
     const handleI18nRouting = createMiddleware({
-      locales,
-      defaultLocale,
+      locales: safeLocales,
+      defaultLocale: safeDefaultLocale,
       localePrefix: 'always'
     });
 
