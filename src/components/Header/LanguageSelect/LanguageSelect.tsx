@@ -49,7 +49,7 @@ export const LanguageSelect = ({ languages }: LanguageSelectProps) => {
             window_location: typeof window !== 'undefined' ? window.location.href : 'N/A'
         });
         
-        // Dead simple: just replace /currentLocale with /newLocale
+        // Instead of router.push, use window.location to avoid middleware interference
         const newPath = pathname.replace(`/${currentLocale}`, `/${localeCode}`);
         
         console.log('🔄 Path transformation:', {
@@ -62,12 +62,16 @@ export const LanguageSelect = ({ languages }: LanguageSelectProps) => {
             willChange: pathname !== newPath
         });
         
-        console.log('🚀 About to call router.push with:', newPath);
+        console.log('🚀 Using window.location.href instead of router.push:', newPath);
         
-        router.push(newPath);
+        // Use window.location to bypass Next.js router and middleware
+        if (typeof window !== 'undefined') {
+            window.location.href = newPath;
+        }
+        
         setIsOpen(false);
         
-        console.log('✅ router.push called, dropdown closed');
+        console.log('✅ window.location.href set, dropdown closed');
     }
 
     const toggleDropdown = () => {
