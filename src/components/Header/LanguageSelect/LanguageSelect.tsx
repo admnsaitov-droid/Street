@@ -41,24 +41,25 @@ export const LanguageSelect = ({ languages }: LanguageSelectProps) => {
     }, [])
 
     const handleLanguageChange = (localeCode: string) => {
-        // More robust path manipulation for locale switching
-        let pathWithoutLocale = pathname;
+        // Simple and reliable locale switching
+        // pathname is always in format: /currentLocale/rest or /currentLocale
+        const pathSegments = pathname.split('/').filter(Boolean); // Remove empty segments
         
-        // Remove the current locale from the beginning of the path
-        const localePattern = new RegExp(`^/${currentLocale}(?:/|$)`);
-        if (localePattern.test(pathname)) {
-            pathWithoutLocale = pathname.replace(localePattern, '/');
+        // Replace the first segment (current locale) with new locale
+        if (pathSegments.length > 0 && pathSegments[0] === currentLocale) {
+            pathSegments[0] = localeCode;
+        } else {
+            // Fallback: prepend new locale if current locale not found
+            pathSegments.unshift(localeCode);
         }
         
-        // Ensure we don't have double slashes and construct the new path
-        const cleanPath = pathWithoutLocale === '/' ? '' : pathWithoutLocale;
-        const newPath = `/${localeCode}${cleanPath}`;
+        const newPath = '/' + pathSegments.join('/');
         
         console.log('Language switch:', { 
             currentLocale, 
             newLocale: localeCode, 
-            originalPath: pathname, 
-            pathWithoutLocale, 
+            originalPath: pathname,
+            pathSegments,
             newPath 
         });
         
