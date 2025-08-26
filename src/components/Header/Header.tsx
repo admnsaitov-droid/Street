@@ -14,6 +14,7 @@ import { Menu } from "./Menu";
 import { useWindowWidth } from "@react-hook/window-size";
 import { LanguageSelect } from "./LanguageSelect/LanguageSelect";
 import AnimatedLink from "../animated/AnimatedLink/AnimatedLink";
+import { getMediaStrapiPath } from "@/utils/getMediaStrapiPath";
 
 export const Header = () => {
     const [headerData, setHeaderData] = useState<any>(null);
@@ -53,8 +54,8 @@ export const Header = () => {
                         <Image 
                             src={
                                 width > 576 
-                                    ? `${process.env.NEXT_PUBLIC_IMAGE_URL}${headerData?.data?.logo?.url || '/logo.png'}` 
-                                    : `${process.env.NEXT_PUBLIC_IMAGE_URL}${headerData?.data?.logoMobile?.url || headerData?.data?.logo?.url || '/logo.png'}`
+                                    ? getMediaStrapiPath(headerData?.data?.logo) || '/logo.png'
+                                    : getMediaStrapiPath(headerData?.data?.logoMobile || headerData?.data?.logo) || '/logo.png'
                             }
                             alt="logo" 
                             width={100} 

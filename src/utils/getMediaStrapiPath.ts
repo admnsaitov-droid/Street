@@ -15,27 +15,28 @@ export const getMediaStrapiPath = (media: any) => {
         return media.url;
     }
     
-    // Fix incomplete base URL (missing port)
-    if (baseUrl === 'http://153.92.1.45' || baseUrl === 'https://153.92.1.45') {
-        baseUrl = baseUrl + ':1337';
-    }
-    
-    // Force HTTPS in production to avoid mixed content errors
-    if (typeof window !== 'undefined' && window.location.protocol === 'https:' && baseUrl.startsWith('http:')) {
-        baseUrl = baseUrl.replace('http:', 'https:');
-        console.warn('Converted HTTP to HTTPS for production:', baseUrl);
-    }
+    // Only add port if it's missing AND the URL doesn't already work
+    // Remove this automatic port addition since it's causing issues
+    // if (baseUrl === 'http://153.92.1.45' || baseUrl === 'https://153.92.1.45') {
+    //     baseUrl = baseUrl + ':1337';
+    // }
     
     const fullUrl = `${baseUrl}${media.url}`;
     
-    // Debug logging to track image URL generation
+    // In production (HTTPS), use Next.js image proxy to avoid mixed content
+    if (typeof window !== 'undefined' && window.location.protocol === 'https:' && baseUrl.startsWith('http:')) {
+        console.log('🔄 Using Next.js image proxy to avoid mixed content');
+        // Encode the HTTP URL so Next.js can proxy it over HTTPS
+        const encodedUrl = encodeURIComponent(fullUrl);
+        return `/_next/image?url=${encodedUrl}&w=1200&q=75`;
+    }
+    
+    // Debug logging
     console.log('Image URL generated:', {
         mediaUrl: media.url,
-        originalBaseUrl: process.env.NEXT_PUBLIC_IMAGE_URL,
-        correctedBaseUrl: baseUrl,
+        baseUrl,
         fullUrl,
-        isProduction: typeof window !== 'undefined' && window.location.protocol === 'https:',
-        currentProtocol: typeof window !== 'undefined' ? window.location.protocol : 'unknown'
+        isProduction: typeof window !== 'undefined' && window.location.protocol === 'https:'
     });
     
     return fullUrl;

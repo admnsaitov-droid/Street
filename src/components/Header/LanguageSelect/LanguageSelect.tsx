@@ -41,25 +41,13 @@ export const LanguageSelect = ({ languages }: LanguageSelectProps) => {
     }, [])
 
     const handleLanguageChange = (localeCode: string) => {
-        // Simple and reliable locale switching
-        // pathname is always in format: /currentLocale/rest or /currentLocale
-        const pathSegments = pathname.split('/').filter(Boolean); // Remove empty segments
-        
-        // Replace the first segment (current locale) with new locale
-        if (pathSegments.length > 0 && pathSegments[0] === currentLocale) {
-            pathSegments[0] = localeCode;
-        } else {
-            // Fallback: prepend new locale if current locale not found
-            pathSegments.unshift(localeCode);
-        }
-        
-        const newPath = '/' + pathSegments.join('/');
+        // Dead simple: just replace /currentLocale with /newLocale
+        const newPath = pathname.replace(`/${currentLocale}`, `/${localeCode}`);
         
         console.log('Language switch:', { 
             currentLocale, 
             newLocale: localeCode, 
             originalPath: pathname,
-            pathSegments,
             newPath 
         });
         
