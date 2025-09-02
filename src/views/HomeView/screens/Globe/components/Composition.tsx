@@ -10,11 +10,12 @@ interface CompositionProps {
     position: [number, number, number]
     rotationXSpeed: number
     rotationZSpeed: number
+    inView: any
 }
 
 const mouseRotationIntensity = 0.05
 
-export const Composition = ({ scale, position, rotationXSpeed, rotationZSpeed }: CompositionProps) => {
+export const Composition = ({ scale, position, rotationXSpeed, rotationZSpeed, inView }: CompositionProps) => {
     const groupRef = useRef<Group>(null)
     const mouseRef = useRef({ x: 0, y: 0 })
     const baseRotation = useRef({ x: 0, z: 0 })
@@ -33,7 +34,7 @@ export const Composition = ({ scale, position, rotationXSpeed, rotationZSpeed }:
     }, [])
 
     useFrame((state, delta) => {
-        if (groupRef.current) {
+        if (groupRef.current && inView.current) {
             // Update base rotation
             baseRotation.current.x += rotationXSpeed
             baseRotation.current.z += rotationZSpeed

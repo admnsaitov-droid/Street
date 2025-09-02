@@ -2,6 +2,7 @@ import { useGLTF } from "@react-three/drei"
 import { useColorStore } from "@/store/store"
 import { useEffect, useRef } from "react"
 import * as THREE from "three"
+import { getMediaStrapiPath } from "@/utils/getMediaStrapiPath"
 
 interface ProductModelProps {
     model: string
@@ -17,7 +18,7 @@ export const ProductModel = ({ model, params = {
     rotation: [0, 0, 0],
     scale: 1
 } }: ProductModelProps) => {
-    const { scene } = useGLTF(model)
+    const { scene }: any = useGLTF(getMediaStrapiPath(model))
     const { activeColor } = useColorStore()
     const sceneRef = useRef<THREE.Group>()
 

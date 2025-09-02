@@ -1,4 +1,5 @@
 import { AnimatedText } from "@/components/animated/AnimatedText/AnimatedText";
+import { ScaleImageAppear } from "@/components/animated/ScaleImageAppear/ScaleImageAppear";
 import { MediaComponent } from "@/components/MediaComponent/MediaComponent"
 import { BlueButton } from "@/components/Ui/buttons/BlueButton";
 import { colors, media, rm } from "@/styles"
@@ -25,7 +26,9 @@ export const About = ({ aboutData }: AboutProps) => {
                 </div>
             </StyledTopContainer>
             <StyledBottomContainer>
-                <MediaComponent media={aboutData?.media} className="image" parallax={true} />
+                <ScaleImageAppear className="image-container">
+                    <MediaComponent media={aboutData?.media} className="image" parallax={true} />
+                </ScaleImageAppear>
             </StyledBottomContainer>
         </StyledAbout>
     )
@@ -183,6 +186,17 @@ const StyledBottomContainer = styled.div`
     ${media.xsm`
         height: ${rm(246)};
     `}
+
+    .image-container{
+        width: 100%;
+        height: 100%;
+
+        >:nth-child(1){
+            position: relative;
+            border-radius: ${rm(10)};
+            overflow: hidden;
+        }
+    }
 
     img{
         position: absolute;

@@ -5,6 +5,8 @@ import { heightLvh } from "@/styles/utils"
 import styled from "styled-components"
 import AnimatedGrid from "@/components/animated/AnimatedContent"
 import { ProjectsMapEmbed } from "./components/ProjectsMapEmbed"
+import { ProjectsMap } from "./components/ProjectsMap"
+import { MapMarker } from "./components/MapMarker"
 
 interface ProjectsViewProps {
     data: any
@@ -55,11 +57,11 @@ export const ProjectsView = ({ data }: ProjectsViewProps) => {
                     </AnimatedGrid>
                 </StyledTitleContainer>
             </StyledContent>
-            <ProjectsMapEmbed
-                location="New York, NY"
+            <ProjectsMap
+                // location="New York, NY"
                 zoom={13}
-                width="100%"
-                height="100%"
+                // width="100%"
+                // height="100%"
             />
         </StyledProjectsView>
     )
@@ -77,6 +79,8 @@ const StyledContent = styled.div`
     width: 100%;
     position: relative;
     z-index: 1;
+    user-select: none;
+    pointer-events: none;
 `
 
 const StyledTitleContainer = styled.div`

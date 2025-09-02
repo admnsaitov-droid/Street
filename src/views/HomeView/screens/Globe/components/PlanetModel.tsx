@@ -131,10 +131,10 @@ export const PlanetModel = ({ scale }: PlanetModelProps) => {
         })
     }, [scene])
 
-    useFrame((state, delta) => {
-        // Animate the time uniform for the planet shader
-        time.current.value += delta / 12
-    })
+    // useFrame((state, delta) => {
+    //     // Animate the time uniform for the planet shader
+    //     time.current.value += delta / 12
+    // })
 
     return (
         <group ref={groupRef}>

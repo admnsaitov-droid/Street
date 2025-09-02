@@ -5,6 +5,7 @@ import { fontGolosText, fontSageGrotesk } from "@/styles/fonts"
 import { MediaComponent } from "@/components/MediaComponent/MediaComponent"
 import { useWindowWidth } from "@react-hook/window-size"
 import AnimatedGrid from "@/components/animated/AnimatedContent"
+import { MaskImageAppear } from "@/components/animated/MaskImageAppear/MaskImageAppear"
 
 interface PurposeProps {
     data: any
@@ -92,13 +93,17 @@ export const Purpose = ({ data }: PurposeProps) => {
                 <div className="left">
                     {data?.mediaSecondary?.map((image: any, index: number) => (
                         <StyledImageContainer key={index} className="imageContainer">
-                            <MediaComponent media={image} className="image" parallax={true} />
+                            <MaskImageAppear className="image-container">
+                                <MediaComponent media={image} className="image" parallax={true} />
+                            </MaskImageAppear>
                         </StyledImageContainer>
                     ))}
                 </div>
                 <div className="right">
                     <StyledImageContainer className="imageContainer">
-                        <MediaComponent media={data?.mainImage} className="image" parallax={true} />
+                        <MaskImageAppear className="image-container">
+                            <MediaComponent media={data?.mainImage} className="image" parallax={true} />
+                        </MaskImageAppear>
                     </StyledImageContainer>
                 </div>
             </StyledBottom>

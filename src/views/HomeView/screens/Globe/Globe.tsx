@@ -4,10 +4,16 @@ import { colors, media, rm } from "@/styles";
 import { fontGolosText, fontSageGrotesk } from "@/styles/fonts";
 import { heightLvh } from "@/styles/utils";
 import styled from "styled-components"
-import { Scene } from "./components/Scene";
 import { AnimatedText } from "@/components/animated/AnimatedText/AnimatedText";
 import { AnimatedTranslate } from "@/components/animated/AnimatedTranslate/AnimatedTranslate";
 import AnimatedGrid from "@/components/animated/AnimatedContent"
+import dynamic from "next/dynamic"
+
+const Scene = dynamic(() => import("./components/Scene").then((mod) => mod.Scene), {
+    ssr: false,
+})
+
+
 
 interface GlobeProps {
     globeData: any

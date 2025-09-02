@@ -12,6 +12,7 @@ import Breadcrumbs from "@/components/Breadcrumbs/Breadcrumbs"
 import { MediaComponent } from "@/components/MediaComponent/MediaComponent"
 import AnimatedGrid from "@/components/animated/AnimatedContent"
 import { colors } from "@/styles/colors"
+import { ScaleImageAppear } from "@/components/animated/ScaleImageAppear/ScaleImageAppear"
 
 interface LineViewProps {
     data: any
@@ -34,7 +35,9 @@ export const LineView = ({ data }: LineViewProps) => {
                     <StyledSubtitle>{data?.line?.lineContent?.description}</StyledSubtitle>
                 </StyledTop>
                 <StyledTopImageContainer>
-                    <MediaComponent media={data?.line?.mainMedia} className="image" parallax={true} />
+                    <ScaleImageAppear className="image-container">
+                        <MediaComponent media={data?.line?.mainMedia} className="image" parallax={true} />
+                    </ScaleImageAppear>
                 </StyledTopImageContainer>
             </StyledHero>
             <LineOverview data={data?.line?.lineOverview} />
@@ -141,7 +144,7 @@ const StyledTopImageContainer = styled.div`
     overflow: hidden;
     border-radius: ${rm(10)};
 
-    .image {
+    .image ,.image-container {
         width: 100%;
         height: 100%;
     }

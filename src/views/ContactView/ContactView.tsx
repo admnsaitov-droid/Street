@@ -79,7 +79,7 @@ export const StyledContactDescription = styled(AnimatedText)`
     font-size: ${rm(40)};
     color: ${colors.black100};
     ${fontGolosText(400)};
-    line-height: 100%;
+    line-height: 115%;
     letter-spacing: -0.01em;
     margin-bottom: ${rm(80)};
     

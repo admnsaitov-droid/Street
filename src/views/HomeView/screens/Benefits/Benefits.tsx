@@ -1,5 +1,6 @@
 import { AnimatedDivider } from "@/components/animated/AnimatedDivider/AnimatedDivider"
 import { AnimatedText } from "@/components/animated/AnimatedText/AnimatedText"
+import { MaskImageAppear } from "@/components/animated/MaskImageAppear/MaskImageAppear"
 import { MediaComponent } from "@/components/MediaComponent/MediaComponent"
 import { colors, media, rm } from "@/styles"
 import { fontGolosText, fontSageGrotesk } from "@/styles/fonts"
@@ -15,9 +16,9 @@ export const Benefits = ({ benefitsData }: BenefitsProps) => {
     return (
         <StyledBenefits>
             <div className="left">
-                <div className="image-container">
+                <MaskImageAppear className="image-container">
                     <MediaComponent media={benefitsData?.media} className="image" parallax={true} />
-                </div>
+                </MaskImageAppear>
             </div>
             <div className="right">
                 <div className="main">

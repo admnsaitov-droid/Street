@@ -1,6 +1,7 @@
 'use client'
 import { AnimatedText } from "@/components/animated/AnimatedText/AnimatedText"
 import { AnimatedTranslate } from "@/components/animated/AnimatedTranslate/AnimatedTranslate"
+import { MaskImageAppear } from "@/components/animated/MaskImageAppear/MaskImageAppear"
 import UnderlineLink from "@/components/animated/UnderlineLink/UnderlineLink"
 import { MediaComponent } from "@/components/MediaComponent/MediaComponent"
 import { colors, media, rm } from "@/styles"
@@ -24,7 +25,9 @@ export const Package = ({ data }: PackageProps) => {
                 <StyledLeft>
                     {width > 576 && <StyledAnnotation>{data?.productsCount} fitness equipment</StyledAnnotation>}
                     <StyledBottomContainer>
-                        <MediaComponent media={data?.previewAboveMedia} className="image" parallax={true}/>
+                        <MaskImageAppear className="image-container" duration={1200}>  
+                            <MediaComponent media={data?.previewAboveMedia} className="image" parallax={true}/>
+                        </MaskImageAppear>
                     </StyledBottomContainer>
                 </StyledLeft>
                 <StyledRight>
@@ -38,7 +41,9 @@ export const Package = ({ data }: PackageProps) => {
                         </StyledExploreButton>
                     </StyledInfo>
                     <StyledBottomContainer>
-                        <MediaComponent media={data?.previewSideMedia} className="image" parallax={true} />
+                        <MaskImageAppear className="image-container" duration={900}>
+                            <MediaComponent media={data?.previewSideMedia} className="image" parallax={true} />
+                        </MaskImageAppear>
                     </StyledBottomContainer>
                 </StyledRight>
                 {width <= 576 && <StyledAnnotation>{data?.productsCount} fitness equipment</StyledAnnotation>}

@@ -4,6 +4,7 @@ import { colors, media, rm } from "@/styles"
 import { fontGolosText, fontSageGrotesk } from "@/styles/fonts"
 import { MediaComponent } from "@/components/MediaComponent/MediaComponent"
 import AnimatedGrid from "@/components/animated/AnimatedContent"
+import { ScaleImageAppear } from "@/components/animated/ScaleImageAppear/ScaleImageAppear"
 
 interface InspirationProps {
     data: any
@@ -70,7 +71,9 @@ export const Inspiration = ({ data }: InspirationProps) => {
                 </div>
             </StyledTopContainer>
             <StyledMediaContainer>
-                <MediaComponent media={data?.media} className="image" parallax={true} />
+                <ScaleImageAppear className="image-container">
+                    <MediaComponent media={data?.media} className="image" parallax={true} />
+                </ScaleImageAppear>
             </StyledMediaContainer>
         </StyledInspiration>
     )
@@ -195,6 +198,17 @@ const StyledMediaContainer = styled.div`
     ${media.xsm`
         height: ${rm(236)};
     `}
+
+    .image-container{
+        width: 100%;
+        height: 100%;
+
+        >:nth-child(1){
+            position: relative;
+            border-radius: ${rm(10)};
+            overflow: hidden;
+        }
+    }
 
     .image{
         width: 100%;

@@ -1,6 +1,7 @@
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState, useCallback } from "react"
 import { Loader } from "@googlemaps/js-api-loader"
 import styled from "styled-components"
+import { MapMarker } from "./MapMarker"
 
 // Custom map styles for a dark theme
 const mapStyles = [
@@ -8,7 +9,7 @@ const mapStyles = [
         "elementType": "geometry",
         "stylers": [
             {
-                "color": "#1d2c4d"
+                "color": "#212020"
             }
         ]
     },
@@ -16,7 +17,7 @@ const mapStyles = [
         "elementType": "labels.text.fill",
         "stylers": [
             {
-                "color": "#8ec3b9"
+                "color": "#727272"
             }
         ]
     },
@@ -24,7 +25,7 @@ const mapStyles = [
         "elementType": "labels.text.stroke",
         "stylers": [
             {
-                "color": "#1a3646"
+                "color": "#101010"
             }
         ]
     },
@@ -33,7 +34,7 @@ const mapStyles = [
         "elementType": "geometry.stroke",
         "stylers": [
             {
-                "color": "#4b6878"
+                "color": "#2a2a2a"
             }
         ]
     },
@@ -42,7 +43,7 @@ const mapStyles = [
         "elementType": "labels.text.fill",
         "stylers": [
             {
-                "color": "#64779f"
+                "color": "#bdbdbd"
             }
         ]
     },
@@ -51,7 +52,25 @@ const mapStyles = [
         "elementType": "geometry.stroke",
         "stylers": [
             {
-                "color": "#4b6878"
+                "color": "#2a2a2a"
+            }
+        ]
+    },
+    {
+        "featureType": "administrative.neighborhood",
+        "elementType": "labels.text.fill",
+        "stylers": [
+            {
+                "visibility": "off"
+            }
+        ]
+    },
+    {
+        "featureType": "administrative.neighborhood",
+        "elementType": "labels.text.stroke",
+        "stylers": [
+            {
+                "visibility": "off"
             }
         ]
     },
@@ -60,7 +79,7 @@ const mapStyles = [
         "elementType": "geometry.stroke",
         "stylers": [
             {
-                "color": "#334e87"
+                "color": "#1a1a1a"
             }
         ]
     },
@@ -69,7 +88,16 @@ const mapStyles = [
         "elementType": "geometry",
         "stylers": [
             {
-                "color": "#023e58"
+                "color": "#0f0f0f"
+            }
+        ]
+    },
+    {
+        "featureType": "landscape.natural.terrain",
+        "elementType": "geometry",
+        "stylers": [
+            {
+                "color": "#151515"
             }
         ]
     },
@@ -78,7 +106,7 @@ const mapStyles = [
         "elementType": "geometry",
         "stylers": [
             {
-                "color": "#283d6a"
+                "color": "#1a1a1a"
             }
         ]
     },
@@ -87,7 +115,7 @@ const mapStyles = [
         "elementType": "labels.text.fill",
         "stylers": [
             {
-                "color": "#6f9ba5"
+                "visibility": "off"
             }
         ]
     },
@@ -96,7 +124,7 @@ const mapStyles = [
         "elementType": "labels.text.stroke",
         "stylers": [
             {
-                "color": "#1d2c4d"
+                "visibility": "off"
             }
         ]
     },
@@ -105,7 +133,7 @@ const mapStyles = [
         "elementType": "geometry.fill",
         "stylers": [
             {
-                "color": "#023e58"
+                "color": "#0f0f0f"
             }
         ]
     },
@@ -114,7 +142,7 @@ const mapStyles = [
         "elementType": "labels.text.fill",
         "stylers": [
             {
-                "color": "#3C7680"
+                "visibility": "off"
             }
         ]
     },
@@ -123,7 +151,7 @@ const mapStyles = [
         "elementType": "geometry",
         "stylers": [
             {
-                "color": "#304a7d"
+                "color": "#323232"
             }
         ]
     },
@@ -132,7 +160,7 @@ const mapStyles = [
         "elementType": "labels.text.fill",
         "stylers": [
             {
-                "color": "#98a5be"
+                "visibility": "off"
             }
         ]
     },
@@ -141,7 +169,7 @@ const mapStyles = [
         "elementType": "labels.text.stroke",
         "stylers": [
             {
-                "color": "#1d2c4d"
+                "visibility": "off"
             }
         ]
     },
@@ -150,7 +178,7 @@ const mapStyles = [
         "elementType": "geometry",
         "stylers": [
             {
-                "color": "#2c6675"
+                "color": "#3a3a3a"
             }
         ]
     },
@@ -159,7 +187,7 @@ const mapStyles = [
         "elementType": "geometry.stroke",
         "stylers": [
             {
-                "color": "#255763"
+                "color": "#1a1a1a"
             }
         ]
     },
@@ -168,7 +196,7 @@ const mapStyles = [
         "elementType": "labels.text.fill",
         "stylers": [
             {
-                "color": "#b0d5ce"
+                "color": "#ffffff"
             }
         ]
     },
@@ -177,7 +205,25 @@ const mapStyles = [
         "elementType": "labels.text.stroke",
         "stylers": [
             {
-                "color": "#023e58"
+                "color": "#000000"
+            }
+        ]
+    },
+    {
+        "featureType": "road.arterial",
+        "elementType": "geometry",
+        "stylers": [
+            {
+                "color": "#2a2a2a"
+            }
+        ]
+    },
+    {
+        "featureType": "road.local",
+        "elementType": "geometry",
+        "stylers": [
+            {
+                "visibility": "off"
             }
         ]
     },
@@ -186,7 +232,7 @@ const mapStyles = [
         "elementType": "labels.text.fill",
         "stylers": [
             {
-                "color": "#98a5be"
+                "visibility": "off"
             }
         ]
     },
@@ -195,7 +241,7 @@ const mapStyles = [
         "elementType": "labels.text.stroke",
         "stylers": [
             {
-                "color": "#1d2c4d"
+                "visibility": "off"
             }
         ]
     },
@@ -204,7 +250,7 @@ const mapStyles = [
         "elementType": "geometry.fill",
         "stylers": [
             {
-                "color": "#283d6a"
+                "color": "#1a1a1a"
             }
         ]
     },
@@ -213,7 +259,7 @@ const mapStyles = [
         "elementType": "geometry",
         "stylers": [
             {
-                "color": "#3a4762"
+                "color": "#2a2a2a"
             }
         ]
     },
@@ -222,7 +268,7 @@ const mapStyles = [
         "elementType": "geometry",
         "stylers": [
             {
-                "color": "#0e1626"
+                "color": "#191919"
             }
         ]
     },
@@ -231,7 +277,88 @@ const mapStyles = [
         "elementType": "labels.text.fill",
         "stylers": [
             {
-                "color": "#4e6d70"
+                "color": "#727272"
+            }
+        ]
+    },
+    {
+        "featureType": "water",
+        "elementType": "labels.text.stroke",
+        "stylers": [
+            {
+                "color": "#101010"
+            }
+        ]
+    },
+    {
+        "featureType": "poi",
+        "elementType": "labels.icon",
+        "stylers": [
+            {
+                "visibility": "off"
+            }
+        ]
+    },
+    {
+        "featureType": "transit",
+        "elementType": "labels.icon",
+        "stylers": [
+            {
+                "visibility": "off"
+            }
+        ]
+    },
+    {
+        "featureType": "transit.station",
+        "elementType": "labels.icon",
+        "stylers": [
+            {
+                "visibility": "off"
+            }
+        ]
+    },
+    {
+        "featureType": "poi.park",
+        "elementType": "labels.icon",
+        "stylers": [
+            {
+                "visibility": "off"
+            }
+        ]
+    },
+    {
+        "featureType": "road",
+        "elementType": "labels.icon",
+        "stylers": [
+            {
+                "visibility": "off"
+            }
+        ]
+    },
+    {
+        "featureType": "road.highway",
+        "elementType": "labels.icon",
+        "stylers": [
+            {
+                "visibility": "off"
+            }
+        ]
+    },
+    {
+        "featureType": "road.arterial",
+        "elementType": "labels.icon",
+        "stylers": [
+            {
+                "visibility": "off"
+            }
+        ]
+    },
+    {
+        "featureType": "road.local",
+        "elementType": "labels.icon",
+        "stylers": [
+            {
+                "visibility": "off"
             }
         ]
     }
@@ -252,80 +379,174 @@ export const ProjectsMap = ({
     zoom = 12,
     markers = []
 }: ProjectsMapProps) => {
+    // Add some default markers if none provided
+    const defaultMarkers = markers.length > 0 ? markers : [
+        {
+            position: { lat: 40.7589, lng: -73.9851 },
+            title: "Times Square",
+            content: "<div style='padding: 10px;'><h3>Times Square</h3><p>The heart of NYC entertainment</p></div>"
+        },
+        {
+            position: { lat: 40.7484, lng: -73.9857 },
+            title: "Empire State Building",
+            content: "<div style='padding: 10px;'><h3>Empire State Building</h3><p>Iconic NYC skyscraper</p></div>"
+        },
+        {
+            position: { lat: 40.7527, lng: -73.9772 },
+            title: "Grand Central Terminal",
+            content: "<div style='padding: 10px;'><h3>Grand Central Terminal</h3><p>Historic train station</p></div>"
+        },
+        {
+            position: { lat: 40.7587, lng: -73.9787 },
+            title: "Rockefeller Center",
+            content: "<div style='padding: 10px;'><h3>Rockefeller Center</h3><p>Famous complex and plaza</p></div>"
+        },
+        {
+            position: { lat: 40.7505, lng: -73.9934 },
+            title: "Madison Square Garden",
+            content: "<div style='padding: 10px;'><h3>Madison Square Garden</h3><p>The World's Most Famous Arena</p></div>"
+        }
+    ]
     const mapRef = useRef<HTMLDivElement>(null)
     const [map, setMap] = useState<google.maps.Map | null>(null)
     const [isLoaded, setIsLoaded] = useState(false)
     const [error, setError] = useState<string | null>(null)
+    const [isInitializing, setIsInitializing] = useState(false)
 
-    useEffect(() => {
-        const initMap = async () => {
-            try {
-                const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
-                
-                if (!apiKey) {
-                    setError("Google Maps API key is not configured. Please add NEXT_PUBLIC_GOOGLE_MAPS_API_KEY to your environment variables.")
-                    return
-                }
-
-                const loader = new Loader({
-                    apiKey: apiKey,
-                    version: "weekly",
-                    libraries: ["places"]
-                })
-
-                const google = await loader.load()
-                
-                if (mapRef.current) {
-                    const mapInstance = new google.maps.Map(mapRef.current, {
-                        center: center,
-                        zoom: zoom,
-                        styles: mapStyles,
-                        disableDefaultUI: false,
-                        zoomControl: true,
-                        mapTypeControl: false,
-                        scaleControl: true,
-                        streetViewControl: false,
-                        rotateControl: false,
-                        fullscreenControl: true,
-                        gestureHandling: 'cooperative'
-                    })
-
-                    setMap(mapInstance)
-                    setIsLoaded(true)
-
-                    // Add markers if provided
-                    markers.forEach((markerData) => {
-                        const marker = new google.maps.Marker({
-                            position: markerData.position,
-                            map: mapInstance,
-                            title: markerData.title || "Location"
-                        })
-
-                        // Add info window if content is provided
-                        if (markerData.content) {
-                            const infoWindow = new google.maps.InfoWindow({
-                                content: markerData.content
-                            })
-
-                            marker.addListener("click", () => {
-                                infoWindow.open(mapInstance, marker)
-                            })
-                        }
-                    })
-                }
-            } catch (err) {
-                console.error("Error loading Google Maps:", err)
-                setError("Failed to load Google Maps. Please check your API key and internet connection.")
-            }
+    const initMap = useCallback(async () => {
+        // Prevent multiple initializations
+        if (isInitializing || map || error) {
+            return
         }
 
-        initMap()
-    }, [center, zoom, markers])
+        setIsInitializing(true)
+        
+        try {
+            const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
+            
+            if (!apiKey) {
+                setError("Google Maps API key is not configured. Please add NEXT_PUBLIC_GOOGLE_MAPS_API_KEY to your environment variables.")
+                setIsInitializing(false)
+                return
+            }
+
+            const loader = new Loader({
+                apiKey: apiKey,
+                version: "weekly",
+                libraries: ["places"]
+            })
+
+            const google = await loader.load()
+            
+            if (mapRef.current && !map) {
+                const mapInstance = new google.maps.Map(mapRef.current, {
+                    center: center,
+                    zoom: zoom,
+                    styles: mapStyles,
+                    disableDefaultUI: false,
+                    zoomControl: true,
+                    mapTypeControl: false,
+                    scaleControl: true,
+                    streetViewControl: false,
+                    rotateControl: false,
+                    fullscreenControl: true,
+                    gestureHandling: 'cooperative'
+                })
+
+                setMap(mapInstance)
+                setIsLoaded(true)
+
+                // Add markers if provided
+                defaultMarkers.forEach((markerData) => {
+                    // Create custom HTML marker
+                    const markerElement = document.createElement('div')
+                    markerElement.innerHTML = `
+                        <div style="
+                            width: 24px; 
+                            height: 24px; 
+                            background-color: rgba(255, 255, 255, 0.16); 
+                            border: 1px solid rgba(255, 255, 255, 0.16); 
+                            display: flex; 
+                            align-items: center; 
+                            justify-content: center; 
+                        ">
+                            <div style="
+                                width: 10px; 
+                                height: 10px; 
+                                background-color: white;
+                            "></div>
+                        </div>
+                    `
+                    
+                    const marker = new google.maps.Marker({
+                        position: markerData.position,
+                        map: mapInstance,
+                        title: markerData.title || "Location",
+                        icon: {
+                            url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
+                                <svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                                    <g transform="rotate(45 24 24)">
+                                        <rect x="12" y="12" width="24" height="24" fill="rgba(255,255,255,0.16)" stroke="rgba(255,255,255,0.16)" stroke-width="1"/>
+                                        <rect x="21" y="21" width="6" height="6" fill="white"/>
+                                    </g>
+                                </svg>
+                            `),
+                            scaledSize: new google.maps.Size(48, 48),
+                            anchor: new google.maps.Point(24, 24)
+                        }
+                    })
+
+                    // Add info window if content is provided
+                    if (markerData.content) {
+                        const infoWindow = new google.maps.InfoWindow({
+                            content: markerData.content
+                        })
+
+                        marker.addListener("click", () => {
+                            infoWindow.open(mapInstance, marker)
+                        })
+                    }
+                })
+            }
+        } catch (err) {
+            console.error("Error loading Google Maps:", err)
+            setError("Failed to load Google Maps. Please check your API key and internet connection.")
+        } finally {
+            setIsInitializing(false)
+        }
+    }, [center, zoom, markers, map, error, isInitializing])
+
+    useEffect(() => {
+        // Only initialize if we have a ref and no existing map
+        if (mapRef.current && !map && !error && !isInitializing) {
+            initMap()
+        }
+    }, [initMap, map, error, isInitializing])
+
+    // Cleanup function to prevent memory leaks
+    useEffect(() => {
+        return () => {
+            if (map) {
+                // Clean up any event listeners or markers if needed
+                setMap(null)
+                setIsLoaded(false)
+            }
+        }
+    }, [map])
 
     if (error) {
         return (
             <StyledProjectsMap>
-                <ErrorMessage>{error}</ErrorMessage>
+                <ErrorMessage>
+                    <div style={{ marginBottom: '10px', fontWeight: 'bold' }}>Map Error</div>
+                    {error}
+                    <div style={{ marginTop: '15px', fontSize: '12px', opacity: 0.8 }}>
+                        To fix this issue:
+                        <br />1. Create a .env.local file in your project root
+                        <br />2. Add: NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=your_api_key_here
+                        <br />3. Restart your development server
+                    </div>
+                </ErrorMessage>
             </StyledProjectsMap>
         )
     }
@@ -333,9 +554,11 @@ export const ProjectsMap = ({
     return (
         <StyledProjectsMap>
             <MapContainer ref={mapRef} />
-            {!isLoaded && (
+            {!isLoaded && !error && (
                 <LoadingOverlay>
-                    <LoadingText>Loading Map...</LoadingText>
+                    <LoadingText>
+                        {isInitializing ? 'Initializing Map...' : 'Loading Map...'}
+                    </LoadingText>
                 </LoadingOverlay>
             )}
         </StyledProjectsMap>
@@ -348,7 +571,6 @@ const StyledProjectsMap = styled.div`
     left: 0;
     width: 100%;
     height: 100%;
-    border-radius: 8px;
     overflow: hidden;
 `
 
