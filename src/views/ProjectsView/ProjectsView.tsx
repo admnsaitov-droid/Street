@@ -4,7 +4,8 @@ import { fontGolosText, fontSageGrotesk } from "@/styles/fonts"
 import { heightLvh } from "@/styles/utils"
 import styled from "styled-components"
 import AnimatedGrid from "@/components/animated/AnimatedContent"
-import { ProjectsMapEmbed } from "./components/ProjectsMapEmbed"
+import { ProjectsMap } from "./components/ProjectsMap"
+import { MapMarker } from "./components/MapMarker"
 
 interface ProjectsViewProps {
     data: any
@@ -13,6 +14,25 @@ interface ProjectsViewProps {
 export const ProjectsView = ({ data }: ProjectsViewProps) => {
 
     console.log(data);
+    
+    // Map configuration for Piton du Feu, Mauritius
+    const mapConfig = {
+        center: {
+            lat: -20.45,
+            lng: 57.3522222
+        },
+        zoom: 13,
+        markers: [
+            {
+                position: {
+                    lat: -20.45,
+                    lng: 57.3522222
+                },
+                title: "Piton du Feu",
+                content: `<div style='padding: 10px;'><h3>Piton du Feu</h3><p>Mauritius</p></div>`
+            }
+        ]
+    }
     
     return (
         <StyledProjectsView>
@@ -55,11 +75,10 @@ export const ProjectsView = ({ data }: ProjectsViewProps) => {
                     </AnimatedGrid>
                 </StyledTitleContainer>
             </StyledContent>
-            <ProjectsMapEmbed
-                location="New York, NY"
-                zoom={13}
-                width="100%"
-                height="100%"
+            <ProjectsMap
+                center={mapConfig.center}
+                zoom={mapConfig.zoom}
+                markers={mapConfig.markers}
             />
         </StyledProjectsView>
     )
@@ -77,6 +96,8 @@ const StyledContent = styled.div`
     width: 100%;
     position: relative;
     z-index: 1;
+    user-select: none;
+    pointer-events: none;
 `
 
 const StyledTitleContainer = styled.div`

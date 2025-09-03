@@ -7,6 +7,7 @@ import { ProductScene } from "./Scene/ProductScene"
 import { ColorPaletre } from "./ColorPaletre/ColoPaletre"
 import { AnimatedText } from "@/components/animated/AnimatedText/AnimatedText"
 
+
 interface HeroProps {
     data: any
     colors: {
@@ -31,7 +32,7 @@ export const Hero = ({ data, colors }: HeroProps) => {
                     <StyledSubtitle>{data?.model}</StyledSubtitle>
                 </div>
             </StyledContent>
-            <ProductScene />
+            <ProductScene data={data?.model3D} />
             <ColorPaletre colors={colors} />
         </StyledHero>
     )

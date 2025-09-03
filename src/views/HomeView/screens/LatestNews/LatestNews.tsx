@@ -9,6 +9,7 @@ import { Navigation, Pagination } from 'swiper/modules';
 import { useRef, useState } from 'react';
 import type { Swiper as SwiperType } from 'swiper';
 import AnimatedGrid from "@/components/animated/AnimatedContent"
+import { useInView, useSpring, animated, easings } from '@react-spring/web';
 
 // Import Swiper styles
 import 'swiper/css';
@@ -20,12 +21,47 @@ interface LatestNewsProps {
     latestNewsData: any
 }
 
+// Individual animated slide component
+const AnimatedSlide = ({ children, index, isInView }: { children: React.ReactNode, index: number, isInView: boolean }) => {
+    const slideSpring = useSpring({
+        y: isInView ? '0%' : '-100%',
+        delay: index * 150, // Staggered delay: 0ms, 150ms, 300ms, etc.
+        config: { 
+            duration: 500,
+            easing: easings.easeInOutQuad,
+        }
+    });
+
+    return (
+        <AnimatedSlideWrapper style={slideSpring}>
+            {children}
+        </AnimatedSlideWrapper>
+    );
+};
+
 export const LatestNews = ({ latestNewsData }: LatestNewsProps) => {
     const swiperRef = useRef<SwiperType | null>(null);
     const [isBeginning, setIsBeginning] = useState(true);
     const [isEnd, setIsEnd] = useState(false);
 
     const width = useWindowWidth()
+    
+    // Detect when swiper container is in view
+    const [swiperInViewRef, swiperInView] = useInView({
+        once: true
+    });
+
+    const [buttonsInViewRef, buttonsInView] = useInView({
+        once: true
+    });
+
+    const buttonsSpring = useSpring({
+        y: buttonsInView ? '0%' : '-100%',
+        config: {
+            duration: 500,
+            easing: easings.easeInOutQuad,
+        }
+    });
 
     const newsMobile = latestNewsData?.articles?.slice(0, 3)
 
@@ -86,31 +122,33 @@ export const LatestNews = ({ latestNewsData }: LatestNewsProps) => {
                         <span id="title-second" className="first">{latestNewsData?.title?.textSecond}</span>
                     </AnimatedGrid>
                 </StyledTitleContainer>
-                <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <StyledSwipeButtonContainer>
-                        <StyledSwipeButton 
-                            onClick={handlePrevClick}
-                            disabled={isBeginning}
-                        >
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M15 6L9 12L15 18" stroke="black" strokeWidth="2"/>
-                            </svg>
-                        </StyledSwipeButton>
-                        <StyledSwipeButton 
-                            onClick={handleNextClick}
-                            disabled={isEnd}
-                        >
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M9 6L15 12L9 18" stroke="black" strokeWidth="2"/>
-                            </svg>
-                        </StyledSwipeButton>
-                    </StyledSwipeButtonContainer>
-                    {width > 576 && <BlueButton isSvg={false} link={latestNewsData?.button?.link}>
-                        {latestNewsData?.button?.text}
-                    </BlueButton>}
+                <div style={{display: 'flex', alignItems: 'center', minWidth: 'fit-content', position: 'relative', overflow: 'hidden'}} ref={buttonsInViewRef}>
+                    <animated.div style={{ display: 'flex', alignItems: 'center', minWidth: 'fit-content', ...buttonsSpring }}>
+                        <StyledSwipeButtonContainer>
+                            <StyledSwipeButton 
+                                onClick={handlePrevClick}
+                                disabled={isBeginning}
+                            >
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M15 6L9 12L15 18" stroke="black" strokeWidth="2"/>
+                                </svg>
+                            </StyledSwipeButton>
+                            <StyledSwipeButton 
+                                onClick={handleNextClick}
+                                disabled={isEnd}
+                            >
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M9 6L15 12L9 18" stroke="black" strokeWidth="2"/>
+                                </svg>
+                            </StyledSwipeButton>
+                        </StyledSwipeButtonContainer>
+                        {width > 576 && <BlueButton isSvg={false} link={latestNewsData?.button?.link}>
+                            {latestNewsData?.button?.text}
+                        </BlueButton>}
+                    </animated.div>
                 </div>
             </StyledTopBar>
-            {width > 576 && <StyledSwiperContainer>
+            {width > 576 && <StyledSwiperContainer ref={swiperInViewRef}>
                 <Swiper
                     modules={[Navigation]}
                     spaceBetween={20}
@@ -138,9 +176,11 @@ export const LatestNews = ({ latestNewsData }: LatestNewsProps) => {
                         }
                     }}
                 >
-                    {latestNewsData?.articles?.map((article: any) => (
+                    {latestNewsData?.articles?.map((article: any, index: number) => (
                         <SwiperSlide key={article?.id}>
-                            <ArticleCard article={article} />
+                            <AnimatedSlide index={index} isInView={swiperInView}>
+                                <ArticleCard article={article} />
+                            </AnimatedSlide>
                         </SwiperSlide>
                     ))}
                 </Swiper>
@@ -209,7 +249,7 @@ const StyledTitleContainer = styled.div`
     `}
 `
 
-const StyledSwipeButtonContainer = styled.div`
+const StyledSwipeButtonContainer = styled(animated.div)`
     display: flex;
     gap: ${rm(5)};
     margin-right: ${rm(10)};
@@ -238,6 +278,8 @@ const StyledSwipeButton = styled.button<{ disabled?: boolean }>`
 `
 
 const StyledSwiperContainer = styled.div`
+    overflow: hidden;
+    
     .swiper {
         width: 100%;
         padding-bottom: ${rm(40)};
@@ -245,6 +287,7 @@ const StyledSwiperContainer = styled.div`
 
     .swiper-slide {
         height: auto;
+        overflow: hidden;
     }
 
     .swiper-pagination {
@@ -263,4 +306,10 @@ const StyledSwiperContainer = styled.div`
         opacity: 1;
         background-color: ${colors.black100};
     }
+`
+
+const AnimatedSlideWrapper = styled(animated.div)`
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
 `

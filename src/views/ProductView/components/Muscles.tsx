@@ -3,6 +3,7 @@ import { fontGolosText } from "@/styles/fonts"
 import styled from "styled-components"
 import { MediaComponent } from "@/components/MediaComponent/MediaComponent"
 import { AnimatedText } from "@/components/animated/AnimatedText/AnimatedText"
+import { MaskImageAppear } from "@/components/animated/MaskImageAppear/MaskImageAppear"
 
 interface MusclesProps {
     muscles: any
@@ -13,7 +14,9 @@ export const Muscles = ({ muscles }: MusclesProps) => {
         <StyledMuscles>
             <StyledSubtitle>{muscles?.text}</StyledSubtitle>
             <StyledImageContainer>
-                <MediaComponent media={muscles?.media} className="image" />
+                <MaskImageAppear className="image-container">
+                    <MediaComponent media={muscles?.media} className="image" />
+                </MaskImageAppear>
             </StyledImageContainer>
         </StyledMuscles>
     )
@@ -50,7 +53,6 @@ const StyledSubtitle = styled(AnimatedText)`
 const StyledImageContainer = styled.div`
     width: 100%;
     height: ${rm(450)};
-    background-color: ${colors.gray};
     position: relative;
 
     ${media.lg`

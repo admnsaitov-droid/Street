@@ -16,6 +16,7 @@ import { usePathname } from "next/navigation"
 import UnderlineLink from "../animated/UnderlineLink/UnderlineLink"
 import { useWindowWidth } from "@react-hook/window-size"
 import AnimatedGrid from "@/components/animated/AnimatedContent"
+import { LineAppear } from "./components/LineAppear"
 
 export const ContactForm = () => {
     const [data, setData] = useState<any>(null)
@@ -216,66 +217,84 @@ export const ContactForm = () => {
             <StyledNote>{data?.data?.note}</StyledNote>
             <StyledForm onSubmit={handleSubmit}>
                 {width > 576 && <>
-                    <StyledSection>
-                        <StyledFormText>Hello, my name is</StyledFormText>
-                        <StyledInputWrapper>
-                            <SimpleInput label="your name" name="fullName" value={formData.fullName} onChange={handleInputChange} onError={handleInputError} />
-                        </StyledInputWrapper>
-                    </StyledSection>
-                    <StyledSection> 
-                        <StyledFormText>You can reach me by</StyledFormText>
-                        <StyledInputWrapper>
-                            <SimpleInput label="your email" name="email" value={formData.email} onChange={handleInputChange} onError={handleInputError} />
-                        </StyledInputWrapper>
-                        <StyledFormText>, my phone number is</StyledFormText>
-                        <StyledInputWrapper>
-                            <SimpleInput label="your phone" name="phoneNumber" value={formData.phoneNumber} onChange={handleInputChange} onError={handleInputError} />
-                        </StyledInputWrapper>
-                    </StyledSection>
-                    <StyledSection>
-                        <StyledFormText>I have a question about</StyledFormText>
-                        <StyledInputWrapper>
-                            <SimpleInput label="letter subject" name="subject" value={formData.subject} onChange={handleInputChange} onError={handleInputError} />
-                        </StyledInputWrapper>
-                    </StyledSection>
-                    <StyledSection>
-                        <StyledFormText>My question is</StyledFormText>
-                        <StyledInputWrapper>
-                            <SimpleTextarea label="question body" name="body" value={formData.body} onChange={handleTextareaChange} onError={handleTextareaError} />
-                        </StyledInputWrapper>
-                    </StyledSection>
+                    <LineAppear>
+                        <StyledSection>
+                            <StyledFormText>Hello, my name is</StyledFormText>
+                            <StyledInputWrapper>
+                                <SimpleInput label="your name" name="fullName" value={formData.fullName} onChange={handleInputChange} onError={handleInputError} />
+                            </StyledInputWrapper>
+                        </StyledSection>
+                    </LineAppear>
+                    <LineAppear>
+                        <StyledSection> 
+                            <StyledFormText>You can reach me by</StyledFormText>
+                            <StyledInputWrapper>
+                                <SimpleInput label="your email" name="email" value={formData.email} onChange={handleInputChange} onError={handleInputError} />
+                            </StyledInputWrapper>
+                            <StyledFormText>, my phone number is</StyledFormText>
+                            <StyledInputWrapper>
+                                <SimpleInput label="your phone" name="phoneNumber" value={formData.phoneNumber} onChange={handleInputChange} onError={handleInputError} />
+                            </StyledInputWrapper>
+                        </StyledSection>
+                    </LineAppear>
+                    <LineAppear>
+                        <StyledSection>
+                            <StyledFormText>I have a question about</StyledFormText>
+                            <StyledInputWrapper>
+                                <SimpleInput label="letter subject" name="subject" value={formData.subject} onChange={handleInputChange} onError={handleInputError} />
+                            </StyledInputWrapper>
+                        </StyledSection>
+                    </LineAppear>
+                    <LineAppear>
+                        <StyledSection>
+                            <StyledFormText>My question is</StyledFormText>
+                            <StyledInputWrapper>
+                                <SimpleTextarea label="question body" name="body" value={formData.body} onChange={handleTextareaChange} onError={handleTextareaError} />
+                            </StyledInputWrapper>
+                        </StyledSection>
+                    </LineAppear>
                 </>}
                 {width <= 576 && <>
-                    <StyledSection>
-                        <StyledFormText>Hello, my name is</StyledFormText>
-                        <StyledInputWrapper>
-                            <SimpleInput label="your name" name="fullName" value={formData.fullName} onChange={handleInputChange} onError={handleInputError} />
-                        </StyledInputWrapper>
-                    </StyledSection>
-                    <StyledSection> 
-                        <StyledFormText>You can reach me by</StyledFormText>
-                        <StyledInputWrapper>
-                            <SimpleInput label="your email" name="email" value={formData.email} onChange={handleInputChange} onError={handleInputError} />
-                        </StyledInputWrapper>
-                    </StyledSection>
-                    <StyledSection>
-                        <StyledFormText>My phone number is</StyledFormText>
-                        <StyledInputWrapper>
-                            <SimpleInput label="your phone" name="phoneNumber" value={formData.phoneNumber} onChange={handleInputChange} onError={handleInputError} />
-                        </StyledInputWrapper>
-                    </StyledSection>
-                    <StyledSection>
-                        <StyledFormText>I have a question about</StyledFormText>
-                        <StyledInputWrapper>
-                            <SimpleInput label="letter subject" name="subject" value={formData.subject} onChange={handleInputChange} onError={handleInputError} />
-                        </StyledInputWrapper>
-                    </StyledSection>
-                    <StyledSection>
-                        <StyledFormText>My question is</StyledFormText>
-                        <StyledInputWrapper>
-                            <SimpleTextarea label="question body" name="body" value={formData.body} onChange={handleTextareaChange} onError={handleTextareaError} />
-                        </StyledInputWrapper>
-                    </StyledSection>
+                    <LineAppear>
+                        <StyledSection>
+                            <StyledFormText>Hello, my name is</StyledFormText>
+                            <StyledInputWrapper>
+                                <SimpleInput label="your name" name="fullName" value={formData.fullName} onChange={handleInputChange} onError={handleInputError} />
+                            </StyledInputWrapper>
+                        </StyledSection>
+                    </LineAppear>
+                    <LineAppear>
+                        <StyledSection> 
+                            <StyledFormText>You can reach me by</StyledFormText>
+                            <StyledInputWrapper>
+                                <SimpleInput label="your email" name="email" value={formData.email} onChange={handleInputChange} onError={handleInputError} />
+                            </StyledInputWrapper>
+                        </StyledSection>
+                    </LineAppear>
+                    <LineAppear>
+                        <StyledSection>
+                            <StyledFormText>My phone number is</StyledFormText>
+                            <StyledInputWrapper>
+                                <SimpleInput label="your phone" name="phoneNumber" value={formData.phoneNumber} onChange={handleInputChange} onError={handleInputError} />
+                            </StyledInputWrapper>
+                        </StyledSection>
+                    </LineAppear>
+                    <LineAppear>
+                        <StyledSection>
+                            <StyledFormText>I have a question about</StyledFormText>
+                            <StyledInputWrapper>
+                                <SimpleInput label="letter subject" name="subject" value={formData.subject} onChange={handleInputChange} onError={handleInputError} />
+                            </StyledInputWrapper>
+                        </StyledSection>
+                    </LineAppear>
+                    <LineAppear>
+                        <StyledSection>
+                            <StyledFormText>My question is</StyledFormText>
+                            <StyledInputWrapper>
+                                <SimpleTextarea label="question body" name="body" value={formData.body} onChange={handleTextareaChange} onError={handleTextareaError} />
+                            </StyledInputWrapper>
+                        </StyledSection>
+                    </LineAppear>
                 </>}
                 <StyledBottom>
                     <div className="left">

@@ -13,6 +13,7 @@ import { ProductPreview, useProductPreview } from "./components/ProductPreview"
 import { MediaComponent } from "@/components/MediaComponent/MediaComponent"
 import { AnimatedText } from "@/components/animated/AnimatedText/AnimatedText"
 import AnimatedGrid from "@/components/animated/AnimatedContent"
+import { MaskImageAppear } from "@/components/animated/MaskImageAppear/MaskImageAppear"
 
 interface OverviewProps {
     data: any
@@ -52,10 +53,14 @@ export const Overview = ({ data }: OverviewProps) => {
             </StyledTop>
             <StyledImagesContainer>
                 <StyledImageContainer>
-                    <MediaComponent media={data?.mainMediaLeft} className="image" />
+                    <MaskImageAppear className="image-container" duration={1200}>
+                        <MediaComponent media={data?.mainMediaLeft} className="image" />
+                    </MaskImageAppear>
                 </StyledImageContainer>
                 <StyledImageContainer>
-                    <MediaComponent media={data?.mainMediaRight} className="image" />
+                    <MaskImageAppear className="image-container" duration={900}>
+                        <MediaComponent media={data?.mainMediaRight} className="image" />
+                    </MaskImageAppear>
                 </StyledImageContainer>
             </StyledImagesContainer>
 

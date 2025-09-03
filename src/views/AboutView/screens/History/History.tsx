@@ -4,6 +4,7 @@ import { HistoryOverview } from "./components/HistoryOverview"
 import { StyledSubtitle } from "@/views/PackagesView/screens/Package/Package"
 import { MediaComponent } from "@/components/MediaComponent/MediaComponent"
 import { useWindowWidth } from "@react-hook/window-size"
+import { MaskImageAppear } from "@/components/animated/MaskImageAppear/MaskImageAppear"
 
 interface HistoryProps {
     data: any
@@ -18,14 +19,18 @@ export const History = ({ data }: HistoryProps) => {
             <StyledBottom>
                 <StyledLeft>
                     <StyledSecndaryImageContainer>
-                        <MediaComponent media={data?.mediaSecondary} className="image" parallax={true} />
+                        <MaskImageAppear className="image-container">
+                            <MediaComponent media={data?.mediaSecondary} className="image" parallax={true} />
+                        </MaskImageAppear>
                     </StyledSecndaryImageContainer>
                     {width > 768 && <StyledSubtitle className="blue80">
                         {data?.descriptionSecondary}
                     </StyledSubtitle>}
                 </StyledLeft>
                 <StyledMainImageContainer>
-                    <MediaComponent media={data?.mediaMain} className="image" parallax={true} />
+                    <MaskImageAppear className="image-container">
+                        <MediaComponent media={data?.mediaMain} className="image" parallax={true} />
+                    </MaskImageAppear>
                     {width <= 768 && <StyledSubtitle className="blue80">
                         {data?.descriptionSecondary}
                     </StyledSubtitle>}

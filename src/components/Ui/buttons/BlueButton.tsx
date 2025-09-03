@@ -48,6 +48,7 @@ const StyledBlueButton = styled.button`
     text-transform: uppercase;
     position: relative;
     height: fit-content;
+    width: fit-content;
 
     ${media.lg`
         font-size: ${rm(16)};

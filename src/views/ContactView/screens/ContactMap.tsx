@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from "react"
 import { Loader } from "@googlemaps/js-api-loader"
 import styled from "styled-components"
-import { MapMarker } from "./MapMarker"
 
 // Custom map styles for a dark theme
 const mapStyles = [
@@ -364,7 +363,7 @@ const mapStyles = [
     }
 ]
 
-interface ProjectsMapProps {
+interface ContactMapProps {
     center: { lat: number; lng: number }
     zoom: number
     markers: Array<{
@@ -374,11 +373,11 @@ interface ProjectsMapProps {
     }>
 }
 
-export const ProjectsMap = ({ 
+export const ContactMap = ({ 
     center,
     zoom,
     markers
-}: ProjectsMapProps) => {
+}: ContactMapProps) => {
     // Use provided markers, or create a default marker at camera position if none provided
     const markersToUse = markers.length > 0 ? markers : [
         {
@@ -464,15 +463,20 @@ export const ProjectsMap = ({
                         title: markerData.title || "Location",
                         icon: {
                             url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
-                                <svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
-                                    <g transform="rotate(45 24 24)">
-                                        <rect x="12" y="12" width="24" height="24" fill="rgba(255,255,255,0.16)" stroke="rgba(255,255,255,0.16)" stroke-width="1"/>
-                                        <rect x="21" y="21" width="6" height="6" fill="white"/>
+                                <svg width="46" height="46" viewBox="0 0 46 46" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <foreignObject x="-2.64428" y="-2.65014" width="51.2886" height="51.2887"><div xmlns="http://www.w3.org/1999/xhtml" style="backdrop-filter:blur(1.51px);clip-path:url(#bgblur_0_4743_7066_clip_path);height:100%;width:100%"></div></foreignObject><g data-figma-bg-blur-radius="3.01732">
+                                    <rect x="23" y="0.367188" width="31.9995" height="31.9995" transform="rotate(45 23 0.367188)" fill="#ED1E2A"/>
+                                    <rect x="23" y="1.25618" width="30.7422" height="30.7422" transform="rotate(45 23 1.25618)" stroke="white" stroke-opacity="0.16" stroke-width="1.25722"/>
                                     </g>
-                                </svg>
+                                    <path d="M30.2547 23.2511V22.9759C31.1023 22.6059 31.8908 21.8446 31.8908 20.5713C31.8908 19.1514 30.7395 18 29.3195 18H25.3936H23.0117V28.2727H26.0741H29.4297C30.8497 28.2727 32.001 27.1213 32.001 25.7014C32.001 24.3732 31.143 23.6022 30.2551 23.2511H30.2547ZM28.8285 21.9121H26.0737V20.4737H28.8285V21.9121ZM28.9387 25.799H26.0737V24.3606H28.9387V25.799Z" fill="white"/>
+                                    <path d="M19.1788 18H15.7494C14.231 18 13 19.231 13 20.7494V21.757C13 22.7747 13.7332 23.6446 14.7367 23.8163L18.8658 24.524V25.7864H16.0624V24.6078H13V25.5237C13 27.0421 14.231 28.2731 15.7494 28.2731H19.1788C20.6972 28.2731 21.9281 27.0421 21.9281 25.5237V24.516C21.9281 23.4983 21.1949 22.6285 20.1915 22.4567L16.0624 21.7491V20.4867H18.8658V21.6653H21.9281V20.7494C21.9281 19.231 20.6972 18 19.1788 18Z" fill="white"/>
+                                    <defs>
+                                    <clipPath id="bgblur_0_4743_7066_clip_path" transform="translate(2.64428 2.65014)"><rect x="23" y="0.367188" width="31.9995" height="31.9995" transform="rotate(45 23 0.367188)"/>
+                                    </clipPath></defs>
+                                    </svg>
                             `),
-                            scaledSize: new google.maps.Size(48, 48),
-                            anchor: new google.maps.Point(24, 24)
+                            scaledSize: new google.maps.Size(46, 46),
+                            anchor: new google.maps.Point(23, 23)
                         }
                     })
 
@@ -516,7 +520,7 @@ export const ProjectsMap = ({
 
     if (error) {
         return (
-            <StyledProjectsMap>
+            <StyledContactMap>
                 <ErrorMessage>
                     <div style={{ marginBottom: '10px', fontWeight: 'bold' }}>Map Error</div>
                     {error}
@@ -527,12 +531,12 @@ export const ProjectsMap = ({
                         <br />3. Restart your development server
                     </div>
                 </ErrorMessage>
-            </StyledProjectsMap>
+            </StyledContactMap>
         )
     }
 
     return (
-        <StyledProjectsMap>
+        <StyledContactMap>
             <MapContainer ref={mapRef} />
             {!isLoaded && !error && (
                 <LoadingOverlay>
@@ -541,11 +545,11 @@ export const ProjectsMap = ({
                     </LoadingText>
                 </LoadingOverlay>
             )}
-        </StyledProjectsMap>
+        </StyledContactMap>
     )
 }
 
-const StyledProjectsMap = styled.div`
+const StyledContactMap = styled.div`
     position: absolute;
     top: 0;
     left: 0;

@@ -3,14 +3,21 @@ import styled from "styled-components"
 import { ProductModel } from "./components/ProductModel"
 import { OrbitControls } from "@react-three/drei"
 
-export const ProductScene = () => {
+interface ProductSceneProps {
+    data: any
+}
+
+export const ProductScene = ({ data }: ProductSceneProps) => {
+
+    console.log('🔥 data', data)
+
     return (
         <StyledCanvas>
             <ambientLight intensity={0.5} />
             <directionalLight position={[1, 1, 1]} intensity={10} />
             <directionalLight position={[-1, -1, -1]} intensity={10} />
             <OrbitControls enableZoom={false} />
-            <ProductModel model="/models/productModel.glb" params={{
+            <ProductModel model={data?.model} params={{
                 position: [0, 0, 0],
                 rotation: [0, 0, 0],
                 scale: 1.4

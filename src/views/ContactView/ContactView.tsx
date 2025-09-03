@@ -6,6 +6,7 @@ import { fontGolosText } from "@/styles/fonts"
 import { ContactForm } from "./screens/ContactForm"
 import { GetInTouch } from "./screens/GetInTouch"
 import { AnimatedText } from "@/components/animated/AnimatedText/AnimatedText"
+import { ContactMap } from "./screens/ContactMap"
 
 interface ContactViewProps {
     data: any
@@ -13,6 +14,26 @@ interface ContactViewProps {
 
 export const ContactView = ({ data }: ContactViewProps) => {
     console.log(data)
+    
+    // Map configuration for Paloheinä, Helsinki, Finland
+    const mapConfig = {
+        center: {
+            lat: 60.248156,
+            lng: 24.950504
+        },
+        zoom: 14,
+        markers: [
+            {
+                position: {
+                    lat: 60.248156,
+                    lng: 24.950504
+                },
+                title: "Paloheinä",
+                content: `<div style='padding: 10px;'><h3>Paloheinä</h3><p>Helsinki, Finland</p></div>`
+            }
+        ]
+    }
+    
     return (
         <StyledContactView>
             <StyledTop>
@@ -27,6 +48,13 @@ export const ContactView = ({ data }: ContactViewProps) => {
                 </StyledContactLeft>
             </StyledTop>
             <GetInTouch data={data?.getInTouchBlock} />
+            <StyledMapContainer>
+                <ContactMap 
+                    center={mapConfig.center}
+                    zoom={mapConfig.zoom}
+                    markers={mapConfig.markers}
+                />
+            </StyledMapContainer>
         </StyledContactView>
     )
 }
@@ -79,11 +107,23 @@ export const StyledContactDescription = styled(AnimatedText)`
     font-size: ${rm(40)};
     color: ${colors.black100};
     ${fontGolosText(400)};
-    line-height: 100%;
+    line-height: 115%;
     letter-spacing: -0.01em;
     margin-bottom: ${rm(80)};
     
     ${media.lg`
         font-size: ${rm(32)};
+    `}
+`
+
+const StyledMapContainer = styled.div`
+    position: relative;
+    overflow: hidden;
+    border-radius: ${rm(16)};
+    width: 100%;
+    height: ${rm(800)};
+
+    ${media.lg`
+        height: ${rm(600)};    
     `}
 `
