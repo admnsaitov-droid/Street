@@ -53,7 +53,7 @@ export const Overview = ({ data }: OverviewProps) => {
             </StyledTop>
             <StyledImagesContainer>
                 <StyledImageContainer>
-                    <MaskImageAppear className="image-container" duration={1200}>
+                    <MaskImageAppear className="image-container" duration={900}>
                         <MediaComponent media={data?.mainMediaLeft} className="image" />
                     </MaskImageAppear>
                 </StyledImageContainer>

@@ -159,7 +159,7 @@ const StyledLinks = styled.div`
         font-size: ${rm(16)};
         color: ${colors.black100};
         ${fontGolosText(400)};
-        line-height: 130%;
+        margin-bottom: ${rm(-2)};
 
         ${media.lg`
             font-size: ${rm(14)};

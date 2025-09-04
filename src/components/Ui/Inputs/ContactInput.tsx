@@ -53,7 +53,7 @@ const Label = styled.label<{ $active: boolean }>`
   color: #B7BCCA;
   pointer-events: none;
   transition: all 0.2s cubic-bezier(.4,0,.2,1);
-  transform: ${({ $active }) => $active ? `translateY(-${rm(18)})` : "none"};
+  transform: ${({ $active }) => $active ? `translateY(-${rm(32)})` : "none"};
 
   ${media.lg`
     font-size: ${({ $active }: any) => $active ? rm(18) : rm(24)};

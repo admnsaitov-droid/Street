@@ -122,8 +122,17 @@ const StyledMapContainer = styled.div`
     border-radius: ${rm(16)};
     width: 100%;
     height: ${rm(800)};
+    margin-top: ${rm(70)};
 
     ${media.lg`
         height: ${rm(600)};    
+    `}
+
+    ${media.md`
+        height: ${rm(539)};    
+    `}
+
+    ${media.xsm`
+        height: ${rm(246)};    
     `}
 `

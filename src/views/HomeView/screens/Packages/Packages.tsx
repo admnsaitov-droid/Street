@@ -62,7 +62,8 @@ export const Packages = ({ packagesData }: PackagesProps) => {
         <StyledPackages>
             <StyledTriggerContainer 
                 onChange={(state) => {
-                    const transformedProgress = transformRange(state?.progress, 0.1, 0.9, 0, 100);
+                    // const transformedProgress = transformRange(state?.progress, 0.1, 0.9, 0, 100);
+                    const transformedProgress = transformRange(state?.progress, 0, 1, 0, 100);
                     progressRef.current = transformedProgress;
 
                     const barProgressFirst = transformRange(transformedProgress, 0, 33, 0, 100);

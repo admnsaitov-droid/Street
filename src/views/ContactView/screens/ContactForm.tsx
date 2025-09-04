@@ -170,7 +170,7 @@ export const ContactForm = () => {
                 </StyledSection>
                 <SimpleTextarea label="Message*" name="body" value={formData.body} onChange={handleTextareaChange} onError={handleTextareaError} />
             </StyledInputs>
-            <StyledBottom>
+            <StyledBottom onClick={() => setFormData({ ...formData, policy: !formData.policy })}>
                 <div className="left">
                     <SimpleCheckbox
                         checked={formData.policy}

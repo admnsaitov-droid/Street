@@ -14,7 +14,7 @@ interface MediaComponentProps {
     parallax?: boolean;
 }
 
-export const MediaComponent = ({ media, className, isExtendable = true, parallax = false }: MediaComponentProps) => {
+export const MediaComponent = ({ media, className, isExtendable = true, parallax = true }: MediaComponentProps) => {
     const { openVideo, openImage } = useVideoPlayerStore();
     const elementRef = useRef<HTMLDivElement>(null);
 
@@ -24,11 +24,10 @@ export const MediaComponent = ({ media, className, isExtendable = true, parallax
     // Parallax effect using useSpringTrigger
     const { springs } = useSpringTrigger({
         elementRef,
-        enabled: parallax,
         start: "top bottom",
         end: "bottom top",
-        from: { y: -20 },
-        to: { y: 20 },
+        from: { y: '-30px' },
+        to: { y: '30px' },
         disableOnMobile: true,
     });
 
@@ -88,12 +87,12 @@ const StyledMediaComponent = styled.div<{ $isExtendable: boolean; $parallax: boo
     }
 
     .media {
-        width: ${({ $parallax }) => $parallax ? "103%" : "100%"};
-        height: ${({ $parallax }) => $parallax ? "103%" : "100%"};
+        width: 105% !important;
+        height: 105% !important;
         object-fit: cover;
         position: absolute;
-        top: ${({ $parallax }) => $parallax ? "-1%" : "0"};
-        left: ${({ $parallax }) => $parallax ? "-1%" : "0"};
+        top: -2% !important;   
+        left: -2% !important;
     }
 
     .media-wrapper {

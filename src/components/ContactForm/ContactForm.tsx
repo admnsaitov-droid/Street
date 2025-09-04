@@ -296,7 +296,7 @@ export const ContactForm = () => {
                         </StyledSection>
                     </LineAppear>
                 </>}
-                <StyledBottom>
+                <StyledBottom onClick={() => setFormData({ ...formData, policy: !formData.policy })}>
                     <div className="left">
                         <SimpleCheckbox
                             checked={formData.policy}
@@ -438,6 +438,7 @@ export const StyledBottom = styled.div`
     align-items: center;
     margin-top: ${rm(50)};
     justify-content: space-between;
+    cursor: pointer;
 
     ${media.xsm`
         margin-top: ${rm(10)};

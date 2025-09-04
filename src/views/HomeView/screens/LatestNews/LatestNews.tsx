@@ -24,11 +24,11 @@ interface LatestNewsProps {
 // Individual animated slide component
 const AnimatedSlide = ({ children, index, isInView }: { children: React.ReactNode, index: number, isInView: boolean }) => {
     const slideSpring = useSpring({
-        y: isInView ? '0%' : '-100%',
+        y: isInView ? '0%' : '-40%',
         delay: index * 150, // Staggered delay: 0ms, 150ms, 300ms, etc.
         config: { 
             duration: 500,
-            easing: easings.easeInOutQuad,
+            easing: easings.easeOutQuad,
         }
     });
 
@@ -48,7 +48,7 @@ export const LatestNews = ({ latestNewsData }: LatestNewsProps) => {
     
     // Detect when swiper container is in view
     const [swiperInViewRef, swiperInView] = useInView({
-        once: true
+        once: false
     });
 
     const [buttonsInViewRef, buttonsInView] = useInView({

@@ -25,7 +25,7 @@ export const Package = ({ data }: PackageProps) => {
                 <StyledLeft>
                     {width > 576 && <StyledAnnotation>{data?.productsCount} fitness equipment</StyledAnnotation>}
                     <StyledBottomContainer>
-                        <MaskImageAppear className="image-container" duration={1200}>  
+                        <MaskImageAppear className="image-container" duration={900}>  
                             <MediaComponent media={data?.previewAboveMedia} className="image" parallax={true}/>
                         </MaskImageAppear>
                     </StyledBottomContainer>

@@ -18,16 +18,35 @@ interface LanguageSelectProps {
 
 export const LanguageSelect = ({ languages }: LanguageSelectProps) => {
     const [isOpen, setIsOpen] = useState(false)
+    const [isAnimating, setIsAnimating] = useState(false)
+    const [isMobile, setIsMobile] = useState(false)
     const router = useRouter()
     const pathname = usePathname()
     const currentLocale = useLocale()
     const dropdownRef = useRef<HTMLDivElement>(null)
+    const dropdownContentRef = useRef<HTMLDivElement>(null)
 
     // Find current language data
     const currentLanguage = languages?.find(lang => lang.localeCode === currentLocale) || languages?.[0]
 
-    // Close dropdown when clicking outside
+    // Detect mobile device
     useEffect(() => {
+        const checkIsMobile = () => {
+            setIsMobile(window.innerWidth <= 768 || 'ontouchstart' in window)
+        }
+        
+        checkIsMobile()
+        window.addEventListener('resize', checkIsMobile)
+        
+        return () => {
+            window.removeEventListener('resize', checkIsMobile)
+        }
+    }, [])
+
+    // Close dropdown when clicking outside (only for mobile)
+    useEffect(() => {
+        if (!isMobile) return
+
         const handleClickOutside = (event: MouseEvent) => {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
                 setIsOpen(false)
@@ -38,7 +57,7 @@ export const LanguageSelect = ({ languages }: LanguageSelectProps) => {
         return () => {
             document.removeEventListener('mousedown', handleClickOutside)
         }
-    }, [])
+    }, [isMobile])
 
     const handleLanguageChange = (localeCode: string) => {
         console.log('🔥 LANGUAGE SWITCH STARTED');
@@ -97,7 +116,57 @@ export const LanguageSelect = ({ languages }: LanguageSelectProps) => {
     }
 
     const toggleDropdown = () => {
-        setIsOpen(!isOpen)
+        // Only toggle on click for mobile devices
+        if (isMobile) {
+            if (isOpen) {
+                closeDropdown()
+            } else {
+                openDropdown()
+            }
+        }
+    }
+
+    const handleMouseEnter = () => {
+        // Only open on hover for desktop devices
+        if (!isMobile) {
+            openDropdown()
+        }
+    }
+
+    const handleMouseLeave = () => {
+        // Only close on mouse leave for desktop devices
+        if (!isMobile) {
+            closeDropdown()
+        }
+    }
+
+    const openDropdown = () => {
+        if (isOpen) return
+        
+        setIsOpen(true)
+        setIsAnimating(true)
+        
+        // Force reflow to ensure the element is rendered
+        requestAnimationFrame(() => {
+            if (dropdownContentRef.current) {
+                const height = dropdownContentRef.current.scrollHeight
+                dropdownContentRef.current.style.height = `${height}px`
+            }
+        })
+    }
+
+    const closeDropdown = () => {
+        if (!isOpen) return
+        
+        if (dropdownContentRef.current) {
+            dropdownContentRef.current.style.height = '0px'
+        }
+        
+        // Wait for animation to complete before hiding
+        setTimeout(() => {
+            setIsOpen(false)
+            setIsAnimating(false)
+        }, 200) // Match the CSS transition duration
     }
 
     if (!languages || languages.length === 0) {
@@ -105,7 +174,11 @@ export const LanguageSelect = ({ languages }: LanguageSelectProps) => {
     }
 
     return (
-        <StyledLanguageSelect ref={dropdownRef}>
+        <StyledLanguageSelect 
+            ref={dropdownRef}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+        >
             <StyledActiveLanguage onClick={toggleDropdown} $isOpen={isOpen}>
                 <span>{currentLanguage?.localeName || 'EN'}</span>
                 <svg width="6" height="4" viewBox="0 0 6 4" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -113,19 +186,21 @@ export const LanguageSelect = ({ languages }: LanguageSelectProps) => {
                 </svg>
             </StyledActiveLanguage>
             
-            {isOpen && (
-                <StyledDropdown>
-                    {languages.map((language) => (
-                        <StyledLanguageOption
-                            key={language.id}
-                            onClick={() => handleLanguageChange(language.localeCode)}
-                            $isActive={language.localeCode === currentLocale}
-                        >
-                            {language.localeName}
-                        </StyledLanguageOption>
-                    ))}
-                </StyledDropdown>
-            )}
+            <StyledDropdown 
+                ref={dropdownContentRef}
+                $isOpen={isOpen}
+                $isAnimating={isAnimating}
+            >
+                {languages.map((language) => (
+                    <StyledLanguageOption
+                        key={language.id}
+                        onClick={() => handleLanguageChange(language.localeCode)}
+                        $isActive={language.localeCode === currentLocale}
+                    >
+                        {language.localeName}
+                    </StyledLanguageOption>
+                ))}
+            </StyledDropdown>
         </StyledLanguageSelect>
     )
 }
@@ -166,7 +241,7 @@ const StyledActiveLanguage = styled.div<{ $isOpen: boolean }>`
     }
 `
 
-const StyledDropdown = styled.div`
+const StyledDropdown = styled.div<{ $isOpen: boolean; $isAnimating: boolean }>`
     position: absolute;
     top: 100%;
     left: 0;
@@ -177,15 +252,25 @@ const StyledDropdown = styled.div`
     box-shadow: 0 ${rm(4)} ${rm(8)} rgba(0, 0, 0, 0.1);
     z-index: 100;
     overflow: hidden;
+    height: 0;
+    transition: height 0.2s ease-in-out;
+    opacity: ${({ $isOpen }) => $isOpen ? 1 : 0};
+    visibility: ${({ $isOpen }) => $isOpen ? 'visible' : 'hidden'};
+    
+    ${({ $isOpen, $isAnimating }) => $isOpen && $isAnimating && `
+        height: auto;
+    `}
 `
 
 const StyledLanguageOption = styled.div<{ $isActive: boolean }>`
     padding: ${rm(12)} ${rm(16)};
-    cursor: pointer;
+    cursor: pointer !important;
     font-size: ${rm(16)};
     ${fontGolosText(400)};
     line-height: 130%;
     background: ${({ $isActive }) => $isActive ? '#f5f5f5' : 'white'};
+    position: relative;
+    z-index: 100;
     
     &:hover {
         background: #f0f0f0;
