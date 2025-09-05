@@ -221,7 +221,7 @@ export const ContactForm = () => {
                         <StyledSection>
                             <StyledFormText>Hello, my name is</StyledFormText>
                             <StyledInputWrapper>
-                                <SimpleInput label="your name" name="fullName" value={formData.fullName} onChange={handleInputChange} onError={handleInputError} />
+                                <SimpleInput label="your name" name="fullName" value={formData.fullName} onChange={handleInputChange} error={errors.subject} />
                             </StyledInputWrapper>
                         </StyledSection>
                     </LineAppear>
@@ -229,11 +229,11 @@ export const ContactForm = () => {
                         <StyledSection> 
                             <StyledFormText>You can reach me by</StyledFormText>
                             <StyledInputWrapper>
-                                <SimpleInput label="your email" name="email" value={formData.email} onChange={handleInputChange} onError={handleInputError} />
+                                <SimpleInput label="your email" name="email" value={formData.email} onChange={handleInputChange} error={errors.email} />
                             </StyledInputWrapper>
                             <StyledFormText>, my phone number is</StyledFormText>
                             <StyledInputWrapper>
-                                <SimpleInput label="your phone" name="phoneNumber" value={formData.phoneNumber} onChange={handleInputChange} onError={handleInputError} />
+                                <SimpleInput label="your phone" name="phoneNumber" value={formData.phoneNumber} onChange={handleInputChange} error={errors.phoneNumber} />
                             </StyledInputWrapper>
                         </StyledSection>
                     </LineAppear>
@@ -241,7 +241,7 @@ export const ContactForm = () => {
                         <StyledSection>
                             <StyledFormText>I have a question about</StyledFormText>
                             <StyledInputWrapper>
-                                <SimpleInput label="letter subject" name="subject" value={formData.subject} onChange={handleInputChange} onError={handleInputError} />
+                                <SimpleInput label="letter subject" name="subject" value={formData.subject} onChange={handleInputChange} error={errors.subject} />
                             </StyledInputWrapper>
                         </StyledSection>
                     </LineAppear>
@@ -249,7 +249,7 @@ export const ContactForm = () => {
                         <StyledSection>
                             <StyledFormText>My question is</StyledFormText>
                             <StyledInputWrapper>
-                                <SimpleTextarea label="question body" name="body" value={formData.body} onChange={handleTextareaChange} onError={handleTextareaError} />
+                                <SimpleTextarea label="question body" name="body" value={formData.body} onChange={handleTextareaChange} error={errors.body} />
                             </StyledInputWrapper>
                         </StyledSection>
                     </LineAppear>
@@ -259,7 +259,7 @@ export const ContactForm = () => {
                         <StyledSection>
                             <StyledFormText>Hello, my name is</StyledFormText>
                             <StyledInputWrapper>
-                                <SimpleInput label="your name" name="fullName" value={formData.fullName} onChange={handleInputChange} onError={handleInputError} />
+                                <SimpleInput label="your name" name="fullName" value={formData.fullName} onChange={handleInputChange} error={errors.subject} />
                             </StyledInputWrapper>
                         </StyledSection>
                     </LineAppear>
@@ -267,7 +267,7 @@ export const ContactForm = () => {
                         <StyledSection> 
                             <StyledFormText>You can reach me by</StyledFormText>
                             <StyledInputWrapper>
-                                <SimpleInput label="your email" name="email" value={formData.email} onChange={handleInputChange} onError={handleInputError} />
+                                <SimpleInput label="your email" name="email" value={formData.email} onChange={handleInputChange} error={errors.email} />
                             </StyledInputWrapper>
                         </StyledSection>
                     </LineAppear>
@@ -275,7 +275,7 @@ export const ContactForm = () => {
                         <StyledSection>
                             <StyledFormText>My phone number is</StyledFormText>
                             <StyledInputWrapper>
-                                <SimpleInput label="your phone" name="phoneNumber" value={formData.phoneNumber} onChange={handleInputChange} onError={handleInputError} />
+                                <SimpleInput label="your phone" name="phoneNumber" value={formData.phoneNumber} onChange={handleInputChange} error={errors.phoneNumber} />
                             </StyledInputWrapper>
                         </StyledSection>
                     </LineAppear>
@@ -283,7 +283,7 @@ export const ContactForm = () => {
                         <StyledSection>
                             <StyledFormText>I have a question about</StyledFormText>
                             <StyledInputWrapper>
-                                <SimpleInput label="letter subject" name="subject" value={formData.subject} onChange={handleInputChange} onError={handleInputError} />
+                                <SimpleInput label="letter subject" name="subject" value={formData.subject} onChange={handleInputChange} error={errors.subject} />
                             </StyledInputWrapper>
                         </StyledSection>
                     </LineAppear>
@@ -291,13 +291,13 @@ export const ContactForm = () => {
                         <StyledSection>
                             <StyledFormText>My question is</StyledFormText>
                             <StyledInputWrapper>
-                                <SimpleTextarea label="question body" name="body" value={formData.body} onChange={handleTextareaChange} onError={handleTextareaError} />
+                                <SimpleTextarea label="question body" name="body" value={formData.body} onChange={handleTextareaChange} error={errors.body} />
                             </StyledInputWrapper>
                         </StyledSection>
                     </LineAppear>
                 </>}
-                <StyledBottom onClick={() => setFormData({ ...formData, policy: !formData.policy })}>
-                    <div className="left">
+                <StyledBottom>
+                    <div className="left" onClick={() => setFormData({ ...formData, policy: !formData.policy })}>
                         <SimpleCheckbox
                             checked={formData.policy}
                             onChange={() => setFormData({ ...formData, policy: !formData.policy })}

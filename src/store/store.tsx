@@ -9,6 +9,10 @@ interface LoadingStore {
   setIsSubmitError: (value: boolean) => void;
   contentLoaded: boolean;
   setContentLoaded: (value: boolean) => void;
+  currentCursor: {
+    type: 'default' | 'hover';
+  };
+  setCurrentCursor: (cursor: { type: 'default' | 'hover' }) => void;
 }
 
 interface VideoPlayerStore {
@@ -57,6 +61,9 @@ const useLoadingStore = create<LoadingStore>((set, get) => ({
 
     contentLoaded: false,
     setContentLoaded: (value: boolean) => set({ contentLoaded: value }),
+
+    currentCursor: { type: 'default' },
+    setCurrentCursor: (cursor: { type: 'default' | 'hover' }) => set({ currentCursor: cursor }),
 }));
 
 export const useVideoPlayerStore = create<VideoPlayerStore>((set, get) => ({
