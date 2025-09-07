@@ -309,7 +309,7 @@ export const ContactForm = () => {
                         {errors.policy && <StyledError>Please accept the privacy policy</StyledError>}
                     </div>
                     <BlueButton 
-                        isSvg={false} 
+                        isSvg={true} 
                         submit={true} 
                         disabled={isSending}
                         className="button"

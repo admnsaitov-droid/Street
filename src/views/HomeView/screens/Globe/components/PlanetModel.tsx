@@ -13,7 +13,7 @@ interface PlanetModelProps {
 }
 
 export const PlanetModel = ({ scale }: PlanetModelProps) => {
-    const { scene } = useGLTF('/models/solar.glb')
+    const { scene } = useGLTF('/models/earth.glb')
     const groupRef = useRef<Group>(null)
     const time = useRef({value: 0})
 
@@ -46,28 +46,7 @@ export const PlanetModel = ({ scale }: PlanetModelProps) => {
                             shader.uniforms.rimColor = { value: new THREE.Color('#81BDDB') };
                             shader.uniforms.rimPower = { value: 1.8 };
 
-                            shader.vertexShader = `
-                                varying vec2 vUv;
-                                varying vec3 vViewPosition;
-                                varying vec3 vNormal;
-                                varying vec3 vPosition;
-                            ` + shader.vertexShader;
-
-                            shader.vertexShader = shader.vertexShader.replace(
-                                'void main() {',
-                                `void main() {
-                                    vUv = uv;
-                                    vNormal = normalize(normalMatrix * normal);
-                                    vPosition = position;
-                                `
-                            );
-
-                            shader.vertexShader = shader.vertexShader.replace(
-                                `#include <project_vertex>`,
-                                `#include <project_vertex>
-                                vViewPosition = -mvPosition.xyz;`
-                            );
-
+                            // Add custom uniforms and noise function to fragment shader
                             shader.fragmentShader = `
                                 uniform float time;
                                 uniform vec3 targetColor;
@@ -78,11 +57,8 @@ export const PlanetModel = ({ scale }: PlanetModelProps) => {
                                 uniform float speedZ;
                                 uniform float mixStrength;
                                 uniform float colorThreshold;
-                                varying vec2 vUv;
                                 uniform vec3 rimColor;
                                 uniform float rimPower;
-                                varying vec3 vViewPosition;
-                                varying vec3 vPosition;
 
                                 ${sNoise}
                             ` + shader.fragmentShader;
@@ -97,27 +73,6 @@ export const PlanetModel = ({ scale }: PlanetModelProps) => {
                                 rim = pow(rim, rimPower);
                                 rim = pow(rim, 1.5);
                                 rim *= 0.7;
-
-                                vec3 currentColor = gl_FragColor.rgb;
-                                float threshold = 0.03;
-                                
-                                // if (currentColor.r < 0.05 && currentColor.g < 0.1 && currentColor.b > 0.000001 && vPosition.x > 0.44 && vPosition.z < -0.3) {
-                                    
-                                //     float noise = snoise(vec3(
-                                //         vUv.x * noiseScale + time * speedX, 
-                                //         vUv.y * noiseScale - time * speedY, 
-                                //         time * speedZ
-                                //     ));
-                                    
-                                //     vec3 blueBase = vec3(0.0, 0.5, 1.0);
-                                //     vec3 cyanBase = vec3(0.0, 1.0, 1.0);
-                                //     vec3 colorVar = mix(blueBase, cyanBase, noise * colorVariation);
-                                    
-                                //     gl_FragColor.rgb += noise / 23.0;
-                                //     gl_FragColor.b += 0.07;
-                                //     gl_FragColor.g += 0.05;
-                                //     gl_FragColor.rgb -= 0.02;
-                                // }
 
                                 vec3 finalColor = mix(gl_FragColor.rgb, rimColor, rim);
                                 gl_FragColor = vec4(finalColor, 1.0);

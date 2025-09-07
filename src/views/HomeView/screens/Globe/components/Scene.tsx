@@ -18,7 +18,7 @@ export const Scene = () => {
             <pointLight position={[10, 10, 10]} />
             <directionalLight position={[10, 10, 10]} />
             <Atmosphere scale={8.4} position={scenePosition} />
-            <Composition scale={5} position={scenePosition} rotationXSpeed={rotationXSpeed} rotationZSpeed={rotationZSpeed} inView={inViewRef} />
+            <Composition scale={0.5} position={scenePosition} rotationXSpeed={rotationXSpeed} rotationZSpeed={rotationZSpeed} inView={inViewRef} />
         </StyledScene>
     )
 }

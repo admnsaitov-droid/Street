@@ -32,6 +32,9 @@ export const BlueButton = ({ children, onClick, isSvg, className, link, submit, 
     const [inViewRef, inView] = useInView()
     const [isHovered, setIsHovered] = useState(false)
     const [circleSpring, api] = useSpring(() => ({ scale: 0, config: { tension: 300, friction: 30 } }))
+    const [path1Spring, path1Api] = useSpring(() => ({ transform: 'translateY(0px)', config: { tension: 300, friction: 30 } }))
+    const [path2Spring, path2Api] = useSpring(() => ({ transform: 'translateX(0px)', config: { tension: 300, friction: 30 } }))
+    const [path3Spring, path3Api] = useSpring(() => ({ transform: 'translateY(0px)', config: { tension: 300, friction: 30 } }))
     const setCurrentCursor = useLoadingStore((state: any) => state.setCurrentCursor)
     const width = useWindowWidth();
 
@@ -71,7 +74,12 @@ export const BlueButton = ({ children, onClick, isSvg, className, link, submit, 
 
     useEffect(() => {
         api.start({ scale: isHovered ? 1 : 0 })
-    }, [isHovered, api])
+        
+        // Animate paths on hover
+        path1Api.start({ transform: isHovered ? 'translateY(-2px)' : 'translateY(0px)' })
+        path2Api.start({ transform: isHovered ? 'translateX(2px)' : 'translateX(0px)' })
+        path3Api.start({ transform: isHovered ? 'translateY(2px)' : 'translateY(0px)' })
+    }, [isHovered, api, path1Api, path2Api, path3Api])
 
     return (
         <StyledBlueButton 
@@ -101,9 +109,21 @@ export const BlueButton = ({ children, onClick, isSvg, className, link, submit, 
             )}
             {isSvg && (
                 <svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M10.1092 9.21504L13.7168 5.60742L10.1092 1.99981L6.50157 5.60742L10.1092 9.21504Z" fill="white"/>
-                    <path d="M13.715 19.1799L10.1074 15.5723L6.49981 19.1799L10.1074 22.7875L13.715 19.1799Z" fill="white"/>
-                    <path d="M16.8927 16.0023L13.2852 12.3947L16.8927 8.78711L20.5003 12.3947" fill="white"/>
+                    <animated.path 
+                        d="M10.1092 9.21504L13.7168 5.60742L10.1092 1.99981L6.50157 5.60742L10.1092 9.21504Z" 
+                        fill="white"
+                        style={{ transform: path1Spring.transform }}
+                    />
+                    <animated.path 
+                        d="M13.715 19.1799L10.1074 15.5723L6.49981 19.1799L10.1074 22.7875L13.715 19.1799Z" 
+                        fill="white"
+                        style={{ transform: path3Spring.transform }}
+                    />
+                    <animated.path 
+                        d="M16.8927 16.0023L13.2852 12.3947L16.8927 8.78711L20.5003 12.3947" 
+                        fill="white"
+                        style={{ transform: path2Spring.transform }}
+                    />
                 </svg>
             )}
             <StyledFloatingHoverCircle ref={ref}>
@@ -140,16 +160,17 @@ const StyledBlueButton = styled.button`
     svg{
         width: ${rm(24)};
         height: ${rm(24)};
+        position: relative;
+        z-index: 1;
     }
 
     span{
-        mix-blend-mode: difference;
         position: relative;
         z-index: 1;
     }
 
     &:hover{
-        opacity: 0.8;
+        // opacity: 0.8;
     }
 
     &:disabled{

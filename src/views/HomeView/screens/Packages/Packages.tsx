@@ -199,7 +199,7 @@ export const Packages = ({ packagesData }: PackagesProps) => {
                         {/* Third package image */}
                         {packagesData?.packages?.[2]?.media && (
                             <div style={{width: '100%', height: '100%', position: 'absolute', top: 0, left: 0}} ref={thirdImageRef}>
-                                <MediaComponent media={packagesData.packages[2].media} className="image" parallax />
+                                <MediaComponent media={packagesData.packages[2].media} className="image" parallax isExtendable={false} />
                             </div>
                         )}
                     </div>

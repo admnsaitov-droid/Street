@@ -20,13 +20,17 @@ interface VideoPlayerStore {
   poster: string | null;
   contentType: 'image' | 'video' | null;
   isOpen: boolean;
+  imageGallery: string[] | null;
+  currentImageIndex: number;
   setContent: (content: string | null) => void;
   setPoster: (poster: string | null) => void;
   setContentType: (type: 'image' | 'video' | null) => void;
   setIsOpen: (isOpen: boolean) => void;
-  openImage: (imageUrl: string) => void;
+  openImage: (imageUrl: string, gallery?: string[]) => void;
   openVideo: (videoUrl: string, poster?: string) => void;
   closePlayer: () => void;
+  nextImage: () => void;
+  previousImage: () => void;
 }
 
 interface ColorStore {
@@ -71,28 +75,60 @@ export const useVideoPlayerStore = create<VideoPlayerStore>((set, get) => ({
     poster: null,
     contentType: null,
     isOpen: false,
+    imageGallery: null,
+    currentImageIndex: 0,
     setContent: (content: string | null) => set({ content }),
     setPoster: (poster: string | null) => set({ poster }),
     setContentType: (type: 'image' | 'video' | null) => set({ contentType: type }),
     setIsOpen: (isOpen: boolean) => set({ isOpen }),
-    openImage: (imageUrl: string) => set({ 
-        content: imageUrl,
-        poster: null,
-        contentType: 'image',
-        isOpen: true 
-    }),
+    openImage: (imageUrl: string, gallery?: string[]) => {
+        const imageList = gallery || [imageUrl];
+        const currentIndex = imageList.findIndex(url => url === imageUrl);
+        set({ 
+            content: imageUrl,
+            poster: null,
+            contentType: 'image',
+            isOpen: true,
+            imageGallery: imageList,
+            currentImageIndex: currentIndex >= 0 ? currentIndex : 0
+        });
+    },
     openVideo: (videoUrl: string, poster?: string) => set({ 
         content: videoUrl, 
         poster: poster || null, 
         contentType: 'video',
-        isOpen: true 
+        isOpen: true,
+        imageGallery: null,
+        currentImageIndex: 0
     }),
     closePlayer: () => set({ 
         content: null, 
         poster: null, 
         contentType: null,
-        isOpen: false 
+        isOpen: false,
+        imageGallery: null,
+        currentImageIndex: 0
     }),
+    nextImage: () => {
+        const { imageGallery, currentImageIndex } = get();
+        if (imageGallery && imageGallery.length > 1) {
+            const nextIndex = (currentImageIndex + 1) % imageGallery.length;
+            set({ 
+                content: imageGallery[nextIndex],
+                currentImageIndex: nextIndex
+            });
+        }
+    },
+    previousImage: () => {
+        const { imageGallery, currentImageIndex } = get();
+        if (imageGallery && imageGallery.length > 1) {
+            const prevIndex = currentImageIndex === 0 ? imageGallery.length - 1 : currentImageIndex - 1;
+            set({ 
+                content: imageGallery[prevIndex],
+                currentImageIndex: prevIndex
+            });
+        }
+    },
 }));
 
 export default useLoadingStore;

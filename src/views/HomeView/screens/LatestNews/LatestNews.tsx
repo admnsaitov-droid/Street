@@ -27,8 +27,11 @@ const AnimatedSlide = ({ children, index, isInView }: { children: React.ReactNod
         y: isInView ? '0%' : '-40%',
         delay: index * 150, // Staggered delay: 0ms, 150ms, 300ms, etc.
         config: { 
-            duration: 500,
-            easing: easings.easeOutQuad,
+            tension: 280,
+            friction: 30,
+            mass: 0.8,
+            duration: 600,
+            easing: easings.easeOutQuart,
         }
     });
 
@@ -58,8 +61,11 @@ export const LatestNews = ({ latestNewsData }: LatestNewsProps) => {
     const buttonsSpring = useSpring({
         y: buttonsInView ? '0%' : '-100%',
         config: {
-            duration: 500,
-            easing: easings.easeInOutQuad,
+            tension: 300,
+            friction: 35,
+            mass: 0.7,
+            duration: 700,
+            easing: easings.easeOutQuart,
         }
     });
 

@@ -6,15 +6,17 @@ import Image from "next/image";
 import styled from "styled-components";
 import { useRef } from "react";
 import VideoPlayer from "../Skeleton/VideoPlayer";
+import { colors } from "@/styles/colors";
 
 interface MediaComponentProps {
     media: any;
     className?: string;
     isExtendable?: boolean;
     parallax?: boolean;
+    imageGallery?: string[];
 }
 
-export const MediaComponent = ({ media, className, isExtendable = true, parallax = true }: MediaComponentProps) => {
+export const MediaComponent = ({ media, className, isExtendable = true, parallax = true, imageGallery }: MediaComponentProps) => {
     const { openVideo, openImage } = useVideoPlayerStore();
     const elementRef = useRef<HTMLDivElement>(null);
 
@@ -38,7 +40,7 @@ export const MediaComponent = ({ media, className, isExtendable = true, parallax
     };
     const handleOpenImage = () => {
         if (isExtendable) {
-            openImage(getMediaStrapiPath(poster));
+            openImage(getMediaStrapiPath(poster), imageGallery);
         }
     };
 
@@ -80,6 +82,8 @@ const StyledMediaComponent = styled.div<{ $isExtendable: boolean; $parallax: boo
                 transform: scale(1.02);
             }
         `}
+
+
     }
 
     img, video {
@@ -99,6 +103,14 @@ const StyledMediaComponent = styled.div<{ $isExtendable: boolean; $parallax: boo
         width: 100%;
         height: 100%;
         position: relative;
+
+        transition: transform 0.3s ease;
+
+        &:hover {
+            ${({ $isExtendable }) => $isExtendable && `
+                transform: scale(1.02);
+            `}
+        }
     }
 
     .parallax-wrapper {

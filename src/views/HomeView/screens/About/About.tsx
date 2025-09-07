@@ -27,7 +27,7 @@ export const About = ({ aboutData }: AboutProps) => {
             </StyledTopContainer>
             <StyledBottomContainer>
                 <ScaleImageAppear className="image-container">
-                    <MediaComponent media={aboutData?.media} className="image" parallax={true} />
+                    <MediaComponent media={aboutData?.media} className="image" parallax={true} isExtendable={false} />
                 </ScaleImageAppear>
             </StyledBottomContainer>
         </StyledAbout>

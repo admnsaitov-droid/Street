@@ -6,6 +6,8 @@ import { MediaComponent } from "@/components/MediaComponent/MediaComponent"
 import { useWindowWidth } from "@react-hook/window-size"
 import AnimatedGrid from "@/components/animated/AnimatedContent"
 import { MaskImageAppear } from "@/components/animated/MaskImageAppear/MaskImageAppear"
+import { getMediaStrapiPath } from "@/utils/getMediaStrapiPath"
+import { useMemo } from "react"
 
 interface PurposeProps {
     data: any
@@ -13,6 +15,27 @@ interface PurposeProps {
 
 export const Purpose = ({ data }: PurposeProps) => {
     const width = useWindowWidth();
+
+    // Create image gallery from all available media
+    const allImageGallery = useMemo(() => {
+        const images = [];
+        
+        // Add main image
+        if (data?.mainImage?.poster) {
+            images.push(getMediaStrapiPath(data.mainImage.poster));
+        }
+        
+        // Add secondary media images
+        if (data?.mediaSecondary) {
+            data.mediaSecondary.forEach((media: any) => {
+                if (media?.poster) {
+                    images.push(getMediaStrapiPath(media.poster));
+                }
+            });
+        }
+        
+        return images;
+    }, [data]);
 
     return (
         <StyledPurpose>
@@ -94,7 +117,7 @@ export const Purpose = ({ data }: PurposeProps) => {
                     {data?.mediaSecondary?.map((image: any, index: number) => (
                         <StyledImageContainer key={index} className="imageContainer">
                             <MaskImageAppear className="image-container">
-                                <MediaComponent media={image} className="image" parallax={true} />
+                                <MediaComponent media={image} className="image" parallax={true} imageGallery={allImageGallery} />
                             </MaskImageAppear>
                         </StyledImageContainer>
                     ))}
@@ -102,7 +125,7 @@ export const Purpose = ({ data }: PurposeProps) => {
                 <div className="right">
                     <StyledImageContainer className="imageContainer">
                         <MaskImageAppear className="image-container">
-                            <MediaComponent media={data?.mainImage} className="image" parallax={true} />
+                            <MediaComponent media={data?.mainImage} className="image" parallax={true} imageGallery={allImageGallery} />
                         </MaskImageAppear>
                     </StyledImageContainer>
                 </div>

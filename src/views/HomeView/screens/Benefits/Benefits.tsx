@@ -17,7 +17,7 @@ export const Benefits = ({ benefitsData }: BenefitsProps) => {
         <StyledBenefits>
             <div className="left">
                 <MaskImageAppear className="image-container">
-                    <MediaComponent media={benefitsData?.media} className="image" parallax={true} />
+                    <MediaComponent media={benefitsData?.media} className="image" parallax={true} isExtendable={false} />
                 </MaskImageAppear>
             </div>
             <div className="right">
