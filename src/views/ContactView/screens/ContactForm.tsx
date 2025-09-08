@@ -161,17 +161,17 @@ export const ContactForm = () => {
         <StyledContactForm onSubmit={handleSubmit}>
             <StyledInputs>
                 <StyledSection>
-                    <ContactInput label="First name*" name="firstName" value={formData.firstName} onChange={handleInputChange} onError={handleInputError} />
-                    <ContactInput label="Last name*" name="lastName" value={formData.lastName} onChange={handleInputChange} onError={handleInputError} />
+                    <ContactInput label="First name*" name="firstName" value={formData.firstName} onChange={handleInputChange} onError={handleInputError} error={errors.firstName} />
+                    <ContactInput label="Last name*" name="lastName" value={formData.lastName} onChange={handleInputChange} onError={handleInputError} error={errors.lastName} />
                 </StyledSection>
                 <StyledSection>
-                    <ContactInput label="Email*" name="email" value={formData.email} onChange={handleInputChange} onError={handleInputError} />
-                    <ContactInput label="Phone number*" name="phoneNumber" value={formData.phoneNumber} onChange={handleInputChange} onError={handleInputError} />
+                    <ContactInput label="Email*" name="email" value={formData.email} onChange={handleInputChange} onError={handleInputError} error={errors.email} />
+                    <ContactInput label="Phone number*" name="phoneNumber" value={formData.phoneNumber} onChange={handleInputChange} onError={handleInputError} error={errors.phoneNumber} />
                 </StyledSection>
-                <SimpleTextarea label="Message*" name="body" value={formData.body} onChange={handleTextareaChange} onError={handleTextareaError} />
+                <SimpleTextarea label="Message*" name="body" value={formData.body} onChange={handleTextareaChange} onError={handleTextareaError} error={errors.body} />
             </StyledInputs>
             <StyledBottom>
-                <div className="left">
+                <div className="left" onClick={() => setFormData({ ...formData, policy: !formData.policy })}>
                     <SimpleCheckbox
                         checked={formData.policy}
                         onChange={() => setFormData({ ...formData, policy: !formData.policy })}

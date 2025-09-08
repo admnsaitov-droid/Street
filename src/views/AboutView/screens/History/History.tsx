@@ -5,6 +5,7 @@ import { StyledSubtitle } from "@/views/PackagesView/screens/Package/Package"
 import { MediaComponent } from "@/components/MediaComponent/MediaComponent"
 import { useWindowWidth } from "@react-hook/window-size"
 import { MaskImageAppear } from "@/components/animated/MaskImageAppear/MaskImageAppear"
+import { getMediaStrapiPath } from "@/utils/getMediaStrapiPath"
 
 interface HistoryProps {
     data: any
@@ -13,6 +14,11 @@ interface HistoryProps {
 export const History = ({ data }: HistoryProps) => {
     const width = useWindowWidth();
 
+    const imageGallery = [
+        data?.mediaSecondary?.poster,
+        data?.mediaMain?.poster
+    ].filter(Boolean).map(media => getMediaStrapiPath(media));
+
     return (
         <StyledHistory>
             <HistoryOverview data={data} />
@@ -20,7 +26,7 @@ export const History = ({ data }: HistoryProps) => {
                 <StyledLeft>
                     <StyledSecndaryImageContainer>
                         <MaskImageAppear className="image-container">
-                            <MediaComponent media={data?.mediaSecondary} className="image" parallax={true} />
+                            <MediaComponent media={data?.mediaSecondary} className="image" parallax={true} imageGallery={imageGallery} />
                         </MaskImageAppear>
                     </StyledSecndaryImageContainer>
                     {width > 768 && <StyledSubtitle className="blue80">
@@ -29,7 +35,7 @@ export const History = ({ data }: HistoryProps) => {
                 </StyledLeft>
                 <StyledMainImageContainer>
                     <MaskImageAppear className="image-container">
-                        <MediaComponent media={data?.mediaMain} className="image" parallax={true} />
+                        <MediaComponent media={data?.mediaMain} className="image" parallax={true} imageGallery={imageGallery} />
                     </MaskImageAppear>
                     {width <= 768 && <StyledSubtitle className="blue80">
                         {data?.descriptionSecondary}

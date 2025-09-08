@@ -21,7 +21,7 @@ export const Inspiration = ({ data }: InspirationProps) => {
                             from: { opacity: 0, y: '40px' },
                             to: { opacity: 1, y: '0px' },
                             delayStep: 60
-                        }}
+                        }}  
                         overflow={true}
                         gap={{ horizontal: '0.25em', vertical: '0.25em' }}
                         containerStyle={{ overflow: 'hidden' }}
@@ -72,7 +72,7 @@ export const Inspiration = ({ data }: InspirationProps) => {
             </StyledTopContainer>
             <StyledMediaContainer>
                 <ScaleImageAppear className="image-container">
-                    <MediaComponent media={data?.media} className="image" parallax={true} />
+                    <MediaComponent media={data?.media} className="image" parallax={true} isExtendable={false} />
                 </ScaleImageAppear>
             </StyledMediaContainer>
         </StyledInspiration>

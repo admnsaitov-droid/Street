@@ -25,7 +25,7 @@ export const LineView = ({ data }: LineViewProps) => {
             <Breadcrumbs
                 items={[
                     { label: "Home", slug: "" },
-                    { label: "Products", slug: "lines" },
+                    { label: "Product lines", slug: "lines" },
                     { label: data?.line?.lineContent?.title || "", href: undefined },
                 ]}
             />

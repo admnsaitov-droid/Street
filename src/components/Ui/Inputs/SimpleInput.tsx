@@ -5,9 +5,10 @@ import { fontGolosText } from "@/styles/fonts"
 
 interface SimpleInputProps extends InputHTMLAttributes<HTMLInputElement> {
   label: string
+  error?: string
 }
 
-export const SimpleInput = ({ label, value = "", ...props }: SimpleInputProps) => {
+export const SimpleInput = ({ label, value = "", error, ...props }: SimpleInputProps) => {
   const [focused, setFocused] = useState(false)
 
   const handleFocus = () => setFocused(true)
@@ -32,8 +33,9 @@ export const SimpleInput = ({ label, value = "", ...props }: SimpleInputProps) =
         onFocus={handleFocus}
         onBlur={handleBlur}
       />
-      <Underline $active={focused || !!value} />
-      <StaticUnderline />
+      <Underline $active={focused || !!value} $error={!!error} />
+      <StaticUnderline $error={!!error} />
+      {error && <ErrorMessage>{error}</ErrorMessage>}
     </StyledSimpleInput>
   )
 }
@@ -117,24 +119,46 @@ const Input = styled.input`
   `}
 `
 
-const Underline = styled.div<{ $active: boolean }>`
+const Underline = styled.div<{ $active: boolean; $error: boolean }>`
   position: absolute;
   left: 0%;
   bottom: ${rm(-10)};
   width: 0%;
   height: ${rm(2)};
-  background: ${colors.black100};
+  background: ${({ $error }) => $error ? colors.red : colors.black100};
   transform: translateX(0%);
   transition: width 0.3s cubic-bezier(.4,0,.2,1);
   ${({ $active }) => $active && `width: 100%;`};
   z-index: 1;
 `
 
-const StaticUnderline = styled.div`
+const StaticUnderline = styled.div<{ $error: boolean }>`
   position: absolute;
   left: 0;
   bottom: ${rm(-10)};
   height: ${rm(1)};
-  background: #B7BCCA;
+  background: ${({ $error }) => $error ? colors.red : '#B7BCCA'};
   width: 100%;
+`
+
+const ErrorMessage = styled.div`
+  position: absolute;
+  left: 0;
+  top: ${rm(45)};
+  color: ${colors.red};
+  font-size: ${rm(14)};
+  ${fontGolosText(400)};
+  margin-top: ${rm(-2)};
+  
+  ${media.lg`
+    font-size: ${rm(12)};
+  `}
+  
+  ${media.md`
+    font-size: ${rm(10)};
+  `}
+  
+  ${media.xsm`
+    font-size: ${rm(10)};
+  `}
 `

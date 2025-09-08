@@ -10,7 +10,7 @@ import { rm, media } from '@/styles';
 import { fontSageGrotesk } from '@/styles/fonts';
 
 export const FullScreenPlayer: React.FC = () => {
-    const { content, poster, contentType, isOpen, closePlayer } = useVideoPlayerStore();
+    const { content, poster, contentType, isOpen, closePlayer, imageGallery, currentImageIndex, nextImage, previousImage } = useVideoPlayerStore();
     const videoRef = useRef<HTMLVideoElement>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [isPlaying, setIsPlaying] = useState(false);
@@ -51,14 +51,28 @@ export const FullScreenPlayer: React.FC = () => {
                     break;
                 case ' ':
                     event.preventDefault();
-                    togglePlayPause();
+                    if (contentType === 'video') {
+                        togglePlayPause();
+                    }
+                    break;
+                case 'ArrowLeft':
+                    if (contentType === 'image' && imageGallery && imageGallery.length > 1) {
+                        event.preventDefault();
+                        previousImage();
+                    }
+                    break;
+                case 'ArrowRight':
+                    if (contentType === 'image' && imageGallery && imageGallery.length > 1) {
+                        event.preventDefault();
+                        nextImage();
+                    }
                     break;
             }
         };
 
         document.addEventListener('keydown', handleKeyDown);
         return () => document.removeEventListener('keydown', handleKeyDown);
-    }, [isOpen]);
+    }, [isOpen, contentType, imageGallery]);
 
     // Auto-hide controls (only for videos)
     useEffect(() => {
@@ -305,6 +319,20 @@ export const FullScreenPlayer: React.FC = () => {
                         <CloseIcon />
                     </StyledImageCloseButton>
                 )}
+
+                {contentType === 'image' && imageGallery && imageGallery.length > 1 && (
+                    <>
+                        <StyledPrevButton onClick={isOpen ? previousImage : undefined}>
+                            <ArrowLeftIcon />
+                        </StyledPrevButton>
+                        <StyledNextButton onClick={isOpen ? nextImage : undefined}>
+                            <ArrowRightIcon />
+                        </StyledNextButton>
+                        <StyledImageCounter>
+                            {currentImageIndex + 1} / {imageGallery.length}
+                        </StyledImageCounter>
+                    </>
+                )}
             </StyledPlayerContainer>
         </StyledFullScreenPlayer>
     );
@@ -339,6 +367,18 @@ const VolumeIcon = () => (
 const CloseIcon = () => (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
         <path d="M6 6L18 18M18 6L6 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+);
+
+const ArrowLeftIcon = () => (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <path d="M15 18L9 12L15 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+);
+
+const ArrowRightIcon = () => (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
     </svg>
 );
 
@@ -393,10 +433,9 @@ const StyledVideo = styled.video`
 `;
 
 const StyledImage = styled.img`
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain;
-    border-radius: ${rm(8)};
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 `;
 
 const StyledLoader = styled.div`
@@ -673,4 +712,69 @@ const StyledTimeSlider = styled.input`
         width: ${rm(12)};
         border-radius: 50%;
     }
+`;
+
+const StyledPrevButton = styled.button`
+    position: absolute;
+    left: ${rm(20)};
+    top: 50%;
+    transform: translateY(-50%);
+    width: ${rm(48)};
+    height: ${rm(48)};
+    border-radius: 50%;
+    background-color: rgba(0, 0, 0, 0.7);
+    color: ${colors.white100};
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(4px);
+    z-index: 1004;
+
+    &:hover {
+        background-color: rgba(0, 0, 0, 0.9);
+        transform: translateY(-50%) scale(1.1);
+    }
+`;
+
+const StyledNextButton = styled.button`
+    position: absolute;
+    right: ${rm(20)};
+    top: 50%;
+    transform: translateY(-50%);
+    width: ${rm(48)};
+    height: ${rm(48)};
+    border-radius: 50%;
+    background-color: rgba(0, 0, 0, 0.7);
+    color: ${colors.white100};
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(4px);
+    z-index: 1004;
+
+    &:hover {
+        background-color: rgba(0, 0, 0, 0.9);
+        transform: translateY(-50%) scale(1.1);
+    }
+`;
+
+const StyledImageCounter = styled.div`
+    position: absolute;
+    bottom: ${rm(20)};
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(0, 0, 0, 0.7);
+    color: ${colors.white100};
+    padding: ${rm(8)} ${rm(16)};
+    border-radius: ${rm(20)};
+    font-size: ${rm(14)};
+    ${fontSageGrotesk(400)};
+    backdrop-filter: blur(4px);
+    z-index: 1004;
 `;

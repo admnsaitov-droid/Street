@@ -5,7 +5,6 @@ import Image from "next/image";
 import { useState, useEffect } from "react";
 import { getStrapiData } from "@/utils/strapi";
 import { useLocale } from 'next-intl';
-import { usePathname } from 'next/navigation';
 import { colors, media, rm } from "@/styles";
 import { AnimLink } from "@/layouts/AnimatedRouterLayout/AnimatedRouterLayout";
 import { fontGolosText } from "@/styles/fonts";
@@ -15,6 +14,7 @@ import { useWindowWidth } from "@react-hook/window-size";
 import { LanguageSelect } from "./LanguageSelect/LanguageSelect";
 import AnimatedLink from "../animated/AnimatedLink/AnimatedLink";
 import { getMediaStrapiPath } from "@/utils/getMediaStrapiPath";
+import { PackageMenu } from "./MegaMenus/PackageMenu";
 
 export const Header = () => {
     const [headerData, setHeaderData] = useState<any>(null);
@@ -49,7 +49,7 @@ export const Header = () => {
     return (
         <StyledHeader>
             <StyledWrapper>
-                <AnimLink href={'/'} className="logo">
+                <AnimLink href={`/${locale}`} className="logo">
                     {headerData?.data && (
                         <Image 
                             src={
@@ -64,6 +64,7 @@ export const Header = () => {
                     )}
                 </AnimLink>
                 <StyledLinks>
+                    <PackageMenu />
                     {headerData?.data?.links?.links?.map((item: any, index: number) => (
                         <AnimatedLink href={item?.link ? item?.link : '#'} key={index}>
                             <span>
@@ -80,7 +81,7 @@ export const Header = () => {
                         </SimpleButton>
                     )}
                 </StyledRightContainer>
-                <Menu />
+                {/* <Menu data={headerData?.data} /> */}
             </StyledWrapper>
         </StyledHeader>
     )
@@ -159,7 +160,7 @@ const StyledLinks = styled.div`
         font-size: ${rm(16)};
         color: ${colors.black100};
         ${fontGolosText(400)};
-        line-height: 130%;
+        margin-bottom: ${rm(-2)};
 
         ${media.lg`
             font-size: ${rm(14)};

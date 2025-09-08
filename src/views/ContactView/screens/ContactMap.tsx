@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from "react"
 import { Loader } from "@googlemaps/js-api-loader"
 import styled from "styled-components"
+import { rm } from "@/styles"
 
 // Custom map styles for a dark theme
 const mapStyles = [
@@ -521,16 +522,6 @@ export const ContactMap = ({
     if (error) {
         return (
             <StyledContactMap>
-                <ErrorMessage>
-                    <div style={{ marginBottom: '10px', fontWeight: 'bold' }}>Map Error</div>
-                    {error}
-                    <div style={{ marginTop: '15px', fontSize: '12px', opacity: 0.8 }}>
-                        To fix this issue:
-                        <br />1. Create a .env.local file in your project root
-                        <br />2. Add: NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=your_api_key_here
-                        <br />3. Restart your development server
-                    </div>
-                </ErrorMessage>
             </StyledContactMap>
         )
     }
@@ -538,13 +529,6 @@ export const ContactMap = ({
     return (
         <StyledContactMap>
             <MapContainer ref={mapRef} />
-            {!isLoaded && !error && (
-                <LoadingOverlay>
-                    <LoadingText>
-                        {isInitializing ? 'Initializing Map...' : 'Loading Map...'}
-                    </LoadingText>
-                </LoadingOverlay>
-            )}
         </StyledContactMap>
     )
 }

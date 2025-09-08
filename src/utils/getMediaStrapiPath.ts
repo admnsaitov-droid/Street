@@ -32,12 +32,12 @@ export const getMediaStrapiPath = (media: any) => {
     }
     
     // Debug logging
-    console.log('Image URL generated:', {
-        mediaUrl: media.url,
-        baseUrl,
-        fullUrl,
-        isProduction: typeof window !== 'undefined' && window.location.protocol === 'https:'
-    });
+    // console.log('Image URL generated:', {
+    //     mediaUrl: media.url,
+    //     baseUrl,
+    //     fullUrl,
+    //     isProduction: typeof window !== 'undefined' && window.location.protocol === 'https:'
+    // });
     
     return fullUrl;
 }

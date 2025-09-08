@@ -13,7 +13,7 @@ interface PlanetModelProps {
 }
 
 export const PlanetModel = ({ scale }: PlanetModelProps) => {
-    const { scene } = useGLTF('/models/solar.glb')
+    const { scene } = useGLTF('/models/earth.glb')
     const groupRef = useRef<Group>(null)
     const time = useRef({value: 0})
 

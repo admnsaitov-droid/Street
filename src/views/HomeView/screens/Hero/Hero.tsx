@@ -19,7 +19,7 @@ export const Hero = ({ heroData }: HeroProps) => {
     
     return (
         <StyledHero>
-            <MediaComponent media={heroData?.mainVideo} className="hero-media" />
+            <MediaComponent media={heroData?.mainVideo} className="hero-media" isExtendable={false}/>
             <BackgroundProgressiveBlur>
             </BackgroundProgressiveBlur>
             <StyledContent>
@@ -64,7 +64,7 @@ export const Hero = ({ heroData }: HeroProps) => {
                     </StyledTitleContainer>
                 </div>
                 <AnimatedTranslate className="button">
-                    <WhiteButton isSvg={true} onClick={() => {}}>
+                    <WhiteButton isSvg={true} link={heroData?.button?.link}>
                         {heroData?.button?.text}
                     </WhiteButton>
                 </AnimatedTranslate>

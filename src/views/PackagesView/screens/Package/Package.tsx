@@ -19,14 +19,24 @@ export const Package = ({ data }: PackageProps) => {
 
     const width = useWindowWidth();
     
+    // Debug: Log the productsCount value
+    console.log('Original productsCount:', data?.productsCount);
+    console.log('Cleaned productsCount:', data?.productsCount?.replace(/,/g, ''));
+    
+    // Create image gallery from available media
+    const imageGallery = [
+        data?.previewAboveMedia?.poster,
+        data?.previewSideMedia?.poster
+    ].filter(Boolean).map(media => getMediaStrapiPath(media));
+    
     return (
         <StyledPackage>
             <StyledContent>
                 <StyledLeft>
-                    {width > 576 && <StyledAnnotation>{data?.productsCount} fitness equipment</StyledAnnotation>}
+                    {width > 576 && <StyledAnnotation>{data?.productsCount.replace(/,/g, '')} fitness equipment</StyledAnnotation>}
                     <StyledBottomContainer>
-                        <MaskImageAppear className="image-container" duration={1200}>  
-                            <MediaComponent media={data?.previewAboveMedia} className="image" parallax={true}/>
+                        <MaskImageAppear className="image-container" duration={900}>  
+                            <MediaComponent media={data?.previewAboveMedia} className="image" parallax={true} imageGallery={imageGallery}/>
                         </MaskImageAppear>
                     </StyledBottomContainer>
                 </StyledLeft>
@@ -42,11 +52,11 @@ export const Package = ({ data }: PackageProps) => {
                     </StyledInfo>
                     <StyledBottomContainer>
                         <MaskImageAppear className="image-container" duration={900}>
-                            <MediaComponent media={data?.previewSideMedia} className="image" parallax={true} />
+                            <MediaComponent media={data?.previewSideMedia} className="image" parallax={true} imageGallery={imageGallery} />
                         </MaskImageAppear>
                     </StyledBottomContainer>
                 </StyledRight>
-                {width <= 576 && <StyledAnnotation>{data?.productsCount} fitness equipment</StyledAnnotation>}
+                {width <= 576 && <StyledAnnotation>{data?.productsCount.replace(/,/g, '')} fitness equipment</StyledAnnotation>}
             </StyledContent>
         </StyledPackage>
     )

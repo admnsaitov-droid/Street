@@ -25,6 +25,7 @@ import { Footer } from "@/components/Footer/Footer";
 import { SuccessModal } from "@/components/Modals/SuccessModal/SuccessModal";
 import { ErrorModal } from "@/components/Modals/ErrorModal/ErrorModal";
 import { FullScreenPlayer } from "@/components/FullScreenPlayer/FullScreenPlayer";
+import { FadeContainer } from "@/components/Header/MegaMenus/FadeContainer";
 
 const onest = Onest({
   subsets: ["latin"],
@@ -72,6 +73,7 @@ export default async function RootLayout({
                   <Cookie />
                   <AnimatedRouterLayout>
                     <Header />
+                    <FadeContainer />
                     <SuccessModal />
                     <ErrorModal />
                     <FullScreenPlayer />

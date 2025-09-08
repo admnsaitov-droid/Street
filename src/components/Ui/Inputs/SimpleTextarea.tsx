@@ -5,9 +5,10 @@ import { fontGolosText } from "@/styles/fonts"
 
 interface SimpleTextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
   label: string
+  error?: string
 }
 
-export const SimpleTextarea = ({ label, value = "", ...props }: SimpleTextareaProps) => {
+export const SimpleTextarea = ({ label, value = "", error, ...props }: SimpleTextareaProps) => {
   const [focused, setFocused] = useState(false)
 
   const handleFocus = () => setFocused(true)
@@ -32,8 +33,9 @@ export const SimpleTextarea = ({ label, value = "", ...props }: SimpleTextareaPr
         onFocus={handleFocus}
         onBlur={handleBlur}
       />
-      <Underline $active={focused || !!value} />
-      <StaticUnderline />
+      <Underline $active={focused || !!value} $error={!!error} />
+      <StaticUnderline $error={!!error} />
+      {error && <ErrorMessage>{error}</ErrorMessage>}
     </StyledSimpleTextarea>
   )
 }
@@ -112,24 +114,46 @@ const Textarea = styled.textarea`
   `}
 `
 
-const Underline = styled.div<{ $active: boolean }>`
+const Underline = styled.div<{ $active: boolean; $error: boolean }>`
   position: absolute;
   left: 0%;
   bottom: ${rm(-10)};
   width: 0%;
   height: ${rm(2)};
-  background: ${colors.black100};
+  background: ${({ $error }) => $error ? colors.red : colors.black100};
   transform: translateX(0%);
   transition: width 0.3s cubic-bezier(.4,0,.2,1);
   ${({ $active }) => $active && `width: 100%;`};
   z-index: 1;
 `
 
-const StaticUnderline = styled.div`
+const StaticUnderline = styled.div<{ $error: boolean }>`
   position: absolute;
   left: 0;
   bottom: ${rm(-10)};
   height: ${rm(1)};
-  background: #B7BCCA;
+  background: ${({ $error }) => $error ? colors.red : '#B7BCCA'};
   width: 100%;
+`
+
+const ErrorMessage = styled.div`
+  position: absolute;
+  left: 0;
+  top: ${rm(100)};
+  color: ${colors.red};
+  font-size: ${rm(14)};
+  ${fontGolosText(400)};
+  margin-top: ${rm(5)};
+  
+  ${media.lg`
+    font-size: ${rm(12)};
+  `}
+  
+  ${media.md`
+    font-size: ${rm(10)};
+  `}
+  
+  ${media.xsm`
+    font-size: ${rm(10)};
+  `}
 `

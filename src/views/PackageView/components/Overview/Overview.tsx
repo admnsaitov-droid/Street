@@ -37,6 +37,11 @@ export const Overview = ({ data }: OverviewProps) => {
         setAllUrls(allProducts)
     }, [allProducts, setAllUrls])
 
+    const imageGallery = [
+        data?.mainMediaLeft?.poster,
+        data?.mainMediaRight?.poster
+    ].filter(Boolean).map(media => getMediaStrapiPath(media));
+
     return (
         <StyledOverview ref={containerRef}>
             <StyledTop>
@@ -53,13 +58,13 @@ export const Overview = ({ data }: OverviewProps) => {
             </StyledTop>
             <StyledImagesContainer>
                 <StyledImageContainer>
-                    <MaskImageAppear className="image-container" duration={1200}>
-                        <MediaComponent media={data?.mainMediaLeft} className="image" />
+                    <MaskImageAppear className="image-container" duration={900}>
+                        <MediaComponent media={data?.mainMediaLeft} className="image" imageGallery={imageGallery} />
                     </MaskImageAppear>
                 </StyledImageContainer>
                 <StyledImageContainer>
                     <MaskImageAppear className="image-container" duration={900}>
-                        <MediaComponent media={data?.mainMediaRight} className="image" />
+                        <MediaComponent media={data?.mainMediaRight} className="image" imageGallery={imageGallery} />
                     </MaskImageAppear>
                 </StyledImageContainer>
             </StyledImagesContainer>

@@ -10,6 +10,7 @@ export const _colors = {
     blue90: '#99B3F1',
     bgGray: '#E9EDF1',
     gray90: '#868D9C',
+    gray700: '#B7BCCA',
 } 
 
 

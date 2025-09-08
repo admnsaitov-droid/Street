@@ -6,15 +6,17 @@ import Image from "next/image";
 import styled from "styled-components";
 import { useRef } from "react";
 import VideoPlayer from "../Skeleton/VideoPlayer";
+import { colors } from "@/styles/colors";
 
 interface MediaComponentProps {
     media: any;
     className?: string;
     isExtendable?: boolean;
     parallax?: boolean;
+    imageGallery?: string[];
 }
 
-export const MediaComponent = ({ media, className, isExtendable = true, parallax = false }: MediaComponentProps) => {
+export const MediaComponent = ({ media, className, isExtendable = true, parallax = true, imageGallery }: MediaComponentProps) => {
     const { openVideo, openImage } = useVideoPlayerStore();
     const elementRef = useRef<HTMLDivElement>(null);
 
@@ -24,11 +26,10 @@ export const MediaComponent = ({ media, className, isExtendable = true, parallax
     // Parallax effect using useSpringTrigger
     const { springs } = useSpringTrigger({
         elementRef,
-        enabled: parallax,
         start: "top bottom",
         end: "bottom top",
-        from: { y: -20 },
-        to: { y: 20 },
+        from: { y: '-30px' },
+        to: { y: '30px' },
         disableOnMobile: true,
     });
 
@@ -39,7 +40,7 @@ export const MediaComponent = ({ media, className, isExtendable = true, parallax
     };
     const handleOpenImage = () => {
         if (isExtendable) {
-            openImage(getMediaStrapiPath(poster));
+            openImage(getMediaStrapiPath(poster), imageGallery);
         }
     };
 
@@ -81,6 +82,8 @@ const StyledMediaComponent = styled.div<{ $isExtendable: boolean; $parallax: boo
                 transform: scale(1.02);
             }
         `}
+
+
     }
 
     img, video {
@@ -88,18 +91,26 @@ const StyledMediaComponent = styled.div<{ $isExtendable: boolean; $parallax: boo
     }
 
     .media {
-        width: ${({ $parallax }) => $parallax ? "103%" : "100%"};
-        height: ${({ $parallax }) => $parallax ? "103%" : "100%"};
+        width: 105% !important;
+        height: 105% !important;
         object-fit: cover;
         position: absolute;
-        top: ${({ $parallax }) => $parallax ? "-1%" : "0"};
-        left: ${({ $parallax }) => $parallax ? "-1%" : "0"};
+        top: -2% !important;   
+        left: -2% !important;
     }
 
     .media-wrapper {
         width: 100%;
         height: 100%;
         position: relative;
+
+        transition: transform 0.3s ease;
+
+        &:hover {
+            ${({ $isExtendable }) => $isExtendable && `
+                transform: scale(1.02);
+            `}
+        }
     }
 
     .parallax-wrapper {
