@@ -106,19 +106,18 @@ const GlobalStyles = createGlobalStyle`
     /* Cookie */
     .cookieContainer {
         position: fixed;
-        right: ${rm(8)} !important;
-        bottom: ${rm(8)} !important;
-        max-width: ${rm(450)};
+        right: ${rm(24)} !important;
+        bottom: ${rm(24)} !important;
+        max-width: ${rm(530)};
         width: 100%;
         z-index: 10002;
         background: rgba(0, 0, 0, .95);
-        border-radius: ${rm(4)};
-        padding: ${rm(12)} ${rm(32)};
+        border-radius: ${rm(10)};
+        padding: ${rm(40)};
         display: flex;
         flex-direction: column;
         justify-content: flex-start;
         align-items: flex-start;
-        gap: ${rm(24)};
         border: 1px solid rgb(37, 37, 37);
         opacity: 0;
         transition: opacity 2s ease;
@@ -179,19 +178,7 @@ const GlobalStyles = createGlobalStyle`
     }
 
     .cookieButton {
-        padding-bottom: ${rm(4)};
-        cursor: pointer;
-        padding: ${rm(16)} ${rm(64)};
-        background-color: white;
-        color: black;
-        border-radius: ${rm(2)};
-        width: 100%;
-        font-size: ${rm(16)};
-        border: 1px solid white;
-        &:hover {
-            background: transparent;
-            color: white;
-        }
+        display: none !important;
     }
 `
 

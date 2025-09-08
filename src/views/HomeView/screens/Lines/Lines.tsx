@@ -11,9 +11,10 @@ import { getMediaStrapiPath } from "@/utils/getMediaStrapiPath";
 
 interface LinesProps {
   linesData: any;
+  isTop?: boolean;
 }
 
-export const Lines = ({ linesData }: LinesProps) => {
+export const Lines = ({ linesData, isTop = true }: LinesProps) => {
     const setAllUrls = usePreview(state => state.setAllUrls)
     const containerRef = usePreview(state => state.containerRef)
     const setUrl = usePreview(state => state.setUrl)
@@ -103,9 +104,9 @@ export const Lines = ({ linesData }: LinesProps) => {
     console.log('lines', linesData)
 
   return (
-    <StyledLines ref={containerRef}>
+    <StyledLines ref={containerRef} isTop={isTop}>
         <Preview />
-        <StyledTopContainer>
+        {isTop && <StyledTopContainer>
             <AnimatedText className="title">
                 {linesData?.title}
             </AnimatedText>
@@ -116,7 +117,7 @@ export const Lines = ({ linesData }: LinesProps) => {
                     </AnimatedText>
                 </div>
             </div>
-        </StyledTopContainer>
+        </StyledTopContainer>}
         <div className="lines">
             {linesData?.lines.map((line: any, index: number) => (
                 <Line 
@@ -132,12 +133,17 @@ export const Lines = ({ linesData }: LinesProps) => {
   )
 };
 
-const StyledLines = styled.div`
+const StyledLines = styled.div<{ isTop: boolean }>`
   display: flex;
   flex-direction: column;
   width: 100%;
   padding: ${rm(150)} ${rm(50)};
   position: relative;
+
+  ${({ isTop }) => !isTop && `
+    padding: 0;
+    margin-top: ${rm(80)};
+  `}
 
   ${media.md`
     padding: ${rm(150)} ${rm(25)};

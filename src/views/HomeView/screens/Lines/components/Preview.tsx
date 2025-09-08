@@ -133,44 +133,34 @@ export const Preview = () => {
         if (!lines.length) return
         
         const containerRect = containerRef.current.getBoundingClientRect()
+        const previewRect = innerRef.current.getBoundingClientRect()
         let targetY = 0
+        let targetX = 0
         
         if (index === 0) {
-            // First line: position preview above it using the line's height as reference
+            // First line: position preview at the top of the first line, translated up by half its height
             const firstLine = lines[0] as HTMLElement
             const firstLineRect = firstLine.getBoundingClientRect()
-            const previewHeight = innerRef.current.getBoundingClientRect().height
-            const lineHeight = firstLineRect.height
             
-            // Position preview above the first line, using line height as spacing reference
-            // Center the preview in the "virtual line space" above the first line
-            const virtualLineTop = firstLineRect.top - lineHeight
-            targetY = virtualLineTop - containerRect.top + (lineHeight / 2) - (previewHeight / 2)
-        } else if (index === 1) {
-            // Second line: center preview on top edge of first line  
-            // (50% of preview above the line, 50% inside the line)
-            const firstLine = lines[0] as HTMLElement
-            const firstLineRect = firstLine.getBoundingClientRect()
-            const previewHeight = innerRef.current.getBoundingClientRect().height
-            
-            targetY = firstLineRect.top - containerRect.top - (previewHeight / 2)
+            // Position at top of the first line, translated up by half preview height
+            targetY = firstLineRect.top - containerRect.top - (previewRect.height / 2) // 10px margin from top
+            targetX = firstLineRect.right - containerRect.left - previewRect.width + 10 // 10px margin from right
         } else {
-            // Third line and beyond: center preview on top edge of previous line
-            // (50% of preview above the line, 50% inside the line)
+            // For other lines: position preview in bottom right of the previous line
             const previousLine = lines[index - 1] as HTMLElement
             
             if (previousLine) {
                 const previousRect = previousLine.getBoundingClientRect()
-                const previewHeight = innerRef.current.getBoundingClientRect().height
                 
-                // Position preview so its center is on the top edge of the previous line
-                targetY = previousRect.top - containerRect.top - (previewHeight / 2)
+                // Position at bottom right of the previous line
+                targetY = previousRect.bottom - containerRect.top - previewRect.height - 10 // 10px margin from bottom
+                targetX = previousRect.right - containerRect.left - previewRect.width + 10 // 10px margin from right
             }
         }
         
         moveApi.start({ 
             y: targetY,
-            x: 0,
+            x: targetX,
             config: { tension: 280, friction: 60 }
         })
     }, [index, moveApi, width])
@@ -211,7 +201,7 @@ export const Preview = () => {
                             />
                         ) }
                         <span className="logo">
-                            <svg width="176" height="16" viewBox="0 0 176 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <svg width="176" height="16" viewBox="0 0 176 16" fill="none" xmlns="http://www.w3.org/2000/svg" className="logo-svg">
                                 <g clip-path="url(#clip0_5081_9399)">
                                 <path d="M92.6527 7.80066L89.3633 4.535L86.0739 7.80066L89.3633 11.0663L92.6527 7.80066Z" fill="black"/>
                                 <path d="M84.7614 6.4944L88.0508 3.22874L84.7614 -0.036913L81.472 3.22875L84.7614 6.4944Z" fill="#FF0021"/>
@@ -287,13 +277,9 @@ const StyledContainer = styled(animated.div)`
     `} */
 
     ${media.xsm`
-        // width: ${rm(390 - 32)};
-        // height: ${rm(285 * 0.75)};
-        // top: ${rm(48)}; left: ${rm(16)};
-        // position: fixed;
-        /* transform: none !important; */
-        // z-index: 11;
-        // pointer-events: auto;
+        width: ${rm(120)};
+        height: ${rm(90)};
+        border-radius: ${rm(4)};
     `}
 
     &:hover {
@@ -316,6 +302,17 @@ const StyledContainer = styled(animated.div)`
         display: flex;
         align-items: center;
         font-size: ${rm(16)};
+
+        ${media.xsm`
+            font-size: ${rm(8)};
+        `}
+
+        // .logo-svg {
+        //     ${media.xsm`
+        //         width: 88px;
+        //         height: 8px;
+        //     `}
+        // }
     }
 
     .progress {

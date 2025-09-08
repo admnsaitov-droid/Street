@@ -5,9 +5,8 @@ import Image from "next/image";
 import { useState, useEffect } from "react";
 import { getStrapiData } from "@/utils/strapi";
 import { useLocale } from 'next-intl';
-import { usePathname } from 'next/navigation';
 import { colors, media, rm } from "@/styles";
-import { AnimLink, useAnimatedRouter } from "@/layouts/AnimatedRouterLayout/AnimatedRouterLayout";
+import { AnimLink } from "@/layouts/AnimatedRouterLayout/AnimatedRouterLayout";
 import { fontGolosText } from "@/styles/fonts";
 import { SimpleButton } from "../Ui/buttons/SimpleButton";
 import { Menu } from "./Menu";
@@ -15,6 +14,7 @@ import { useWindowWidth } from "@react-hook/window-size";
 import { LanguageSelect } from "./LanguageSelect/LanguageSelect";
 import AnimatedLink from "../animated/AnimatedLink/AnimatedLink";
 import { getMediaStrapiPath } from "@/utils/getMediaStrapiPath";
+import { PackageMenu } from "./MegaMenus/PackageMenu";
 
 export const Header = () => {
     const [headerData, setHeaderData] = useState<any>(null);
@@ -22,10 +22,6 @@ export const Header = () => {
     const [error, setError] = useState<string | null>(null);
     const width = useWindowWidth();
     const locale = useLocale();
-
-    const { routeChangeStart } = useAnimatedRouter();
-
-    const pathname = usePathname();
 
     useEffect(() => {
         const fetchHeaderData = async () => {
@@ -68,6 +64,7 @@ export const Header = () => {
                     )}
                 </AnimLink>
                 <StyledLinks>
+                    <PackageMenu />
                     {headerData?.data?.links?.links?.map((item: any, index: number) => (
                         <AnimatedLink href={item?.link ? item?.link : '#'} key={index}>
                             <span>
@@ -84,7 +81,7 @@ export const Header = () => {
                         </SimpleButton>
                     )}
                 </StyledRightContainer>
-                <Menu />
+                {/* <Menu data={headerData?.data} /> */}
             </StyledWrapper>
         </StyledHeader>
     )

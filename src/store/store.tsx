@@ -13,6 +13,8 @@ interface LoadingStore {
     type: 'default' | 'hover';
   };
   setCurrentCursor: (cursor: { type: 'default' | 'hover' }) => void;
+  isMegaMenuOpen: boolean;
+  setIsMegaMenuOpen: (value: boolean) => void;
 }
 
 interface VideoPlayerStore {
@@ -68,6 +70,9 @@ const useLoadingStore = create<LoadingStore>((set, get) => ({
 
     currentCursor: { type: 'default' },
     setCurrentCursor: (cursor: { type: 'default' | 'hover' }) => set({ currentCursor: cursor }),
+
+    isMegaMenuOpen: false,
+    setIsMegaMenuOpen: (value: boolean) => set({ isMegaMenuOpen: value }),
 }));
 
 export const useVideoPlayerStore = create<VideoPlayerStore>((set, get) => ({

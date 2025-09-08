@@ -10,6 +10,7 @@ import Image from "next/image";
 import { getMediaStrapiPath } from "@/utils/getMediaStrapiPath";
 import { useTransition, animated, easings } from "@react-spring/web";
 import { MediaComponent } from "@/components/MediaComponent/MediaComponent";
+import { useWindowWidth } from "@react-hook/window-size";
 
 interface PackagesProps {
     packagesData: any
@@ -25,6 +26,8 @@ export const Packages = ({ packagesData }: PackagesProps) => {
     const prevBarProgressFirst = useRef<number>(0);
     const prevBarProgressSecond = useRef<number>(0);
     const prevBarProgressThird = useRef<number>(0);
+
+    const width = useWindowWidth()
 
     const firstImageRef = useRef<HTMLDivElement>(null);
     const secondImageRef = useRef<HTMLDivElement>(null);
@@ -187,19 +190,19 @@ export const Packages = ({ packagesData }: PackagesProps) => {
                         {/* First package image */}
                         {packagesData?.packages?.[0]?.media && (
                             <div style={{width: '100%', height: '100%', position: 'absolute', top: 0, left: 0}} ref={firstImageRef}>
-                                <MediaComponent media={packagesData.packages[0].media} className="image" parallax />
+                                <MediaComponent media={packagesData.packages[0].media} className="image" parallax={width > 576} isExtendable={false} />
                             </div>
                         )}
                         {/* Second package image */}
                         {packagesData?.packages?.[1]?.media && (
                             <div style={{width: '100%', height: '100%', position: 'absolute', top: 0, left: 0}} ref={secondImageRef}>
-                                <MediaComponent media={packagesData.packages[1].media} className="image" parallax />
+                                <MediaComponent media={packagesData.packages[1].media} className="image" parallax={width > 576} isExtendable={false} />
                             </div>
                         )}
                         {/* Third package image */}
                         {packagesData?.packages?.[2]?.media && (
                             <div style={{width: '100%', height: '100%', position: 'absolute', top: 0, left: 0}} ref={thirdImageRef}>
-                                <MediaComponent media={packagesData.packages[2].media} className="image" parallax isExtendable={false} />
+                                <MediaComponent media={packagesData.packages[2].media} className="image" parallax={width > 576} isExtendable={false} />
                             </div>
                         )}
                     </div>

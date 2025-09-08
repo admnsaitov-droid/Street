@@ -1,7 +1,16 @@
+import { useScroll } from "@/layouts/ScrollLayout/useScroll";
 import { colors, media, rm } from "@/styles"
 import styled from "styled-components"
 
-export const Menu = () => {
+interface MenuProps {
+    data: any;
+}
+
+export const Menu = ({ data }: MenuProps) => {
+
+    const stopScroll = useScroll((state) => state.stop);
+    const startScroll = useScroll((state) => state.start);
+
     return (
         <StyledMenu>
             <div className="button">
@@ -35,3 +44,7 @@ const StyledMenu = styled.div`
         }
     }
 `   
+
+const StyledMenuContainer = styled.div`
+    position: fixed;
+`
