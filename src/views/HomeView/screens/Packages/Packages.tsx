@@ -283,7 +283,7 @@ const StyledContentLayout = styled.div`
         `}
 
         ${media.xsm`
-            padding: ${rm(40)} ${rm(20)};
+            padding: ${rm(24)} ${rm(20)};
             height: 65%;
         `}
 
@@ -325,6 +325,10 @@ const StyledMidContent = styled.div`
     flex-direction: column;
     gap: ${rm(20)};
 
+    ${media.xsm`
+        gap: ${rm(10)};
+    `}
+
     .title-container, .description-container {
         position: relative;
         overflow: hidden;
@@ -337,7 +341,7 @@ const StyledMidContent = styled.div`
         `}
 
         ${media.xsm`
-            height: ${rm(51)};
+            height: ${rm(21)};
         `}
     }
 
@@ -365,7 +369,7 @@ const StyledMidContent = styled.div`
         `}
 
         ${media.xsm`
-            font-size: ${rm(32)};
+            font-size: ${rm(26)};
         `}
     }
 

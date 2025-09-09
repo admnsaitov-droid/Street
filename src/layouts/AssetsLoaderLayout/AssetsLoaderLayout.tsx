@@ -100,7 +100,7 @@ export const AssetsLoaderLayout = ({
         from: { transform: 'translateY(0%)' },
         enter: { transform: 'translateY(0%)' },
         leave: { transform: 'translateY(100%)' },
-        delay: 2000,
+        delay: 3500,
         config: {
             duration: 400,
             easing: easings.easeInCubic
@@ -115,7 +115,7 @@ export const AssetsLoaderLayout = ({
         <>
             {transitions((styles, item) => item && (
                 <StyledLoader style={styles}>
-                    <Loader setFullyLoaded={setFullyLoaded} progress={progress} />
+                    <Loader setFullyLoaded={setFullyLoaded} progress={progress} isFullyLoaded={fullyLoaded}/>
                 </StyledLoader>
             ))}
             <StyledLoaderContainer as={animated.div} style={wrapperValues}>

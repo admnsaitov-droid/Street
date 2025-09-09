@@ -28,8 +28,11 @@ export const ProjectsView = ({ data }: ProjectsViewProps) => {
                     lat: -20.45,
                     lng: 57.3522222
                 },
-                title: "Piton du Feu",
-                content: `<div style='padding: 10px;'><h3>Piton du Feu</h3><p>Mauritius</p></div>`
+                title: "SB Outdoor Gym",
+                address: "501 Silverside Rd, Wilmington, DE 19809, USA",
+                image: "/markerImage.png",
+                linkText: "View details",
+                onLinkClick: () => console.log("View details clicked")
             }
         ]
     }

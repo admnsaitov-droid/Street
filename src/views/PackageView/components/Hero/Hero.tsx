@@ -6,6 +6,11 @@ import Breadcrumbs from "@/components/Breadcrumbs/Breadcrumbs"
 import { AnimatedText } from "@/components/animated/AnimatedText/AnimatedText"
 import Image from "next/image"
 import styled from "styled-components"
+import dynamic from "next/dynamic"
+
+const PackageScene = dynamic(() => import("./PackageScene").then((mod) => mod.PackageScene), {
+    ssr: false,
+})
 
 interface HeroProps {
     data: any
@@ -15,7 +20,8 @@ export const Hero = ({ data }: HeroProps) => {
 
     return (
         <StyledHero>
-            <StyledBackgroundImage src={`/packages/${data?.slug.toLowerCase()}.jpg`} alt='preview-image' fill/>
+            <PackageScene />
+            {/* <StyledBackgroundImage src={`/packages/${data?.slug.toLowerCase()}.jpg`} alt='preview-image' fill/> */}
             <StyledContent>
                 <Breadcrumbs
                     items={[
@@ -40,7 +46,7 @@ const StyledHero = styled.div`
 
 const StyledContent = styled.div`
     width: 100%;
-    height: 100%;
+    // height: 100%;
     padding: ${rm(100)} ${rm(50)};
     display: flex;
     flex-direction: column;

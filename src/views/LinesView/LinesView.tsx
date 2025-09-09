@@ -11,7 +11,6 @@ interface LinesViewProps {
 }
 
 export const LinesView = ({ data }: LinesViewProps) => {
-    console.log(data)
     return (
         <StyledLinesView>
             <Breadcrumbs

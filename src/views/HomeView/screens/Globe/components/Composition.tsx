@@ -4,21 +4,27 @@ import { Group } from "three"
 import * as THREE from "three"
 import { PlanetModel } from "./PlanetModel"
 import { Trackers } from "./Trackers/Trackers"
+import { useRotationControls } from "./RotationGUI"
 
 interface CompositionProps {
     scale: number
     position: [number, number, number]
+    inView: any
     rotationXSpeed: number
     rotationZSpeed: number
-    inView: any
+    mouseRotationIntensity: number
 }
 
-const mouseRotationIntensity = 0.05
-
-export const Composition = ({ scale, position, rotationXSpeed, rotationZSpeed, inView }: CompositionProps) => {
+export const Composition = ({ scale, position, inView, rotationXSpeed, rotationZSpeed, mouseRotationIntensity }: CompositionProps) => {
+    const rotationControls = useRotationControls()
     const groupRef = useRef<Group>(null)
+    const mouseGroupRef = useRef<Group>(null)
     const mouseRef = useRef({ x: 0, y: 0 })
-    const baseRotation = useRef({ x: 0, z: 0 })
+    const baseRotation = useRef({ x: 0, y: 0, z: 0 })
+
+    // Use GUI controls if available, otherwise fallback to props
+    const effectiveRotationZSpeed = rotationControls.rotationZSpeed || rotationZSpeed
+    const effectiveMouseIntensity = rotationControls.mouseIntensity || mouseRotationIntensity
 
     useEffect(() => {
         const handleMouseMove = (event: MouseEvent) => {
@@ -34,35 +40,42 @@ export const Composition = ({ scale, position, rotationXSpeed, rotationZSpeed, i
     }, [])
 
     useFrame((state, delta) => {
-        if (groupRef.current && inView.current) {
-            // Update base rotation
-            baseRotation.current.x += rotationXSpeed
-            baseRotation.current.z += rotationZSpeed
+        if (groupRef.current && mouseGroupRef.current && inView.current) {
+            // Update base rotation for groupRef (Y axis only)
+            baseRotation.current.y += effectiveRotationZSpeed
 
-            // Calculate target rotation (base + mouse influence)
-            const targetX = baseRotation.current.x + mouseRef.current.y * mouseRotationIntensity
-            const targetZ = baseRotation.current.z + mouseRef.current.x * mouseRotationIntensity
-            // const targetX = mouseRef.current.y * mouseRotationIntensity
-            // const targetZ = mouseRef.current.x * mouseRotationIntensity
+            // Apply continuous Y rotation to groupRef
+            groupRef.current.rotation.y = baseRotation.current.y
 
-            // Interpolate to target rotation
-            groupRef.current.rotation.x = THREE.MathUtils.lerp(
-                groupRef.current.rotation.x,
-                targetX,
+            // Calculate mouse-based rotation for mouseGroupRef
+            const targetMouseX = mouseRef.current.y * effectiveMouseIntensity
+            const targetMouseY = mouseRef.current.x * effectiveMouseIntensity
+
+            // Apply mouse rotation to mouseGroupRef (X and Y axes)
+            mouseGroupRef.current.rotation.x = THREE.MathUtils.lerp(
+                mouseGroupRef.current.rotation.x,
+                targetMouseX,
                 delta * 3
             )
-            groupRef.current.rotation.z = THREE.MathUtils.lerp(
-                groupRef.current.rotation.z,
-                targetZ,
+            mouseGroupRef.current.rotation.y = THREE.MathUtils.lerp(
+                mouseGroupRef.current.rotation.y,
+                targetMouseY,
                 delta * 3
             )
         }
     })
 
     return (
-        <group ref={groupRef} position={position}>
-            <PlanetModel scale={scale} />
-            <Trackers />
+        <group 
+            ref={groupRef} 
+            position={position} 
+        >
+            <group ref={mouseGroupRef}>
+                <group rotation={[4, 0.9, -3.521836734693878]}>
+                    <PlanetModel scale={scale} />
+                    <Trackers />
+                </group>
+            </group>
         </group>
     )
 }

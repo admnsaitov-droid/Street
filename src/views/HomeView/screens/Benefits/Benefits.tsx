@@ -7,16 +7,20 @@ import { fontGolosText, fontSageGrotesk } from "@/styles/fonts"
 import { getMediaStrapiPath } from "@/utils/getMediaStrapiPath"
 import Image from "next/image"
 import styled from "styled-components"
+import { useWindowWidth } from "@react-hook/window-size"
 
 interface BenefitsProps {
     benefitsData: any
 }
 
 export const Benefits = ({ benefitsData }: BenefitsProps) => {
+
+    const width = useWindowWidth()
+
     return (
         <StyledBenefits>
             <div className="left">
-                <MaskImageAppear className="image-container">
+                <MaskImageAppear className="image-container" enabled={width > 768}>
                     <MediaComponent media={benefitsData?.media} className="image" parallax={true} isExtendable={false} />
                 </MaskImageAppear>
             </div>

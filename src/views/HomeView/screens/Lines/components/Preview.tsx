@@ -56,16 +56,6 @@ export const Preview = () => {
         config: { tension: 280, friction: 60 }
     })
 
-    // Debug preview state
-    console.log('Preview component state:', {
-        url,
-        poster: !!poster,
-        index,
-        condition: url === 'poster-only' && poster,
-        opacity: values.opacity.get(),
-        scale: values.scale.get()
-    })
-    
 
     const [moveValues, moveApi] = useSpring(() => ({
         y: 0,

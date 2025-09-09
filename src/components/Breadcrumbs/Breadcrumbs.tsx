@@ -68,7 +68,6 @@ function withLocale(locale: string, slug?: string) {
 const StyledBreadcrumbs = styled.nav`
   display: flex;
   align-items: center;
-  gap: ${rm(8)};
   margin-bottom: ${rm(20)};
 `;
 

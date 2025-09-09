@@ -161,18 +161,18 @@ export const ContactForm = () => {
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value })
+        // Clear error when user starts typing
+        if (errors[e.target.name as keyof typeof errors]) {
+            setErrors({ ...errors, [e.target.name]: '' })
+        }
     }
 
     const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value })
-    }
-
-    const handleInputError = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setErrors({ ...errors, [e.target.name]: e.target.value })
-    }
-
-    const handleTextareaError = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-        setErrors({ ...errors, [e.target.name]: e.target.value })
+        // Clear error when user starts typing
+        if (errors[e.target.name as keyof typeof errors]) {
+            setErrors({ ...errors, [e.target.name]: '' })
+        }
     }
 
     return (    
@@ -221,7 +221,7 @@ export const ContactForm = () => {
                         <StyledSection>
                             <StyledFormText>Hello, my name is</StyledFormText>
                             <StyledInputWrapper>
-                                <SimpleInput label="your name" name="fullName" value={formData.fullName} onChange={handleInputChange} error={errors.subject} />
+                                <SimpleInput label="your name" name="fullName" value={formData.fullName} onChange={handleInputChange} error={errors.fullName} />
                             </StyledInputWrapper>
                         </StyledSection>
                     </LineAppear>
@@ -259,7 +259,7 @@ export const ContactForm = () => {
                         <StyledSection>
                             <StyledFormText>Hello, my name is</StyledFormText>
                             <StyledInputWrapper>
-                                <SimpleInput label="your name" name="fullName" value={formData.fullName} onChange={handleInputChange} error={errors.subject} />
+                                <SimpleInput label="your name" name="fullName" value={formData.fullName} onChange={handleInputChange} error={errors.fullName} />
                             </StyledInputWrapper>
                         </StyledSection>
                     </LineAppear>
@@ -297,10 +297,22 @@ export const ContactForm = () => {
                     </LineAppear>
                 </>}
                 <StyledBottom>
-                    <div className="left" onClick={() => setFormData({ ...formData, policy: !formData.policy })}>
+                    <div className="left" onClick={() => {
+                        setFormData({ ...formData, policy: !formData.policy })
+                        // Clear error when user toggles checkbox
+                        if (errors.policy) {
+                            setErrors({ ...errors, policy: false })
+                        }
+                    }}>
                         <SimpleCheckbox
                             checked={formData.policy}
-                            onChange={() => setFormData({ ...formData, policy: !formData.policy })}
+                            onChange={() => {
+                                setFormData({ ...formData, policy: !formData.policy })
+                                // Clear error when user toggles checkbox
+                                if (errors.policy) {
+                                    setErrors({ ...errors, policy: false })
+                                }
+                            }}
                         />
                         <div className="texts">
                             <p>{data?.data?.policyText}</p>

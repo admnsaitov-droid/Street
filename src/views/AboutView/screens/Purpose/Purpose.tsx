@@ -225,6 +225,10 @@ export const StyledPurposeTitleContainer = styled.div`
 
     .first-row {
         width: 100%;
+
+        ${media.xsm`
+            margin-bottom: ${rm(4)};
+        `}
     }
 
     .second-row {

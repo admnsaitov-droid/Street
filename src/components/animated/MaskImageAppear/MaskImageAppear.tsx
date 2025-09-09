@@ -1,14 +1,14 @@
 import { animated, easings, useInView, useSpring } from "@react-spring/web"
 import styled from "styled-components"
 
-export const MaskImageAppear = ({ children, className, delay, duration }: { children: React.ReactNode, className?: string, delay?: number, duration?: number }) => {
+export const MaskImageAppear = ({ children, className, delay, duration, enabled=true }: { children: React.ReactNode, className?: string, delay?: number, duration?: number, enabled?: boolean }) => {
 
     const [ref, inView] = useInView({
         once: true,
     })
 
     const springAppear = useSpring({
-        y: inView ? '0%' : '-100%',
+        y: inView || !enabled ? '0%' : '-100%',
         config: {
             duration: duration || 900,
             easing: easings.easeOutQuad,
@@ -17,7 +17,7 @@ export const MaskImageAppear = ({ children, className, delay, duration }: { chil
     })
 
     const springAddition = useSpring({
-        y: inView ? '0%' : '50%',
+        y: inView || !enabled ? '0%' : '50%',
         config: {
             duration: duration || 900,
             easing: easings.easeOutQuad,

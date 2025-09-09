@@ -12,9 +12,9 @@ import { getMediaStrapiPath } from "@/utils/getMediaStrapiPath"
 import useLoadingStore from "@/store/store"
 import { AnimLink } from "@/layouts/AnimatedRouterLayout/AnimatedRouterLayout"
 
-export const PackageMenu = () => {  
+export const ProductsMenu = () => {  
     const [isHovered, setIsHovered] = useState(false)
-    const [packagesData, setPackagesData] = useState<any>(null);
+    const [linesData, setLinesData] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [contentHeight, setContentHeight] = useState(0);
@@ -26,9 +26,10 @@ export const PackageMenu = () => {
     useEffect(() => {
         const fetchPackagesData = async () => {
             try {
-                const data = await getStrapiData('get-packages-data', locale);
-                setPackagesData(data?.package);
-                setCurrentPackage(data?.package?.[0]);
+                const data = await getStrapiData('get-lines', locale);
+                setLinesData(data?.linesPageData?.lines);
+                console.log('ProductsMenuData', data)
+                // setCurrentPackage(data?.package?.[0]);
             } catch (err) {
                 console.error('Error fetching packages data:', err);
                 setError('Failed to load header');
@@ -42,7 +43,7 @@ export const PackageMenu = () => {
 
     // Measure content height when packages data changes
     useEffect(() => {
-        if (packagesData && contentRef.current) {
+        if (linesData && contentRef.current) {
             // Temporarily make the content visible to measure it
             const element = contentRef.current;
             const originalStyles = {
@@ -71,12 +72,12 @@ export const PackageMenu = () => {
             // Restore original styles
             Object.assign(element.style, originalStyles);
         }
-    }, [packagesData]);
+    }, [linesData]);
 
     // Handle resize to recalculate height
     useEffect(() => {
         const handleResize = () => {
-            if (contentRef.current && packagesData) {
+            if (contentRef.current && linesData) {
                 const element = contentRef.current;
                 const originalStyles = {
                     height: element.style.height,
@@ -111,7 +112,7 @@ export const PackageMenu = () => {
         return () => {
             resizeObserver.disconnect();
         };
-    }, [packagesData]);
+    }, [linesData]);
 
     const menuAnimation = useSpring({
         height: isHovered ? contentHeight : 0,
@@ -119,10 +120,10 @@ export const PackageMenu = () => {
     })
 
     return (
-        <StyledPackageMenu>
+        <StyledProductsMenu>
             <StyledVisibleContainer>
                 <AnimLink
-                    href="/packages"
+                    href="/lines"
                     onMouseEnter={() => {
                         setIsHovered(true);
                         setIsMegaMenuOpen(true);
@@ -132,7 +133,7 @@ export const PackageMenu = () => {
                         setIsMegaMenuOpen(false);
                     }}
                 >
-                    Packages
+                    Products
                 </AnimLink>
             </StyledVisibleContainer>
             
@@ -150,25 +151,34 @@ export const PackageMenu = () => {
                     <StyledLayout ref={contentRef}>
                         <StyledLeft>
                             <StyledPackages>
-                                {packagesData?.map((item: any, index: number) => (
-                                    <StyledPackage key={index} href={`/packages/${item?.slug}`} onMouseEnter={() => setCurrentPackage(item)}>
-                                        0{index + 1}.<span>{item?.title} layout</span>
+                                {linesData?.map((item: any, index: number) => (
+                                    <StyledPackage key={index} href={`/lines/${item?.slug}`} onMouseEnter={() => setCurrentPackage(item)}>
+                                        0{index + 1}.<span>{item?.name} ({item?.count})</span>
                                     </StyledPackage>
                                 ))}
                             </StyledPackages>
-                            <AllButton text="All packages" href="/packages" lineColor={colors.red} />
+                            <AllButton text="All products lines" href="/lines" lineColor={colors.red} />
                         </StyledLeft>
                         <StyledRight>
-                            <Image src={getMediaStrapiPath(currentPackage?.mainMediaLeft?.poster)} alt="Package" width={760} height={420} />
+                            <StyledProduct>
+                                <Image src={getMediaStrapiPath(currentPackage?.products?.[0]?.previewImage)} alt="Package" width={760} height={420} />
+                                <div className="name">{currentPackage?.products?.[0]?.name}</div>
+                                <div className="model">{currentPackage?.products?.[0]?.model}</div>
+                            </StyledProduct>
+                            <StyledProduct>
+                                <Image src={getMediaStrapiPath(currentPackage?.products?.[1]?.previewImage)} alt="Package" width={760} height={420} />
+                                <div className="name">{currentPackage?.products?.[1]?.name}</div>
+                                <div className="model">{currentPackage?.products?.[1]?.model}</div>
+                            </StyledProduct>
                         </StyledRight>
                     </StyledLayout>
                 </StyledMenuContainer>
             </StyledMenu>
-        </StyledPackageMenu>
+        </StyledProductsMenu>
     )
 }
 
-const StyledPackageMenu = styled.div`
+const StyledProductsMenu = styled.div`
     position: relative;
 `
 
@@ -268,14 +278,43 @@ const AllButton = styled(UnderlineLink)`
 
 const StyledRight = styled.div`
     position: relative;
-    width: ${rm(760)};
-    height: ${rm(420)};
+    width: ${rm(810)};
+    height: ${rm(470)};
     overflow: hidden;
-    border-radius: ${rm(10)};
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: ${rm(10)};
+`
+
+const StyledProduct = styled.div`
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+
+    .name{
+        font-size: ${rm(18)};
+        ${fontGolosText(500)};
+        line-height: 100%;
+        letter-spacing: -0.01em;
+        color: ${colors.black100};
+        text-transform: uppercase;
+        margin-bottom: ${rm(6)};
+    }
+        
+    .model{
+        font-size: ${rm(14)};
+        ${fontGolosText(400)};
+        line-height: 130%;
+        color: ${colors.gray90};
+        text-transform: uppercase;
+    }
 
     img{
         width: 100%;
-        height: 100%;
+        height: ${rm(407)};
         object-fit: cover;
+        border-radius: ${rm(10)};
+        margin-bottom: ${rm(10)};
     }
 `

@@ -45,19 +45,23 @@ const StyledArticleCard = styled.div`
     cursor: pointer;
     position: relative;
 
-    &:hover{
-        .description{
-            color: ${colors.blue};
-        }
+    @media (min-width: 768px) {
+        &:hover{
+            .description{
+                color: ${colors.blue};
+            }
 
-        .imageContainer{
-            opacity: 1;
+            .imageContainer{
+                opacity: 1;
 
-            img{
-                transform: scale(1.02);
+                img{
+                    transform: scale(1.02);
+                }
             }
         }
     }
+
+
 
     .dividerMain{
         width: 100%;
@@ -148,6 +152,10 @@ const StyledImageContainer = styled.div`
     overflow: hidden;
 
     transition: opacity 0.3s ease-in-out;
+
+    ${media.xsm`
+        opacity: 1;
+    `}
 
     img{
         width: 100%;

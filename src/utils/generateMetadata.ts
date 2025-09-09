@@ -39,15 +39,15 @@ interface MetadataProps {
 }
 
 export function generateMetadata({
-    title = 'New Project',
-    description = 'New Project',
-    keywords = 'New Project',
+    title = 'Street Barbell',
+    description = 'Street Barbell',
+    keywords = 'Street Barbell',
     url = '',
     ogImage = '/open-graph.png',
-    twitterHandle = '@newproject',
-    author = 'New Project',
+    twitterHandle = '@streetbarbell',
+    author = 'Street Barbell',
     themeColor = '#000',
-    siteName = 'New Project',
+    siteName = 'Street Barbell',
     locale = 'en_US',
 }: MetadataProps): Metadata {
     return {

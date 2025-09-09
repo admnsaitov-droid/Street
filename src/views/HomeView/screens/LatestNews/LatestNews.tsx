@@ -26,12 +26,9 @@ const AnimatedSlide = ({ children, index, isInView }: { children: React.ReactNod
     const slideSpring = useSpring({
         y: isInView ? '0%' : '-40%',
         delay: index * 150, // Staggered delay: 0ms, 150ms, 300ms, etc.
-        config: { 
-            tension: 280,
-            friction: 30,
-            mass: 0.8,
-            duration: 600,
-            easing: easings.easeOutQuart,
+        config: {
+            tension: 120,
+            friction: 40
         }
     });
 
@@ -229,6 +226,10 @@ const StyledNewsMobile = styled.div`
 
     ${media.xsm`
         display: flex;
+
+        >:nth-child(2) .dividerMain{
+            display: none;
+        }
     `}
 `
 

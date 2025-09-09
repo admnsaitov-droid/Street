@@ -29,7 +29,10 @@ export const ContactView = ({ data }: ContactViewProps) => {
                     lng: 24.950504
                 },
                 title: "Paloheinä",
-                content: `<div style='padding: 10px;'><h3>Paloheinä</h3><p>Helsinki, Finland</p></div>`
+                address: "Helsinki, Finland",
+                image: "/markerImage.png",
+                linkText: "View details",
+                onLinkClick: () => console.log("View details clicked")
             }
         ]
     }
@@ -63,6 +66,14 @@ const StyledContactView = styled.div`
     width: 100%;
     padding: ${rm(110)} ${rm(50)} ${rm(150)} ${rm(50)};
     min-height: 100vh;
+
+    ${media.md`
+        padding: ${rm(100)} ${rm(25)} ${rm(100)} ${rm(25)};
+    `}
+
+    ${media.xsm`
+        padding: ${rm(100)} ${rm(16)} ${rm(100)} ${rm(16)};
+    `}
 `
 
 const StyledTop = styled.div`
@@ -71,6 +82,11 @@ const StyledTop = styled.div`
     justify-content: space-between;
     padding-bottom: ${rm(75)};
     position: relative;
+
+    ${media.md`
+        flex-direction: column;
+        gap: ${rm(20)};
+    `}
 
     &::after {
         content: '';
@@ -100,6 +116,14 @@ export const StyledContactLeft = styled.div`
     ${media.lg`
         width: ${rm(777)};  
     `}
+
+    ${media.md`
+        width: 100%;
+    `}
+
+    ${media.xsm`
+        width: 100%;
+    `}
 `
 
 export const StyledContactDescription = styled(AnimatedText)`
@@ -113,6 +137,17 @@ export const StyledContactDescription = styled(AnimatedText)`
     
     ${media.lg`
         font-size: ${rm(32)};
+    `}
+
+    ${media.md`
+        font-size: ${rm(24)};
+        width: ${rm(600)};
+        margin-bottom: ${rm(50)};
+    `}
+
+    ${media.xsm`
+        font-size: ${rm(20)};
+        width: 100%;
     `}
 `
 
