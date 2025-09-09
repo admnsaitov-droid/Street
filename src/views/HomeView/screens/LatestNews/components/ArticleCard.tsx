@@ -52,7 +52,7 @@ const StyledArticleCard = styled.div`
             }
 
             .imageContainer{
-                opacity: 1;
+                opacity: 0.1;
 
                 img{
                     transform: scale(1.02);
@@ -147,15 +147,11 @@ const StyledImageContainer = styled.div`
     width: 100%;
     height: ${rm(211)};
     position: relative;
-    opacity: 0.1;
+    opacity: 1;
     border-radius: ${rm(4)};
     overflow: hidden;
 
     transition: opacity 0.3s ease-in-out;
-
-    ${media.xsm`
-        opacity: 1;
-    `}
 
     img{
         width: 100%;

@@ -80,10 +80,10 @@ export const ContactForm = () => {
             newErrors.phoneNumber = 'Phone number is required'
             isValid = false
         } else {
-            // Allows formats: +1234567890, +1 234 567 890, +1-234-567-890
-            const phoneRegex = /^\+?[0-9\s-]{10,}$/
-            if (!phoneRegex.test(formData.phoneNumber.trim())) {
-                newErrors.phoneNumber = 'Please enter a valid phone number'
+            // Check if phone number contains only numbers and has more than 6 digits
+            const phoneNumbers = formData.phoneNumber.replace(/\D/g, '') // Remove all non-digits
+            if (phoneNumbers.length <= 6) {
+                newErrors.phoneNumber = 'Phone number must be more than 6 digits'
                 isValid = false
             }
         }
@@ -464,6 +464,11 @@ export const StyledBottom = styled.div`
         align-items: center;
         gap: ${rm(10)};
 
+        ${media.xsm`
+            gap: ${rm(5)};
+            flex-direction: column;
+        `}
+
         .texts{
             ${fontGolosText(400)};
             color: ${colors.gray};
@@ -493,4 +498,10 @@ const StyledError = styled.div`
     font-size: ${rm(14)};
     ${fontGolosText(400)};
     margin-top: ${rm(5)};
+
+    ${media.xsm`
+        font-size: ${rm(12)};
+        margin-top: ${rm(5)};
+        margin-left: ${rm(-10)};
+    `}
 `

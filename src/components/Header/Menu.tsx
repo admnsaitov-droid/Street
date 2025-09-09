@@ -30,6 +30,14 @@ export const Menu = ({ data }: MenuProps) => {
     const isMegaMenuOpen = useLoadingStore((state: any) => state.isMegaMenuOpen);
 
     useEffect(() => {
+        if (!isMegaMenuOpen) {
+            setOpenMenu(false);
+            setIsPackageMenuOpen(false);
+            setIsProductsMenuOpen(false);
+        }
+    }, [isMegaMenuOpen]);
+
+    useEffect(() => {
         if (openMenu) {
             stopScroll();
         } else {

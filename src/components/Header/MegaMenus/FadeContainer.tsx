@@ -5,9 +5,10 @@ import styled from "styled-components"
 
 export const FadeContainer = () => {
     const isMegaMenuOpen = useLoadingStore((state: any) => state.isMegaMenuOpen);
+    const setIsMegaMenuOpen = useLoadingStore((state: any) => state.setIsMegaMenuOpen);
 
     return (
-        <StyledFadeContainer style={{opacity: isMegaMenuOpen ? 1 : 0, pointerEvents: isMegaMenuOpen ? 'all' : 'none'}}>
+        <StyledFadeContainer onClick={() => setIsMegaMenuOpen(false)} style={{opacity: isMegaMenuOpen ? 1 : 0, pointerEvents: isMegaMenuOpen ? 'all' : 'none'}}>
         </StyledFadeContainer>
     )
 }

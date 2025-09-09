@@ -4,21 +4,30 @@ import { Atmosphere } from "./Atmosphere"
 import { Composition } from "./Composition"
 import { PerspectiveCamera } from "@react-three/drei"
 
+interface DistributionSceneProps {
+    activeFilterId?: string
+}
+
 const rotationXSpeed = 0.001
 const rotationZSpeed = 0.001
 
 const scenePosition: [number, number, number] = [-2.1, -1.5, -1]
 const atmospherePosition: [number, number, number] = [-2.35, -1.5, -1]
 
-export const DistributionScene = () => {
+export const DistributionScene = ({ activeFilterId = 'all' }: DistributionSceneProps) => {
     return (
         <StyledScene>
-            {/* <ambientLight intensity={0.5} />
-            <pointLight position={[10, 10, 10]} />
-            <directionalLight position={[10, 10, 10]} /> */}
-            <PerspectiveCamera makeDefault position={[0, 0, 8]} />
-            <Atmosphere scale={5.8} position={atmospherePosition} />
-            <Composition scale={3.4} position={scenePosition} rotationXSpeed={rotationXSpeed} rotationZSpeed={rotationZSpeed} />
+            {/* <pointLight position={[-2, 0, 5]} intensity={50} decay={0.9}/> */}
+            <pointLight position={[-2, 0, 5]} intensity={35} decay={0.9}/>
+            <PerspectiveCamera makeDefault position={[0, 0, 8]} fov={40}/>
+            <Atmosphere scale={6.3} position={atmospherePosition} />
+            <Composition 
+                scale={0.37} 
+                position={scenePosition} 
+                rotationXSpeed={rotationXSpeed} 
+                rotationZSpeed={rotationZSpeed}
+                activeFilterId={activeFilterId}
+            />
         </StyledScene>
     )
 }

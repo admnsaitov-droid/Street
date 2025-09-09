@@ -28,8 +28,8 @@ export const ProductsMenu = () => {
             try {
                 const data = await getStrapiData('get-lines', locale);
                 setLinesData(data?.linesPageData?.lines);
+                setCurrentPackage(data?.linesPageData?.lines[0]);
                 console.log('ProductsMenuData', data)
-                // setCurrentPackage(data?.package?.[0]);
             } catch (err) {
                 console.error('Error fetching packages data:', err);
                 setError('Failed to load header');
@@ -152,7 +152,12 @@ export const ProductsMenu = () => {
                         <StyledLeft>
                             <StyledPackages>
                                 {linesData?.map((item: any, index: number) => (
-                                    <StyledPackage key={index} href={`/lines/${item?.slug}`} onMouseEnter={() => setCurrentPackage(item)}>
+                                    <StyledPackage 
+                                        key={index} 
+                                        href={`/lines/${item?.slug}`} 
+                                        onMouseEnter={() => setCurrentPackage(item)}
+                                        $isActive={currentPackage?.id === item?.id}
+                                    >
                                         0{index + 1}.<span>{item?.name} ({item?.count})</span>
                                     </StyledPackage>
                                 ))}
@@ -235,10 +240,10 @@ const StyledPackages = styled.div`
     gap: ${rm(20)};
 `
 
-const StyledPackage = styled(AnimLink)`
+const StyledPackage = styled(AnimLink)<{ $isActive?: boolean }>`
     font-size: ${rm(16)};
     ${fontGolosText(400)};
-    color: ${colors.gray700} !important;
+    color: ${props => props.$isActive ? colors.blue : colors.gray700} !important;
     text-transform: uppercase;
     line-height: 110%;
     cursor: pointer;
@@ -259,7 +264,7 @@ const StyledPackage = styled(AnimLink)`
         letter-spacing: -0.01em;
         ${fontGolosText(500)};
         margin-left: ${rm(5)};
-        color: ${colors.gray700};
+        color: ${props => props.$isActive ? colors.blue : colors.gray700} !important;
 
         transition: color 0.3s ease;
     }

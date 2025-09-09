@@ -17,6 +17,7 @@ import {
 } from "react";
 import { TransitionBg } from "./TransitionBg";
 import { scrollTo } from "@/utils/scrollTo";
+import { useLocalizedUrl } from "@/utils/localizedUrl";
 
 const AnimatedRouterContext = createContext({});
 export const AnimatedRouterLayout: NextPage<{ children: any }> = ({
@@ -186,17 +187,38 @@ interface Props extends AnchorHTMLAttributes<HTMLAnchorElement> {
 }
 
 export const AnimLink = forwardRef<HTMLAnchorElement, Props>(
-  ({ onClick, ...props }, outerRef) => {
+  ({ onClick, href, ...props }, outerRef) => {
     const ref = useRef<HTMLAnchorElement | null>(null);
     useImperativeHandle(outerRef, () => ref.current as HTMLAnchorElement);
     const { routeChangeStart } = useAnimatedRouter();
+    const createLocalizedUrl = useLocalizedUrl();
+    
+    // Create localized href if it's a string and doesn't already have a locale prefix
+    const localizedHref = useMemo(() => {
+      if (typeof href === 'string' && href.startsWith('/')) {
+        // Check if href already has a locale prefix (e.g., /en/, /es/)
+        const pathSegments = href.split('/');
+        const firstSegment = pathSegments[1]; // Skip the empty string from split
+        
+        // If the first segment looks like a locale (2-3 characters), don't add locale
+        if (firstSegment && firstSegment.length <= 3 && /^[a-z]{2,3}$/i.test(firstSegment)) {
+          return href;
+        }
+        
+        // Otherwise, add the locale prefix
+        return createLocalizedUrl(href);
+      }
+      return href;
+    }, [href, createLocalizedUrl]);
+    
     const handleClick = (e: MouseEvent) => {
-      routeChangeStart(props.href, props.backMode);
+      routeChangeStart(localizedHref, props.backMode);
     };
 
     return (
       <Link
         ref={ref}
+        href={localizedHref}
         onClick={(e) => {
           e.preventDefault();
           onClick?.(e as any);

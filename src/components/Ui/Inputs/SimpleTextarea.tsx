@@ -155,5 +155,6 @@ const ErrorMessage = styled.div`
   
   ${media.xsm`
     font-size: ${rm(10)};
+    top: ${rm(55)};
   `}
 `
