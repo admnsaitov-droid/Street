@@ -31,7 +31,14 @@ export const Trackers = () => {
         return config
     }, {} as any)
 
-    const controls = isDevelopment ? useControls("Trackers", levaConfig) : trackerConfigs.reduce((config, tracker) => {
+    // const controls = isDevelopment ? useControls("Trackers", levaConfig) : trackerConfigs.reduce((config, tracker) => {
+    //     const key = tracker.label.toLowerCase()
+    //     config[`${key}Enabled`] = tracker.defaultEnabled
+    //     config[`${key}Position`] = tracker.defaultPosition
+    //     return config
+    // }, {} as any)
+
+    const controls = trackerConfigs.reduce((config, tracker) => {
         const key = tracker.label.toLowerCase()
         config[`${key}Enabled`] = tracker.defaultEnabled
         config[`${key}Position`] = tracker.defaultPosition
