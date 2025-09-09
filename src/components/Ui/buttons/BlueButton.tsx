@@ -10,7 +10,7 @@ import { lerp } from "@/utils/math";
 import { useInView } from "@react-spring/web";
 import { useSpring, animated } from "@react-spring/web";
 import useLoadingStore from "@/store/store";
-import { useWindowWidth } from "@/hooks/useWindowSize";
+import { useWindowWidth } from "@react-hook/window-size";
 
 const CIRCLE_SIZE = 100; // px
 
@@ -47,7 +47,7 @@ export const BlueButton = ({ children, onClick, isSvg, className, link, submit, 
     }, [inView])
 
     useEffect(() => {
-        if(width <= 576) return;
+        if(width <= 768) return;
         
         const handlePointerMove = (e: MouseEvent) => {
             pointerRef.current = {
@@ -62,7 +62,7 @@ export const BlueButton = ({ children, onClick, isSvg, className, link, submit, 
 
     useLoop(() => {
         if (!isInViewRef.current) return
-        if (window.innerWidth < 1024) return
+        if (window.innerWidth < 768) return
         if (!ref.current) return
 
         const buttonRect = inViewRef.current.getBoundingClientRect()
@@ -89,14 +89,14 @@ export const BlueButton = ({ children, onClick, isSvg, className, link, submit, 
             type={submit ? 'submit' : 'button'} 
             disabled={disabled}
             onMouseEnter={() => {
-                if(width <= 576) return;
+                if(width <= 768) return;
                 setIsHovered(true)
                 setCurrentCursor({
                     type: 'hover',
                 })
             }}
             onMouseLeave={() => {
-                if(width <= 576) return;
+                if(width <= 768) return;
                 setIsHovered(false)
                 setCurrentCursor({
                     type: 'default',

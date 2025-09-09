@@ -28,8 +28,8 @@ export const MediaComponent = ({ media, className, isExtendable = true, parallax
         elementRef,
         start: "top bottom",
         end: "bottom top",
-        from: { y: '-30px' },
-        to: { y: '30px' },
+        from: { y: '-4%' },
+        to: { y: '4%' },
         disableOnMobile: true,
     });
 
@@ -95,8 +95,8 @@ const StyledMediaComponent = styled.div<{ $isExtendable: boolean; $parallax: boo
         height: 105% !important;
         object-fit: cover;
         position: absolute;
-        top: -2% !important;   
-        left: -2% !important;
+        top: 0;
+        left: 0;
     }
 
     .media-wrapper {

@@ -56,11 +56,21 @@ const StyledGetInTouch = styled.div`
     display: flex;
     justify-content: space-between;
     padding-top: ${rm(75)};
+
+    ${media.md`
+        flex-direction: column;
+        gap: ${rm(30)};
+    `}
 `
 
 const StyledHelp = styled.div`
     display: flex;
     gap: ${rm(10)};
+
+    ${media.xsm`
+        flex-direction: column;
+        gap: ${rm(25)};
+    `}
 
     .section{
         display: flex;
@@ -96,6 +106,10 @@ const StyledHelpBlock = styled.div`
         ${media.lg`
             font-size: ${rm(16)};
         `}
+
+        ${media.xsm`
+            font-size: ${rm(14)};
+        `}
     }
 
     .text{
@@ -107,6 +121,10 @@ const StyledHelpBlock = styled.div`
 
         ${media.lg`
             font-size: ${rm(24)};
+        `}
+
+        ${media.xsm`
+            font-size: ${rm(16)};
         `}
     }
 

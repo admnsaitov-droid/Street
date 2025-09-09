@@ -15,6 +15,7 @@ import { LanguageSelect } from "./LanguageSelect/LanguageSelect";
 import AnimatedLink from "../animated/AnimatedLink/AnimatedLink";
 import { getMediaStrapiPath } from "@/utils/getMediaStrapiPath";
 import { PackageMenu } from "./MegaMenus/PackageMenu";
+import { ProductsMenu } from "./MegaMenus/ProductsMenu";
 
 export const Header = () => {
     const [headerData, setHeaderData] = useState<any>(null);
@@ -65,6 +66,7 @@ export const Header = () => {
                 </AnimLink>
                 <StyledLinks>
                     <PackageMenu />
+                    <ProductsMenu />
                     {headerData?.data?.links?.links?.map((item: any, index: number) => (
                         <AnimatedLink href={item?.link ? item?.link : '#'} key={index}>
                             <span>
@@ -81,7 +83,7 @@ export const Header = () => {
                         </SimpleButton>
                     )}
                 </StyledRightContainer>
-                {/* <Menu data={headerData?.data} /> */}
+                <Menu data={headerData?.data} />
             </StyledWrapper>
         </StyledHeader>
     )

@@ -207,6 +207,10 @@ export const LanguageSelect = ({ languages }: LanguageSelectProps) => {
 
 const StyledLanguageSelect = styled.div`
     position: relative;
+    
+    ${media.xsm`
+        margin-left: ${rm(-12)};
+    `}
 `
 
 const StyledActiveLanguage = styled.div<{ $isOpen: boolean }>`

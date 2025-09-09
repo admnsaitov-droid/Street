@@ -10,18 +10,24 @@ import { getMediaStrapiPath } from "@/utils/getMediaStrapiPath"
 import { StyledTitle } from "@/views/PackagesView/PackagesView"
 import Image from "next/image"
 import styled from "styled-components"
+import { useWindowWidth } from "@react-hook/window-size"
+import { StyledMobileBackgroundViewoContainer } from "@/views/HomeView/screens/Hero/Hero"
 
 interface HeroProps {
     data: any
 }
 
 export const Hero = ({ data }: HeroProps) => {
-    
+    const width = useWindowWidth()
     return (
         <StyledHero>
             <MediaComponent media={data?.media} className="image" parallax={true} isExtendable={false} />
-            <BackgroundProgressiveBlur>
-            </BackgroundProgressiveBlur>
+            {width <= 768 && (
+                <StyledMobileBackgroundViewoContainer/>
+            )}
+            {width > 768 && (
+                <BackgroundProgressiveBlur/>
+            )}
             <StyledContent>
                 <div className="left">
                     <AnimatedText className="description">{data?.description}</AnimatedText>

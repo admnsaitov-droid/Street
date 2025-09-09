@@ -8,6 +8,7 @@ import { colors, media, rm } from "@/styles"
 import { fontGolosText, fontSageGrotesk } from "@/styles/fonts"
 import { heightLvh } from "@/styles/utils"
 import { getMediaStrapiPath } from "@/utils/getMediaStrapiPath"
+import { useWindowWidth } from "@react-hook/window-size"
 import Image from "next/image"
 import styled from "styled-components"
 
@@ -16,12 +17,17 @@ interface HeroProps {
 }
 
 export const Hero = ({ heroData }: HeroProps) => {
-    
+    const width = useWindowWidth()
+
     return (
         <StyledHero>
             <MediaComponent media={heroData?.mainVideo} className="hero-media" isExtendable={false}/>
-            <BackgroundProgressiveBlur>
-            </BackgroundProgressiveBlur>
+            {width <= 768 && (
+                <StyledMobileBackgroundViewoContainer />
+            )}
+            {width > 768 && (
+                <BackgroundProgressiveBlur/>
+            )}
             <StyledContent>
                 <div className="left">
                     <AnimatedText className="description">{heroData?.description}</AnimatedText>
@@ -208,5 +214,20 @@ export const BackgroundProgressiveBlur = styled.div`
 
     ${media.xsm`
         display: none;
+    `}
+`
+
+export const StyledMobileBackgroundViewoContainer = styled.div`
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    top: 0;
+    left: 0;
+    background-color: ${colors.black100};
+    opacity: 0.3;
+    display: none;
+
+    ${media.xsm`
+        display: block;
     `}
 `

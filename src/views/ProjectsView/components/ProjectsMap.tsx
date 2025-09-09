@@ -2,6 +2,8 @@ import { useEffect, useRef, useState, useCallback } from "react"
 import { Loader } from "@googlemaps/js-api-loader"
 import styled from "styled-components"
 import { MapMarker } from "./MapMarker"
+import { InfoWindow } from "./InfoWindow"
+import { createRoot } from "react-dom/client"
 
 // Custom map styles for a dark theme
 const mapStyles = [
@@ -88,7 +90,7 @@ const mapStyles = [
         "elementType": "geometry",
         "stylers": [
             {
-                "color": "#0f0f0f"
+                "color": "#1a1a1a"
             }
         ]
     },
@@ -151,7 +153,7 @@ const mapStyles = [
         "elementType": "geometry",
         "stylers": [
             {
-                "color": "#323232"
+                "color": "#3c3c3c"
             }
         ]
     },
@@ -268,7 +270,7 @@ const mapStyles = [
         "elementType": "geometry",
         "stylers": [
             {
-                "color": "#191919"
+                "color": "#0e0e0e"
             }
         ]
     },
@@ -364,14 +366,19 @@ const mapStyles = [
     }
 ]
 
+interface MarkerData {
+    position: { lat: number; lng: number }
+    title: string
+    address: string
+    image: string
+    linkText?: string
+    onLinkClick?: () => void
+}
+
 interface ProjectsMapProps {
     center: { lat: number; lng: number }
     zoom: number
-    markers: Array<{
-        position: { lat: number; lng: number }
-        title?: string
-        content?: string
-    }>
+    markers: MarkerData[]
 }
 
 export const ProjectsMap = ({ 
@@ -383,8 +390,11 @@ export const ProjectsMap = ({
     const markersToUse = markers.length > 0 ? markers : [
         {
             position: center,
-            title: "Location",
-            content: `<div style='padding: 10px;'><h3>Location</h3><p>Current position</p></div>`
+            title: "SB Outdoor Gym",
+            address: "501 Silverside Rd, Wilmington, DE 19809, USA",
+            image: "/markerImage.png",
+            linkText: "View details",
+            onLinkClick: () => console.log("View details clicked")
         }
     ]
     const mapRef = useRef<HTMLDivElement>(null)
@@ -392,6 +402,7 @@ export const ProjectsMap = ({
     const [isLoaded, setIsLoaded] = useState(false)
     const [error, setError] = useState<string | null>(null)
     const [isInitializing, setIsInitializing] = useState(false)
+    const openInfoWindowRef = useRef<google.maps.InfoWindow | null>(null)
 
     const initMap = useCallback(async () => {
         // Prevent multiple initializations
@@ -426,42 +437,35 @@ export const ProjectsMap = ({
                     disableDefaultUI: false,
                     zoomControl: true,
                     mapTypeControl: false,
-                    scaleControl: true,
+                    scaleControl: false,
                     streetViewControl: false,
                     rotateControl: false,
-                    fullscreenControl: true,
-                    gestureHandling: 'cooperative'
+                    fullscreenControl: false,
+                    gestureHandling: 'cooperative',
+                    disableDoubleClickZoom: false,
+                    // Ensure the My Location button is disabled
+                    clickableIcons: false,
                 })
 
                 setMap(mapInstance)
                 setIsLoaded(true)
 
+                // Add click listener to close InfoWindow when clicking outside
+                mapInstance.addListener("click", (event: google.maps.MapMouseEvent) => {
+                    console.log("Map clicked, openInfoWindow:", openInfoWindowRef.current);
+                    if (openInfoWindowRef.current) {
+                        console.log("Closing InfoWindow");
+                        openInfoWindowRef.current.close();
+                        openInfoWindowRef.current = null;
+                    }
+                });
+
                 // Add markers
                 markersToUse.forEach((markerData) => {
-                    // Create custom HTML marker
-                    const markerElement = document.createElement('div')
-                    markerElement.innerHTML = `
-                        <div style="
-                            width: 24px; 
-                            height: 24px; 
-                            background-color: rgba(255, 255, 255, 0.16); 
-                            border: 1px solid rgba(255, 255, 255, 0.16); 
-                            display: flex; 
-                            align-items: center; 
-                            justify-content: center; 
-                        ">
-                            <div style="
-                                width: 10px; 
-                                height: 10px; 
-                                background-color: white;
-                            "></div>
-                        </div>
-                    `
-                    
                     const marker = new google.maps.Marker({
                         position: markerData.position,
                         map: mapInstance,
-                        title: markerData.title || "Location",
+                        title: markerData.title,
                         icon: {
                             url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
                                 <svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
@@ -476,16 +480,34 @@ export const ProjectsMap = ({
                         }
                     })
 
-                    // Add info window if content is provided
-                    if (markerData.content) {
-                        const infoWindow = new google.maps.InfoWindow({
-                            content: markerData.content
-                        })
+                    // Create info window with React component
+                    const infoWindowElement = document.createElement('div')
+                    const root = createRoot(infoWindowElement)
+                    
+                    root.render(
+                        <InfoWindow
+                            image={markerData.image}
+                            title={markerData.title}
+                            address={markerData.address}
+                            linkText={markerData.linkText}
+                            onLinkClick={markerData.onLinkClick}
+                        />
+                    )
 
-                        marker.addListener("click", () => {
-                            infoWindow.open(mapInstance, marker)
-                        })
-                    }
+                    const infoWindow = new google.maps.InfoWindow({
+                        content: infoWindowElement
+                    })
+
+                    marker.addListener("click", () => {
+                        // Close any previously open InfoWindow
+                        if (openInfoWindowRef.current) {
+                            openInfoWindowRef.current.close();
+                        }
+                        
+                        // Open the new InfoWindow
+                        infoWindow.open(mapInstance, marker);
+                        openInfoWindowRef.current = infoWindow;
+                    })
                 })
             }
         } catch (err) {
@@ -538,40 +560,88 @@ const StyledProjectsMap = styled.div`
 `
 
 const MapContainer = styled.div`
-    width: 100%;
-    height: 100%;
-`
+  width: 100%;
+  height: 100%;
+  
+  /* Hide Google logo */
+  .gm-style div a img[src*="google_white"] {
+    display: none !important;
+  }
+  
+  /* Hide the entire logo container */
+  .gm-style-cc {
+    display: none !important;
+  }
+  
+  /* Hide the My Location button specifically */
+  .gm-control-active.gm-fullscreen-control,
+  button[title*="My Location"],
+  button[title*="Show your current location"],
+  .gm-svpc {
+    display: none !important;
+  }
+  
+  /* Hide any remaining Google branding */
+  a[href^="http://maps.google.com/maps"],
+  a[href^="https://maps.google.com/maps"] {
+    display: none !important;
+  }
+  
+  /* Hide Google logo text alternative */
+  .gm-style .gm-style-cc span,
+  .gm-style .gm-style-cc a {
+    display: none !important;
+  }
+  
+  /* Hide the terms of use link */
+  .gm-style-pbc {
+    display: none !important;
+  }
+  
+  /* Hide InfoWindow close button */
+  .gm-style .gm-style-iw-c {
+    padding: 0 !important;
+  }
 
-const LoadingOverlay = styled.div`
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(29, 44, 77, 0.9);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 10;
-`
-
-const LoadingText = styled.div`
-    color: #8ec3b9;
-    font-size: 18px;
-    font-weight: 500;
-`
-
-const ErrorMessage = styled.div`
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    color: #ff6b6b;
-    text-align: center;
-    padding: 20px;
-    background-color: rgba(0, 0, 0, 0.8);
-    border-radius: 8px;
-    max-width: 80%;
-    font-size: 14px;
-    line-height: 1.4;
+  .gm-style-iw-chr {
+    display: none !important;
+  }
+  
+  .gm-style .gm-style-iw-d {
+    overflow: hidden !important;
+  }
+  
+  /* Hide the close button */
+  .gm-style .gm-style-iw-tc::after {
+    display: none !important;
+  }
+  
+  .gm-style .gm-style-iw-tc {
+    display: none !important;
+  }
+  
+  /* Hide the bottom triangle pointer */
+  .gm-style .gm-style-iw-tc::before {
+    display: none !important;
+  }
+  
+  /* Remove padding from InfoWindow content */
+  .gm-style .gm-style-iw-c {
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  
+  /* IMPORTANT: Ensure zoom controls remain visible */
+  .gmnoprint .gm-style-mtc,
+  .gmnoprint .gm-bundled-control,
+  .gmnoprint .gm-bundled-control-on-bottom {
+    display: block !important;
+  }
+  
+  /* Ensure zoom buttons remain visible */
+  .gm-control-active.gm-zoom-control,
+  .gmnoprint .gmnoscreen .gm-style-mtc,
+  .gmnoprint .gmnoscreen .gm-bundled-control {
+    display: block !important;
+  }
 `

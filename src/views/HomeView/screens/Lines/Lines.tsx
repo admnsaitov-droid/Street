@@ -58,16 +58,6 @@ export const Lines = ({ linesData, isTop = true }: LinesProps) => {
         if (closestDistance > maxDistance) {
             closestIndex = -1
         }
-
-        console.log('Mobile scroll detection:', {
-            closestIndex,
-            closestDistance,
-            maxDistance,
-            activeMobileIndex,
-            shouldClear: closestIndex === -1,
-            currentUrl: url,
-            currentPoster: !!poster
-        })
         
 
         
@@ -93,15 +83,12 @@ export const Lines = ({ linesData, isTop = true }: LinesProps) => {
         
         // Always clear preview state if closestIndex is -1 and preview is still active
         if (closestIndex === -1 && (url !== '' || poster !== '')) {
-            console.log('FORCE CLEARING preview state - closestIndex is -1 but preview is still active')
             setUrl('')
             setPoster('')
             setRoute('')
             setIndex(-1)
         }
     })
-
-    console.log('lines', linesData)
 
   return (
     <StyledLines ref={containerRef} isTop={isTop}>

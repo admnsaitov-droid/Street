@@ -8,7 +8,7 @@ import { SimpleInput } from "@/components/Ui/Inputs/SimpleInput";
 import { SimpleTextarea } from "@/components/Ui/Inputs/SimpleTextarea";
 import { AnimLink } from "@/layouts/AnimatedRouterLayout/AnimatedRouterLayout";
 import useLoadingStore from "@/store/store";
-import { colors, rm } from "@/styles";
+import { colors, media, rm } from "@/styles";
 import { fontGolosText } from "@/styles/fonts";
 import { useState } from "react";
 import styled from "styled-components"
@@ -143,38 +143,50 @@ export const ContactForm = () => {
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value })
+        // Clear error when user starts typing
+        if (errors[e.target.name as keyof typeof errors]) {
+            setErrors({ ...errors, [e.target.name]: '' })
+        }
     }
 
     const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value })
-    }
-
-    const handleInputError = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setErrors({ ...errors, [e.target.name]: e.target.value })
-    }
-
-    const handleTextareaError = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-        setErrors({ ...errors, [e.target.name]: e.target.value })
+        // Clear error when user starts typing
+        if (errors[e.target.name as keyof typeof errors]) {
+            setErrors({ ...errors, [e.target.name]: '' })
+        }
     }
 
     return (
         <StyledContactForm onSubmit={handleSubmit}>
             <StyledInputs>
                 <StyledSection>
-                    <ContactInput label="First name*" name="firstName" value={formData.firstName} onChange={handleInputChange} onError={handleInputError} error={errors.firstName} />
-                    <ContactInput label="Last name*" name="lastName" value={formData.lastName} onChange={handleInputChange} onError={handleInputError} error={errors.lastName} />
+                    <ContactInput label="First name*" name="firstName" value={formData.firstName} onChange={handleInputChange} error={errors.firstName} />
+                    <ContactInput label="Last name*" name="lastName" value={formData.lastName} onChange={handleInputChange} error={errors.lastName} />
                 </StyledSection>
                 <StyledSection>
-                    <ContactInput label="Email*" name="email" value={formData.email} onChange={handleInputChange} onError={handleInputError} error={errors.email} />
-                    <ContactInput label="Phone number*" name="phoneNumber" value={formData.phoneNumber} onChange={handleInputChange} onError={handleInputError} error={errors.phoneNumber} />
+                    <ContactInput label="Email*" name="email" value={formData.email} onChange={handleInputChange} error={errors.email} />
+                    <ContactInput label="Phone number*" name="phoneNumber" value={formData.phoneNumber} onChange={handleInputChange} error={errors.phoneNumber} />
                 </StyledSection>
-                <SimpleTextarea label="Message*" name="body" value={formData.body} onChange={handleTextareaChange} onError={handleTextareaError} error={errors.body} />
+                <SimpleTextarea label="Message*" name="body" value={formData.body} onChange={handleTextareaChange} error={errors.body} />
             </StyledInputs>
             <StyledBottom>
-                <div className="left" onClick={() => setFormData({ ...formData, policy: !formData.policy })}>
+                <div className="left" onClick={() => {
+                    setFormData({ ...formData, policy: !formData.policy })
+                    // Clear error when user toggles checkbox
+                    if (errors.policy) {
+                        setErrors({ ...errors, policy: false })
+                    }
+                }}>
                     <SimpleCheckbox
                         checked={formData.policy}
-                        onChange={() => setFormData({ ...formData, policy: !formData.policy })}
+                        onChange={() => {
+                            setFormData({ ...formData, policy: !formData.policy })
+                            // Clear error when user toggles checkbox
+                            if (errors.policy) {
+                                setErrors({ ...errors, policy: false })
+                            }
+                        }}
                     />
                     <div className="texts">
                         <p>I have read and accept agree the</p>
@@ -186,6 +198,7 @@ export const ContactForm = () => {
                     isSvg={false} 
                     submit={true} 
                     disabled={isSending}
+                    className="button"
                 >
                     {isSending ? 'Sending...' : 'Submit'}
                 </BlueButton>
@@ -199,6 +212,12 @@ const StyledContactForm = styled.form`
     display: flex;
     flex-direction: column;
     gap: ${rm(50)};
+
+    .button{
+        ${media.xsm`
+            width: 100%;
+        `}
+    }
 `
 
 const StyledInputs = styled.div`
@@ -212,8 +231,17 @@ const StyledSection = styled.div`
     display: flex;
     gap: ${rm(10)};
 
+    ${media.xsm`
+        flex-direction: column;
+        gap: ${rm(50)};
+    `}
+
     >div{
         width: 49%;
+
+        ${media.xsm`
+            width: 100%;
+        `}
     }
 `
 

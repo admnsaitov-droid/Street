@@ -19,7 +19,7 @@ export const Atmosphere = ({ scale, position }: AtmosphereProps) => {
         depthWrite: false,
             uniforms: {
                 centerColor: { value: new THREE.Color('white') }, // Blue at center
-                edgeColor: { value: new THREE.Color('#1F1F96') }, // Purple at edges
+                edgeColor: { value: new THREE.Color('#81BDDB') }, // Purple at edges
                 atmosphereIntensity: { value: 1.0 },
                 bloomIntensity: { value: .3 },
                 bloomRadius: { value: 0.0001 },

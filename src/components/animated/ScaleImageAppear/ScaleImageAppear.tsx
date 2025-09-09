@@ -17,7 +17,7 @@ export const ScaleImageAppear = ({ children, className, delay }: ScaleImageAppea
         scale: inView ? 1 : 0.94,
         config: {
             duration: 600,
-            easing: easings.easeInOutCubic,
+            easing: easings.easeOutQuad,
         },
         delay: delay,
     })
