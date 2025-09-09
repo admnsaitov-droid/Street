@@ -3,14 +3,21 @@ import { media, colors, rm } from "@/styles"
 import { fontGolosText, fontSageGrotesk } from "@/styles/fonts"
 import { heightLvh } from "@/styles/utils"
 import styled from "styled-components"
+import { useState } from "react"
 import { DistributionScene } from "./components/Scene"
 import AnimatedGrid from "@/components/animated/AnimatedContent"
+import { CountryPanel } from "./components/CountryPanel/CountryPanel"
 
 interface DistributionViewProps {
     data: any
 }
 
 export const DistributionView = ({ data }: DistributionViewProps) => {
+    const [activeFilterId, setActiveFilterId] = useState('all')
+
+    const handleFilterChange = (filterId: string) => {
+        setActiveFilterId(filterId)
+    }
 
     return (
         <StyledDistributionView>
@@ -52,7 +59,8 @@ export const DistributionView = ({ data }: DistributionViewProps) => {
                     </AnimatedGrid>
                 </StyledTitleContainer>
             </StyledContent>
-            <DistributionScene />
+            <DistributionScene activeFilterId={activeFilterId} />
+            <CountryPanel onFilterChange={handleFilterChange} />
         </StyledDistributionView>
     )
 }
@@ -69,6 +77,10 @@ const StyledContent = styled.div`
     width: 100%;
     position: relative;
     z-index: 4;
+
+    ${media.xsm`
+        padding: ${rm(100)} ${rm(16)};
+    `}
 `
 
 const StyledTitleContainer = styled.div`

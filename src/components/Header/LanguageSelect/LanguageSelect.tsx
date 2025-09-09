@@ -207,21 +207,19 @@ export const LanguageSelect = ({ languages }: LanguageSelectProps) => {
 
 const StyledLanguageSelect = styled.div`
     position: relative;
-    
-    ${media.xsm`
-        margin-left: ${rm(-12)};
-    `}
 `
 
 const StyledActiveLanguage = styled.div<{ $isOpen: boolean }>`
     position: relative;
-    padding: ${rm(14)} ${rm(8)} ${rm(14)} ${rm(12)};
-    display: flex;
-    align-items: center;
+    padding: ${rm(14)} ${rm(0)} ${rm(14)} ${rm(0)};
+    width: ${rm(68)};
     gap: ${rm(4.5)};
     height: 100%;
     cursor: pointer;
     transition: opacity 0.2s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 
     &:hover {
         opacity: 0.7;
@@ -263,6 +261,12 @@ const StyledDropdown = styled.div<{ $isOpen: boolean; $isAnimating: boolean }>`
     
     ${({ $isOpen, $isAnimating }) => $isOpen && $isAnimating && `
         height: auto;
+    `}
+
+    ${media.xsm`
+        top: auto;
+        bottom: 100%;
+        box-shadow: 0 -${rm(4)} ${rm(8)} rgba(0, 0, 0, 0.1);
     `}
 `
 
