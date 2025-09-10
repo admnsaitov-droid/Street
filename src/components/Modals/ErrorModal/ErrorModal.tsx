@@ -150,6 +150,11 @@ const StyledMainText = styled.div`
         width: ${rm(403)};
     `}
 
+    ${media.xsm`
+        width: ${rm(292)};
+        margin-bottom: ${rm(30)};
+    `}
+
     .title{
         font-size: ${rm(40)};
         ${fontGolosText(400)};
@@ -159,6 +164,10 @@ const StyledMainText = styled.div`
 
         ${media.lg`
             font-size: ${rm(32)};    
+        `}
+
+        ${media.xsm`
+            font-size: ${rm(24)};
         `}
     }
 
@@ -171,6 +180,10 @@ const StyledMainText = styled.div`
 
         ${media.lg`
             font-size: ${rm(16)};    
+        `}
+
+        ${media.xsm`
+            font-size: ${rm(14)};
         `}
     }
 

@@ -73,6 +73,7 @@ const StyledContactView = styled.div`
 
     ${media.xsm`
         padding: ${rm(100)} ${rm(16)} ${rm(100)} ${rm(16)};
+        padding-bottom: ${rm(40)};
     `}
 `
 
@@ -168,6 +169,7 @@ const StyledMapContainer = styled.div`
     `}
 
     ${media.xsm`
-        height: ${rm(246)};    
+        height: ${rm(246)};
+        margin-top: ${rm(50)};
     `}
 `

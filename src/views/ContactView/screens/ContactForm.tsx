@@ -189,8 +189,7 @@ export const ContactForm = () => {
                         }}
                     />
                     <div className="texts">
-                        <p>I have read and accept agree the</p>
-                        <UnderlineLink href='/privacy-policy' text='Privacy policy' lineColor={colors.blue} />
+                        <p>I have read and accept agree the <UnderlineLink className="link" href='/privacy-policy' text='Privacy policy' lineColor={colors.blue} /></p>
                     </div>
                     {errors.policy && <StyledError>Please accept the privacy policy</StyledError>}
                 </div>
@@ -216,6 +215,15 @@ const StyledContactForm = styled.form`
     .button{
         ${media.xsm`
             width: 100%;
+        `}
+    }
+
+    .link{
+        margin-bottom: ${rm(-8)};
+        color: ${colors.blue};
+
+        ${media.xsm`
+            margin-bottom: ${rm(-6)};
         `}
     }
 `
@@ -250,4 +258,9 @@ const StyledError = styled.div`
     font-size: ${rm(14)};
     ${fontGolosText(400)};
     margin-top: ${rm(5)};
+    
+    ${media.xsm`
+        position: absolute;
+        margin-top: ${rm(60)};
+    `}
 `

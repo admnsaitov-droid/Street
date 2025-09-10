@@ -226,6 +226,10 @@ export const StyledMobileBackgroundViewoContainer = styled.div`
     background-color: ${colors.black100};
     opacity: 0.3;
     display: none;
+    border-bottom-left-radius: ${rm(10)};
+    border-bottom-right-radius: ${rm(10)};
+    overflow: hidden;
+    
 
     ${media.xsm`
         display: block;

@@ -148,7 +148,7 @@ const StyledFloatingHoverCircle = styled.div`
 
 const StyledButton = styled.button`
     background-color: ${colors.blue};
-    border-radius: ${rm(5)};
+    border-radius: ${rm(6)};
     display: flex;
     align-items: center;
     justify-content: center;

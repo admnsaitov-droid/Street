@@ -116,7 +116,7 @@ export const Purpose = ({ data }: PurposeProps) => {
                 <div className="left">
                     {data?.mediaSecondary?.map((image: any, index: number) => (
                         <StyledImageContainer key={index} className="imageContainer">
-                            <MaskImageAppear className="image-container">
+                            <MaskImageAppear className="image-container" enabled={width > 768}>
                                 <MediaComponent media={image} className="image" parallax={true} imageGallery={allImageGallery} />
                             </MaskImageAppear>
                         </StyledImageContainer>
@@ -124,7 +124,7 @@ export const Purpose = ({ data }: PurposeProps) => {
                 </div>
                 <div className="right">
                     <StyledImageContainer className="imageContainer">
-                        <MaskImageAppear className="image-container">
+                        <MaskImageAppear className="image-container" enabled={width > 768}>
                             <MediaComponent media={data?.mainImage} className="image" parallax={true} imageGallery={allImageGallery} />
                         </MaskImageAppear>
                     </StyledImageContainer>

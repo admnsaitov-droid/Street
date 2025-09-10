@@ -149,8 +149,8 @@ const StyledFirstSvgContainer = styled.div`
     overflow: hidden;
 
     ${media.xsm`
-        width: ${rm(68)};
-        height: ${rm(13)};
+        width: ${rm(80)};
+        height: ${rm(16)};
     `}
 
     svg{
@@ -165,8 +165,8 @@ const StyledSecondSvgContainer = styled.div`
     overflow: hidden;
 
     ${media.xsm`
-        width: ${rm(21)};
-        height: ${rm(16)};
+        width: ${rm(24)};
+        height: ${rm(18)};
     `}
 
     svg{
@@ -181,8 +181,8 @@ const StyledThirdSvgContainer = styled.div`
     overflow: hidden;
 
     ${media.xsm`
-        width: ${rm(79)};
-        height: ${rm(13)};
+        width: ${rm(80)};
+        height: ${rm(16)};
     `}
 
     svg{

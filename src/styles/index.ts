@@ -110,7 +110,7 @@ const GlobalStyles = createGlobalStyle`
         bottom: ${rm(24)} !important;
         max-width: ${rm(530)};
         width: 100%;
-        z-index: 10002;
+        z-index: 900;
         background: rgba(0, 0, 0, .95);
         border-radius: ${rm(10)};
         padding: ${rm(40)};
