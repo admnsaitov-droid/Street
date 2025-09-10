@@ -315,8 +315,7 @@ export const ContactForm = () => {
                             }}
                         />
                         <div className="texts">
-                            <p>{data?.data?.policyText}</p>
-                            <UnderlineLink href='/privacy-policy' text='Privacy policy' lineColor={colors.blue} />
+                            <span>{data?.data?.policyText} <UnderlineLink href='/privacy-policy' text='Privacy policy' lineColor={colors.blue} /></span>
                         </div>
                         {errors.policy && <StyledError>Please accept the privacy policy</StyledError>}
                     </div>
@@ -463,10 +462,11 @@ export const StyledBottom = styled.div`
         display: flex;
         align-items: center;
         gap: ${rm(10)};
+        flex: 1;
 
         ${media.xsm`
             gap: ${rm(5)};
-            flex-direction: column;
+            flex: 1;
         `}
 
         .texts{
@@ -475,10 +475,19 @@ export const StyledBottom = styled.div`
             font-size: ${rm(20)};
             line-height: 130%;
             display: flex;
+            flex-wrap: wrap;
 
             >span{
-                color: ${colors.blue};
                 margin-left: ${rm(5)};
+
+                span{
+                    color: ${colors.blue};
+                    margin-bottom: ${rm(-8)};
+
+                    ${media.xsm`
+                        margin-bottom: ${rm(-6)};
+                    `}
+                }
             }
 
             ${media.lg`
@@ -487,7 +496,9 @@ export const StyledBottom = styled.div`
 
             ${media.xsm`
                 font-size: ${rm(14)};
-                display: inline;
+                display: flex;
+                flex-wrap: wrap;
+                width: ${rm(200)};
             `}
         }
     }
@@ -500,8 +511,7 @@ const StyledError = styled.div`
     margin-top: ${rm(5)};
 
     ${media.xsm`
-        font-size: ${rm(12)};
-        margin-top: ${rm(5)};
-        margin-left: ${rm(-10)};
+        position: absolute;
+        margin-top: ${rm(60)};
     `}
 `

@@ -25,7 +25,7 @@ export const History = ({ data }: HistoryProps) => {
             <StyledBottom>
                 <StyledLeft>
                     <StyledSecndaryImageContainer>
-                        <MaskImageAppear className="image-container">
+                        <MaskImageAppear className="image-container" enabled={width > 768}>
                             <MediaComponent media={data?.mediaSecondary} className="image" parallax={true} imageGallery={imageGallery} />
                         </MaskImageAppear>
                     </StyledSecndaryImageContainer>
@@ -34,7 +34,7 @@ export const History = ({ data }: HistoryProps) => {
                     </StyledSubtitle>}
                 </StyledLeft>
                 <StyledMainImageContainer>
-                    <MaskImageAppear className="image-container">
+                    <MaskImageAppear className="image-container" enabled={width > 768}>
                         <MediaComponent media={data?.mediaMain} className="image" parallax={true} imageGallery={imageGallery} />
                     </MaskImageAppear>
                     {width <= 768 && <StyledSubtitle className="blue80">
