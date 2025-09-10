@@ -2,7 +2,8 @@ import { colors, media, rm } from "@/styles"
 import { fontGolosText } from "@/styles/fonts"
 import styled from "styled-components"
 import { useState } from "react"
-import { distributionData, getFilterNames, Filter } from "../../data/distributionData"
+import { distributionData, getFilterNames, Filter, getLocationsByFilter } from "../../data/distributionData"
+import { LocationCard } from "../LocationCard/LocationCard"
 
 const filters = getFilterNames()
 
@@ -24,6 +25,10 @@ export const CountryPanel = ({ onFilterChange }: CountryPanelProps) => {
         }
     }
 
+    // Get locations for the active filter
+    const activeFilterData = distributionData.find((f: Filter) => f.name === activeFilter)
+    const locations = activeFilterData ? activeFilterData.locations : []
+
     return (
         <StyledCountryPanel>
             <StyledTopContainer>
@@ -37,6 +42,19 @@ export const CountryPanel = ({ onFilterChange }: CountryPanelProps) => {
                     </div>
                 ))}
             </StyledTopContainer>
+            
+            <StyledCardsContainer
+                onWheel={(e) => {
+                    e.stopPropagation()
+                }}
+                onTouchMove={(e) => {
+                    e.stopPropagation()
+                }}
+            >
+                {locations.map((location) => (
+                    <LocationCard key={location.id} location={location} />
+                ))}
+            </StyledCardsContainer>
         </StyledCountryPanel>
     )
 }
@@ -47,7 +65,6 @@ const StyledCountryPanel = styled.div`
     right: ${rm(50)};
     width: ${rm(440)};
     z-index: 1000;
-    cursor: pointer;
 
     ${media.xsm`
         display: none;
@@ -84,4 +101,41 @@ const StyledTopContainer = styled.div`
         background-color: ${colors.white100};
         color: ${colors.black100};
     }
+`
+
+const StyledCardsContainer = styled.div`
+    margin-top: ${rm(24)};
+    padding-right: ${rm(8)};
+    max-height: calc(100vh - ${rm(300)});
+    overflow-y: auto;
+    
+    /* Prevent scroll from bubbling to parent */
+    overscroll-behavior: contain;
+    
+    /* Custom scrollbar styling */
+    &::-webkit-scrollbar {
+        width: ${rm(6)};
+    }
+    
+    &::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: ${rm(3)};
+    }
+    
+    &::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: ${rm(3)};
+        transition: background 0.2s ease;
+    }
+    
+    &::-webkit-scrollbar-thumb:hover {
+        background: rgba(255, 255, 255, 0.4);
+    }
+    
+    /* Smooth scrolling */
+    scroll-behavior: smooth;
+    
+    /* Firefox scrollbar styling */
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.2) rgba(255, 255, 255, 0.05);
 `
