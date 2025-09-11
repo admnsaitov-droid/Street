@@ -2,14 +2,32 @@ import { Environment, EnvironmentMap, OrbitControls, PerspectiveCamera, useTextu
 import { Canvas } from "@react-three/fiber"
 import styled from "styled-components"
 import { PackageModel } from "./PackageModel"
+import * as THREE from "three"
 
 export const PackageScene = () => {    
     return (
-        <StyledPackageScene>
-            <OrbitControls enableZoom={false} />
+        <StyledPackageScene
+            gl={{
+                powerPreference: "high-performance",
+                alpha: true,
+                antialias: true,
+                toneMappingExposure: Math.pow(2, 0),
+                toneMapping: THREE.ACESFilmicToneMapping,
+                outputColorSpace: THREE.SRGBColorSpace,
+                preserveDrawingBuffer: true,
+            }}
+        >
+            <OrbitControls 
+                enableZoom={false} 
+                enableRotate={true}
+                target={[0, 0, 0]}
+                minPolarAngle={Math.PI / 2 - 0.5}
+                maxPolarAngle={Math.PI / 2 - 0.5}
+            />
             <PackageModel />
             {/* <ambientLight intensity={5} /> */}
-            <PerspectiveCamera makeDefault position={[0, 15, -30]} fov={15} rotation={[0, 0, 0]} />
+            <PerspectiveCamera makeDefault position={[0, 15, -30]} fov={36} rotation={[0, 0, 0]} />
+            <fog attach="fog" color='#F8F9FC' near={30} far={70} />
             <Environment
                 files="/models/hadrMap.hdr"
                 environmentIntensity={1}
