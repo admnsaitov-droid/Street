@@ -53,6 +53,8 @@ const StyledContent = styled.div`
     gap: ${rm(20)};
     position: relative;
     z-index: 1;
+    user-select: none;
+    pointer-events: none;
 
     ${media.md`
         padding: ${rm(100)} ${rm(25)};

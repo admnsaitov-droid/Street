@@ -7,6 +7,7 @@ import { useState } from "react"
 import { DistributionScene } from "./components/Scene"
 import AnimatedGrid from "@/components/animated/AnimatedContent"
 import { CountryPanel } from "./components/CountryPanel/CountryPanel"
+import { Location as DistributionLocation } from "./data/distributionData"
 
 interface DistributionViewProps {
     data: any
@@ -14,9 +15,15 @@ interface DistributionViewProps {
 
 export const DistributionView = ({ data }: DistributionViewProps) => {
     const [activeFilterId, setActiveFilterId] = useState('all')
+    const [selectedLocation, setSelectedLocation] = useState<DistributionLocation | null>(null)
 
     const handleFilterChange = (filterId: string) => {
         setActiveFilterId(filterId)
+    }
+
+    const handleLocationClick = (location: DistributionLocation) => {
+        console.log('Location clicked:', location)
+        setSelectedLocation(location)
     }
 
     return (
@@ -59,8 +66,12 @@ export const DistributionView = ({ data }: DistributionViewProps) => {
                     </AnimatedGrid>
                 </StyledTitleContainer>
             </StyledContent>
-            <DistributionScene activeFilterId={activeFilterId} />
-            <CountryPanel onFilterChange={handleFilterChange} />
+            <DistributionScene 
+                activeFilterId={activeFilterId} 
+                onLocationClick={handleLocationClick}
+                selectedLocation={selectedLocation}
+            />
+            <CountryPanel onFilterChange={handleFilterChange} onLocationClick={handleLocationClick} />
         </StyledDistributionView>
     )
 }

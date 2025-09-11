@@ -1,14 +1,16 @@
 import { useGLTF } from "@react-three/drei"
+import { useTexture } from "@react-three/drei"
 import { useRef } from "react"
 import { Group } from "three"
 
 export const PackageModel = () => {
 
-    const { scene } = useGLTF('/models/mashine.glb')
+    const { scene } = useGLTF('/models/package.glb')
     const groupRef = useRef<Group>(null)
 
+
     return (
-        <group ref={groupRef} scale={0.1} position={[-20, 0, 0]}>
+        <group ref={groupRef}>
             <primitive object={scene} />
         </group>
     )

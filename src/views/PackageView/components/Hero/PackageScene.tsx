@@ -1,15 +1,19 @@
-import { OrbitControls, PerspectiveCamera } from "@react-three/drei"
+import { Environment, EnvironmentMap, OrbitControls, PerspectiveCamera, useTexture } from "@react-three/drei"
 import { Canvas } from "@react-three/fiber"
 import styled from "styled-components"
 import { PackageModel } from "./PackageModel"
 
-export const PackageScene = () => {
+export const PackageScene = () => {    
     return (
         <StyledPackageScene>
             <OrbitControls enableZoom={false} />
             <PackageModel />
-            <ambientLight intensity={0.5} />
-            <PerspectiveCamera makeDefault position={[-100, 10, -30]} fov={40} rotation={[0, 0, 0]} />
+            {/* <ambientLight intensity={5} /> */}
+            <PerspectiveCamera makeDefault position={[0, 15, -30]} fov={15} rotation={[0, 0, 0]} />
+            <Environment
+                files="/models/hadrMap.hdr"
+                environmentIntensity={1}
+            />
         </StyledPackageScene>
     )
 }

@@ -3,9 +3,12 @@ import styled from "styled-components"
 import { Atmosphere } from "./Atmosphere"
 import { Composition } from "./Composition"
 import { PerspectiveCamera } from "@react-three/drei"
+import { Location as DistributionLocation } from "../data/distributionData"
 
 interface DistributionSceneProps {
     activeFilterId?: string
+    onLocationClick?: (location: DistributionLocation) => void
+    selectedLocation?: DistributionLocation | null
 }
 
 const rotationXSpeed = 0.001
@@ -14,7 +17,7 @@ const rotationZSpeed = 0.001
 const scenePosition: [number, number, number] = [-2.1, -1.5, -1]
 const atmospherePosition: [number, number, number] = [-2.35, -1.5, -1]
 
-export const DistributionScene = ({ activeFilterId = 'all' }: DistributionSceneProps) => {
+export const DistributionScene = ({ activeFilterId = 'all', onLocationClick, selectedLocation }: DistributionSceneProps) => {
     return (
         <StyledScene>
             {/* <pointLight position={[-2, 0, 5]} intensity={50} decay={0.9}/> */}
@@ -27,6 +30,8 @@ export const DistributionScene = ({ activeFilterId = 'all' }: DistributionSceneP
                 rotationXSpeed={rotationXSpeed} 
                 rotationZSpeed={rotationZSpeed}
                 activeFilterId={activeFilterId}
+                onLocationClick={onLocationClick}
+                selectedLocation={selectedLocation}
             />
         </StyledScene>
     )
