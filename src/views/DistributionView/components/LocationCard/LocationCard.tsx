@@ -1,15 +1,22 @@
 import { colors, media, rm } from "@/styles"
 import { fontGolosText, fontSageGrotesk } from "@/styles/fonts"
 import styled from "styled-components"
-import { Location } from "../../data/distributionData"
+import { Location as DistributionLocation } from "../../data/distributionData"
 
 interface LocationCardProps {
-  location: Location
+  location: DistributionLocation
+  onClick?: (location: DistributionLocation) => void
 }
 
-export const LocationCard = ({ location }: LocationCardProps) => {
+export const LocationCard = ({ location, onClick }: LocationCardProps) => {
+  const handleClick = () => {
+    if (onClick) {
+      onClick(location)
+    }
+  }
+
   return (
-    <StyledLocationCard>
+    <StyledLocationCard onClick={handleClick}>
       <StyledHeader>
         {location.name}
       </StyledHeader>
@@ -37,6 +44,7 @@ const StyledLocationCard = styled.div`
   margin-bottom: ${rm(16)};
   border: 1px solid rgba(255, 255, 255, 0.1);
   transition: all 0.3s ease;
+  cursor: pointer;
 
   &:hover {
     border-color: rgba(255, 255, 255, 0.2);

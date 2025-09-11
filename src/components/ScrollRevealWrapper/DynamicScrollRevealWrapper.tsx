@@ -13,14 +13,15 @@ const BlurOverlay = styled.div`
   height: 100vh;
 //   backdrop-filter: blur(2px);
   background: rgba(3, 14, 28, 0.2);
-  z-index: 1;
+  // z-index: 1;
   pointer-events: none;
+  user-select: none;
   opacity: 0;
   transition: opacity 0.3s ease;
 
   &.visible {
     opacity: 1;
-    pointer-events: all;
+    // pointer-events: all;
   }
 `;
 

@@ -2,7 +2,7 @@ import { colors, media, rm } from "@/styles"
 import { fontGolosText } from "@/styles/fonts"
 import styled from "styled-components"
 import { useState } from "react"
-import { distributionData, getFilterNames, Filter, getLocationsByFilter } from "../../data/distributionData"
+import { distributionData, getFilterNames, Filter, getLocationsByFilter, Location as DistributionLocation } from "../../data/distributionData"
 import { LocationCard } from "../LocationCard/LocationCard"
 
 const filters = getFilterNames()
@@ -11,9 +11,10 @@ const filters = getFilterNames()
 
 interface CountryPanelProps {
     onFilterChange?: (filterId: string) => void
+    onLocationClick?: (location: DistributionLocation) => void
 }
 
-export const CountryPanel = ({ onFilterChange }: CountryPanelProps) => {
+export const CountryPanel = ({ onFilterChange, onLocationClick }: CountryPanelProps) => {
     const [activeFilter, setActiveFilter] = useState('All')
 
     const handleFilterClick = (filterName: string) => {
@@ -52,7 +53,11 @@ export const CountryPanel = ({ onFilterChange }: CountryPanelProps) => {
                 }}
             >
                 {locations.map((location) => (
-                    <LocationCard key={location.id} location={location} />
+                    <LocationCard 
+                        key={location.id} 
+                        location={location} 
+                        onClick={onLocationClick}
+                    />
                 ))}
             </StyledCardsContainer>
         </StyledCountryPanel>
