@@ -36,33 +36,11 @@ export const Composition = ({ scale, position, rotationXSpeed, rotationZSpeed, a
             onLocationClick(location)
         }
         
-        // Calculate rotation to center the location
-        const [x, y, z] = location.position
+        // Use the predefined target rotation from the location data
+        const [targetX, targetY, targetZ] = location.targetRotation
         
-        console.log('Location position:', { x, y, z })
-        
-        // Create vectors for the current position and target position
-        const currentPos = new THREE.Vector3(x, y, z)
-        const targetPos = new THREE.Vector3(0, 0, 1) // We want the location at the front
-        
-        // Normalize the current position
-        currentPos.normalize()
-        
-        // Calculate the rotation quaternion
-        const quaternion = new THREE.Quaternion()
-        quaternion.setFromUnitVectors(currentPos, targetPos)
-        
-        // Convert to Euler angles with proper order
-        const euler = new THREE.Euler()
-        euler.setFromQuaternion(quaternion, 'YXZ')
-        
-        const targetX = euler.x
-        const targetY = euler.y
-        const targetZ = euler.z
-        
-        console.log('Quaternion:', quaternion)
-        console.log('Euler angles:', { x: euler.x, y: euler.y, z: euler.z })
-        console.log('Target rotation:', { x: targetX, y: targetY, z: targetZ })
+        console.log('Location:', location.name)
+        console.log('Using target rotation from data:', { x: targetX, y: targetY, z: targetZ })
         
         setTargetRotation({ x: targetX, y: targetY, z: targetZ })
         setIsRotating(true)
