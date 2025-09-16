@@ -6,6 +6,10 @@ import { getMediaStrapiPath } from "@/utils/getMediaStrapiPath"
 
 interface ProductModelProps {
     model: string
+    colors: {
+        name: string
+        color: string
+    }[]
     params: {
         position: [number, number, number]
         rotation: [number, number, number]
@@ -13,16 +17,23 @@ interface ProductModelProps {
     }
 }
 
-export const ProductModel = ({ model, params = {
+export const ProductModel = ({ model, colors, params = {
     position: [0, 0, 0],
     rotation: [0, 0, 0],
     scale: 1
 } }: ProductModelProps) => {
-    const { scene }: any = useGLTF(getMediaStrapiPath(model))
-    const { activeColor } = useColorStore()
+    const { scene }: any = useGLTF('/models/testProduct.glb')
+    const { activeColor, setActiveColor } = useColorStore()
     const sceneRef = useRef<THREE.Group>()
 
-    // Apply color to all materials in the model
+    // Set the first color when component mounts
+    useEffect(() => {
+        if (colors && colors.length > 0 && !activeColor) {
+            setActiveColor(colors[0])
+        }
+    }, [colors, activeColor, setActiveColor])
+
+    // Apply color only to materials with name "blue_metal"
     useEffect(() => {
         if (!sceneRef.current || !activeColor?.color) return
 
@@ -32,12 +43,13 @@ export const ProductModel = ({ model, params = {
                 const materials = Array.isArray(child.material) ? child.material : [child.material]
                 
                 materials.forEach((material) => {
-                    if (material instanceof THREE.MeshStandardMaterial || 
+                    if ((material instanceof THREE.MeshStandardMaterial || 
                         material instanceof THREE.MeshBasicMaterial ||
                         material instanceof THREE.MeshPhongMaterial ||
-                        material instanceof THREE.MeshLambertMaterial) {
+                        material instanceof THREE.MeshLambertMaterial) &&
+                        material.name === 'blue_metal') {
                         
-                        // Set the new color
+                        // Set the new color only for blue_metal materials
                         material.color.set(activeColor.color)
                         material.needsUpdate = true
                     }

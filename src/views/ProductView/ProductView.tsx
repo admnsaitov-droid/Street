@@ -13,12 +13,12 @@ interface ProductViewProps {
 const testColors = [
     {
         name: "Red",
-        color: "#FF0000"
+        color: "rgb(236, 100, 10)"
     },
     
     {
         name: "Blue",
-        color: "#0000FF"
+        color: "rgb(60, 97, 206)"
     },
     
     {
@@ -60,6 +60,7 @@ const StyledProductView = styled.div`
 const StyledWrapper = styled.div`
     width: 100%;
     padding: ${rm(150)} ${rm(50)};
+    color:rgb(12, 50, 163);
 
     ${media.md`
         padding: ${rm(100)} ${rm(25)};

@@ -18,6 +18,7 @@ export const PackageScene = () => {
                 preserveDrawingBuffer: true,
             }}
         >
+            <PackageModel />
             <OrbitControls 
                 enableZoom={false} 
                 enableRotate={true}
@@ -25,7 +26,6 @@ export const PackageScene = () => {
                 minPolarAngle={Math.PI / 2 - 0.5}
                 maxPolarAngle={Math.PI / 2 - 0.5}
             />
-            <PackageModel />
             {/* <ambientLight intensity={5} /> */}
             <PerspectiveCamera makeDefault position={[0, 15, -30]} fov={36} rotation={[0, 0, 0]} />
             <fog attach="fog" color='#F8F9FC' near={30} far={70} />
