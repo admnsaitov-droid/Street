@@ -12,7 +12,7 @@ interface ProductViewProps {
 
 const testColors = [
     {
-        name: "Red",
+        name: "Orange",
         color: "rgb(236, 100, 10)"
     },
     
@@ -23,19 +23,22 @@ const testColors = [
     
     {
         name: "Green",
-        color: "#00FF00"
+        color: "rgb(74, 203, 98)"
     },
     
+    {
+        name: "Red",
+        color: "rgb(205, 33, 33)"
+    },
+    
+    {
+        name: "Lime",
+        color: "rgb(191, 255, 0)"
+    },
     {
         name: "Yellow",
-        color: "#FFFF00"
+        color: "rgb(255, 255, 0)"
     },
-    
-    {
-        name: "Purple",
-        color: "#800080"
-    },
-    
 ]
 
 export const ProductView = ({ data }: ProductViewProps) => {
