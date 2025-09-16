@@ -5,6 +5,7 @@ export interface Location {
   email: string
   coordinates: [number, number] // [latitude, longitude]
   position: [number, number, number] // 3D position for tracker
+  targetRotation: [number, number, number] // Target rotation for planet [x, y, z]
   country: string
   region: string
 }
@@ -27,6 +28,7 @@ export const distributionData: Filter[] = [
         email: 'david.jandrisevits@barzflex.com',
         coordinates: [48.2082, 16.3738],
         position: [1.3, 0.6, 3.35],
+        targetRotation: [-0.2, -0.4, 0],
         country: 'Austria',
         region: 'Europe'
       },
@@ -37,6 +39,7 @@ export const distributionData: Filter[] = [
         email: 'contact@location2.com',
         coordinates: [40.7128, -74.0060],
         position: [-0.5, 1.6, 3.25],
+        targetRotation: [-0.5, 0.2, 0],
         country: 'United States',
         region: 'America'
       },
@@ -47,6 +50,7 @@ export const distributionData: Filter[] = [
         email: 'info@location3.jp',
         coordinates: [35.6762, 139.6503],
         position: [0.3, 1, 3.49],
+        targetRotation: [-0.3, -0.1, 0],
         country: 'Japan',
         region: 'Asia'
       },
@@ -57,6 +61,7 @@ export const distributionData: Filter[] = [
         email: 'support@location4.ng',
         coordinates: [6.5244, 3.3792],
         position: [0.8, -0.3, 3.2],
+        targetRotation: [0.1, -0.3, 0],
         country: 'Nigeria',
         region: 'Africa'
       },
@@ -67,6 +72,7 @@ export const distributionData: Filter[] = [
         email: 'sales@location5.com.br',
         coordinates: [-23.5505, -46.6333],
         position: [-1.2, -0.8, 3.1],
+        targetRotation: [0.3, 0.4, 0],
         country: 'Brazil',
         region: 'America'
       },
@@ -77,6 +83,7 @@ export const distributionData: Filter[] = [
         email: 'info@location6.de',
         coordinates: [52.5200, 13.4050],
         position: [0.9, 1.2, 3.4],
+        targetRotation: [-0.4, -0.2, 0],
         country: 'Germany',
         region: 'Europe'
       }
@@ -93,6 +100,7 @@ export const distributionData: Filter[] = [
         email: 'support@location4.ng',
         coordinates: [6.5244, 3.3792],
         position: [0.8, -0.3, 3.2],
+        targetRotation: [0.1, -0.3, 0],
         country: 'Nigeria',
         region: 'Africa'
       },
@@ -103,6 +111,7 @@ export const distributionData: Filter[] = [
         email: 'contact@location7.eg',
         coordinates: [30.0444, 31.2357],
         position: [1.1, 0.2, 3.3],
+        targetRotation: [-0.1, -0.2, 0],
         country: 'Egypt',
         region: 'Africa'
       }
@@ -119,6 +128,7 @@ export const distributionData: Filter[] = [
         email: 'contact@location2.com',
         coordinates: [40.7128, -74.0060],
         position: [-0.5, 1.6, 3.25],
+        targetRotation: [-0.5, 0.2, 0],
         country: 'United States',
         region: 'America'
       },
@@ -129,6 +139,7 @@ export const distributionData: Filter[] = [
         email: 'sales@location5.com.br',
         coordinates: [-23.5505, -46.6333],
         position: [-1.2, -0.8, 3.1],
+        targetRotation: [0.3, 0.4, 0],
         country: 'Brazil',
         region: 'America'
       },
@@ -139,6 +150,7 @@ export const distributionData: Filter[] = [
         email: 'info@location8.ca',
         coordinates: [43.6532, -79.3832],
         position: [-0.2, 1.4, 3.15],
+        targetRotation: [-0.4, 0.1, 0],
         country: 'Canada',
         region: 'America'
       }
@@ -155,6 +167,7 @@ export const distributionData: Filter[] = [
         email: 'info@location3.jp',
         coordinates: [35.6762, 139.6503],
         position: [0.3, 1, 3.49],
+        targetRotation: [-0.3, -0.1, 0],
         country: 'Japan',
         region: 'Asia'
       },
@@ -165,6 +178,7 @@ export const distributionData: Filter[] = [
         email: 'contact@location9.cn',
         coordinates: [31.2304, 121.4737],
         position: [0.6, 0.9, 3.45],
+        targetRotation: [-0.2, -0.1, 0],
         country: 'China',
         region: 'Asia'
       },
@@ -175,6 +189,7 @@ export const distributionData: Filter[] = [
         email: 'support@location10.in',
         coordinates: [19.0760, 72.8777],
         position: [0.4, 0.1, 3.25],
+        targetRotation: [0.0, -0.1, 0],
         country: 'India',
         region: 'Asia'
       }
@@ -191,6 +206,7 @@ export const distributionData: Filter[] = [
         email: 'david.jandrisevits@barzflex.com',
         coordinates: [48.2082, 16.3738],
         position: [1.3, 0.6, 3.35],
+        targetRotation: [-0.2, -0.4, 0],
         country: 'Austria',
         region: 'Europe'
       },
@@ -201,6 +217,7 @@ export const distributionData: Filter[] = [
         email: 'info@location6.de',
         coordinates: [52.5200, 13.4050],
         position: [0.9, 1.2, 3.4],
+        targetRotation: [-0.4, -0.2, 0],
         country: 'Germany',
         region: 'Europe'
       },
@@ -211,6 +228,7 @@ export const distributionData: Filter[] = [
         email: 'contact@location11.co.uk',
         coordinates: [51.5074, -0.1278],
         position: [0.7, 1.1, 3.3],
+        targetRotation: [-0.3, -0.1, 0],
         country: 'United Kingdom',
         region: 'Europe'
       }
