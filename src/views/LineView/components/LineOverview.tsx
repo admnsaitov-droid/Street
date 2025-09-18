@@ -6,12 +6,13 @@ import { AnimatedText } from "@/components/animated/AnimatedText/AnimatedText"
 
 interface LineOverviewProps {
     data: any
+    overviewText: string
 }
 
-export const LineOverview = ({ data }: LineOverviewProps) => {
+export const LineOverview = ({ data, overviewText }: LineOverviewProps) => {
     return (
         <StyledTop>
-            <StyledAnnotation>line overview</StyledAnnotation>
+            <StyledAnnotation>{overviewText}</StyledAnnotation>
             <div className="right">
                 <StyledTitle>{data?.title}</StyledTitle>
                 <div className="bottom">

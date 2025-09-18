@@ -12,7 +12,7 @@ import { getMediaStrapiPath } from "@/utils/getMediaStrapiPath"
 import useLoadingStore from "@/store/store"
 import { AnimLink } from "@/layouts/AnimatedRouterLayout/AnimatedRouterLayout"
 
-export const ProductsMenu = () => {  
+export const ProductsMenu = ({ previewText, allText }: { previewText: string, allText: string }) => {  
     const [isHovered, setIsHovered] = useState(false)
     const [linesData, setLinesData] = useState<any>(null);
     const [loading, setLoading] = useState(true);
@@ -133,7 +133,7 @@ export const ProductsMenu = () => {
                         setIsMegaMenuOpen(false);
                     }}
                 >
-                    Products
+                    {previewText}
                 </AnimLink>
             </StyledVisibleContainer>
             
@@ -162,15 +162,15 @@ export const ProductsMenu = () => {
                                     </StyledPackage>
                                 ))}
                             </StyledPackages>
-                            <AllButton text="All products lines" href="/lines" lineColor={colors.red} />
+                            <AllButton text={allText} href="/lines" lineColor={colors.red} />
                         </StyledLeft>
                         <StyledRight>
-                            <StyledProduct>
+                            <StyledProduct href={`/products/${currentPackage?.products?.[0]?.slug}`}>
                                 <Image src={getMediaStrapiPath(currentPackage?.products?.[0]?.previewImage)} alt="Package" width={760} height={420} />
                                 <div className="name">{currentPackage?.products?.[0]?.name}</div>
                                 <div className="model">{currentPackage?.products?.[0]?.model}</div>
                             </StyledProduct>
-                            <StyledProduct>
+                            <StyledProduct href={`/products/${currentPackage?.products?.[1]?.slug}`}>
                                 <Image src={getMediaStrapiPath(currentPackage?.products?.[1]?.previewImage)} alt="Package" width={760} height={420} />
                                 <div className="name">{currentPackage?.products?.[1]?.name}</div>
                                 <div className="model">{currentPackage?.products?.[1]?.model}</div>
@@ -292,7 +292,7 @@ const StyledRight = styled.div`
     gap: ${rm(10)};
 `
 
-const StyledProduct = styled.div`
+const StyledProduct = styled(AnimLink)`
     display: flex;
     flex-direction: column;
     width: 50%;

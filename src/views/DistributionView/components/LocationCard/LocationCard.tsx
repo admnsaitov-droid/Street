@@ -47,8 +47,10 @@ const StyledLocationCard = styled.div`
   cursor: pointer;
 
   &:hover {
-    border-color: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.3);
     transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    background-color: rgba(255, 255, 255, 0.02);
   }
 
   &:last-child {

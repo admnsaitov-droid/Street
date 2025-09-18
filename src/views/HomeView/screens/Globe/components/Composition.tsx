@@ -42,7 +42,7 @@ export const Composition = ({ scale, position, inView, rotationXSpeed, rotationZ
     useFrame((state, delta) => {
         if (groupRef.current && mouseGroupRef.current && inView.current) {
             // Update base rotation for groupRef (Y axis only)
-            baseRotation.current.y += effectiveRotationZSpeed
+            baseRotation.current.y -= 0.0002
 
             // Apply continuous Y rotation to groupRef
             groupRef.current.rotation.y = baseRotation.current.y
@@ -71,10 +71,11 @@ export const Composition = ({ scale, position, inView, rotationXSpeed, rotationZ
             position={position} 
         >
             <group ref={mouseGroupRef}>
+            {/* rotation={[4, 0.9, -3.521836734693878]} */}
                 <group rotation={[4, 0.9, -3.521836734693878]}>
                     <PlanetModel scale={scale} />
-                    <Trackers />
                 </group>
+                <Trackers />
             </group>
         </group>
     )

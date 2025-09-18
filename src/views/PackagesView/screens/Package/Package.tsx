@@ -13,9 +13,11 @@ import styled from "styled-components"
 
 interface PackageProps {
     data: any
+    productsCountText: string
+    exploreText: string
 }
 
-export const Package = ({ data }: PackageProps) => {
+export const Package = ({ data, productsCountText, exploreText }: PackageProps) => {
 
     const width = useWindowWidth();
     
@@ -28,12 +30,14 @@ export const Package = ({ data }: PackageProps) => {
         data?.previewAboveMedia?.poster,
         data?.previewSideMedia?.poster
     ].filter(Boolean).map(media => getMediaStrapiPath(media));
+
+    const productText = data?.productsCount.replace(/,/g, '') + ' ' + productsCountText
     
     return (
         <StyledPackage>
             <StyledContent>
                 <StyledLeft>
-                    {width > 576 && <StyledAnnotation>{data?.productsCount.replace(/,/g, '')} fitness equipment</StyledAnnotation>}
+                    {width > 576 && <StyledAnnotation>{productText}</StyledAnnotation>}
                     <StyledBottomContainer>
                         <MaskImageAppear className="image-container" duration={900}>  
                             <MediaComponent media={data?.previewAboveMedia} className="image" parallax={true} imageGallery={imageGallery}/>
@@ -47,7 +51,7 @@ export const Package = ({ data }: PackageProps) => {
                             <StyledSubtitle>{data?.previewDescription}</StyledSubtitle>
                         </div>
                         <StyledExploreButton>
-                            <UnderlineLink lineColor={colors.blue} href={`/packages/${data?.slug}`} text='Explore'/>
+                            <UnderlineLink lineColor={colors.blue} href={`/packages/${data?.slug}`} text={exploreText}/>
                         </StyledExploreButton>
                     </StyledInfo>
                     <StyledBottomContainer>
@@ -56,7 +60,7 @@ export const Package = ({ data }: PackageProps) => {
                         </MaskImageAppear>
                     </StyledBottomContainer>
                 </StyledRight>
-                {width <= 576 && <StyledAnnotation>{data?.productsCount.replace(/,/g, '')} fitness equipment</StyledAnnotation>}
+                {width <= 576 && <StyledAnnotation>{productText}</StyledAnnotation>}
             </StyledContent>
         </StyledPackage>
     )

@@ -9,7 +9,7 @@ import { AnimatedTranslate } from "@/components/animated/AnimatedTranslate/Anima
 import AnimatedGrid from "@/components/animated/AnimatedContent"
 import dynamic from "next/dynamic"
 
-const Scene = dynamic(() => import("./components/Scene").then((mod) => mod.Scene), {
+const Scene = dynamic(() => import("./components/DynamicScene").then((mod) => mod.DynamicScene), {
     ssr: false,
 })
 

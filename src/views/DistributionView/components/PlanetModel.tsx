@@ -93,9 +93,7 @@ export const PlanetModel = ({ scale }: PlanetModelProps) => {
 
     return (
         <group ref={groupRef}>
-            <group rotation={[4, 1.4, -3.521836734693878]}>
-                <primitive object={scene} scale={scale}/>
-            </group>
+            <primitive object={scene} scale={scale}/>
         </group>
     )
 }

@@ -68,8 +68,15 @@ const StyledCountryPanel = styled.div`
     position: absolute;
     top: ${rm(110)};
     right: ${rm(50)};
+    height: calc(100% - ${rm(110)});
     width: ${rm(440)};
     z-index: 1000;
+    display: flex;
+    flex-direction: column;
+
+    /* Mask for transparency effect at the bottom */
+    mask: linear-gradient(to bottom, black 0%, black calc(100% - ${rm(60)}), transparent 100%);
+    -webkit-mask: linear-gradient(to bottom, black 0%, black calc(100% - ${rm(60)}), transparent 100%);
 
     ${media.xsm`
         display: none;
@@ -94,12 +101,23 @@ const StyledTopContainer = styled.div`
         font-size: ${rm(16)};
         line-height: 130%;
         border-radius: ${rm(6)};
+        cursor: pointer;
+        user-select: none;
 
         ${media.lg`
             font-size: ${rm(14)};
         `}
 
-        transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+        transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out, transform 0.2s ease-in-out;
+
+        &:not(.active):hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            transform: translateY(-1px);
+        }
+
+        &:not(.active):active {
+            transform: translateY(0);
+        }
     }
 
     .active{
@@ -111,8 +129,10 @@ const StyledTopContainer = styled.div`
 const StyledCardsContainer = styled.div`
     margin-top: ${rm(24)};
     padding-right: ${rm(8)};
-    max-height: calc(100vh - ${rm(300)});
+    padding-bottom: ${rm(40)};
+    flex: 1;
     overflow-y: auto;
+    position: relative;
     
     /* Prevent scroll from bubbling to parent */
     overscroll-behavior: contain;

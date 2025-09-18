@@ -13,49 +13,49 @@ interface ContactViewProps {
 }
 
 export const ContactView = ({ data }: ContactViewProps) => {
-    console.log(data)
+    console.log('contacs data' ,data)
     
-    // Map configuration for Paloheinä, Helsinki, Finland
-    const mapConfig = {
-        center: {
-            lat: 60.248156,
-            lng: 24.950504
-        },
-        zoom: 14,
-        markers: [
-            {
-                position: {
-                    lat: 60.248156,
-                    lng: 24.950504
-                },
-                title: "Paloheinä",
-                address: "Helsinki, Finland",
-                image: "/markerImage.png",
-                linkText: "View details",
-                onLinkClick: () => console.log("View details clicked")
-            }
-        ]
+    const mapCenter = {
+        lat: parseFloat(data?.mapSettings?.mapLat) || 0,
+        lng: parseFloat(data?.mapSettings?.mapLng) || 0
     }
+
+    const zoom = parseInt(data?.mapSettings?.zoom) || 10
+
+    const marker = {
+        position: {
+            lat: parseFloat(data?.mapMarker?.lat) || 0,
+            lng: parseFloat(data?.mapMarker?.lng) || 0
+        },
+        title: data?.mapMarker?.title,
+        address: data?.mapMarker?.address,
+        image: data?.mapMarker?.image,
+        linkText: data?.mapMarker?.linkText,
+        // onLinkClick: data?.mapMarker?.onLinkClick
+        onClick: () => console.log("Marker clicked")
+    }
+
+    console.log(mapCenter, zoom, marker)
     
     return (
         <StyledContactView>
             <StyledTop>
                 <StyledTitle>
-                    Contact
+                    {data?.title}
                 </StyledTitle>
                 <StyledContactLeft>
                     <StyledContactDescription>
                         {data.description}
                     </StyledContactDescription>
-                    <ContactForm />
+                    <ContactForm data={data?.contactForm} buttonText={data?.buttonText} />
                 </StyledContactLeft>
             </StyledTop>
             <GetInTouch data={data?.getInTouchBlock} />
             <StyledMapContainer>
                 <ContactMap 
-                    center={mapConfig.center}
-                    zoom={mapConfig.zoom}
-                    markers={mapConfig.markers}
+                    center={mapCenter}
+                    zoom={zoom}
+                    markers={[marker]}
                 />
             </StyledMapContainer>
         </StyledContactView>

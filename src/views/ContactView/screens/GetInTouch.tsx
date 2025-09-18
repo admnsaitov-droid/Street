@@ -11,6 +11,7 @@ interface GetInTouchProps {
 }
 
 export const GetInTouch = ({ data }: GetInTouchProps) => {
+    console.log( ' get in touch data', data)
     return (
         <StyledGetInTouch>
             <StyledAnnotation>
@@ -23,25 +24,25 @@ export const GetInTouch = ({ data }: GetInTouchProps) => {
                 <StyledHelp>
                     <div className="section">
                         <StyledHelpBlock>
-                            <AnimatedText className="name">Phone</AnimatedText>
+                            <AnimatedText className="name">{data?.phoneText}</AnimatedText>
                             <AnimatedText className="text">{data?.phone}</AnimatedText>
                         </StyledHelpBlock>
                         <StyledHelpBlock>
-                            <AnimatedText className="name">General Inquiries</AnimatedText>
+                            <AnimatedText className="name">{data?.unquiriesText}</AnimatedText>
                             <AnimatedText className="text">{data?.inquries}</AnimatedText>
                         </StyledHelpBlock>
                         <StyledHelpBlock>
-                            <AnimatedText className="name">Customer Support</AnimatedText>
+                            <AnimatedText className="name">{data?.supportText}</AnimatedText>
                             <AnimatedText className="text">{data?.support}</AnimatedText>
                         </StyledHelpBlock>
                     </div>
                     <div className="section">
                         <StyledHelpBlock>
-                            <AnimatedText className="name">ADDRESS</AnimatedText>
+                            <AnimatedText className="name">{data?.addressText}</AnimatedText>
                             <AnimatedText className="text">{data?.address}</AnimatedText>
                         </StyledHelpBlock>
                         <StyledHelpBlock>
-                            <AnimatedText className="name">Open hours</AnimatedText>
+                            <AnimatedText className="name">{data?.hoursText}</AnimatedText>
                             <AnimatedText className="text">{data?.hours}</AnimatedText>
                         </StyledHelpBlock>
                     </div>

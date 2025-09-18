@@ -13,7 +13,7 @@ export const Tracker = ({ position, label }: TrackerProps) => {
             {/* 3D positioned HTML element */}
             <Html
                 center
-                distanceFactor={6}
+                distanceFactor={5}
                 position={[0, 0, 0]}
                 occlude
                 zIndexRange={[100, 0]}

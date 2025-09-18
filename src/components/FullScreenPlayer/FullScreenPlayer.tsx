@@ -734,7 +734,7 @@ const StyledPrevButton = styled.button`
     z-index: 1004;
 
     &:hover {
-        background-color: rgba(0, 0, 0, 0.9);
+        background-color: ${colors.blue90};
         transform: translateY(-50%) scale(1.1);
     }
 `;

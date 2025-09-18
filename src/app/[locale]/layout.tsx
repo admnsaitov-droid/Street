@@ -26,6 +26,8 @@ import { SuccessModal } from "@/components/Modals/SuccessModal/SuccessModal";
 import { ErrorModal } from "@/components/Modals/ErrorModal/ErrorModal";
 import { FullScreenPlayer } from "@/components/FullScreenPlayer/FullScreenPlayer";
 import { FadeContainer } from "@/components/Header/MegaMenus/FadeContainer";
+import { StructuredData } from "@/components/StructuredData";
+import { generateOrganizationSchema, generateWebSiteSchema } from "@/utils/generateStructuredData";
 
 const onest = Onest({
   subsets: ["latin"],
@@ -59,9 +61,37 @@ export default async function RootLayout({
 }>) {
   const { locale } = await params;
   const messages = await getMessages();
+  
+  // Generate structured data for the site
+  const baseUrl = process.env.NEXT_PUBLIC_BASEURL || 'https://www.streetbarbell.com';
+  const organizationSchema = generateOrganizationSchema({
+    name: 'Street Barbell',
+    url: baseUrl,
+    logo: `${baseUrl}/logo.png`,
+    description: 'Street Barbell is a barbell brand that makes high-quality barbell products.',
+    sameAs: [
+      // Add your social media URLs here
+      // 'https://www.facebook.com/streetbarbell',
+      // 'https://www.instagram.com/streetbarbell',
+      // 'https://twitter.com/streetbarbell'
+    ]
+  });
+  
+  const websiteSchema = generateWebSiteSchema({
+    name: 'Street Barbell',
+    url: baseUrl,
+    description: 'Street Barbell is a barbell brand that makes high-quality barbell products.',
+    potentialAction: {
+      target: `${baseUrl}/search?q={search_term_string}`,
+      queryInput: 'required name=search_term_string'
+    }
+  });
 
   return (
     <html lang={locale}>
+      <head>
+        <StructuredData schemas={[organizationSchema, websiteSchema]} />
+      </head>
       <body className={`${onest.variable} ${golosText.variable} ${sageGrotesk.variable}`} style={{ opacity: 0 }}>
           <NextIntlClientProvider messages={messages}>
             <StyledComponentsLayout>

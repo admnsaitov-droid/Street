@@ -8,14 +8,17 @@ import { ContentRenderer } from "./components/ContentRenderer"
 
 export const ArticleView = ({ data }: { data: any }) => {
 
-    console.log('data', data)
+    console.log('data', data?.breadcrumbs)
+    
+    const breadcrumbs = data?.breadcrumbs?.map((breadcrumb: any) => (
+        { label: breadcrumb.text, slug: breadcrumb.link }
+    ))
 
     return (
         <StyledArticleView>
             <Breadcrumbs
                 items={[
-                    { label: "Home", slug: "" },
-                    { label: "Articles", slug: "articles" },
+                    ...breadcrumbs,
                     { label: data.title, slug: data.slug },
                 ]}
             />

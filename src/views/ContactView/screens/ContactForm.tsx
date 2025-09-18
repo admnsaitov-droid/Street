@@ -13,7 +13,12 @@ import { fontGolosText } from "@/styles/fonts";
 import { useState } from "react";
 import styled from "styled-components"
 
-export const ContactForm = () => {
+interface ContactFormProps {
+    data: any
+    buttonText: string
+}
+
+export const ContactForm = ({ data, buttonText }: ContactFormProps) => {
     const setIsSubmitSuccessful = useLoadingStore((state: any) => (state.setIsSubmitSuccessful))
     const setIsSubmitError = useLoadingStore((state: any) => (state.setIsSubmitError))
     const [isSending, setIsSending] = useState(false);
@@ -46,42 +51,42 @@ export const ContactForm = () => {
         let isValid = true
 
         if (!formData.firstName.trim()) {
-            newErrors.firstName = 'First name is required'
+            newErrors.firstName = data?.firstNameErrorText
             isValid = false
         }
 
         if (!formData.lastName.trim()) {
-            newErrors.lastName = 'Last name is required'
+            newErrors.lastName = data?.lastNameErrorText
             isValid = false
         }
 
         if (!formData.email.trim()) {
-            newErrors.email = 'Email is required'
+            newErrors.email = data?.mailErrorText
             isValid = false
         } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-            newErrors.email = 'Please enter a valid email address'
+            newErrors.email = data?.mailErrorText
             isValid = false
         }
 
         if (!formData.phoneNumber.trim()) {
-            newErrors.phoneNumber = 'Phone number is required'
+            newErrors.phoneNumber = data?.phoneErrorText
             isValid = false
         } else {
-            // Allows formats: +1234567890, +1 234 567 890, +1-234-567-890
-            const phoneRegex = /^\+?[0-9\s-]{10,}$/
-            if (!phoneRegex.test(formData.phoneNumber.trim())) {
-                newErrors.phoneNumber = 'Please enter a valid phone number'
+            // Check if phone number contains only numbers and has more than 6 digits
+            const phoneNumbers = formData.phoneNumber.replace(/\D/g, '') // Remove all non-digits
+            if (phoneNumbers.length <= 6) {
+                newErrors.phoneNumber = data?.phoneErrorText
                 isValid = false
             }
         }
 
         if (!formData.body.trim()) {
-            newErrors.body = 'Message body is required'
+            newErrors.body = data?.messageErrorText
             isValid = false
         }
 
         if (!formData.policy) {
-            newErrors.policy = true
+            newErrors.policy = data?.policyErrorText
             isValid = false
         }
 
@@ -161,14 +166,14 @@ export const ContactForm = () => {
         <StyledContactForm onSubmit={handleSubmit}>
             <StyledInputs>
                 <StyledSection>
-                    <ContactInput label="First name*" name="firstName" value={formData.firstName} onChange={handleInputChange} error={errors.firstName} />
-                    <ContactInput label="Last name*" name="lastName" value={formData.lastName} onChange={handleInputChange} error={errors.lastName} />
+                    <ContactInput label={data?.firstNamePlaceholder} name="firstName" value={formData.firstName} onChange={handleInputChange} error={errors.firstName} />
+                    <ContactInput label={data?.lastNamePlaceholder} name="lastName" value={formData.lastName} onChange={handleInputChange} error={errors.lastName} />
                 </StyledSection>
                 <StyledSection>
-                    <ContactInput label="Email*" name="email" value={formData.email} onChange={handleInputChange} error={errors.email} />
-                    <ContactInput label="Phone number*" name="phoneNumber" value={formData.phoneNumber} onChange={handleInputChange} error={errors.phoneNumber} />
+                    <ContactInput label={data?.mailPlaceholder} name="email" value={formData.email} onChange={handleInputChange} error={errors.email} />
+                    <ContactInput label={data?.phonePlaceholder} name="phoneNumber" value={formData.phoneNumber} onChange={handleInputChange} error={errors.phoneNumber} />
                 </StyledSection>
-                <SimpleTextarea label="Message*" name="body" value={formData.body} onChange={handleTextareaChange} error={errors.body} />
+                <SimpleTextarea label={data?.messagePlaceholder} name="body" value={formData.body} onChange={handleTextareaChange} error={errors.body} />
             </StyledInputs>
             <StyledBottom>
                 <div className="left" onClick={() => {
@@ -189,9 +194,9 @@ export const ContactForm = () => {
                         }}
                     />
                     <div className="texts">
-                        <p>I have read and accept agree the <UnderlineLink className="link" href='/privacy-policy' text='Privacy policy' lineColor={colors.blue} /></p>
+                        <p>{data?.checkboxText} <UnderlineLink className="link" href='/privacy-policy' text={data?.policyText} lineColor={colors.blue} /></p>
                     </div>
-                    {errors.policy && <StyledError>Please accept the privacy policy</StyledError>}
+                    {errors.policy && <StyledError>{data?.policyErrorText}</StyledError>}
                 </div>
                 <BlueButton 
                     isSvg={false} 
@@ -199,7 +204,7 @@ export const ContactForm = () => {
                     disabled={isSending}
                     className="button"
                 >
-                    {isSending ? 'Sending...' : 'Submit'}
+                    {isSending ? buttonText : buttonText}
                 </BlueButton>
             </StyledBottom>
         </StyledContactForm>

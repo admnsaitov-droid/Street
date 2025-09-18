@@ -61,6 +61,7 @@ export function generateMetadata({
         metadataBase: url ? new URL(url) : null,
         alternates: {
             canonical: url || undefined,
+            languages: {}, // Will be populated by hreflang utility
         },
         openGraph: {
             title,
@@ -99,10 +100,24 @@ export function generateMetadata({
         robots: {
             index: true,
             follow: true,
+            googleBot: {
+                index: true,
+                follow: true,
+                'max-video-preview': -1,
+                'max-image-preview': 'large',
+                'max-snippet': -1,
+            },
+        },
+        verification: {
+            // Add your verification codes here when available
+            // google: 'your-google-verification-code',
+            // bing: 'your-bing-verification-code',
         },
         other: {
             'distribution': 'web',
             'language': 'english',
+            'revisit-after': '7 days',
+            'rating': 'general',
         }
     }
 }

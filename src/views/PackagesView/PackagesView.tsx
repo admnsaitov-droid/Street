@@ -12,12 +12,16 @@ interface PackagesViewProps {
 
 export const PackagesView = ({ data }: PackagesViewProps) => {
     console.log(data)
+
+    const breadcrumbs = data?.breadcrumbs?.map((breadcrumb: any) => (
+        { label: breadcrumb.text, slug: breadcrumb.link }
+    ))
+    
     return (
         <StyledPackagesView>
             <Breadcrumbs
                 items={[
-                    { label: "Home", slug: "" },
-                    { label: "Packages", slug: "packages" },
+                    ...breadcrumbs
                 ]}
             />
             <StyledTop>
@@ -26,7 +30,7 @@ export const PackagesView = ({ data }: PackagesViewProps) => {
             </StyledTop>
             <StyledPackages>
                 {data?.package?.map((item: any, index: number) => (
-                    <Package key={index} data={item} />
+                    <Package key={index} data={item} productsCountText={data?.productsCountText} exploreText={data?.exploreText} />
                 ))}
             </StyledPackages>
         </StyledPackagesView>

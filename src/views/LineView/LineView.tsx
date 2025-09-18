@@ -19,13 +19,15 @@ interface LineViewProps {
 }
 
 export const LineView = ({ data }: LineViewProps) => {
+    const breadcrumbs = data?.line?.breadcrumbs?.map((breadcrumb: any) => (
+        { label: breadcrumb.text, slug: breadcrumb.link }
+    ))
 
     return (
         <StyledLineView>
             <Breadcrumbs
                 items={[
-                    { label: "Home", slug: "" },
-                    { label: "Product lines", slug: "lines" },
+                    ...breadcrumbs,
                     { label: data?.line?.lineContent?.title || "", href: undefined },
                 ]}
             />
@@ -40,7 +42,7 @@ export const LineView = ({ data }: LineViewProps) => {
                     </ScaleImageAppear>
                 </StyledTopImageContainer>
             </StyledHero>
-            <LineOverview data={data?.line?.lineOverview} />
+            <LineOverview data={data?.line?.lineOverview} overviewText={data?.line?.overviewText} />
             <StyledProductsTitleContainer>
                 <AnimatedGrid
                     type="words"
@@ -74,8 +76,8 @@ export const LineView = ({ data }: LineViewProps) => {
                         }
                     }}
                 >
-                    <span id="title-first" className="first">Explore</span>
-                    <span id="title-second">our products</span>
+                    <span id="title-first" className="first">{data?.line?.exploreTitle?.textFirst}</span>
+                    <span id="title-second">{data?.line?.exploreTitle?.textSecond}</span>
                 </AnimatedGrid>
             </StyledProductsTitleContainer>
             <StyledProductsGrid>

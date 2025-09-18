@@ -491,6 +491,8 @@ export const ProjectsMap = ({
                             address={markerData.address}
                             linkText={markerData.linkText}
                             onLinkClick={markerData.onLinkClick}
+                            lat={markerData.position.lat}
+                            lng={markerData.position.lng}
                         />
                     )
 
