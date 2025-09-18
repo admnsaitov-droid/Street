@@ -3,9 +3,10 @@ import { useFrame } from "@react-three/fiber"
 import { Group } from "three"
 import * as THREE from "three"
 import { PlanetModel } from "./PlanetModel"
-import { Tracker } from "./Tracker"
+import { Trackers } from "./Trackers"
 import { getSpecificSpherePositions } from "@/utils/spherePosition"
 import { getLocationsByFilter, Location as DistributionLocation } from "../data/distributionData"
+import { getRotationAdjustmentByLabel } from "./Trackers"
 
 interface CompositionProps {
     scale: number
@@ -36,11 +37,12 @@ export const Composition = ({ scale, position, rotationXSpeed, rotationZSpeed, a
             onLocationClick(location)
         }
         
-        // Use the predefined target rotation from the location data
-        const [targetX, targetY, targetZ] = location.targetRotation
+        // Use only manual rotation adjustments from trackerConfigs (ignore base targetRotation)
+        const [targetX, targetY, targetZ] = getRotationAdjustmentByLabel(location.name)
         
         console.log('Location:', location.name)
-        console.log('Using target rotation from data:', { x: targetX, y: targetY, z: targetZ })
+        console.log('Using only manual rotation adjustment:', [targetX, targetY, targetZ])
+        console.log('(Base targetRotation ignored:', location.targetRotation, ')')
         
         setTargetRotation({ x: targetX, y: targetY, z: targetZ })
         setIsRotating(true)
@@ -126,15 +128,12 @@ export const Composition = ({ scale, position, rotationXSpeed, rotationZSpeed, a
         <group ref={groupRef} position={position}>
             {/* Additional group for planet rotation */}
             <group ref={planetGroupRef}>
-                <PlanetModel scale={scale} />
-                {/* Render trackers based on active filter */}
-                {locations.map((location: DistributionLocation) => (
-                    <Tracker
-                        key={location.id}
-                        position={location.position}
-                        label={location.name}
-                    />
-                ))}
+                <group rotation={[-0.35, 0.5, 0]}>
+                    <group rotation={[4, 0.9, -3.521836734693878]}>
+                        <PlanetModel scale={scale} />
+                    </group>
+                    <Trackers onLocationClick={onLocationClick} />
+                </group>
             </group>
         </group>
     )

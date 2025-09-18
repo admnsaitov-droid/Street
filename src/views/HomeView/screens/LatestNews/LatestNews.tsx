@@ -67,6 +67,11 @@ export const LatestNews = ({ latestNewsData }: LatestNewsProps) => {
     });
 
     const newsMobile = latestNewsData?.articles?.slice(0, 3)
+    
+    // Calculate if there are enough slides to enable swiping
+    const articlesCount = latestNewsData?.articles?.length || 0
+    const slidesPerView = width > 768 ? 4 : 3
+    const canSwipe = articlesCount > slidesPerView
 
     const handlePrevClick = () => {
         if (swiperRef.current) {
@@ -127,24 +132,26 @@ export const LatestNews = ({ latestNewsData }: LatestNewsProps) => {
                 </StyledTitleContainer>
                 <div style={{display: 'flex', alignItems: 'center', minWidth: 'fit-content', position: 'relative', overflow: 'hidden'}} ref={buttonsInViewRef}>
                     <animated.div style={{ display: 'flex', alignItems: 'center', minWidth: 'fit-content', ...buttonsSpring }}>
-                        <StyledSwipeButtonContainer>
-                            <StyledSwipeButton 
-                                onClick={handlePrevClick}
-                                disabled={isBeginning}
-                            >
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M15 6L9 12L15 18" stroke="black" strokeWidth="2"/>
-                                </svg>
-                            </StyledSwipeButton>
-                            <StyledSwipeButton 
-                                onClick={handleNextClick}
-                                disabled={isEnd}
-                            >
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M9 6L15 12L9 18" stroke="black" strokeWidth="2"/>
-                                </svg>
-                            </StyledSwipeButton>
-                        </StyledSwipeButtonContainer>
+                        {canSwipe && (
+                            <StyledSwipeButtonContainer>
+                                <StyledSwipeButton 
+                                    onClick={handlePrevClick}
+                                    disabled={isBeginning}
+                                >
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M15 6L9 12L15 18" stroke="black" strokeWidth="2"/>
+                                    </svg>
+                                </StyledSwipeButton>
+                                <StyledSwipeButton 
+                                    onClick={handleNextClick}
+                                    disabled={isEnd}
+                                >
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M9 6L15 12L9 18" stroke="black" strokeWidth="2"/>
+                                    </svg>
+                                </StyledSwipeButton>
+                            </StyledSwipeButtonContainer>
+                        )}
                         {width > 576 && <BlueButton isSvg={false} link={latestNewsData?.button?.link}>
                             {latestNewsData?.button?.text}
                         </BlueButton>}

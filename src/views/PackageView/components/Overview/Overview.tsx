@@ -45,7 +45,7 @@ export const Overview = ({ data }: OverviewProps) => {
     return (
         <StyledOverview ref={containerRef}>
             <StyledTop>
-                <StyledAnnotation>overview</StyledAnnotation>
+                <StyledAnnotation>{data?.overviewText}</StyledAnnotation>
                 <div className="right">
                     <StyledTitle>{data?.mainDescription}</StyledTitle>
                     <div className="bottom">

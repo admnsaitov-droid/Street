@@ -12,7 +12,7 @@ import { getMediaStrapiPath } from "@/utils/getMediaStrapiPath"
 import useLoadingStore from "@/store/store"
 import { AnimLink } from "@/layouts/AnimatedRouterLayout/AnimatedRouterLayout"
 
-export const PackageMenu = () => {  
+export const PackageMenu = ({ previewText, allText }: { previewText: string, allText: string }) => {  
     const [isHovered, setIsHovered] = useState(false)
     const [packagesData, setPackagesData] = useState<any>(null);
     const [loading, setLoading] = useState(true);
@@ -132,7 +132,7 @@ export const PackageMenu = () => {
                         setIsMegaMenuOpen(false);
                     }}
                 >
-                    Packages
+                    {previewText}
                 </AnimLink>
             </StyledVisibleContainer>
             
@@ -161,7 +161,7 @@ export const PackageMenu = () => {
                                     </StyledPackage>
                                 ))}
                             </StyledPackages>
-                            <AllButton text="All packages" href="/packages" lineColor={colors.red} />
+                            <AllButton text={allText} href="/packages" lineColor={colors.red} />
                         </StyledLeft>
                         <StyledRight>
                             <Image src={getMediaStrapiPath(currentPackage?.mainMediaLeft?.poster)} alt="Package" width={760} height={420} />

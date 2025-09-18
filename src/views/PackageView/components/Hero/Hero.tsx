@@ -8,15 +8,16 @@ import Image from "next/image"
 import styled from "styled-components"
 import dynamic from "next/dynamic"
 
-const PackageScene = dynamic(() => import("./PackageScene").then((mod) => mod.PackageScene), {
+const PackageScene = dynamic(() => import("./DynamicPackageScene").then((mod) => mod.DynamicPackageScene), {
     ssr: false,
 })
 
 interface HeroProps {
     data: any
+    breadcrumbs: any
 }
 
-export const Hero = ({ data }: HeroProps) => {
+export const Hero = ({ data, breadcrumbs }: HeroProps) => {
 
     return (
         <StyledHero>
@@ -25,9 +26,8 @@ export const Hero = ({ data }: HeroProps) => {
             <StyledContent>
                 <Breadcrumbs
                     items={[
-                        { label: "Home", slug: "" },
-                        { label: "Packages", slug: "packages" },
-                        { label: data?.hero?.title || data?.title || "", href: undefined },
+                        ...breadcrumbs,
+                        // { label: data?.hero?.title || data?.title || "", href: undefined },
                     ]}
                 />
                 <StyledTitle>{data?.hero?.title}</StyledTitle>

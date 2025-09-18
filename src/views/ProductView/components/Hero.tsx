@@ -3,7 +3,7 @@ import { colors, media, rm } from "@/styles"
 import { fontGolosText } from "@/styles/fonts"
 import { heightLvh } from "@/styles/utils"
 import styled from "styled-components"
-import { ProductScene } from "./Scene/ProductScene"
+import { DynamicProductScene as ProductScene } from "./Scene/DynamicProductScene"
 import { ColorPaletre } from "./ColorPaletre/ColoPaletre"
 import { AnimatedText } from "@/components/animated/AnimatedText/AnimatedText"
 

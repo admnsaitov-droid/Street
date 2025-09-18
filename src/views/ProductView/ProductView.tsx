@@ -50,7 +50,7 @@ export const ProductView = ({ data }: ProductViewProps) => {
             <StyledWrapper>
                 <ProductOverview data={data?.product} />
             </StyledWrapper>
-            <SwiperBlock images={data?.product?.swiperMedias} />
+            <SwiperBlock images={data?.product?.swiperMedias} title={data?.product?.referencesTitle} />
         </StyledProductView>
     )
 }

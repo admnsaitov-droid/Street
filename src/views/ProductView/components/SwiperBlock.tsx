@@ -15,13 +15,15 @@ import AnimatedGrid from "@/components/animated/AnimatedContent"
 
 interface SwiperBlockProps {
     images?: any[]
+    title?: any
 }
 
-export const SwiperBlock = ({ images }: SwiperBlockProps) => {
+export const SwiperBlock = ({ images, title }: SwiperBlockProps) => {
     const [currentIndex, setCurrentIndex] = useState(0)
     const swiperRef = useRef<SwiperType | null>(null)
 
     const hasImages = Array.isArray(images) && images.length > 0
+    const canSwipe = hasImages && images.length > 1
 
     const handlePrev = () => {
         if (!hasImages) return
@@ -69,22 +71,24 @@ export const SwiperBlock = ({ images }: SwiperBlockProps) => {
                             }
                         }}
                     >
-                        <span id="title-first" className="first">Built to perform</span>
-                        <span id="title-second">Show in use</span>
+                        <span id="title-first" className="first">{title?.textFirst}</span>
+                        <span id="title-second">{title?.textSecond}</span>
                     </AnimatedGrid>
                 </StyledTitleContainer>
-                <div className="buttonsBlock">
-                    <StyledSwiperButton side="left" onClick={handlePrev} aria-label="Previous slide">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M15 6L9 12L15 18" stroke="black" stroke-width="2"/>
-                        </svg>
-                    </StyledSwiperButton>
-                    <StyledSwiperButton side="right" onClick={handleNext} aria-label="Next slide">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M15 6L9 12L15 18" stroke="black" stroke-width="2"/>
-                        </svg>
-                    </StyledSwiperButton>
-                </div>
+                {canSwipe && (
+                    <div className="buttonsBlock">
+                        <StyledSwiperButton side="left" onClick={handlePrev} aria-label="Previous slide">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M15 6L9 12L15 18" stroke="black" stroke-width="2"/>
+                            </svg>
+                        </StyledSwiperButton>
+                        <StyledSwiperButton side="right" onClick={handleNext} aria-label="Next slide">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M15 6L9 12L15 18" stroke="black" stroke-width="2"/>
+                            </svg>
+                        </StyledSwiperButton>
+                    </div>
+                )}
             </StyledTop>
             {hasImages && (
                 <StyledViewport aria-label="Product images">
@@ -139,7 +143,7 @@ const StyledTop = styled.div`
     }
 `
 
-const StyledSwiperButton = styled.div<{side: 'left' | 'right'}>`
+const StyledSwiperButton = styled.div<{side: 'left' | 'right', disabled?: boolean}>`
     padding: ${rm(12)};
     background-color: #F8F9FC;
     border-radius: ${rm(4)};
@@ -148,7 +152,8 @@ const StyledSwiperButton = styled.div<{side: 'left' | 'right'}>`
     transition: background-color 0.3s ease-in-out;
 
     &:hover{
-        background-color:rgb(150, 156, 161);
+        background-color: ${colors.blue};
+        opacity: 1 !important;
     }
 
     svg{

@@ -7,19 +7,27 @@ import Breadcrumbs from "@/components/Breadcrumbs/Breadcrumbs"
 
 interface ArticlesViewProps {
     data: any
+    pageData: any
 }
 
-export const ArticlesView = ({ data }: ArticlesViewProps) => {
+export const ArticlesView = ({ data, pageData }: ArticlesViewProps) => {
+
+
+    const breadcrumbs = pageData?.breadcrumbs?.map((breadcrumb: any) => (
+        { label: breadcrumb.text, slug: breadcrumb.link }
+    ))
+
+    console.log('pageData', data)
+
     return (
         <StyledArticlesView>
             <Breadcrumbs
                 items={[
-                    { label: "Home", slug: "" },
-                    { label: "Articles", slug: "articles" },
+                    ...breadcrumbs
                 ]}
             />
             <StyledTitle>
-                last news
+                {pageData?.Title}
             </StyledTitle>
             <StyledArticlesGrid>
                 {data.map((article: any) => (

@@ -5,7 +5,7 @@ import * as THREE from "three"
 import { getMediaStrapiPath } from "@/utils/getMediaStrapiPath"
 
 interface ProductModelProps {
-    model: string
+    model: any
     colors: {
         name: string
         color: string
@@ -22,7 +22,7 @@ export const ProductModel = ({ model, colors, params = {
     rotation: [0, 0, 0],
     scale: 1
 } }: ProductModelProps) => {
-    const { scene }: any = useGLTF('/models/testProduct.glb')
+    const { scene }: any = useGLTF(getMediaStrapiPath(model))
     const { activeColor, setActiveColor } = useColorStore()
     const sceneRef = useRef<THREE.Group>()
 

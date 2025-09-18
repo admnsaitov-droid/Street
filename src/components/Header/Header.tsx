@@ -65,8 +65,8 @@ export const Header = () => {
                     )}
                 </AnimLink>
                 <StyledLinks>
-                    <PackageMenu />
-                    <ProductsMenu />
+                    <PackageMenu previewText={headerData?.data?.packagesText} allText={headerData?.data?.packagesAllText}/>
+                    <ProductsMenu previewText={headerData?.data?.productsText} allText={headerData?.data?.productsAllText}/>
                     {headerData?.data?.links?.links?.map((item: any, index: number) => (
                         <AnimatedLink href={item?.link ? item?.link : '#'} key={index}>
                             <span>

@@ -15,18 +15,18 @@ interface ProductOverviewProps {
 export const ProductOverview = ({ data }: ProductOverviewProps) => {
     return (
         <StyledTop>
-            <StyledAnnotation>about</StyledAnnotation>
+            <StyledAnnotation>{data?.aboutText}</StyledAnnotation>
             <div className="right">
                 <StyledTitle>{data?.productInfo?.descriptionMain}</StyledTitle>
                 <div className="bottom">
                     <div className="accordions">
-                        <Accordion title="Description">
+                        <Accordion title={data?.productInfo?.descriptionTitle}>
                             <Description model={data?.model} description={data?.productInfo?.description} />
                         </Accordion>
-                        <Accordion title="Specifications">
+                        <Accordion title={data?.productInfo?.specificationsTitle}>
                             <Specifications specifications={data?.productInfo?.specification} />
                         </Accordion>
-                        <Accordion title="Muscles">
+                        <Accordion title={data?.productInfo?.musclesTitle}>
                             <Muscles muscles={data?.productInfo?.muscles} />
                         </Accordion>
                     </div>

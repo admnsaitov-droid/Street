@@ -11,12 +11,16 @@ interface LinesViewProps {
 }
 
 export const LinesView = ({ data }: LinesViewProps) => {
+
+    const breadcrumbs = data?.breadcrumbs?.map((breadcrumb: any) => (
+        { label: breadcrumb.text, slug: breadcrumb.link }
+    ))
+
     return (
         <StyledLinesView>
             <Breadcrumbs
                 items={[
-                    { label: "Home", slug: "" },
-                    { label: "Product lines", slug: "lines" },
+                    ...breadcrumbs
                 ]}
             />
             <StyledTop>

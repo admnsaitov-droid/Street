@@ -1,4 +1,5 @@
 import { rm } from "@/styles"
+import { getMediaStrapiPath } from "@/utils/getMediaStrapiPath"
 import styled from "styled-components"
 
 interface InfoWindowProps {
@@ -7,32 +8,8 @@ interface InfoWindowProps {
     address: string
     linkText?: string
     onLinkClick?: () => void
-}
-
-export const InfoWindow = ({ 
-    image, 
-    title, 
-    address, 
-    linkText = "View details",
-    onLinkClick 
-}: InfoWindowProps) => {
-
-    console.log(image);
-
-    return (
-        <StyledInfoWindow>
-            <ImageContainer>
-                <Image src={image} alt={title} />
-            </ImageContainer>
-            <ContentContainer>
-                <Title>{title}</Title>
-                <Address>{address}</Address>
-                <LinkButton onClick={onLinkClick}>
-                    {linkText}
-                </LinkButton>
-            </ContentContainer>
-        </StyledInfoWindow>
-    )
+    lat?: number
+    lng?: number
 }
 
 const StyledInfoWindow = styled.div`
@@ -76,6 +53,12 @@ const Address = styled.p`
     line-height: 1.4;
 `
 
+const ButtonContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    gap: ${rm(8)};
+`
+
 const LinkButton = styled.button`
     background: none;
     border: none;
@@ -95,3 +78,63 @@ const LinkButton = styled.button`
         outline-offset: 2px;
     }
 `
+
+const GoogleMapsButton = styled.a`
+    background: none;
+    border: none;
+    color: #0066cc;
+    font-size: ${rm(14)};
+    text-decoration: underline;
+    cursor: pointer;
+    padding: 0;
+    font-family: inherit;
+    text-align: left;
+    
+    &:hover {
+        color: #0052a3;
+    }
+    
+    &:focus {
+        outline: 2px solid #0066cc;
+        outline-offset: 2px;
+    }
+`
+
+export const InfoWindow = ({ 
+    image, 
+    title, 
+    address, 
+    linkText = "View details",
+    onLinkClick,
+    lat,
+    lng
+}: InfoWindowProps) => {
+
+    console.log(image);
+
+    return (
+        <StyledInfoWindow>
+            <ImageContainer>
+                <Image src={getMediaStrapiPath(image)} alt={title} />
+            </ImageContainer>
+            <ContentContainer>
+                <Title>{title}</Title>
+                <Address>{address}</Address>
+                <ButtonContainer>
+                    {/* <LinkButton onClick={onLinkClick}>
+                        {linkText}
+                    </LinkButton> */}
+                    {lat && lng && (
+                        <GoogleMapsButton 
+                            href={`https://www.google.com/maps?q=${lat},${lng}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            {linkText}
+                        </GoogleMapsButton>
+                    )}
+                </ButtonContainer>
+            </ContentContainer>
+        </StyledInfoWindow>
+    )
+}

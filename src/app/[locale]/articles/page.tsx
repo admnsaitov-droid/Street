@@ -9,8 +9,9 @@ export default async function ArticlesPage({
     const { locale } = await params;
 
     const data = await getStrapiData('get-articles', locale)
+    const pageData = await getStrapiData('get-news-page-data', locale)
 
     return (
-        <ArticlesView data={data} />
+        <ArticlesView data={data} pageData={pageData?.newsPage} />
     );
   } 

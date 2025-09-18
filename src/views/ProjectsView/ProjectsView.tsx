@@ -14,28 +14,25 @@ interface ProjectsViewProps {
 export const ProjectsView = ({ data }: ProjectsViewProps) => {
 
     console.log(data);
-    
-    // Map configuration for Piton du Feu, Mauritius
-    const mapConfig = {
-        center: {
-            lat: -20.45,
-            lng: 57.3522222
-        },
-        zoom: 13,
-        markers: [
-            {
-                position: {
-                    lat: -20.45,
-                    lng: 57.3522222
-                },
-                title: "SB Outdoor Gym",
-                address: "501 Silverside Rd, Wilmington, DE 19809, USA",
-                image: "/markerImage.png",
-                linkText: "View details",
-                onLinkClick: () => console.log("View details clicked")
-            }
-        ]
+
+    const mapCenter = {
+        lat: parseFloat(data?.projectsPage?.mapSettings?.mapLat) || 0,
+        lng: parseFloat(data?.projectsPage?.mapSettings?.mapLng) || 0
     }
+
+    const zoom = parseInt(data?.projectsPage?.mapSettings?.zoom) || 10
+    
+    const markers = data?.projectsPage?.markers?.map((marker: any) => ({
+        position: {
+            lat: parseFloat(marker?.lat) || 0,
+            lng: parseFloat(marker?.lng) || 0
+        },
+        title: marker?.title,
+        address: marker?.address,
+        image: marker?.image,
+        linkText: marker?.linkText,
+        onLinkClick: () => console.log("View details clicked")
+    }))
     
     return (
         <StyledProjectsView>
@@ -79,9 +76,9 @@ export const ProjectsView = ({ data }: ProjectsViewProps) => {
                 </StyledTitleContainer>
             </StyledContent>
             <ProjectsMap
-                center={mapConfig.center}
-                zoom={mapConfig.zoom}
-                markers={mapConfig.markers}
+                center={mapCenter}
+                zoom={zoom}
+                markers={markers}
             />
         </StyledProjectsView>
     )

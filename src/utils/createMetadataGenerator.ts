@@ -40,6 +40,7 @@
 
 import { Metadata } from "next";
 import { generateMetadata as baseGenerateMetadata } from "./generateMetadata";
+import { generateHreflangTags } from "./generateHreflangTags";
 
 interface MetadataConfig {
   getMetadata?: (locale: string, ...args: any[]) => Promise<any>;
@@ -86,8 +87,16 @@ export function createMetadataGenerator(config: MetadataConfig) {
       const baseUrl = process.env.NEXT_PUBLIC_BASEURL || 'https://www.streetbarbell.com';
       const path = config.getPath(locale, ...additionalArgs);
       const fullUrl = `${baseUrl}${path}`;
+      
+      // Generate hreflang tags for internationalization
+      const pathWithoutLocale = path.replace(`/${locale}`, '') || '/';
+      const hreflangTags = await generateHreflangTags({
+        path: pathWithoutLocale,
+        currentLocale: locale,
+        baseUrl,
+      });
 
-      return baseGenerateMetadata({
+      const generatedMetadata = baseGenerateMetadata({
         title: metadata?.metatitle || config.fallback.title,
         description: metadata?.metadescription || config.fallback.description,
         keywords: metadata?.metakeywords || config.fallback.keywords,
@@ -95,21 +104,43 @@ export function createMetadataGenerator(config: MetadataConfig) {
         ogImage: metadata?.openGraph ? `/api/media${metadata.openGraph.url}` : undefined,
         locale: locale === 'en' ? 'en_US' : `${locale}_${locale.toUpperCase()}`,
       });
+      
+      // Add hreflang tags to alternates
+      if (generatedMetadata.alternates) {
+        generatedMetadata.alternates.languages = hreflangTags;
+      }
+      
+      return generatedMetadata;
     } catch (error) {
       console.error(`Error generating metadata for ${config.getPath(locale, ...additionalArgs)}:`, error);
       
-      // Fallback metadata with locale-aware URL
+      // Fallback metadata with locale-aware URL and hreflang
       const baseUrl = process.env.NEXT_PUBLIC_BASEURL || 'https://www.streetbarbell.com';
       const path = config.getPath(locale, ...additionalArgs);
       const fullUrl = `${baseUrl}${path}`;
       
-      return baseGenerateMetadata({
+      // Generate hreflang tags for fallback as well
+      const pathWithoutLocale = path.replace(`/${locale}`, '') || '/';
+      const hreflangTags = await generateHreflangTags({
+        path: pathWithoutLocale,
+        currentLocale: locale,
+        baseUrl,
+      });
+      
+      const fallbackMetadata = baseGenerateMetadata({
         title: config.fallback.title,
         description: config.fallback.description,
         keywords: config.fallback.keywords,
         url: fullUrl,
         locale: locale === 'en' ? 'en_US' : `${locale}_${locale.toUpperCase()}`,
       });
+      
+      // Add hreflang tags to alternates
+      if (fallbackMetadata.alternates) {
+        fallbackMetadata.alternates.languages = hreflangTags;
+      }
+      
+      return fallbackMetadata;
     }
   };
 }

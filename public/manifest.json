@@ -1,5 +1,12 @@
 {
- "name": "App",
+ "name": "Street Barbell",
+ "short_name": "Street Barbell",
+ "description": "Street Barbell is a barbell brand that makes high-quality barbell products.",
+ "start_url": "/",
+ "display": "standalone",
+ "background_color": "#000000",
+ "theme_color": "#000000",
+ "orientation": "portrait-primary",
  "icons": [
   {
    "src": "\/android-icon-36x36.png",
