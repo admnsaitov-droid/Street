@@ -74,12 +74,17 @@ export function createMetadataGenerator(config: MetadataConfig) {
       
       // Fetch metadata if a getter function is provided
       if (config.getMetadata) {
-        const data = await config.getMetadata(locale, ...additionalArgs);
-        // Apply custom data transformer if provided, otherwise use default logic
-        if (config.transformData) {
-          metadata = config.transformData(data);
-        } else {
-          metadata = data?.metadata || data;
+        try {
+          const data = await config.getMetadata(locale, ...additionalArgs);
+          // Apply custom data transformer if provided, otherwise use default logic
+          if (config.transformData) {
+            metadata = config.transformData(data);
+          } else {
+            metadata = data?.metadata || data;
+          }
+        } catch (metadataError) {
+          console.error(`Error fetching metadata for ${config.getPath(locale, ...additionalArgs)}:`, metadataError);
+          metadata = null;
         }
       }
 

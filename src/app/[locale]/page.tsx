@@ -35,8 +35,20 @@ export default async function Page({
 }) {
   const { locale } = await params;
 
-  // For now, pass empty objects - this will be updated with Strapi data
+  // Fetch data with graceful fallback
   const homeData = await getStrapiData('get-home-data', locale);
+  
+  // Provide fallback data structure if Strapi is unavailable
+  const fallbackHomeData = homeData || {
+    hero: null,
+    achievements: null,
+    packages: null,
+    benefits: null,
+    about: null,
+    globe: null,
+    latestNews: null,
+    linesBlock: null
+  };
 
-  return <HomeView homeData={homeData} footerData={{}} />;
+  return <HomeView homeData={fallbackHomeData} footerData={{}} />;
 }
