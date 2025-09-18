@@ -1,4 +1,22 @@
 import type { Metadata } from "next";
+import { Onest } from "next/font/google";
+import { Golos_Text } from "next/font/google";
+import localFont from "next/font/local";
+
+const onest = Onest({
+  subsets: ["latin"],
+  variable: "--font-onest",
+});
+
+const golosText = Golos_Text({
+  subsets: ["latin"],
+  variable: "--font-golos-text",
+});
+
+const sageGrotesk = localFont({
+    src: '../../public/fonts/Sage-Grotesk.woff2',
+    variable: "--font-sage-grotesk",
+  });
 
 export const metadata: Metadata = {
   title: "Street Barbell",
@@ -12,7 +30,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body style={{ margin: 0, padding: 0 }}>
+      <body className={`${onest.variable} ${golosText.variable} ${sageGrotesk.variable}`} style={{ margin: 0, padding: 0, opacity: 0 }}>
         {children}
       </body>
     </html>
