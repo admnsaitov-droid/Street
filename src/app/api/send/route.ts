@@ -15,7 +15,7 @@ export async function POST(request: Request) {
     const data = await resend.emails.send({
       from: 'Contact Form <noreply@streetbarbell.com>',
       to: [recipientEmail as string],
-      subject: 'New Request from <b>streetbarbell.com</b>',
+      subject: 'New Request from streetbarbell.com',
       html: `
         <h2>New Request from streetbarbell.com</h2>
         <p><strong>Name:</strong> ${fullName}</p>
