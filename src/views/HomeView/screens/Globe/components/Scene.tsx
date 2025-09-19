@@ -38,7 +38,7 @@ export const Scene = () => {
             <StyledScene ref={ref} frameloop={sceneManager.isInView ? "always" : "demand"}>
                 <Suspense fallback={null}>
                     <ambientLight intensity={18} />
-                    <pointLight position={[-2, 0, 5]} intensity={50} decay={1.8}/>
+                    {/* <pointLight position={[-2, 0, 5]} intensity={1} decay={0.9}/> */}
                     <PerspectiveCamera makeDefault position={[0, 0, 8]} fov={40}/>
                     <Atmosphere scale={5.7} position={scenePosition} />
                     <Composition 

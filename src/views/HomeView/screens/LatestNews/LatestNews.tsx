@@ -48,7 +48,7 @@ export const LatestNews = ({ latestNewsData }: LatestNewsProps) => {
     
     // Detect when swiper container is in view
     const [swiperInViewRef, swiperInView] = useInView({
-        once: false
+        once: true
     });
 
     const [buttonsInViewRef, buttonsInView] = useInView({
