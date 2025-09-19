@@ -15,17 +15,25 @@ export default function NotFound() {
   const locale = 'en'; // This will be the fallback
 
   return (
-    <div style={{
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      minHeight: '100vh',
-      padding: '2rem',
-      textAlign: 'center',
-      backgroundColor: '#000',
-      color: '#fff'
-    }}>
+    <>
+      <style dangerouslySetInnerHTML={{
+        __html: `
+          .home-link:hover {
+            background-color: #f0f0f0 !important;
+          }
+        `
+      }} />
+      <div style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        minHeight: '100vh',
+        padding: '2rem',
+        textAlign: 'center',
+        backgroundColor: '#000',
+        color: '#fff'
+      }}>
       <h1 style={{
         fontSize: '4rem',
         fontWeight: 'bold',
@@ -52,6 +60,7 @@ export default function NotFound() {
       </p>
       <Link 
         href={`/${locale}`}
+        className="home-link"
         style={{
           display: 'inline-block',
           padding: '12px 24px',
@@ -62,15 +71,10 @@ export default function NotFound() {
           fontWeight: '500',
           transition: 'all 0.2s ease',
         }}
-        onMouseOver={(e) => {
-          e.currentTarget.style.backgroundColor = '#f0f0f0'
-        }}
-        onMouseOut={(e) => {
-          e.currentTarget.style.backgroundColor = '#fff'
-        }}
       >
         Return to Homepage
       </Link>
     </div>
+    </>
   )
 }
