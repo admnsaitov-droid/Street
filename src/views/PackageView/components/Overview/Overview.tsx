@@ -50,7 +50,7 @@ export const Overview = ({ data }: OverviewProps) => {
                     <StyledTitle>{data?.mainDescription}</StyledTitle>
                     <div className="bottom">
                         <StyledSubtitle>{data?.descriptionSecondary}</StyledSubtitle>
-                        <SimpleButton className="button">
+                        <SimpleButton className="button" link={data?.button?.link}>
                             {data?.button?.text}
                         </SimpleButton>
                     </div>
