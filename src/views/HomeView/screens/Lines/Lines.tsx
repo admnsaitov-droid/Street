@@ -12,9 +12,10 @@ import { getMediaStrapiPath } from "@/utils/getMediaStrapiPath";
 interface LinesProps {
   linesData: any;
   isTop?: boolean;
+  exploreText?: string;
 }
 
-export const Lines = ({ linesData, isTop = true }: LinesProps) => {
+export const Lines = ({ linesData, isTop = true, exploreText }: LinesProps) => {
     const setAllUrls = usePreview(state => state.setAllUrls)
     const containerRef = usePreview(state => state.containerRef)
     const setUrl = usePreview(state => state.setUrl)
@@ -113,6 +114,7 @@ export const Lines = ({ linesData, isTop = true }: LinesProps) => {
                     index={index}
                     ref={(el: HTMLDivElement | null) => { lineRefs.current[index] = el }}
                     activeMobileIndex={activeMobileIndex}
+                    exploreText={exploreText}
                 />
             ))}
         </div>

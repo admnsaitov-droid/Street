@@ -27,7 +27,7 @@ export const LinesView = ({ data }: LinesViewProps) => {
                 <StyledTitle>{data?.title}</StyledTitle>
                 <StyledDescription>{data?.description}</StyledDescription>
             </StyledTop>
-            <Lines linesData={data} isTop={false} />
+            <Lines linesData={data} isTop={false} exploreText={data?.overviewText}/>
         </StyledLinesView>
     )
 }

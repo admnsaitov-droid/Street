@@ -17,9 +17,10 @@ interface LineProps {
     onMouseEnter?: () => void;
     onMouseLeave?: () => void;
     activeMobileIndex?: number;
+    exploreText?: string;
 }
 
-export const Line = forwardRef<HTMLDivElement, LineProps>(({ line, index, onMouseEnter, onMouseLeave, activeMobileIndex }, ref) => {
+export const Line = forwardRef<HTMLDivElement, LineProps>(({ line, index, onMouseEnter, onMouseLeave, activeMobileIndex, exploreText }, ref) => {
     const setUrl = usePreview(state => state.setUrl)
     const setPoster = usePreview(state => state.setPoster)
     const setRef = usePreview(state => state.setRef)
@@ -106,7 +107,7 @@ export const Line = forwardRef<HTMLDivElement, LineProps>(({ line, index, onMous
                 </StyledDescriptionContainer>
             </div>
             <StyledExploreButton style={exploreSpring}>
-                <UnderlineLink href={`/lines/${line.slug}`} lineColor="#0040DD" text="Explore"></UnderlineLink>
+                <UnderlineLink href={`/lines/${line.slug}`} lineColor="#0040DD" text={exploreText || 'Explore'}></UnderlineLink>
             </StyledExploreButton>
         </StyledLine>
     )
