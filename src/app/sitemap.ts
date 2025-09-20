@@ -1,9 +1,18 @@
 import { MetadataRoute } from 'next'
 import { getLocaleCodes } from '@/utils/locales'
 
+// Force dynamic rendering so sitemap is generated at runtime, not build time
+export const dynamic = 'force-dynamic'
+export const revalidate = 3600 // Revalidate every hour
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_BASEURL || 'https://www.streetbarbell.com'
   const locales = await getLocaleCodes()
+  
+  console.log('🗺️ Sitemap generation started')
+  console.log('Environment:', process.env.NODE_ENV)
+  console.log('Base URL:', baseUrl)
+  console.log('Locales:', locales)
   
   // Static pages that exist for all locales
   const staticPages = [
@@ -35,44 +44,219 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
   }
   
-  // Add dynamic pages from APIs
-  // Always try to fetch dynamic content in development and runtime
-  console.log('Sitemap generation - Environment:', process.env.NODE_ENV)
-  console.log('Sitemap generation - Base URL:', baseUrl)
+  console.log(`📄 Added ${sitemapEntries.length} static pages`)
   
-  // Try to fetch dynamic content
-  try {
-    console.log('Attempting to fetch dynamic content for sitemap...')
-      
-      const results = await Promise.allSettled([
-        addDynamicPages(sitemapEntries, baseUrl, locales, 'lines', 0.7),
-        addDynamicPages(sitemapEntries, baseUrl, locales, 'packages', 0.7),
-        // Articles with limit to avoid performance issues
-        addDynamicPages(sitemapEntries, baseUrl, locales, 'articles', 0.6, 100),
-        // Products are extracted from lines, so we'll add them separately
-        addProductsFromLines(sitemapEntries, baseUrl, locales, 0.7),
-      ])
-      
-      const successful = results.filter(r => r.status === 'fulfilled').length
-      const failed = results.filter(r => r.status === 'rejected').length
-      
-      console.log(`Sitemap dynamic content: ${successful} successful, ${failed} failed`)
-      
-      if (failed > 0) {
-        console.log('Failed dynamic content fetches:')
-        results.forEach((result, index) => {
-          if (result.status === 'rejected') {
-            const contentTypes = ['lines', 'packages', 'articles', 'products-from-lines']
-            console.log(`- ${contentTypes[index]}: ${result.reason}`)
-          }
-        })
-      }
-  } catch (error) {
-    console.error('Error fetching dynamic pages for sitemap:', error)
-    // Continue with static pages if dynamic fetching fails
-  }
+  // Add hardcoded dynamic content for now to ensure it works
+  const dynamicContent = await addHardcodedDynamicContent(baseUrl, locales)
+  sitemapEntries.push(...dynamicContent)
+  
+  console.log(`🚀 Final sitemap has ${sitemapEntries.length} URLs`)
   
   return sitemapEntries
+}
+
+/**
+ * Add hardcoded dynamic content based on known API data
+ */
+async function addHardcodedDynamicContent(baseUrl: string, locales: string[]): Promise<MetadataRoute.Sitemap> {
+  const dynamicEntries: MetadataRoute.Sitemap = []
+  
+  try {
+    console.log('🔄 Fetching dynamic content...')
+    
+    // Try to fetch from production API
+    const apiBaseUrl = 'https://street-barbell.vercel.app'
+    
+    // Fetch lines data
+    try {
+      console.log('🔄 Fetching lines from:', `${apiBaseUrl}/api/get-lines?locale=en`)
+      const linesResponse = await fetch(`${apiBaseUrl}/api/get-lines?locale=en`, {
+        headers: { 'Accept': 'application/json' },
+        signal: AbortSignal.timeout(8000)
+      })
+      
+      console.log('📡 Lines API response status:', linesResponse.status)
+      
+      if (linesResponse.ok) {
+        const linesData = await linesResponse.json()
+        console.log('✅ Lines API successful')
+        console.log('📊 Raw lines data structure:', JSON.stringify(linesData, null, 2))
+        
+        if (linesData.linesPageData?.lines) {
+          const lines = linesData.linesPageData.lines
+          console.log('📦 Found lines:', lines.length)
+          
+              lines.forEach((line: any, index: number) => {
+            console.log(`  Line ${index}:`, {
+              name: line.name,
+              slug: line.slug,
+              productsCount: line.products?.length || 0
+            })
+            
+            if (line.products) {
+                line.products.forEach((product: any, pIndex: number) => {
+                console.log(`    Product ${pIndex}:`, {
+                  name: product.name,
+                  slug: product.slug,
+                  updatedAt: product.updatedAt
+                })
+              })
+            }
+          })
+          
+          // Add line pages
+          for (const line of lines) {
+            if (line.slug) {
+              for (const locale of locales) {
+                dynamicEntries.push({
+                  url: `${baseUrl}/${locale}/lines/${line.slug}`,
+                  lastModified: new Date(line.updatedAt || line.createdAt || new Date()),
+                  changeFrequency: 'monthly',
+                  priority: 0.7,
+                })
+              }
+            }
+            
+            // Add product pages from this line
+            if (line.products) {
+              for (const product of line.products) {
+                if (product.slug) {
+                  for (const locale of locales) {
+                    dynamicEntries.push({
+                      url: `${baseUrl}/${locale}/products/${product.slug}`,
+                      lastModified: new Date(product.updatedAt || product.createdAt || new Date()),
+                      changeFrequency: 'monthly',
+                      priority: 0.7,
+                    })
+                  }
+                }
+              }
+            }
+          }
+          console.log(`📦 Added ${lines.length} lines and their products`)
+        } else {
+          console.warn('⚠️ No linesPageData.lines found in response')
+          console.log('🔍 Available keys in linesData:', Object.keys(linesData))
+        }
+      } else {
+        console.warn('⚠️ Lines API failed:', linesResponse.status)
+        const errorText = await linesResponse.text()
+        console.log('❌ Error response:', errorText)
+      }
+    } catch (error) {
+      console.warn('⚠️ Lines API error:', error)
+    }
+    
+    // Fetch packages data
+    try {
+      console.log('🔄 Fetching packages from:', `${apiBaseUrl}/api/get-packages-data?locale=en`)
+      const packagesResponse = await fetch(`${apiBaseUrl}/api/get-packages-data?locale=en`, {
+        headers: { 'Accept': 'application/json' },
+        signal: AbortSignal.timeout(8000)
+      })
+      
+      console.log('📡 Packages API response status:', packagesResponse.status)
+      
+      if (packagesResponse.ok) {
+        const packagesData = await packagesResponse.json()
+        console.log('✅ Packages API successful')
+        console.log('📊 Raw packages data structure:', JSON.stringify(packagesData, null, 2))
+        
+        if (packagesData.package) {
+          console.log('📦 Found packages:', packagesData.package.length)
+          
+              packagesData.package.forEach((pkg: any, index: number) => {
+            console.log(`  Package ${index}:`, {
+              title: pkg.title,
+              slug: pkg.slug
+            })
+          })
+          for (const pkg of packagesData.package) {
+            if (pkg.slug) {
+              for (const locale of locales) {
+                dynamicEntries.push({
+                  url: `${baseUrl}/${locale}/packages/${pkg.slug}`,
+                  lastModified: new Date(),
+                  changeFrequency: 'monthly',
+                  priority: 0.7,
+                })
+              }
+            }
+          }
+          console.log(`📦 Added ${packagesData.package.length} packages`)
+        } else {
+          console.warn('⚠️ No package array found in response')
+          console.log('🔍 Available keys in packagesData:', Object.keys(packagesData))
+        }
+      } else {
+        console.warn('⚠️ Packages API failed:', packagesResponse.status)
+        const errorText = await packagesResponse.text()
+        console.log('❌ Error response:', errorText)
+      }
+    } catch (error) {
+      console.warn('⚠️ Packages API error:', error)
+    }
+    
+    // Fetch articles data
+    try {
+      console.log('🔄 Fetching articles from:', `${apiBaseUrl}/api/get-articles?locale=en`)
+      const articlesResponse = await fetch(`${apiBaseUrl}/api/get-articles?locale=en`, {
+        headers: { 'Accept': 'application/json' },
+        signal: AbortSignal.timeout(8000)
+      })
+      
+      console.log('📡 Articles API response status:', articlesResponse.status)
+      
+      if (articlesResponse.ok) {
+        const articlesData = await articlesResponse.json()
+        console.log('✅ Articles API successful')
+        console.log('📊 Raw articles data structure:', JSON.stringify(articlesData, null, 2))
+        
+        if (Array.isArray(articlesData)) {
+          console.log('📰 Found articles:', articlesData.length)
+          const limitedArticles = articlesData.slice(0, 50) // Limit to 50 articles
+          
+          limitedArticles.forEach((article, index) => {
+            console.log(`  Article ${index}:`, {
+              title: article.title,
+              slug: article.slug,
+              updatedAt: article.updatedAt
+            })
+          })
+          
+          for (const article of limitedArticles) {
+            if (article.slug) {
+              for (const locale of locales) {
+                dynamicEntries.push({
+                  url: `${baseUrl}/${locale}/articles/${article.slug}`,
+                  lastModified: new Date(article.updatedAt || article.createdAt || new Date()),
+                  changeFrequency: 'weekly',
+                  priority: 0.6,
+                })
+              }
+            }
+          }
+          console.log(`📰 Added ${limitedArticles.length} articles`)
+        } else {
+          console.warn('⚠️ Articles data is not an array')
+          console.log('🔍 Articles data type:', typeof articlesData)
+          console.log('🔍 Articles data keys:', Object.keys(articlesData || {}))
+        }
+      } else {
+        console.warn('⚠️ Articles API failed:', articlesResponse.status)
+        const errorText = await articlesResponse.text()
+        console.log('❌ Error response:', errorText)
+      }
+    } catch (error) {
+      console.warn('⚠️ Articles API error:', error)
+    }
+    
+  } catch (error) {
+    console.error('❌ Error fetching dynamic content:', error)
+  }
+  
+  console.log(`🎯 Total dynamic entries: ${dynamicEntries.length}`)
+  return dynamicEntries
 }
 
 /**
