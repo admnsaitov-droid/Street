@@ -21,7 +21,7 @@ export const DistributionView = ({ data }: DistributionViewProps) => {
         setActiveFilterId(filterId)
     }
 
-    const handleLocationClick = (location: DistributionLocation) => {
+    const handleLocationClick = (location: DistributionLocation | null) => {
         console.log('Location clicked:', location)
         setSelectedLocation(location)
     }
@@ -71,7 +71,7 @@ export const DistributionView = ({ data }: DistributionViewProps) => {
                 onLocationClick={handleLocationClick}
                 selectedLocation={selectedLocation}
             />
-            <CountryPanel onFilterChange={handleFilterChange} onLocationClick={handleLocationClick} />
+            <CountryPanel onFilterChange={handleFilterChange} onLocationClick={handleLocationClick} selectedLocation={selectedLocation} />
         </StyledDistributionView>
     )
 }

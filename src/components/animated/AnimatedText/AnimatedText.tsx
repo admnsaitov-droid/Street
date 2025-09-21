@@ -7,6 +7,7 @@ import { easings } from "@react-spring/web";
 import { memo } from "react";
 import { useIsRerouting } from "@/layouts/AnimatedRouterLayout/AnimatedRouterLayout";
 import type { EngineProps } from "@/components/Text/TextEngine";
+import { config } from "@react-spring/web";
 
 import TextEngine from "@/components/Text/TextEngine";
 

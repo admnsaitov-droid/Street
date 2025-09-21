@@ -30,7 +30,7 @@ export const Globe = ({ globeData }: GlobeProps) => {
     return (
         <StyledGlobe>
             <div className="left">
-                <div>
+                <div style={{pointerEvents: 'none', userSelect: 'none'}}>
                     <StyledTitleContainer>
                         <AnimatedGrid
                             type="words"
@@ -71,7 +71,7 @@ export const Globe = ({ globeData }: GlobeProps) => {
                     <StyledDescription>{globeData?.description}</StyledDescription>
                 </div>
                 <div>
-                    <StyledContinents>
+                    <StyledContinents style={{pointerEvents: 'none', userSelect: 'none'}}>
                         {globeData?.continents?.map((continent: any) => (
                             <StyledContinent key={continent?.id}>
                                 <div className="dividerMain"></div>
@@ -122,9 +122,11 @@ const StyledGlobe = styled.div`
         z-index: 2;
         justify-content: space-between;
         height: 100%;
+        width: 50%;
 
         ${media.md`
             padding: ${rm(100)} ${rm(25)};
+            width: 100%;
         `}
 
         ${media.xsm`

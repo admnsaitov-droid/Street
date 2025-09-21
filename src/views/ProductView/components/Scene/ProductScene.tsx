@@ -34,13 +34,6 @@ export const ProductScene = ({ data, colors }: ProductSceneProps) => {
         }
     }, [data?.model, sceneManager.shouldRender, sceneManager])
 
-    console.log('🔥 ProductScene render state:', {
-        shouldRender: sceneManager.shouldRender,
-        isLoading: sceneManager.isLoading,
-        isInView: sceneManager.isInView,
-        hasData: !!data?.model
-    })
-
     return (
         <StyledContainer ref={sceneManager.containerRef}>
             <SceneSkeleton isLoading={sceneManager.isLoading} />

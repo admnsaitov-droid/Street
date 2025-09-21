@@ -1,4 +1,4 @@
-import { rm } from "@/styles"
+import { media, rm } from "@/styles"
 import styled from "styled-components"
 import { ColorVariant } from "./components/ColorVariant"
 import { useColorStore } from "@/store/store"
@@ -34,4 +34,12 @@ const StyledColorPaletre = styled.div`
     left: ${rm(50)};
     bottom: ${rm(50)};
     z-index: 2;
+
+    ${media.xsm`
+        left: 50%;
+        transform: translateX(-50%);
+        max-width: 90%;
+        width: 90%
+        flex-wrap: wrap;
+    `}
 `

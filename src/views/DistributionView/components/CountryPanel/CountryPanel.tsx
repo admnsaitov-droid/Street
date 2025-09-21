@@ -1,7 +1,7 @@
 import { colors, media, rm } from "@/styles"
 import { fontGolosText } from "@/styles/fonts"
 import styled from "styled-components"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { distributionData, getFilterNames, Filter, getLocationsByFilter, Location as DistributionLocation } from "../../data/distributionData"
 import { LocationCard } from "../LocationCard/LocationCard"
 
@@ -11,18 +11,47 @@ const filters = getFilterNames()
 
 interface CountryPanelProps {
     onFilterChange?: (filterId: string) => void
-    onLocationClick?: (location: DistributionLocation) => void
+    onLocationClick?: (location: DistributionLocation | null) => void
+    selectedLocation?: DistributionLocation | null
 }
 
-export const CountryPanel = ({ onFilterChange, onLocationClick }: CountryPanelProps) => {
+export const CountryPanel = ({ onFilterChange, onLocationClick, selectedLocation }: CountryPanelProps) => {
     const [activeFilter, setActiveFilter] = useState('All')
+    const [activeCard, setActiveCard] = useState<string | null>(null)
+
+    // Sync activeCard state with selectedLocation changes (from tracker clicks)
+    useEffect(() => {
+        if (selectedLocation) {
+            setActiveCard(selectedLocation.id)
+        } else {
+            setActiveCard(null)
+        }
+    }, [selectedLocation])
 
     const handleFilterClick = (filterName: string) => {
         setActiveFilter(filterName)
+        setActiveCard(null) // Reset active card when filter changes
         // Find the filter ID from the name
         const filter = distributionData.find((f: Filter) => f.name === filterName)
         if (filter && onFilterChange) {
             onFilterChange(filter.id)
+        }
+    }
+
+    const handleCardClick = (location: DistributionLocation) => {
+        // Toggle card expansion
+        if (activeCard === location.id) {
+            setActiveCard(null)
+            // Reset planet rotation to initial state
+            if (onLocationClick) {
+                onLocationClick(null)
+            }
+        } else {
+            setActiveCard(location.id)
+            // Rotate planet to location
+            if (onLocationClick) {
+                onLocationClick(location)
+            }
         }
     }
 
@@ -56,7 +85,8 @@ export const CountryPanel = ({ onFilterChange, onLocationClick }: CountryPanelPr
                     <LocationCard 
                         key={location.id} 
                         location={location} 
-                        onClick={onLocationClick}
+                        onClick={() => handleCardClick(location)}
+                        isExpanded={activeCard === location.id}
                     />
                 ))}
             </StyledCardsContainer>

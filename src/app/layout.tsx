@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Onest } from "next/font/google";
 import { Golos_Text } from "next/font/google";
 import localFont from "next/font/local";
+import { HtmlLangSetter } from "@/components/HtmlLangSetter";
 
 const onest = Onest({
   subsets: ["latin"],
@@ -30,7 +31,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${onest.variable} ${golosText.variable} ${sageGrotesk.variable}`} style={{ margin: 0, padding: 0, opacity: 0 }}>
+      <body className={`${onest.variable} ${golosText.variable} ${sageGrotesk.variable}`} style={{ margin: 0, padding: 0 }}>
+        <HtmlLangSetter />
         {children}
       </body>
     </html>

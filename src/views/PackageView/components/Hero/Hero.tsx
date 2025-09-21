@@ -30,8 +30,8 @@ export const Hero = ({ data, breadcrumbs }: HeroProps) => {
                         // { label: data?.hero?.title || data?.title || "", href: undefined },
                     ]}
                 />
-                <StyledTitle>{data?.hero?.title}</StyledTitle>
-                <StyledDescription>{data?.hero?.description}</StyledDescription>
+                <StyledTitle style={{ userSelect: 'none', pointerEvents: 'none' }}>{data?.hero?.title}</StyledTitle>
+                <StyledDescription style={{ userSelect: 'none', pointerEvents: 'none' }}>{data?.hero?.description}</StyledDescription>
             </StyledContent>
         </StyledHero>
     )
@@ -45,7 +45,7 @@ const StyledHero = styled.div`
 `
 
 const StyledContent = styled.div`
-    width: 100%;
+    // width: 100%;
     // height: 100%;
     padding: ${rm(100)} ${rm(50)};
     display: flex;
@@ -53,8 +53,6 @@ const StyledContent = styled.div`
     gap: ${rm(20)};
     position: relative;
     z-index: 1;
-    user-select: none;
-    pointer-events: none;
 
     ${media.md`
         padding: ${rm(100)} ${rm(25)};
@@ -65,20 +63,14 @@ const StyledContent = styled.div`
     `}
 `
 
-const StyledBackgroundImage = styled(Image)`
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-`
-
 const StyledDescription = styled(AnimatedText)`
     font-size: ${rm(20)};
     line-height: 130%;
     ${fontGolosText(400)};
     color: ${colors.gray};
     width: ${rm(540)};
+    user-select: none;
+    pointer-events: none;
 
     ${media.lg`
         font-size: ${rm(16)};
