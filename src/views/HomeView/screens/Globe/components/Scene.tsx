@@ -3,7 +3,7 @@ import styled from "styled-components"
 import { Atmosphere } from "./Atmosphere"
 import { Composition } from "./Composition"
 import { useInViewRef } from "@/hooks/useInViewRef"
-import { PerspectiveCamera } from "@react-three/drei"
+import { Environment, PerspectiveCamera } from "@react-three/drei"
 import { useSceneManager } from "@/hooks/useSceneManager"
 import { SceneSkeleton } from "@/components/Skeleton/SceneSkeleton"
 import { Suspense, useEffect } from "react"
@@ -37,7 +37,12 @@ export const Scene = () => {
             <SceneSkeleton isLoading={sceneManager.isLoading} className="globe-scene-skeleton" />
             <StyledScene ref={ref} frameloop={sceneManager.isInView ? "always" : "demand"}>
                 <Suspense fallback={null}>
-                    <ambientLight intensity={18} />
+                    <ambientLight intensity={1} color={0xFFE6AA} />
+                    <Environment
+                        files="/models/hdr/sky.hdr"
+                        environmentIntensity={1}
+                    />
+                    <directionalLight position={[0, 10, 0]} intensity={1}/> 
                     {/* <pointLight position={[-2, 0, 5]} intensity={1} decay={0.9}/> */}
                     <PerspectiveCamera makeDefault position={[0, 0, 8]} fov={40}/>
                     <Atmosphere scale={5.7} position={scenePosition} />
