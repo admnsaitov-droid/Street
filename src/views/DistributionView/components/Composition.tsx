@@ -8,6 +8,7 @@ import { Stars } from "./Stars"
 import { getSpecificSpherePositions } from "@/utils/spherePosition"
 import { getLocationsByFilter, Location as DistributionLocation } from "../data/distributionData"
 import { getRotationAdjustmentByLabel } from "./Trackers"
+import SphereClouds from "@/components/Clouds/SphereClouds"
 
 interface CompositionProps {
     scale: number
@@ -168,8 +169,9 @@ export const Composition = ({ scale, position, rotationXSpeed, rotationZSpeed, a
             {/* Additional group for planet rotation */}
             <group ref={planetGroupRef}>
                 <group rotation={[-0.35, 0.5, 0]}>
-                    <group rotation={[4, 0.9, -3.521836734693878]}>
+                    <group rotation={[4, 0.9, -3.521836734693878]} renderOrder={2}>
                         <PlanetModel scale={scale} />
+                        <SphereClouds size={3.75} />
                     </group>
                     <Trackers onLocationClick={onLocationClick} selectedLocation={selectedLocation} />
                 </group>

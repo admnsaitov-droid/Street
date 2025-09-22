@@ -59,9 +59,9 @@ const StyledSceneSkeleton = styled.div`
             animation: spin 1s linear infinite;
         }
         
-        &::after {
-            animation: shimmer 2s infinite;
-        }
+        // &::after {
+        //     animation: shimmer 2s infinite;
+        // }
     }
 
     &.-hidden {
@@ -74,10 +74,10 @@ const StyledSceneSkeleton = styled.div`
         100% { transform: translate(-50%, -50%) rotate(360deg); }
     }
 
-    @keyframes shimmer {
-        0% { transform: translateX(-100%); }
-        100% { transform: translateX(100%); }
-    }
+    // @keyframes shimmer {
+    //     0% { transform: translateX(-100%); }
+    //     100% { transform: translateX(100%); }
+    // }
 `
 
 interface SceneSkeletonProps {

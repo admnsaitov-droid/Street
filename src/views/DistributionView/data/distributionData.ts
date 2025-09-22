@@ -1,6 +1,7 @@
 export interface Location {
   id: string
   name: string
+  displayName?: string // Optional display name for LocationCard title
   address: string
   email: string
   coordinates: [number, number] // [latitude, longitude]
@@ -25,6 +26,7 @@ export const distributionData: Filter[] = [
       {
         id: 'austria',
         name: 'Austria',
+        displayName: 'Austrian Distribution Center',
         address: 'Vienna, Austria',
         email: 'austria@distributor.com',
         coordinates: [48.2082, 16.3738],
@@ -36,6 +38,7 @@ export const distributionData: Filter[] = [
       {
         id: 'benelux',
         name: 'Benelux',
+        displayName: 'Benelux Regional Office',
         address: 'Brussels, Belgium',
         email: 'benelux@distributor.com',
         coordinates: [50.8503, 4.3517],
@@ -47,6 +50,7 @@ export const distributionData: Filter[] = [
       {
         id: 'bulgaria',
         name: 'Bulgaria',
+        displayName: 'Bulgarian Distribution Hub',
         address: 'Sofia, Bulgaria',
         email: 'bulgaria@distributor.com',
         coordinates: [42.6977, 23.3219],
@@ -58,6 +62,7 @@ export const distributionData: Filter[] = [
       {
         id: 'denmark',
         name: 'Denmark',
+        displayName: 'Danish Distribution Center',
         address: 'Copenhagen, Denmark',
         email: 'denmark@distributor.com',
         coordinates: [55.6761, 12.5683],
@@ -69,6 +74,7 @@ export const distributionData: Filter[] = [
       {
         id: 'croatia',
         name: 'Croatia',
+        displayName: 'Croatian Distribution Hub',
         address: 'Zagreb, Croatia',
         email: 'croatia@distributor.com',
         coordinates: [45.8150, 15.9819],
@@ -80,6 +86,7 @@ export const distributionData: Filter[] = [
       {
         id: 'czech-republic',
         name: 'Czech Republic',
+        displayName: 'Czech Distribution Center',
         address: 'Prague, Czech Republic',
         email: 'czech@distributor.com',
         coordinates: [50.0755, 14.4378],
@@ -91,6 +98,7 @@ export const distributionData: Filter[] = [
       {
         id: 'france',
         name: 'France',
+        displayName: 'French Distribution Center',
         address: 'Paris, France',
         email: 'france@distributor.com',
         coordinates: [48.8566, 2.3522],
@@ -102,6 +110,7 @@ export const distributionData: Filter[] = [
       {
         id: 'estonia',
         name: 'Estonia',
+        displayName: 'Estonian Distribution Hub',
         address: 'Tallinn, Estonia',
         email: 'estonia@distributor.com',
         coordinates: [59.4370, 24.7536],
@@ -113,6 +122,7 @@ export const distributionData: Filter[] = [
       {
         id: 'germany',
         name: 'Germany',
+        displayName: 'German Distribution Center',
         address: 'Berlin, Germany',
         email: 'germany@distributor.com',
         coordinates: [52.5200, 13.4050],
@@ -124,6 +134,7 @@ export const distributionData: Filter[] = [
       {
         id: 'hungary',
         name: 'Hungary',
+        displayName: 'Hungarian Distribution Hub',
         address: 'Budapest, Hungary',
         email: 'hungary@distributor.com',
         coordinates: [47.4979, 19.0402],
@@ -135,6 +146,7 @@ export const distributionData: Filter[] = [
       {
         id: 'italy',
         name: 'Italy',
+        displayName: 'Italian Distribution Center',
         address: 'Rome, Italy',
         email: 'italy@distributor.com',
         coordinates: [41.9028, 12.4964],
@@ -146,6 +158,7 @@ export const distributionData: Filter[] = [
       {
         id: 'latvia',
         name: 'Latvia',
+        displayName: 'Latvian Distribution Hub',
         address: 'Riga, Latvia',
         email: 'latvia@distributor.com',
         coordinates: [56.9496, 24.1052],
@@ -157,6 +170,7 @@ export const distributionData: Filter[] = [
       {
         id: 'malta',
         name: 'Malta',
+        displayName: 'Maltese Distribution Center',
         address: 'Valletta, Malta',
         email: 'malta@distributor.com',
         coordinates: [35.8989, 14.5146],
@@ -168,6 +182,7 @@ export const distributionData: Filter[] = [
       {
         id: 'norway',
         name: 'Norway',
+        displayName: 'Norwegian Distribution Center',
         address: 'Oslo, Norway',
         email: 'norway@distributor.com',
         coordinates: [59.9139, 10.7522],
@@ -179,6 +194,7 @@ export const distributionData: Filter[] = [
       {
         id: 'poland',
         name: 'Poland',
+        displayName: 'Polish Distribution Center',
         address: 'Warsaw, Poland',
         email: 'poland@distributor.com',
         coordinates: [52.2297, 21.0122],
@@ -190,6 +206,7 @@ export const distributionData: Filter[] = [
       {
         id: 'spain',
         name: 'Spain',
+        displayName: 'Spanish Distribution Center',
         address: 'Madrid, Spain',
         email: 'spain@distributor.com',
         coordinates: [40.4168, -3.7038],
@@ -201,6 +218,7 @@ export const distributionData: Filter[] = [
       {
         id: 'sweden',
         name: 'Sweden',
+        displayName: 'Swedish Distribution Center',
         address: 'Stockholm, Sweden',
         email: 'sweden@distributor.com',
         coordinates: [59.3293, 18.0686],
@@ -212,6 +230,7 @@ export const distributionData: Filter[] = [
       {
         id: 'switzerland',
         name: 'Switzerland',
+        displayName: 'Swiss Distribution Center',
         address: 'Zurich, Switzerland',
         email: 'switzerland@distributor.com',
         coordinates: [47.3769, 8.5417],
@@ -223,6 +242,7 @@ export const distributionData: Filter[] = [
       {
         id: 'uk',
         name: 'UK',
+        displayName: 'UK Distribution Center',
         address: 'London, UK',
         email: 'uk@distributor.com',
         coordinates: [51.5074, -0.1278],
@@ -236,6 +256,7 @@ export const distributionData: Filter[] = [
       {
         id: 'egypt',
         name: 'Egypt',
+        displayName: 'Egyptian Distribution Hub',
         address: 'Cairo, Egypt',
         email: 'egypt@distributor.com',
         coordinates: [30.0444, 31.2357],
@@ -247,6 +268,7 @@ export const distributionData: Filter[] = [
       {
         id: 'morocco',
         name: 'Morocco',
+        displayName: 'Moroccan Distribution Hub',
         address: 'Casablanca, Morocco',
         email: 'morocco@distributor.com',
         coordinates: [33.5731, -7.5898],
@@ -258,6 +280,7 @@ export const distributionData: Filter[] = [
       {
         id: 'seychelles',
         name: 'Seychelles',
+        displayName: 'Seychelles Distribution Hub',
         address: 'Victoria, Seychelles',
         email: 'seychelles@distributor.com',
         coordinates: [-4.6191, 55.4513],
@@ -271,6 +294,7 @@ export const distributionData: Filter[] = [
       {
         id: 'mexico',
         name: 'Mexico',
+        displayName: 'Mexican Distribution Center',
         address: 'Mexico City, Mexico',
         email: 'mexico@distributor.com',
         coordinates: [19.4326, -99.1332],
@@ -282,6 +306,7 @@ export const distributionData: Filter[] = [
       {
         id: 'usa',
         name: 'USA',
+        displayName: 'USA Distribution Center',
         address: 'New York, USA',
         email: 'usa@distributor.com',
         coordinates: [40.7128, -74.0060],
@@ -293,6 +318,7 @@ export const distributionData: Filter[] = [
       {
         id: 'puerto-rico',
         name: 'Puerto-Rico',
+        displayName: 'Puerto Rico Distribution Center',
         address: 'San Juan, Puerto Rico',
         email: 'puerto@distributor.com',
         coordinates: [18.4655, -66.1057],
@@ -304,6 +330,7 @@ export const distributionData: Filter[] = [
       {
         id: 'canada',
         name: 'Canada',
+        displayName: 'Canadian Distribution Center',
         address: 'Toronto, Canada',
         email: 'canada@distributor.com',
         coordinates: [43.6532, -79.3832],
@@ -315,6 +342,7 @@ export const distributionData: Filter[] = [
       {
         id: 'argentina',
         name: 'Argentina',
+        displayName: 'Argentine Distribution Hub',
         address: 'Buenos Aires, Argentina',
         email: 'argentina@distributor.com',
         coordinates: [-34.6118, -58.3960],
@@ -326,6 +354,7 @@ export const distributionData: Filter[] = [
       {
         id: 'brasil',
         name: 'Brasil',
+        displayName: 'Brazilian Distribution Center',
         address: 'São Paulo, Brazil',
         email: 'brasil@distributor.com',
         coordinates: [-23.5505, -46.6333],
@@ -337,6 +366,7 @@ export const distributionData: Filter[] = [
       {
         id: 'chile',
         name: 'Chile',
+        displayName: 'Chilean Distribution Center',
         address: 'Santiago, Chile',
         email: 'chile@distributor.com',
         coordinates: [-33.4489, -70.6693],
@@ -348,6 +378,7 @@ export const distributionData: Filter[] = [
       {
         id: 'peru',
         name: 'Peru',
+        displayName: 'Peruvian Distribution Hub',
         address: 'Lima, Peru',
         email: 'peru@distributor.com',
         coordinates: [-12.0464, -77.0428],
@@ -359,6 +390,7 @@ export const distributionData: Filter[] = [
       {
         id: 'columbia',
         name: 'Columbia',
+        displayName: 'Colombian Distribution Center',
         address: 'Bogotá, Colombia',
         email: 'columbia@distributor.com',
         coordinates: [4.7110, -74.0721],
@@ -370,6 +402,7 @@ export const distributionData: Filter[] = [
       {
         id: 'dominican-republic',
         name: 'Dominican Republic',
+        displayName: 'Dominican Distribution Center',
         address: 'Santo Domingo, Dominican Republic',
         email: 'dominican@distributor.com',
         coordinates: [18.4861, -69.9312],
@@ -383,6 +416,7 @@ export const distributionData: Filter[] = [
       {
         id: 'azerbaijan',
         name: 'Azerbaijan',
+        displayName: 'Azerbaijan Distribution Hub',
         address: 'Baku, Azerbaijan',
         email: 'azerbaijan@distributor.com',
         coordinates: [40.4093, 49.8671],
@@ -394,6 +428,7 @@ export const distributionData: Filter[] = [
       {
         id: 'bahrain',
         name: 'Bahrain',
+        displayName: 'Bahrain Distribution Center',
         address: 'Manama, Bahrain',
         email: 'bahrain@distributor.com',
         coordinates: [26.0667, 50.5577],
@@ -405,6 +440,7 @@ export const distributionData: Filter[] = [
       {
         id: 'israel',
         name: 'Israel',
+        displayName: 'Israeli Distribution Center',
         address: 'Tel Aviv, Israel',
         email: 'israel@distributor.com',
         coordinates: [32.0853, 34.7818],
@@ -416,6 +452,7 @@ export const distributionData: Filter[] = [
       {
         id: 'qatar',
         name: 'Qatar',
+        displayName: 'Qatari Distribution Hub',
         address: 'Doha, Qatar',
         email: 'qatar@distributor.com',
         coordinates: [25.2854, 51.5310],
@@ -427,6 +464,7 @@ export const distributionData: Filter[] = [
       {
         id: 'saudi-arabia',
         name: 'Saudi Arabia',
+        displayName: 'Saudi Distribution Center',
         address: 'Riyadh, Saudi Arabia',
         email: 'saudi@distributor.com',
         coordinates: [24.7136, 46.6753],
@@ -438,6 +476,7 @@ export const distributionData: Filter[] = [
       {
         id: 'taiwan',
         name: 'Taiwan',
+        displayName: 'Taiwanese Distribution Hub',
         address: 'Taipei, Taiwan',
         email: 'taiwan@distributor.com',
         coordinates: [25.0330, 121.5654],
@@ -449,6 +488,7 @@ export const distributionData: Filter[] = [
       {
         id: 'uae',
         name: 'UAE',
+        displayName: 'UAE Distribution Center',
         address: 'Dubai, UAE',
         email: 'uae@distributor.com',
         coordinates: [25.2048, 55.2708],
@@ -460,6 +500,7 @@ export const distributionData: Filter[] = [
       {
         id: 'south-korea',
         name: 'South Korea',
+        displayName: 'Korean Distribution Center',
         address: 'Seoul, South Korea',
         email: 'korea@distributor.com',
         coordinates: [37.5665, 126.9780],
@@ -471,6 +512,7 @@ export const distributionData: Filter[] = [
       {
         id: 'japan',
         name: 'Japan',
+        displayName: 'Japanese Distribution Center',
         address: 'Tokyo, Japan',
         email: 'japan@distributor.com',
         coordinates: [35.6762, 139.6503],
@@ -488,6 +530,7 @@ export const distributionData: Filter[] = [
       {
         id: 'austria',
         name: 'Austria',
+        displayName: 'Austrian Distribution Center',
         address: 'Vienna, Austria',
         email: 'austria@distributor.com',
         coordinates: [48.2082, 16.3738],
@@ -499,6 +542,7 @@ export const distributionData: Filter[] = [
       {
         id: 'benelux',
         name: 'Benelux',
+        displayName: 'Benelux Regional Office',
         address: 'Brussels, Belgium',
         email: 'benelux@distributor.com',
         coordinates: [50.8503, 4.3517],
@@ -510,6 +554,7 @@ export const distributionData: Filter[] = [
       {
         id: 'bulgaria',
         name: 'Bulgaria',
+        displayName: 'Bulgarian Distribution Hub',
         address: 'Sofia, Bulgaria',
         email: 'bulgaria@distributor.com',
         coordinates: [42.6977, 23.3219],
@@ -521,6 +566,7 @@ export const distributionData: Filter[] = [
       {
         id: 'denmark',
         name: 'Denmark',
+        displayName: 'Danish Distribution Center',
         address: 'Copenhagen, Denmark',
         email: 'denmark@distributor.com',
         coordinates: [55.6761, 12.5683],
@@ -532,6 +578,7 @@ export const distributionData: Filter[] = [
       {
         id: 'croatia',
         name: 'Croatia',
+        displayName: 'Croatian Distribution Hub',
         address: 'Zagreb, Croatia',
         email: 'croatia@distributor.com',
         coordinates: [45.8150, 15.9819],
@@ -543,6 +590,7 @@ export const distributionData: Filter[] = [
       {
         id: 'czech-republic',
         name: 'Czech Republic',
+        displayName: 'Czech Distribution Center',
         address: 'Prague, Czech Republic',
         email: 'czech@distributor.com',
         coordinates: [50.0755, 14.4378],
@@ -554,6 +602,7 @@ export const distributionData: Filter[] = [
       {
         id: 'france',
         name: 'France',
+        displayName: 'French Distribution Center',
         address: 'Paris, France',
         email: 'france@distributor.com',
         coordinates: [48.8566, 2.3522],
@@ -565,6 +614,7 @@ export const distributionData: Filter[] = [
       {
         id: 'estonia',
         name: 'Estonia',
+        displayName: 'Estonian Distribution Hub',
         address: 'Tallinn, Estonia',
         email: 'estonia@distributor.com',
         coordinates: [59.4370, 24.7536],
@@ -576,6 +626,7 @@ export const distributionData: Filter[] = [
       {
         id: 'germany',
         name: 'Germany',
+        displayName: 'German Distribution Center',
         address: 'Berlin, Germany',
         email: 'germany@distributor.com',
         coordinates: [52.5200, 13.4050],
@@ -587,6 +638,7 @@ export const distributionData: Filter[] = [
       {
         id: 'hungary',
         name: 'Hungary',
+        displayName: 'Hungarian Distribution Hub',
         address: 'Budapest, Hungary',
         email: 'hungary@distributor.com',
         coordinates: [47.4979, 19.0402],
@@ -598,6 +650,7 @@ export const distributionData: Filter[] = [
       {
         id: 'italy',
         name: 'Italy',
+        displayName: 'Italian Distribution Center',
         address: 'Rome, Italy',
         email: 'italy@distributor.com',
         coordinates: [41.9028, 12.4964],
@@ -609,6 +662,7 @@ export const distributionData: Filter[] = [
       {
         id: 'latvia',
         name: 'Latvia',
+        displayName: 'Latvian Distribution Hub',
         address: 'Riga, Latvia',
         email: 'latvia@distributor.com',
         coordinates: [56.9496, 24.1052],
@@ -620,6 +674,7 @@ export const distributionData: Filter[] = [
       {
         id: 'malta',
         name: 'Malta',
+        displayName: 'Maltese Distribution Center',
         address: 'Valletta, Malta',
         email: 'malta@distributor.com',
         coordinates: [35.8989, 14.5146],
@@ -631,6 +686,7 @@ export const distributionData: Filter[] = [
       {
         id: 'norway',
         name: 'Norway',
+        displayName: 'Norwegian Distribution Center',
         address: 'Oslo, Norway',
         email: 'norway@distributor.com',
         coordinates: [59.9139, 10.7522],
@@ -642,6 +698,7 @@ export const distributionData: Filter[] = [
       {
         id: 'poland',
         name: 'Poland',
+        displayName: 'Polish Distribution Center',
         address: 'Warsaw, Poland',
         email: 'poland@distributor.com',
         coordinates: [52.2297, 21.0122],
@@ -653,6 +710,7 @@ export const distributionData: Filter[] = [
       {
         id: 'spain',
         name: 'Spain',
+        displayName: 'Spanish Distribution Center',
         address: 'Madrid, Spain',
         email: 'spain@distributor.com',
         coordinates: [40.4168, -3.7038],
@@ -664,6 +722,7 @@ export const distributionData: Filter[] = [
       {
         id: 'sweden',
         name: 'Sweden',
+        displayName: 'Swedish Distribution Center',
         address: 'Stockholm, Sweden',
         email: 'sweden@distributor.com',
         coordinates: [59.3293, 18.0686],
@@ -675,6 +734,7 @@ export const distributionData: Filter[] = [
       {
         id: 'switzerland',
         name: 'Switzerland',
+        displayName: 'Swiss Distribution Center',
         address: 'Zurich, Switzerland',
         email: 'switzerland@distributor.com',
         coordinates: [47.3769, 8.5417],
@@ -686,6 +746,7 @@ export const distributionData: Filter[] = [
       {
         id: 'uk',
         name: 'UK',
+        displayName: 'UK Distribution Center',
         address: 'London, UK',
         email: 'uk@distributor.com',
         coordinates: [51.5074, -0.1278],
@@ -703,6 +764,7 @@ export const distributionData: Filter[] = [
       {
         id: 'egypt',
         name: 'Egypt',
+        displayName: 'Egyptian Distribution Hub',
         address: 'Cairo, Egypt',
         email: 'egypt@distributor.com',
         coordinates: [30.0444, 31.2357],
@@ -714,6 +776,7 @@ export const distributionData: Filter[] = [
       {
         id: 'morocco',
         name: 'Morocco',
+        displayName: 'Moroccan Distribution Hub',
         address: 'Casablanca, Morocco',
         email: 'morocco@distributor.com',
         coordinates: [33.5731, -7.5898],
@@ -725,6 +788,7 @@ export const distributionData: Filter[] = [
       {
         id: 'seychelles',
         name: 'Seychelles',
+        displayName: 'Seychelles Distribution Hub',
         address: 'Victoria, Seychelles',
         email: 'seychelles@distributor.com',
         coordinates: [-4.6191, 55.4513],
@@ -742,6 +806,7 @@ export const distributionData: Filter[] = [
       {
         id: 'mexico',
         name: 'Mexico',
+        displayName: 'Mexican Distribution Center',
         address: 'Mexico City, Mexico',
         email: 'mexico@distributor.com',
         coordinates: [19.4326, -99.1332],
@@ -753,6 +818,7 @@ export const distributionData: Filter[] = [
       {
         id: 'usa',
         name: 'USA',
+        displayName: 'USA Distribution Center',
         address: 'New York, USA',
         email: 'usa@distributor.com',
         coordinates: [40.7128, -74.0060],
@@ -764,6 +830,7 @@ export const distributionData: Filter[] = [
       {
         id: 'puerto-rico',
         name: 'Puerto-Rico',
+        displayName: 'Puerto Rico Distribution Center',
         address: 'San Juan, Puerto Rico',
         email: 'puerto@distributor.com',
         coordinates: [18.4655, -66.1057],
@@ -775,6 +842,7 @@ export const distributionData: Filter[] = [
       {
         id: 'canada',
         name: 'Canada',
+        displayName: 'Canadian Distribution Center',
         address: 'Toronto, Canada',
         email: 'canada@distributor.com',
         coordinates: [43.6532, -79.3832],
@@ -786,6 +854,7 @@ export const distributionData: Filter[] = [
       {
         id: 'argentina',
         name: 'Argentina',
+        displayName: 'Argentine Distribution Hub',
         address: 'Buenos Aires, Argentina',
         email: 'argentina@distributor.com',
         coordinates: [-34.6118, -58.3960],
@@ -797,6 +866,7 @@ export const distributionData: Filter[] = [
       {
         id: 'brasil',
         name: 'Brasil',
+        displayName: 'Brazilian Distribution Center',
         address: 'São Paulo, Brazil',
         email: 'brasil@distributor.com',
         coordinates: [-23.5505, -46.6333],
@@ -808,6 +878,7 @@ export const distributionData: Filter[] = [
       {
         id: 'chile',
         name: 'Chile',
+        displayName: 'Chilean Distribution Center',
         address: 'Santiago, Chile',
         email: 'chile@distributor.com',
         coordinates: [-33.4489, -70.6693],
@@ -819,6 +890,7 @@ export const distributionData: Filter[] = [
       {
         id: 'peru',
         name: 'Peru',
+        displayName: 'Peruvian Distribution Hub',
         address: 'Lima, Peru',
         email: 'peru@distributor.com',
         coordinates: [-12.0464, -77.0428],
@@ -830,6 +902,7 @@ export const distributionData: Filter[] = [
       {
         id: 'columbia',
         name: 'Columbia',
+        displayName: 'Colombian Distribution Center',
         address: 'Bogotá, Colombia',
         email: 'columbia@distributor.com',
         coordinates: [4.7110, -74.0721],
@@ -841,6 +914,7 @@ export const distributionData: Filter[] = [
       {
         id: 'dominican-republic',
         name: 'Dominican Republic',
+        displayName: 'Dominican Distribution Center',
         address: 'Santo Domingo, Dominican Republic',
         email: 'dominican@distributor.com',
         coordinates: [18.4861, -69.9312],
@@ -858,6 +932,7 @@ export const distributionData: Filter[] = [
       {
         id: 'azerbaijan',
         name: 'Azerbaijan',
+        displayName: 'Azerbaijan Distribution Hub',
         address: 'Baku, Azerbaijan',
         email: 'azerbaijan@distributor.com',
         coordinates: [40.4093, 49.8671],
@@ -869,6 +944,7 @@ export const distributionData: Filter[] = [
       {
         id: 'bahrain',
         name: 'Bahrain',
+        displayName: 'Bahrain Distribution Center',
         address: 'Manama, Bahrain',
         email: 'bahrain@distributor.com',
         coordinates: [26.0667, 50.5577],
@@ -880,6 +956,7 @@ export const distributionData: Filter[] = [
       {
         id: 'israel',
         name: 'Israel',
+        displayName: 'Israeli Distribution Center',
         address: 'Tel Aviv, Israel',
         email: 'israel@distributor.com',
         coordinates: [32.0853, 34.7818],
@@ -891,6 +968,7 @@ export const distributionData: Filter[] = [
       {
         id: 'qatar',
         name: 'Qatar',
+        displayName: 'Qatari Distribution Hub',
         address: 'Doha, Qatar',
         email: 'qatar@distributor.com',
         coordinates: [25.2854, 51.5310],
@@ -902,6 +980,7 @@ export const distributionData: Filter[] = [
       {
         id: 'saudi-arabia',
         name: 'Saudi Arabia',
+        displayName: 'Saudi Distribution Center',
         address: 'Riyadh, Saudi Arabia',
         email: 'saudi@distributor.com',
         coordinates: [24.7136, 46.6753],
@@ -913,6 +992,7 @@ export const distributionData: Filter[] = [
       {
         id: 'taiwan',
         name: 'Taiwan',
+        displayName: 'Taiwanese Distribution Hub',
         address: 'Taipei, Taiwan',
         email: 'taiwan@distributor.com',
         coordinates: [25.0330, 121.5654],
@@ -924,6 +1004,7 @@ export const distributionData: Filter[] = [
       {
         id: 'uae',
         name: 'UAE',
+        displayName: 'UAE Distribution Center',
         address: 'Dubai, UAE',
         email: 'uae@distributor.com',
         coordinates: [25.2048, 55.2708],
@@ -935,6 +1016,7 @@ export const distributionData: Filter[] = [
       {
         id: 'south-korea',
         name: 'South Korea',
+        displayName: 'Korean Distribution Center',
         address: 'Seoul, South Korea',
         email: 'korea@distributor.com',
         coordinates: [37.5665, 126.9780],
@@ -946,6 +1028,7 @@ export const distributionData: Filter[] = [
       {
         id: 'japan',
         name: 'Japan',
+        displayName: 'Japanese Distribution Center',
         address: 'Tokyo, Japan',
         email: 'japan@distributor.com',
         coordinates: [35.6762, 139.6503],

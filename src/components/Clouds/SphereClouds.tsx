@@ -11,7 +11,11 @@ cloudsTexture.wrapS = THREE.RepeatWrapping
 cloudsTexture.wrapT = THREE.RepeatWrapping
 cloudsTexture.repeat.set(5, 5)
 
-function SphereClouds() {
+interface SphereCloudsProps {
+    size?: number
+}
+
+function SphereClouds({ size = 4 }: SphereCloudsProps) {
     // Remove useTexture since we're loading it outside
     const meshRef = useRef<THREE.Mesh>(null)
     const time = useRef({value: 0})
@@ -25,7 +29,7 @@ function SphereClouds() {
 
     return (
         <mesh ref={meshRef} position={[0, 0, 0]} renderOrder={2} userData={{ isCloud: true }}>
-            <sphereGeometry args={[4, 64, 64]}/>
+            <sphereGeometry args={[size, 64, 64]}/>
             <meshStandardMaterial 
                 transparent={true}
                 // opacity={0.7}

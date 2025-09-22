@@ -40,7 +40,7 @@ export const DistributionScene = ({ activeFilterId = 'all', onLocationClick, sel
 
     return (
         <StyledContainer ref={sceneManager.containerRef}>
-            <SceneSkeleton isLoading={sceneManager.isLoading} />
+            <SceneSkeleton isLoading={sceneManager.isLoading} className="distribution-scene-skeleton" />
             <StyledScene frameloop={sceneManager.isInView ? "always" : "demand"}>
                 <Suspense fallback={null}>
                     {/* <pointLight position={[-2, 0, 5]} intensity={50} decay={0.9}/> */}
@@ -54,6 +54,7 @@ export const DistributionScene = ({ activeFilterId = 'all', onLocationClick, sel
                         rotationXSpeed={rotationXSpeed} 
                         rotationZSpeed={rotationZSpeed}
                         activeFilterId={activeFilterId}
+                        //@ts-expect-error
                         onLocationClick={onLocationClick}
                         selectedLocation={selectedLocation}
                     />
@@ -69,6 +70,41 @@ const StyledContainer = styled.div`
     position: absolute;
     top: 0;
     left: 0;
+    background-color: black;
+
+    .distribution-scene-skeleton {
+        background: black;
+    }
+    
+    @media (max-width: 768px) {
+        &:before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20%;
+            height: 80%;
+            background: linear-gradient(90deg, rgba(0,0,0,0.1) 0%, transparent 100%);
+            border-radius: 0 10px 10px 0;
+            z-index: 10;
+            pointer-events: all;
+        }
+        
+        &:after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20%;
+            height: 80%;
+            background: linear-gradient(270deg, rgba(0,0,0,0.1) 0%, transparent 100%);
+            border-radius: 10px 0 0 10px;
+            z-index: 10;
+            pointer-events: all;
+        }
+    }
 `
 
 const StyledScene = styled(Canvas)`

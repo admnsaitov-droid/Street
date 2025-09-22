@@ -119,7 +119,7 @@ const StyledGlobe = styled.div`
         flex-direction: column;
         padding: ${rm(150)} ${rm(50)};
         position: relative;
-        z-index: 2;
+        z-index: 10;
         justify-content: space-between;
         height: 100%;
         width: 50%;
