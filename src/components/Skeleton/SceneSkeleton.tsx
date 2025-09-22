@@ -12,6 +12,8 @@
 
 import { useInView } from "@react-spring/web"
 import styled from "styled-components"
+import { SkeletonIcon } from "./SkeletonIcon"
+import { rm } from "@/styles"
 
 const StyledSceneSkeleton = styled.div`
     position: absolute;
@@ -24,68 +26,107 @@ const StyledSceneSkeleton = styled.div`
     z-index: 2;
     transition: opacity 0.3s ease-out;
 
-    &::before {
-        content: '';
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 60px;
-        height: 60px;
-        margin: -30px 0 0 -30px;
-        border: 3px solid rgba(0, 0, 0, 0.1);
-        border-top: 3px solid #007bff;
-        border-radius: 50%;
-    }
-
-    &::after {
-        position: absolute;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        left: 0;
-        transform: translateX(-100%);
-        background: linear-gradient(
-            90deg, 
-            rgba(255, 255, 255, 0) 0%, 
-            rgba(255, 255, 255, 0.2) 20%, 
-            rgba(255, 255, 255, 0.4) 60%, 
-            rgba(255, 255, 255, 0) 100%
-        );
-        content: '';
-    }
-
-    &.-animate {
-        &::before {
-            animation: spin 1s linear infinite;
-        }
-        
-        // &::after {
-        //     animation: shimmer 2s infinite;
-        // }
-    }
-
     &.-hidden {
         opacity: 0;
         pointer-events: none;
     }
+`
 
-    @keyframes spin {
-        0% { transform: translate(-50%, -50%) rotate(0deg); }
-        100% { transform: translate(-50%, -50%) rotate(360deg); }
+const LoaderContainer = styled.div<{ $position: 'left' | 'right' | 'center', $theme: 'light' | 'dark' }>`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: ${rm(20)};
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    
+    ${props => {
+        switch (props.$position) {
+            case 'left':
+                return `
+                    left: 30%;
+                    transform: translate(-50%, -50%);
+                `;
+            case 'right':
+                return `
+                    right: 30%;
+                    transform: translate(50%, -50%);
+                `;
+            case 'center':
+            default:
+                return `
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                `;
+        }
+    }}
+`
+
+const IconContainer = styled.div`
+    position: relative;
+    width: ${rm(127)};
+    height: ${rm(127)};
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    > svg:first-child {
+        width: ${rm(103)};
+        height: ${rm(103)};
+        z-index: 2;
     }
+`
 
-    // @keyframes shimmer {
-    //     0% { transform: translateX(-100%); }
-    //     100% { transform: translateX(100%); }
-    // }
+const ProgressRing = styled.div<{ $progress: number, $theme: 'light' | 'dark' }>`
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: ${rm(127)};
+    height: ${rm(127)};
+    z-index: 1;
+    opacity: ${(props) => props.$progress > 0 ? 1 : 0};
+    transition: opacity 0.2s ease;
+
+    svg {
+        width: 100%;
+        height: 100%;
+        transform: rotate(90deg);
+        
+        circle {
+            fill: none;
+            stroke: ${(props) => props.$theme === 'light' ? 'white' : 'black'};
+            stroke-width: 2;
+            stroke-dasharray: ${2 * Math.PI * 61.5};
+            stroke-dashoffset: ${(props) => 2 * Math.PI * 61.5 * (1 - props.$progress / 100)};
+            stroke-linecap: round;
+            transition: stroke-dashoffset 0.3s ease;
+        }
+    }
+`
+
+const PercentageText = styled.div<{ $theme: 'light' | 'dark' }>`
+    font-size: ${rm(14)};
+    font-weight: 600;
+    color: ${(props) => props.$theme === 'light' ? 'white' : 'black'};
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+`
+
+const StyledIconsContainer = styled.div`
+    width: ${rm(127)};
+    height: ${rm(127)};
+    position: relative;
 `
 
 interface SceneSkeletonProps {
     isLoading: boolean
+    progress?: number // Progress percentage (0-100)
     className?: string
+    position?: 'left' | 'right' | 'center' // Position of the loader
+    theme?: 'light' | 'dark'
 }
 
-export const SceneSkeleton = ({ isLoading, className }: SceneSkeletonProps) => {
+export const SceneSkeleton = ({ isLoading, progress = 0, className, position = 'center', theme = 'light' }: SceneSkeletonProps) => {
     const [ref, inView] = useInView()
     
     return (
@@ -93,9 +134,22 @@ export const SceneSkeleton = ({ isLoading, className }: SceneSkeletonProps) => {
             ref={ref}
             className={`
                 ${className || ''} 
-                ${inView ? '-animate' : ''} 
                 ${!isLoading ? '-hidden' : ''}
             `}
-        />
+        >
+            <LoaderContainer $position={position} $theme={theme}>
+                <StyledIconsContainer>
+                    <IconContainer>
+                        <SkeletonIcon />
+                        <ProgressRing $progress={progress} $theme={theme}>
+                            <svg viewBox="0 0 127 127">
+                                <circle cx="63.5" cy="63.5" r="61.5" />
+                            </svg>
+                        </ProgressRing>
+                    </IconContainer>
+                </StyledIconsContainer>
+                <PercentageText $theme={theme}>{Math.round(progress)}%</PercentageText>
+            </LoaderContainer>
+        </StyledSceneSkeleton>
     )
 }

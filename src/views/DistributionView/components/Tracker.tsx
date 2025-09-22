@@ -1,8 +1,11 @@
 import { Html } from "@react-three/drei"
 import styled from "styled-components"
-import { useState } from "react"
+import { useState, MutableRefObject } from "react"
 import { DistMarker } from "./DistMarker"
 import { useWindowWidth } from "@react-hook/window-size"
+import { useFrame } from "@react-three/fiber"
+import { fontGolosText } from "@/styles/fonts"
+import { rm } from "@/styles"
 
 interface TrackerProps {
     position: [number, number, number]
@@ -10,12 +13,41 @@ interface TrackerProps {
     name?: string // Display name for the tracker
     isActive?: boolean
     onClick?: () => void
+    fromRotation?: number
+    toRotation?: number
+    currentRotationRef?: MutableRefObject<number>
 }
 
-export const Tracker = ({ position, label, name, isActive = false, onClick }: TrackerProps) => {
+export const Tracker = ({ position, label, name, isActive = false, onClick, fromRotation, toRotation, currentRotationRef }: TrackerProps) => {
     const [isHovered, setIsHovered] = useState(false)
+    const [isVisible, setIsVisible] = useState(true)
 
     const width = useWindowWidth()
+
+    // Add rotation-based visibility logic (same as Globe trackers)
+    useFrame(() => {
+        if (fromRotation !== undefined && toRotation !== undefined && currentRotationRef?.current !== undefined) {
+            // Normalize rotation to 0-2π range
+            const normalizedRotation = ((currentRotationRef.current % (Math.PI * 2)) + (Math.PI * 2)) % (Math.PI * 2)
+            const normalizedFrom = ((fromRotation % (Math.PI * 2)) + (Math.PI * 2)) % (Math.PI * 2)
+            const normalizedTo = ((toRotation % (Math.PI * 2)) + (Math.PI * 2)) % (Math.PI * 2)
+            
+            let visible = false
+            
+            if (normalizedFrom <= normalizedTo) {
+                // Normal case: from 1 to 4 radians
+                visible = normalizedRotation >= normalizedFrom && normalizedRotation <= normalizedTo
+            } else {
+                // Wrap-around case: from 5 to 1 radians (crossing 0)
+                visible = normalizedRotation >= normalizedFrom || normalizedRotation <= normalizedTo
+            }
+            
+            setIsVisible(visible)
+        } else {
+            // If no rotation parameters, always visible
+            setIsVisible(true)
+        }
+    })
 
     const handleClick = () => {
         if (onClick) {
@@ -32,6 +64,10 @@ export const Tracker = ({ position, label, name, isActive = false, onClick }: Tr
                 position={[0, 0, 0]}
                 // occlude
                 zIndexRange={[100, 0]}
+                style={{ 
+                    opacity: isVisible ? 1 : 0,
+                    transition: 'opacity 0.2s ease-in-out'
+                }}
             >
                 <TrackerContainer
                     onMouseEnter={() => {
@@ -80,10 +116,9 @@ const TrackerLabel = styled.div`
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 8px;
-    padding: 8px 12px;
+    padding: ${rm(4)} ${rm(8)};
     color: white;
-    font-size: 14px;
-    font-weight: 500;
+    font-size: ${rm(14)};
     white-space: nowrap;
     pointer-events: none;
     user-select: none;
@@ -118,7 +153,7 @@ const TrackerLabel = styled.div`
     &::after {
         content: '';
         position: absolute;
-        right: calc(100% - 1px);
+        right: calc(100% + 0.1px);
         top: 50%;
         transform: translateY(-50%);
         width: 0;
@@ -131,5 +166,5 @@ const TrackerLabel = styled.div`
 
 const TrackerText = styled.span`
     color: white;
-    font-family: inherit;
+    ${fontGolosText(400)};
 `   

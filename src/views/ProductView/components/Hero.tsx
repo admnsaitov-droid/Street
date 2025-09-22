@@ -56,7 +56,7 @@ const StyledHero = styled.div`
 const StyledContent = styled.div`
     padding: ${rm(100)} ${rm(50)};
     position: relative;
-    z-index: 2;
+    z-index: 10;
 
     ${media.md`
         padding: ${rm(100)} ${rm(25)};

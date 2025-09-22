@@ -31,6 +31,7 @@ export const Composition = ({ scale, position, rotationXSpeed, rotationZSpeed, a
     const [isRotating, setIsRotating] = useState(false)
     const [targetZoom, setTargetZoom] = useState(10) // Default camera distance
     const [isZooming, setIsZooming] = useState(false)
+    const currentRotationRef = useRef(0)
     
     // Access camera for zoom control
     const { camera } = useThree()
@@ -60,7 +61,7 @@ export const Composition = ({ scale, position, rotationXSpeed, rotationZSpeed, a
             console.log('(Base targetRotation ignored:', location.targetRotation, ')')
             
             setTargetRotation({ x: targetX, y: targetY, z: targetZ })
-            setTargetZoom(8.5) // Zoom in slightly when location is selected
+            setTargetZoom(7) // Zoom in slightly when location is selected
             setIsRotating(true)
             setIsZooming(true)
         }
@@ -110,6 +111,11 @@ export const Composition = ({ scale, position, rotationXSpeed, rotationZSpeed, a
                 targetZ,
                 delta * 3
             )
+            
+            // Update the rotation ref for trackers (use Y rotation from planet group)
+            if (planetGroupRef.current) {
+                currentRotationRef.current = planetGroupRef.current.rotation.y
+            }
         }
 
         // Handle planet rotation when location is clicked
@@ -173,7 +179,7 @@ export const Composition = ({ scale, position, rotationXSpeed, rotationZSpeed, a
                         <PlanetModel scale={scale} />
                         <SphereClouds size={3.75} />
                     </group>
-                    <Trackers onLocationClick={onLocationClick} selectedLocation={selectedLocation} />
+                    <Trackers onLocationClick={onLocationClick} selectedLocation={selectedLocation} currentRotationRef={currentRotationRef} />
                 </group>
             </group>
         </group>

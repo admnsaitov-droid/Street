@@ -3,9 +3,10 @@ import styled from "styled-components"
 import { ProductModel } from "./components/ProductModel"
 import { Environment, OrbitControls, PerspectiveCamera } from "@react-three/drei"
 import * as THREE from "three"
-import { useSceneManager } from "@/hooks/useSceneManager"
 import { SceneSkeleton } from "@/components/Skeleton/SceneSkeleton"
-import { Suspense, useEffect } from "react"
+import { Suspense } from "react"
+import { useLazyScene } from "@/hooks/useLazyScene"
+import { SceneReadyDetector } from "@/views/DistributionView/components/SceneReadyDetector"
 
 interface ProductSceneProps {
     data?: any
@@ -16,28 +17,19 @@ interface ProductSceneProps {
 }
 
 export const ProductScene = ({ data, colors }: ProductSceneProps) => {
-    const sceneManager = useSceneManager({
+    const lazyScene = useLazyScene('product', {
         threshold: 0.2,
-        rootMargin: '100px',
-        renderDelay: 150,
-        minLoadingTime: 800
+        rootMargin: '100px'
     })
 
-    // Mark scene as ready when model data is loaded
-    useEffect(() => {
-        if (data?.model && sceneManager.shouldRender) {
-            // Simulate loading time for model
-            const timer = setTimeout(() => {
-                sceneManager.setSceneReady()
-            }, 500)
-            return () => clearTimeout(timer)
-        }
-    }, [data?.model, sceneManager.shouldRender, sceneManager])
-
     return (
-        <StyledContainer ref={sceneManager.containerRef}>
-            <SceneSkeleton isLoading={sceneManager.isLoading} />
-            {data?.model && (
+        <StyledContainer ref={lazyScene.containerRef}>
+            <SceneSkeleton 
+                isLoading={lazyScene.isLoading} 
+                progress={lazyScene.progress} 
+                theme="dark"
+            />
+            {data?.model && lazyScene.shouldLoad && (
                 <StyledCanvas
                     gl={{
                         powerPreference: "high-performance",
@@ -48,9 +40,10 @@ export const ProductScene = ({ data, colors }: ProductSceneProps) => {
                         outputColorSpace: THREE.SRGBColorSpace,
                         preserveDrawingBuffer: true,
                     }}
-                    frameloop={sceneManager.isInView ? "always" : "demand"}
+                    frameloop={lazyScene.isInView ? "always" : "demand"}
                 >
                     <Suspense fallback={null}>
+                        <SceneReadyDetector sceneType="product" />
                         <OrbitControls 
                             enableZoom={false} 
                             enableRotate={true}

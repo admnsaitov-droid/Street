@@ -52,7 +52,7 @@ const StyledContent = styled.div`
     flex-direction: column;
     gap: ${rm(20)};
     position: relative;
-    z-index: 1;
+    z-index: 10;
 
     ${media.md`
         padding: ${rm(100)} ${rm(25)};
