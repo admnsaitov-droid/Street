@@ -2,16 +2,20 @@ import { Html } from "@react-three/drei"
 import styled from "styled-components"
 import { useState } from "react"
 import { DistMarker } from "./DistMarker"
+import { useWindowWidth } from "@react-hook/window-size"
 
 interface TrackerProps {
     position: [number, number, number]
     label: string
+    name?: string // Display name for the tracker
     isActive?: boolean
     onClick?: () => void
 }
 
-export const Tracker = ({ position, label, isActive = false, onClick }: TrackerProps) => {
+export const Tracker = ({ position, label, name, isActive = false, onClick }: TrackerProps) => {
     const [isHovered, setIsHovered] = useState(false)
+
+    const width = useWindowWidth()
 
     const handleClick = () => {
         if (onClick) {
@@ -26,12 +30,18 @@ export const Tracker = ({ position, label, isActive = false, onClick }: TrackerP
                 center
                 distanceFactor={5}
                 position={[0, 0, 0]}
-                occlude
+                // occlude
                 zIndexRange={[100, 0]}
             >
                 <TrackerContainer
-                    onMouseEnter={() => setIsHovered(true)}
-                    onMouseLeave={() => setIsHovered(false)}
+                    onMouseEnter={() => {
+                        if (width <= 768) return;
+                        setIsHovered(true)
+                    }}
+                    onMouseLeave={() => {
+                        if (width <= 768) return;
+                        setIsHovered(false)
+                    }}
                     onClick={handleClick}
                 >
                     <DistMarker isActive={isActive} />

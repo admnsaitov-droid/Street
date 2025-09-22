@@ -22,20 +22,8 @@ export const LocationCard = ({ location, onClick, isExpanded = false }: Location
         {location.name}
       </StyledHeader>
       <StyledTitle>
-        {location.name}
+        {location.displayName || location.name}
       </StyledTitle>
-      <StyledDetails>
-        <StyledDetailItem>
-          <StyledDetailLabel>Location</StyledDetailLabel>
-          <StyledDetailValue>{location.address}</StyledDetailValue>
-        </StyledDetailItem>
-        <StyledDetailItem>
-          <StyledDetailLabel>Email</StyledDetailLabel>
-          <StyledDetailValue>{location.email}</StyledDetailValue>
-        </StyledDetailItem>
-      </StyledDetails>
-      
-      {/* Accordion content - only visible when expanded */}
       <StyledAccordionContent $isExpanded={isExpanded}>
         <StyledAccordionDetails>
           <StyledDetailItem>
@@ -47,28 +35,41 @@ export const LocationCard = ({ location, onClick, isExpanded = false }: Location
             <StyledDetailValue>{location.country}</StyledDetailValue>
           </StyledDetailItem>
         </StyledAccordionDetails>
+      </StyledAccordionContent>
+      <StyledDivider />
+      <StyledDetails>
+        <StyledDetailItem>
+          <StyledDetailLabel>Location</StyledDetailLabel>
+          <StyledDetailValue>{location.address}</StyledDetailValue>
+        </StyledDetailItem>
+        <StyledDetailItem>
+          <StyledDetailLabel>Email</StyledDetailLabel>
+          <StyledDetailValue>{location.email}</StyledDetailValue>
+        </StyledDetailItem>
+      </StyledDetails>
+      <StyledButtonContainer $isExpanded={isExpanded}>
         <StyledVisitButton>
           VISIT WEBSITE
         </StyledVisitButton>
-      </StyledAccordionContent>
+      </StyledButtonContainer>
+      {/* Accordion content - only visible when expanded */}
     </StyledLocationCard>
   )
 }
 
 const StyledLocationCard = styled.div<{ $isExpanded: boolean }>`
-  background-color: ${colors.black100};
-  border-radius: ${rm(12)};
-  padding: ${rm(24)};
-  margin-bottom: ${rm(16)};
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: ${rm(8)};
+  padding: ${rm(20)};
+  margin-bottom: ${rm(10)};
+  border: 1px solid #B7BCCA33;
+  background-color: #6F768526;
   transition: all 0.3s ease;
   cursor: pointer;
+  backdrop-filter: blur(32px);
 
   &:hover {
     border-color: rgba(255, 255, 255, 0.3);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-    background-color: rgba(255, 255, 255, 0.02);
+    background-color: #6F768540;
   }
 
   &:last-child {
@@ -82,12 +83,11 @@ const StyledLocationCard = styled.div<{ $isExpanded: boolean }>`
 `
 
 const StyledHeader = styled.div`
-  color: ${colors.white100};
+  color: #868D9C;
   ${fontGolosText(400)};
   font-size: ${rm(14)};
   line-height: 130%;
-  margin-bottom: ${rm(8)};
-  opacity: 0.8;
+  margin-bottom: ${rm(5)};
 
   ${media.xsm`
     font-size: ${rm(12)};
@@ -96,16 +96,17 @@ const StyledHeader = styled.div`
 
 const StyledTitle = styled.div`
   color: ${colors.white100};
-  ${fontSageGrotesk(400)};
-  font-size: ${rm(24)};
-  font-weight: 600;
-  line-height: 120%;
+  ${fontSageGrotesk(500)};
+  font-size: ${rm(22)};
+  line-height: 100%;
   text-transform: uppercase;
-  margin-bottom: ${rm(20)};
+  // margin-bottom: ${rm(16)};
+  letter-spacing: -0.01em;
+  width: 70%;
 
   ${media.xsm`
     font-size: ${rm(20)};
-    margin-bottom: ${rm(16)};
+    // margin-bottom: ${rm(16)};
   `}
 `
 
@@ -155,22 +156,38 @@ const StyledAccordionContent = styled.div<{ $isExpanded: boolean }>`
   opacity: ${({ $isExpanded }) => $isExpanded ? '1' : '0'};
   overflow: hidden;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  // margin-bottom: ${rm(16)};
+  position: relative;
   
   ${({ $isExpanded }) => $isExpanded && `
     margin-top: ${rm(20)};
   `}
 `
 
+
+const StyledDivider = styled.div`
+  width: 100%;
+  height: 1px;
+  background-color: #FFFFFF14;
+  margin: ${rm(24)} 0;
+`
+
 const StyledAccordionDetails = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${rm(16)};
-  margin-bottom: ${rm(24)};
 
   ${media.xsm`
     gap: ${rm(12)};
-    margin-bottom: ${rm(20)};
   `}
+`
+
+const StyledButtonContainer = styled.div<{ $isExpanded: boolean }>`
+  max-height: ${({ $isExpanded }) => $isExpanded ? '80px' : '0'};
+  opacity: ${({ $isExpanded }) => $isExpanded ? '1' : '0'};
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  margin-top: ${({ $isExpanded }) => $isExpanded ? rm(20) : '0'};
 `
 
 const StyledVisitButton = styled.button`

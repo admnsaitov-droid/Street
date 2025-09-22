@@ -34,7 +34,7 @@ export const Scene = () => {
 
     return (
         <StyledContainer ref={sceneManager.containerRef}>
-            <SceneSkeleton isLoading={sceneManager.isLoading} />
+            <SceneSkeleton isLoading={sceneManager.isLoading} className="globe-scene-skeleton" />
             <StyledScene ref={ref} frameloop={sceneManager.isInView ? "always" : "demand"}>
                 <Suspense fallback={null}>
                     <ambientLight intensity={18} />
@@ -61,6 +61,40 @@ const StyledContainer = styled.div`
     position: absolute;
     top: 0;
     left: 0;
+
+    .globe-scene-skeleton {
+        background: black;
+    }
+    
+    @media (max-width: 768px) {
+        &:before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20%;
+            height: 80%;
+            background: linear-gradient(90deg, rgba(0,0,0,0.1) 0%, transparent 100%);
+            border-radius: 0 10px 10px 0;
+            z-index: 10;
+            pointer-events: all;
+        }
+        
+        &:after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20%;
+            height: 80%;
+            background: linear-gradient(270deg, rgba(0,0,0,0.1) 0%, transparent 100%);
+            border-radius: 10px 0 0 10px;
+            z-index: 10;
+            pointer-events: all;
+        }
+    }
 `
 
 const StyledScene = styled(Canvas)`

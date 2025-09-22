@@ -116,8 +116,11 @@ const StyledCountryPanel = styled.div`
 const StyledTopContainer = styled.div`
     display: flex;
     width: 100%;
-    backdrop-filter: blur(88);
     gap: ${rm(4)};
+    border: 1px solid #B7BCCA33;
+    background-color: #6F768526;
+    backdrop-filter: blur(32px);
+    border-radius: ${rm(8)};
 
     .filter{
         width: 20%;
@@ -133,6 +136,7 @@ const StyledTopContainer = styled.div`
         border-radius: ${rm(6)};
         cursor: pointer;
         user-select: none;
+        // backdrop-filter: blur(88px);
 
         ${media.lg`
             font-size: ${rm(14)};
@@ -142,11 +146,6 @@ const StyledTopContainer = styled.div`
 
         &:not(.active):hover {
             background-color: rgba(255, 255, 255, 0.1);
-            transform: translateY(-1px);
-        }
-
-        &:not(.active):active {
-            transform: translateY(0);
         }
     }
 
@@ -157,8 +156,8 @@ const StyledTopContainer = styled.div`
 `
 
 const StyledCardsContainer = styled.div`
-    margin-top: ${rm(24)};
-    padding-right: ${rm(8)};
+    margin-top: ${rm(12)};
+    // padding-right: ${rm(8)};
     padding-bottom: ${rm(40)};
     flex: 1;
     overflow-y: auto;

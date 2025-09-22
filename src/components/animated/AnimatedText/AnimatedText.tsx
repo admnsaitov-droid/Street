@@ -31,7 +31,7 @@ export const AnimatedText: NextPage<Props & EngineProps> = memo(({
             lineIn={{y: 0}} //opacity 1
             lineOut={{y: 100}} //opacity 0
             lineStagger={stagger}
-            lineConfig={{ duration, easing: easings.easeOutQuad }}
+            lineConfig={config.slow}
             overflow
             showSeoText={false}
             seo={true}

@@ -16,6 +16,7 @@ import AnimatedLink from "../animated/AnimatedLink/AnimatedLink";
 import { getMediaStrapiPath } from "@/utils/getMediaStrapiPath";
 import { PackageMenu } from "./MegaMenus/PackageMenu";
 import { ProductsMenu } from "./MegaMenus/ProductsMenu";
+import useLoadingStore from "@/store/store";
 
 export const Header = () => {
     const [headerData, setHeaderData] = useState<any>(null);
@@ -23,6 +24,8 @@ export const Header = () => {
     const [error, setError] = useState<string | null>(null);
     const width = useWindowWidth();
     const locale = useLocale();
+
+    const setIsMegaMenuOpen = useLoadingStore((state: any) => state.setIsMegaMenuOpen);
 
     useEffect(() => {
         const fetchHeaderData = async () => {
@@ -50,7 +53,11 @@ export const Header = () => {
     return (
         <StyledHeader>
             <StyledWrapper>
-                <AnimLink href={`/${locale}`} className="logo">
+                <AnimLink href={`/${locale}`} className="logo" onClick={() => {
+                    if (width <= 576) {
+                        setIsMegaMenuOpen(false);
+                    }
+                }}>
                     {headerData?.data && (
                         <Image 
                             src={
