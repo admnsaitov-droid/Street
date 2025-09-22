@@ -2,7 +2,7 @@ import { Canvas } from "@react-three/fiber"
 import styled from "styled-components"
 import { Atmosphere } from "./Atmosphere"
 import { Composition } from "./Composition"
-import { PerspectiveCamera } from "@react-three/drei"
+import { Environment, PerspectiveCamera } from "@react-three/drei"
 import { Location as DistributionLocation } from "../data/distributionData"
 import { SceneSkeleton } from "@/components/Skeleton/SceneSkeleton"
 import { Suspense } from "react"
@@ -39,9 +39,12 @@ export const DistributionScene = ({ activeFilterId = 'all', onLocationClick, sel
                 <StyledScene frameloop={lazyScene.isInView ? "always" : "demand"}>
                     <Suspense fallback={null}>
                         <SceneReadyDetector sceneType="distribution" />
-                        {/* <pointLight position={[-2, 0, 5]} intensity={50} decay={0.9}/> */}
-                        <ambientLight intensity={18} />
-                        <pointLight position={[-2, 0, 5]} intensity={15} decay={1.8}/>
+                        <ambientLight intensity={1} color={0xFFE6AA} />
+                        <Environment
+                            files="/models/hdr/sky.hdr"
+                            environmentIntensity={1}
+                        />
+                        <directionalLight position={[0, 10, 0]} intensity={1}/> 
                         <PerspectiveCamera makeDefault position={[0, 0, 8]} fov={40}/>
                         <Atmosphere scale={6.3} position={atmospherePosition} />
                         <Composition 
