@@ -1,10 +1,11 @@
-import { useRef, useEffect } from "react"
-import { useFrame } from "@react-three/fiber"
+import { useRef, useEffect, useState } from "react"
+import { useFrame, useThree } from "@react-three/fiber"
 import { Group } from "three"
 import * as THREE from "three"
 import { PlanetModel } from "./PlanetModel"
 import { Trackers } from "./Trackers/Trackers"
 import { useRotationControls } from "./RotationGUI"
+import SphereClouds from "@/components/Clouds/SphereClouds"
 
 interface CompositionProps {
     scale: number
@@ -19,49 +20,105 @@ export const Composition = ({ scale, position, inView, rotationXSpeed, rotationZ
     const rotationControls = useRotationControls()
     const groupRef = useRef<Group>(null)
     const mouseGroupRef = useRef<Group>(null)
-    const mouseRef = useRef({ x: 0, y: 0 })
     const baseRotation = useRef({ x: 0, y: 0, z: 0 })
+    const [isDragging, setIsDragging] = useState(false)
+    const dragStart = useRef({ x: 0, y: 0 })
+    const dragRotation = useRef({ y: 0 })
+    const targetRotation = useRef({ y: 0 })
+    const currentRotation = useRef({ y: 0 })
+    const velocity = useRef({ y: 0 })
+    const currentRotationRef = useRef(0)
+    const { gl } = useThree()
+    
+    // Rotation settings - only Y-axis rotation allowed
+    const dampingFactor = 0.95
+    const smoothingFactor = 0.1
 
     // Use GUI controls if available, otherwise fallback to props
     const effectiveRotationZSpeed = rotationControls.rotationZSpeed || rotationZSpeed
     const effectiveMouseIntensity = rotationControls.mouseIntensity || mouseRotationIntensity
 
     useEffect(() => {
-        const handleMouseMove = (event: MouseEvent) => {
-            mouseRef.current.x = (event.clientX / document.documentElement.clientWidth) * 2 - 1
-            mouseRef.current.y = -(event.clientY / document.documentElement.clientHeight) * 2 + 1
+        const canvas = gl.domElement
+
+        const handleMouseDown = (event: MouseEvent) => {
+            setIsDragging(true)
+            dragStart.current.x = event.clientX
+            dragStart.current.y = event.clientY
+            canvas.style.cursor = 'grabbing'
         }
 
-        window.addEventListener('mousemove', handleMouseMove)
-        
-        return () => {
-            window.removeEventListener('mousemove', handleMouseMove)
+        const handleMouseMove = (event: MouseEvent) => {
+            if (!isDragging) return
+
+            const deltaX = event.clientX - dragStart.current.x
+
+            // Convert pixel movement to rotation - only horizontal (Y-axis)
+            const sensitivity = 0.008
+            const deltaRotationY = deltaX * sensitivity
+
+            // Update velocity for momentum
+            velocity.current.y = deltaRotationY
+
+            // Update target rotation - unlimited Y-axis rotation
+            targetRotation.current.y += deltaRotationY
+
+            dragStart.current.x = event.clientX
+            dragStart.current.y = event.clientY
         }
-    }, [])
+
+        const handleMouseUp = () => {
+            setIsDragging(false)
+            canvas.style.cursor = 'grab'
+        }
+
+        canvas.addEventListener('mousedown', handleMouseDown)
+        window.addEventListener('mousemove', handleMouseMove)
+        window.addEventListener('mouseup', handleMouseUp)
+        
+        // Set initial cursor
+        canvas.style.cursor = 'grab'
+
+        return () => {
+            canvas.removeEventListener('mousedown', handleMouseDown)
+            window.removeEventListener('mousemove', handleMouseMove)
+            window.removeEventListener('mouseup', handleMouseUp)
+        }
+    }, [isDragging, gl])
 
     useFrame((state, delta) => {
         if (groupRef.current && mouseGroupRef.current && inView.current) {
-            // Update base rotation for groupRef (Y axis only)
-            baseRotation.current.y -= 0.0002
+            // Update base rotation for groupRef (Y axis only) - continuous auto-rotation
+            if (!isDragging) {
+                baseRotation.current.y -= 0.0002
+                
+                // Apply momentum and damping when not dragging
+                velocity.current.y *= dampingFactor
+                
+                // Continue rotation with momentum - unlimited Y-axis rotation
+                if (Math.abs(velocity.current.y) > 0.001) {
+                    targetRotation.current.y += velocity.current.y
+                }
+            }
 
-            // Apply continuous Y rotation to groupRef
-            groupRef.current.rotation.y = baseRotation.current.y
-
-            // Calculate mouse-based rotation for mouseGroupRef
-            const targetMouseX = mouseRef.current.y * effectiveMouseIntensity
-            const targetMouseY = mouseRef.current.x * effectiveMouseIntensity
-
-            // Apply mouse rotation to mouseGroupRef (X and Y axes)
-            mouseGroupRef.current.rotation.x = THREE.MathUtils.lerp(
-                mouseGroupRef.current.rotation.x,
-                targetMouseX,
-                delta * 3
+            // Smooth interpolation towards target rotation - only Y-axis
+            currentRotation.current.y = THREE.MathUtils.lerp(
+                currentRotation.current.y,
+                targetRotation.current.y,
+                smoothingFactor
             )
-            mouseGroupRef.current.rotation.y = THREE.MathUtils.lerp(
-                mouseGroupRef.current.rotation.y,
-                targetMouseY,
-                delta * 3
-            )
+
+            // Update drag rotation for smooth application
+            dragRotation.current.y = currentRotation.current.y
+
+            // Apply combined rotation: base rotation + smooth drag rotation
+            groupRef.current.rotation.y = baseRotation.current.y + dragRotation.current.y
+            
+            // Update the rotation ref for trackers
+            currentRotationRef.current = groupRef.current.rotation.y
+            
+            // Reset X rotation to 0 (no vertical rotation)
+            mouseGroupRef.current.rotation.x = 0
         }
     })
 
@@ -72,10 +129,11 @@ export const Composition = ({ scale, position, inView, rotationXSpeed, rotationZ
         >
             <group ref={mouseGroupRef}>
             {/* rotation={[4, 0.9, -3.521836734693878]} */}
-                <group rotation={[4, 0.9, -3.521836734693878]}>
+                <group rotation={[4, 0.9, -3.521836734693878]} renderOrder={2}>
                     <PlanetModel scale={scale} />
+                    <SphereClouds/>
                 </group>
-                <Trackers />
+                <Trackers currentRotationRef={currentRotationRef} />
             </group>
         </group>
     )

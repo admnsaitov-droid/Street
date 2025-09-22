@@ -1,13 +1,24 @@
 import { Html } from "@react-three/drei"
 import styled from "styled-components"
+import { useState } from "react"
 import { DistMarker } from "./DistMarker"
 
 interface TrackerProps {
     position: [number, number, number]
     label: string
+    isActive?: boolean
+    onClick?: () => void
 }
 
-export const Tracker = ({ position, label }: TrackerProps) => {
+export const Tracker = ({ position, label, isActive = false, onClick }: TrackerProps) => {
+    const [isHovered, setIsHovered] = useState(false)
+
+    const handleClick = () => {
+        if (onClick) {
+            onClick()
+        }
+    }
+
     return (
         <group position={position}>
             {/* 3D positioned HTML element */}
@@ -18,13 +29,40 @@ export const Tracker = ({ position, label }: TrackerProps) => {
                 occlude
                 zIndexRange={[100, 0]}
             >
-                <DistMarker />
+                <TrackerContainer
+                    onMouseEnter={() => setIsHovered(true)}
+                    onMouseLeave={() => setIsHovered(false)}
+                    onClick={handleClick}
+                >
+                    <DistMarker isActive={isActive} />
+                    {isHovered && (
+                        <TrackerLabel>
+                            <TrackerText>{label}</TrackerText>
+                        </TrackerLabel>
+                    )}
+                </TrackerContainer>
             </Html>
         </group>
     )
 }
 
+const TrackerContainer = styled.div`
+    position: relative;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    
+    &:hover {
+        transform: scale(1.05);
+        transition: transform 0.2s ease;
+    }
+`
+
 const TrackerLabel = styled.div`
+    position: absolute;
+    left: calc(100% + 16px);
+    top: 50%;
+    transform: translateY(-50%);
     display: flex;
     align-items: center;
     gap: 8px;
@@ -39,14 +77,46 @@ const TrackerLabel = styled.div`
     white-space: nowrap;
     pointer-events: none;
     user-select: none;
-`
+    z-index: 1000;
+    opacity: 0;
+    animation: fadeIn 0.2s ease-out forwards;
 
-const TrackerIcon = styled.div`
-    width: 8px;
-    height: 8px;
-    background: white;
-    border-radius: 50%;
-    transform: rotate(45deg);
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(-50%) translateX(-8px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(-50%) translateX(0);
+        }
+    }
+
+    &::before {
+        content: '';
+        position: absolute;
+        right: 100%;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 0;
+        height: 0;
+        border-style: solid;
+        border-width: 6px 6px 6px 0;
+        border-color: transparent rgba(255, 255, 255, 0.2) transparent transparent;
+    }
+
+    &::after {
+        content: '';
+        position: absolute;
+        right: calc(100% - 1px);
+        top: 50%;
+        transform: translateY(-50%);
+        width: 0;
+        height: 0;
+        border-style: solid;
+        border-width: 5px 5px 5px 0;
+        border-color: transparent rgba(0, 0, 0, 0.8) transparent transparent;
+    }
 `
 
 const TrackerText = styled.span`

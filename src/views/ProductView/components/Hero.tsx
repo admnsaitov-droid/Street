@@ -17,13 +17,17 @@ interface HeroProps {
 }
 
 export const Hero = ({ data, colors }: HeroProps) => {
+
+    const breadcrumbs = data?.breadcrumbs?.map((breadcrumb: any) => (
+        { label: breadcrumb.text, slug: breadcrumb.link }
+    ))
+
     return (
         <StyledHero>
             <StyledContent>
                 <Breadcrumbs
                     items={[
-                        { label: "Home", slug: "" },
-                        { label: "Products", slug: "products" },
+                        ...breadcrumbs,
                         { label: data?.name || "", href: undefined },
                     ]}
                 />

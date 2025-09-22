@@ -1,5 +1,5 @@
 import { Tracker } from "./Tracker"
-import { Location as DistributionLocation } from "../data/distributionData"
+import { Location as DistributionLocation, getAllLocations } from "../data/distributionData"
 
 interface TrackerConfig {
     label: string
@@ -11,6 +11,7 @@ interface TrackerConfig {
 
 interface TrackersProps {
     onLocationClick?: (location: DistributionLocation) => void
+    selectedLocation?: DistributionLocation | null
 }
 
 const trackerConfigs: TrackerConfig[] = [
@@ -63,7 +64,20 @@ export const getRotationAdjustmentByLabel = (label: string): [number, number, nu
     return config?.rotationAdjustment || [0, 0, 0]
 }
 
-export const Trackers = ({ onLocationClick }: TrackersProps) => {
+export const Trackers = ({ onLocationClick, selectedLocation }: TrackersProps) => {
+    // Function to find corresponding location data for a tracker
+    const getLocationForTracker = (trackerLabel: string): DistributionLocation | null => {
+        const allLocations = getAllLocations()
+        return allLocations.find((location: DistributionLocation) => location.name === trackerLabel) || null
+    }
+
+    const handleTrackerClick = (trackerLabel: string) => {
+        const location = getLocationForTracker(trackerLabel)
+        if (location && onLocationClick) {
+            onLocationClick(location)
+        }
+    }
+
     return (
         <group scale={0.927}>
             {trackerConfigs.map((config) => (
@@ -71,6 +85,8 @@ export const Trackers = ({ onLocationClick }: TrackersProps) => {
                     key={config.label}
                     position={config.position} 
                     label={config.label}
+                    isActive={selectedLocation?.name === config.label}
+                    onClick={() => handleTrackerClick(config.label)}
                 />
             ))}
         </group>
