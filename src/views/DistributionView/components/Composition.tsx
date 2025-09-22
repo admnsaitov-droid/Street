@@ -2,6 +2,7 @@ import { useRef, useEffect, useState } from "react"
 import { useFrame, useThree } from "@react-three/fiber"
 import { Group } from "three"
 import * as THREE from "three"
+import { OrbitControls } from "@react-three/drei"
 import { PlanetModel } from "./PlanetModel"
 import { Trackers } from "./Trackers"
 import { Stars } from "./Stars"
@@ -31,18 +32,65 @@ export const Composition = ({ scale, position, rotationXSpeed, rotationZSpeed, a
     const [isRotating, setIsRotating] = useState(false)
     const [targetZoom, setTargetZoom] = useState(10) // Default camera distance
     const [isZooming, setIsZooming] = useState(false)
+    const [isProgrammaticControl, setIsProgrammaticControl] = useState(false)
+    const [isZoomedIn, setIsZoomedIn] = useState(false)
+    const zoomCheckTimeout = useRef<NodeJS.Timeout | null>(null)
+    const lastCameraPosition = useRef<THREE.Vector3>(new THREE.Vector3())
+    const isUserRotating = useRef(false)
+    const rotationTimeout = useRef<NodeJS.Timeout | null>(null)
     
     // Access camera for zoom control
     const { camera } = useThree()
+    
+    // Ref for OrbitControls to access its methods
+    const controlsRef = useRef<any>(null)
 
-    // Get locations based on active filter
-    const locations = getLocationsByFilter(activeFilterId)
+    // Function to handle zoom out and deactivate tracker
+    const handleZoomOutAndDeactivate = () => {
+        console.log('User rotating while zoomed in - zooming out and deactivating tracker')
+        
+        // Enable programmatic control
+        setIsProgrammaticControl(true)
+        
+        // Preserve current camera rotation but zoom out
+        if (camera) {
+            const currentSpherical = new THREE.Spherical()
+            currentSpherical.setFromVector3(camera.position)
+            
+            // Convert camera spherical coordinates back to planet rotation coordinates
+            setTargetRotation({ 
+                x: Math.PI/2 - currentSpherical.phi, // Convert phi back to X
+                y: -currentSpherical.theta, // Invert theta back to Y
+                z: 0 
+            })
+            setTargetZoom(10) // Reset to default zoom distance
+            setIsRotating(true)
+            setIsZooming(true)
+            setIsZoomedIn(false) // Mark as not zoomed in
+        } else {
+            // Fallback to default view if camera not available
+            setTargetRotation({ x: 0, y: 0, z: 0 })
+            setTargetZoom(10)
+            setIsRotating(true)
+            setIsZooming(true)
+            setIsZoomedIn(false)
+        }
+        
+        // Deactivate the tracker by calling onLocationClick with null
+        if (onLocationClick) {
+            onLocationClick(null)
+        }
+    }
+
 
     // Handle location click to rotate planet
     const handleLocationClick = (location: DistributionLocation | null) => {
         if (onLocationClick) {
             onLocationClick(location)
         }
+        
+        // Enable programmatic control
+        setIsProgrammaticControl(true)
         
         if (location === null) {
             // Reset to initial rotation and zoom
@@ -51,6 +99,7 @@ export const Composition = ({ scale, position, rotationXSpeed, rotationZSpeed, a
             setTargetZoom(10) // Reset to default zoom
             setIsRotating(true)
             setIsZooming(true)
+            setIsZoomedIn(false) // Mark as not zoomed in
         } else {
             // Use only manual rotation adjustments from trackerConfigs (ignore base targetRotation)
             const [targetX, targetY, targetZ] = getRotationAdjustmentByLabel(location.name)
@@ -60,24 +109,29 @@ export const Composition = ({ scale, position, rotationXSpeed, rotationZSpeed, a
             console.log('(Base targetRotation ignored:', location.targetRotation, ')')
             
             setTargetRotation({ x: targetX, y: targetY, z: targetZ })
-            setTargetZoom(8.5) // Zoom in slightly when location is selected
+            setTargetZoom(7) // Zoom in slightly when location is selected
             setIsRotating(true)
             setIsZooming(true)
+            setIsZoomedIn(true) // Mark as zoomed in
         }
     }
 
     useEffect(() => {
-        const handleMouseMove = (event: MouseEvent) => {
-            mouseRef.current.x = (event.clientX / document.documentElement.clientWidth) * 2 - 1
-            mouseRef.current.y = -(event.clientY / document.documentElement.clientHeight) * 2 + 1
+        // Initialize camera position tracking
+        if (camera) {
+            lastCameraPosition.current.copy(camera.position)
         }
-
-        window.addEventListener('mousemove', handleMouseMove)
         
         return () => {
-            window.removeEventListener('mousemove', handleMouseMove)
+            // window.removeEventListener('mousemove', handleMouseMove)
+            if (zoomCheckTimeout.current) {
+                clearTimeout(zoomCheckTimeout.current)
+            }
+            if (rotationTimeout.current) {
+                clearTimeout(rotationTimeout.current)
+            }
         }
-    }, [])
+    }, [camera])
 
     // Handle selected location changes
     useEffect(() => {
@@ -89,7 +143,91 @@ export const Composition = ({ scale, position, rotationXSpeed, rotationZSpeed, a
         }
     }, [selectedLocation])
 
+    // Effect to ensure OrbitControls are properly configured when state changes
+    useEffect(() => {
+        if (controlsRef.current && !isProgrammaticControl) {
+            // Force update when coming out of programmatic control
+            controlsRef.current.update()
+        }
+    }, [isProgrammaticControl, isZoomedIn])
+
+    // Effect to add event listeners for OrbitControls
+    useEffect(() => {
+        if (controlsRef.current) {
+            const controls = controlsRef.current
+            
+            const handleStart = () => {
+                if (isZoomedIn && !isProgrammaticControl) {
+                    console.log('User started interacting with controls while zoomed in')
+                    // Clear any existing timeout
+                    if (rotationTimeout.current) {
+                        clearTimeout(rotationTimeout.current)
+                    }
+                    
+                    // Set a timeout to zoom out if user continues interacting
+                    rotationTimeout.current = setTimeout(() => {
+                        if (isZoomedIn && !isProgrammaticControl) {
+                            console.log('User continued interacting - zooming out and deactivating')
+                            handleZoomOutAndDeactivate()
+                        }
+                        rotationTimeout.current = null
+                    }, 600) // Reduced delay for more responsive feel
+                }
+            }
+            
+            const handleEnd = () => {
+                // Clear timeout when user stops interacting
+                if (rotationTimeout.current) {
+                    clearTimeout(rotationTimeout.current)
+                    rotationTimeout.current = null
+                }
+            }
+            
+            controls.addEventListener('start', handleStart)
+            controls.addEventListener('end', handleEnd)
+            
+            return () => {
+                controls.removeEventListener('start', handleStart)
+                controls.removeEventListener('end', handleEnd)
+            }
+        }
+    }, [isZoomedIn, isProgrammaticControl])
+
     useFrame((state, delta) => {
+
+        // Track zoom level in real-time for auto-rotation control
+        if (!isProgrammaticControl && camera) {
+            const currentDistance = camera.position.length()
+            const shouldBeZoomedIn = currentDistance < 8.5
+            
+            if (shouldBeZoomedIn !== isZoomedIn) {
+                // Clear any existing timeout
+                if (zoomCheckTimeout.current) {
+                    clearTimeout(zoomCheckTimeout.current)
+                    zoomCheckTimeout.current = null
+                }
+                
+                // Add a small delay to prevent flickering when zooming out
+                if (!shouldBeZoomedIn) {
+                    console.log('Zooming out - will enable auto-rotation in 300ms')
+                    zoomCheckTimeout.current = setTimeout(() => {
+                        setIsZoomedIn(shouldBeZoomedIn)
+                        zoomCheckTimeout.current = null
+                        console.log('Auto-rotation enabled after zoom out')
+                    }, 300) // Reduced delay for better responsiveness
+                } else {
+                    // Immediate update when zooming in
+                    console.log('Zooming in - disabling auto-rotation immediately')
+                    setIsZoomedIn(shouldBeZoomedIn)
+                }
+            }
+            
+            // Update last position for next frame (simplified tracking)
+            if (isZoomedIn && !isProgrammaticControl) {
+                lastCameraPosition.current.copy(camera.position)
+            }
+        }
+
         if (groupRef.current) {
             // Update base rotation
             baseRotation.current.x += 0
@@ -112,70 +250,105 @@ export const Composition = ({ scale, position, rotationXSpeed, rotationZSpeed, a
             )
         }
 
-        // Handle planet rotation when location is clicked
-        if (planetGroupRef.current && isRotating) {
-            const currentRotation = planetGroupRef.current.rotation
-            const lerpFactor = delta * 2 // Adjust speed of rotation
-            
-            // Set rotation order to ensure consistent behavior
-            currentRotation.order = 'YXZ'
-            
-            // Interpolate to target rotation
-            currentRotation.x = THREE.MathUtils.lerp(currentRotation.x, targetRotation.x, lerpFactor)
-            currentRotation.y = THREE.MathUtils.lerp(currentRotation.y, targetRotation.y, lerpFactor)
-            currentRotation.z = THREE.MathUtils.lerp(currentRotation.z, targetRotation.z, lerpFactor)
-            
-            // Debug: log current rotation occasionally
-            if (Math.random() < 0.05) {
-                console.log('Current rotation:', { 
-                    x: currentRotation.x, 
-                    y: currentRotation.y, 
-                    z: currentRotation.z 
-                })
-            }
-            
-            // Check if rotation is complete
-            const threshold = 0.01
-            if (Math.abs(currentRotation.x - targetRotation.x) < threshold &&
-                Math.abs(currentRotation.y - targetRotation.y) < threshold &&
-                Math.abs(currentRotation.z - targetRotation.z) < threshold) {
-                setIsRotating(false)
-                console.log('Rotation complete!')
-            }
-        }
 
-        // Handle camera zoom
-        if (isZooming && camera) {
-            const currentZ = camera.position.z
-            const lerpFactor = delta * 2 // Adjust speed of zoom
+        // Handle camera zoom and rotation using direct camera control
+        if ((isZooming || isRotating) && camera) {
+            const currentSpherical = new THREE.Spherical()
+            currentSpherical.setFromVector3(camera.position)
             
-            // Interpolate camera position
-            camera.position.z = THREE.MathUtils.lerp(currentZ, targetZoom, lerpFactor)
+            const lerpFactor = delta * 3 // Faster movement for more responsive feel
             
-            // Check if zoom is complete
-            const zoomThreshold = 0.05
-            if (Math.abs(currentZ - targetZoom) < zoomThreshold) {
+            // Handle rotation
+            if (isRotating) {
+                // Convert planet rotation coordinates to camera spherical coordinates
+                // targetRotation.y is the planet's Y rotation (azimuth), targetRotation.x is the planet's X rotation (elevation)
+                currentSpherical.theta = THREE.MathUtils.lerp(currentSpherical.theta, -targetRotation.y, lerpFactor) // Invert Y for camera
+                currentSpherical.phi = THREE.MathUtils.lerp(currentSpherical.phi, Math.PI/2 - targetRotation.x, lerpFactor) // Convert X to phi
+            }
+            
+            // Handle zoom
+            if (isZooming) {
+                currentSpherical.radius = THREE.MathUtils.lerp(currentSpherical.radius, targetZoom, lerpFactor)
+            }
+            
+            // Update camera position
+            camera.position.setFromSpherical(currentSpherical)
+            
+            // Update controls to reflect the new position
+            if (controlsRef.current) {
+                controlsRef.current.update()
+            }
+            
+            // Check if movements are complete
+            const threshold = 0.01
+            const rotationComplete = !isRotating || (
+                Math.abs(currentSpherical.theta - (-targetRotation.y)) < threshold &&
+                Math.abs(currentSpherical.phi - (Math.PI/2 - targetRotation.x)) < threshold
+            )
+            
+            const zoomComplete = !isZooming || Math.abs(currentSpherical.radius - targetZoom) < threshold
+            
+            if (rotationComplete && zoomComplete) {
+                setIsRotating(false)
                 setIsZooming(false)
-                console.log('Zoom complete!')
+                setIsProgrammaticControl(false) // Re-enable user control
+                
+                // Update zoom state based on final distance
+                const finalDistance = camera.position.length()
+                const newZoomedInState = finalDistance < 8.5
+                setIsZoomedIn(newZoomedInState) // Consider zoomed in if distance < 8.5
+                
+                // Ensure OrbitControls are properly updated
+                if (controlsRef.current) {
+                    controlsRef.current.update()
+                }
+                
+                console.log('Movement complete!', {
+                    finalDistance,
+                    isZoomedIn: newZoomedInState,
+                    isProgrammaticControl: false
+                })
             }
         }
     })
 
     return (
-        <group ref={groupRef} position={position}>
-            {/* Star field background */}
-            <Stars count={800} radius={120} />
+        <>
+            {/* OrbitControls for user interaction and programmatic control */}
+            <OrbitControls
+                ref={controlsRef}
+                enabled={!isProgrammaticControl} // Disable user control during programmatic movement
+                enablePan={true}
+                enableZoom={false}
+                enableRotate={true}
+                minDistance={5}
+                maxDistance={20}
+                target={position} // Keep target at planet center
+                autoRotate={!isZoomedIn && !isProgrammaticControl} // Auto-rotate only when not zoomed in and not in programmatic control
+                autoRotateSpeed={0.25} // Slow auto-rotation speed
+                enableDamping={true}
+                dampingFactor={0.05}
+                rotateSpeed={0.5}
+                zoomSpeed={1}
+                panSpeed={0.8}
+                key={`controls-${isZoomedIn}-${isProgrammaticControl}`} // Force re-render when state changes
+            />
             
-            {/* Additional group for planet rotation */}
-            <group ref={planetGroupRef}>
-                <group rotation={[-0.35, 0.5, 0]}>
-                    <group rotation={[4, 0.9, -3.521836734693878]} renderOrder={2}>
-                        <PlanetModel scale={scale} />
-                        <SphereClouds size={3.75} />
+            <group ref={groupRef} position={position}>
+                {/* Star field background */}
+                <Stars count={1500} radius={120} />
+                
+                {/* Additional group for planet rotation */}
+                <group ref={planetGroupRef}>
+                    <group rotation={[-0.35, 0.5, 0]}>
+                        <group rotation={[4, 0.9, -3.521836734693878]} renderOrder={2}>
+                            <PlanetModel scale={scale} />
+                            <SphereClouds size={3.75} />
+                        </group>
+                        <Trackers onLocationClick={onLocationClick} selectedLocation={selectedLocation} />
                     </group>
-                    <Trackers onLocationClick={onLocationClick} selectedLocation={selectedLocation} />
                 </group>
             </group>
-        </group>
+        </>
     )
 }

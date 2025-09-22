@@ -180,12 +180,12 @@ export const PlanetModel = ({ scale }: PlanetModelProps) => {
                 gl_FragColor = vec4(finalColor, 1.0);
 
                 // Night blend texture
-
                 vec3 blendedColor = blendTexture(gl_FragColor.rgb) * 4.0;
-                // Use vWorldPosition to determine left side darkening based on global position
-                float nightAppearFactor = smoothstep(-2.0, 2.0, vWorldPosition.x);
                 
-                // Smoothly darken the color and increase blend texture influence on left side
+                // Use vViewPosition for darkening effect based on view angle
+                float nightAppearFactor = smoothstep(1.0, -3.0, vViewPosition.x);
+                
+                // Smoothly darken the color and increase blend texture influence based on view angle
                 gl_FragColor.rgb = mix(gl_FragColor.rgb, gl_FragColor.rgb * 0.1, nightAppearFactor);
 
                 // Apply nightDisappearFactor only to the blended night texture

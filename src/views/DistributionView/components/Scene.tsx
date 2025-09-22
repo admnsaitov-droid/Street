@@ -75,6 +75,7 @@ const StyledContainer = styled.div`
     top: 0;
     left: 0;
     background-color: black;
+    overflow: hidden;
 
     .distribution-scene-skeleton {
         background: black;
@@ -112,8 +113,9 @@ const StyledContainer = styled.div`
 `
 
 const StyledScene = styled(Canvas)`
-    width: 100%;
-    height: 100%;
+    width: calc(100% + 50rem) !important;
+    height: calc(100% + 10rem) !important;
+    transform: translate(-50rem, 0rem) !important;
     position: absolute !important;
     top: 0;
     left: 0;

@@ -88,6 +88,7 @@ const StyledContent = styled.div`
     width: 100%;
     position: relative;
     z-index: 4;
+    pointer-events: none;
 
     ${media.xsm`
         padding: ${rm(100)} ${rm(16)};
