@@ -6,7 +6,7 @@ import { sNoise } from '@/utils/sNoise'
 import { memo } from 'react'
 
 // Move texture setup outside component
-const cloudsTexture = new THREE.TextureLoader().load('/textures/smallClouds3.png')
+const cloudsTexture = new THREE.TextureLoader().load('/textures/smallClouds3_fixed.png')
 cloudsTexture.wrapS = THREE.RepeatWrapping
 cloudsTexture.wrapT = THREE.RepeatWrapping
 cloudsTexture.repeat.set(5, 5)
@@ -38,10 +38,10 @@ function SphereClouds({ size = 4 }: SphereCloudsProps) {
                 onBeforeCompile={(shader) => {
                     shader.uniforms.uTime = time.current;
                     shader.uniforms.uTexture = { value: cloudsTexture };
-                    shader.uniforms.noiseScale = { value: 100.0 };  
-                    shader.uniforms.uSpeedX = { value: 2.0 };
-                    shader.uniforms.uSpeedY = { value: 3.0 };
-                    shader.uniforms.uSpeedZ = { value: 5.0 };
+                    shader.uniforms.noiseScale = { value: 20.0 };  
+                    shader.uniforms.uSpeedX = { value: 1.0 };
+                    shader.uniforms.uSpeedY = { value: 2.0 };
+                    shader.uniforms.uSpeedZ = { value: 2.0 };
 
 
                     shader.vertexShader = `
