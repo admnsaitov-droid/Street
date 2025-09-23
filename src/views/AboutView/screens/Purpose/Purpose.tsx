@@ -65,7 +65,7 @@ export const Purpose = ({ data }: PurposeProps) => {
                                     }
                                 }}
                             >
-                                <span id="title-first">{data?.title?.firstWord}</span>
+                                <h2 id="title-first">{data?.title?.firstWord}</h2>
                             </AnimatedGrid>
                         </div>
                         <div className="second-row">
@@ -101,8 +101,8 @@ export const Purpose = ({ data }: PurposeProps) => {
                                     }
                                 }}
                             >
-                                <span id="title-second">{data?.title?.secondWord}</span>
-                                <span id="title-third" className="first">{data?.title?.thirdWord}</span>
+                                <h2 id="title-second">{data?.title?.secondWord}</h2>
+                                <h2 id="title-third" className="first">{data?.title?.thirdWord}</h2>
                             </AnimatedGrid>
                         </div>
                     </StyledPurposeTitleContainer>

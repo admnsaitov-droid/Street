@@ -166,12 +166,16 @@ export const ProductsMenu = ({ previewText, allText }: { previewText: string, al
                         </StyledLeft>
                         <StyledRight>
                             <StyledProduct href={`/products/${currentPackage?.products?.[0]?.slug}`}>
-                                <Image src={getMediaStrapiPath(currentPackage?.products?.[0]?.previewImage)} alt="Package" width={760} height={420} />
+                                <div className="imageContainer">
+                                    <Image src={getMediaStrapiPath(currentPackage?.products?.[0]?.previewImage)} alt="Package" width={760} height={420} />
+                                </div>
                                 <div className="name">{currentPackage?.products?.[0]?.name}</div>
                                 <div className="model">{currentPackage?.products?.[0]?.model}</div>
                             </StyledProduct>
                             <StyledProduct href={`/products/${currentPackage?.products?.[1]?.slug}`}>
-                                <Image src={getMediaStrapiPath(currentPackage?.products?.[1]?.previewImage)} alt="Package" width={760} height={420} />
+                                <div className="imageContainer">
+                                    <Image src={getMediaStrapiPath(currentPackage?.products?.[1]?.previewImage)} alt="Package" width={760} height={420} />
+                                </div>
                                 <div className="name">{currentPackage?.products?.[1]?.name}</div>
                                 <div className="model">{currentPackage?.products?.[1]?.model}</div>
                             </StyledProduct>
@@ -297,6 +301,12 @@ const StyledProduct = styled(AnimLink)`
     flex-direction: column;
     width: 50%;
 
+    &:hover{
+        img{
+            transform: scale(1.01);
+        }
+    }
+
     .name{
         font-size: ${rm(18)};
         ${fontGolosText(500)};
@@ -315,11 +325,19 @@ const StyledProduct = styled(AnimLink)`
         text-transform: uppercase;
     }
 
-    img{
+    .imageContainer{
         width: 100%;
         height: ${rm(407)};
+        overflow: hidden;
+        border-radius: ${rm(10)};
+    }
+
+    img{
+        width: 100%;
+        height: 100%;
         object-fit: cover;
         border-radius: ${rm(10)};
         margin-bottom: ${rm(10)};
+        transition: transform 0.3s ease;
     }
 `

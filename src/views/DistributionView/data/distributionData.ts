@@ -9,6 +9,8 @@ export interface Location {
   targetRotation: [number, number, number] // Target rotation for planet [x, y, z]
   country: string
   region: string
+  description: string
+  image: string
 }
 
 export interface Filter {
@@ -33,7 +35,9 @@ export const distributionData: Filter[] = [
         position: [-2.23, 0.97, 3.08],
         targetRotation: [-0.2, -0.4, 0],
         country: 'Austria',
-        region: 'Europe'
+        region: 'Europe',
+        description: 'Strategic distribution hub in the heart of Europe, serving Central and Eastern European markets with state-of-the-art logistics infrastructure.',
+        image: '/distTest1.png'
       },
       {
         id: 'benelux',
@@ -45,7 +49,9 @@ export const distributionData: Filter[] = [
         position: [-2.46, 1.30, 2.77],
         targetRotation: [-0.3, -0.2, 0],
         country: 'Belgium',
-        region: 'Europe'
+        region: 'Europe',
+        description: 'Central European distribution center covering Belgium, Netherlands, and Luxembourg with advanced cross-border logistics capabilities.',
+        image: '/distTest2.png'
       },
       {
         id: 'bulgaria',
@@ -57,7 +63,9 @@ export const distributionData: Filter[] = [
         position: [-1.80, 0.63, 3.43],
         targetRotation: [-0.1, -0.3, 0],
         country: 'Bulgaria',
-        region: 'Europe'
+        region: 'Europe',
+        description: 'Gateway to Southeast Europe, providing efficient distribution services across the Balkan region with modern warehousing facilities.',
+        image: '/distTest3.png'
       },
       {
         id: 'denmark',
@@ -69,7 +77,9 @@ export const distributionData: Filter[] = [
         position: [-2.19, 1.47, 2.91],
         targetRotation: [-0.2, -0.1, 0],
         country: 'Denmark',
-        region: 'Europe'
+        region: 'Europe',
+        description: 'Nordic distribution excellence with sustainable logistics solutions and advanced cold chain capabilities for Scandinavian markets.',
+        image: '/distTest1.png'
       },
       {
         id: 'croatia',
@@ -81,7 +91,9 @@ export const distributionData: Filter[] = [
         position: [-2.25, 0.76, 3.13],
         targetRotation: [-0.2, -0.3, 0],
         country: 'Croatia',
-        region: 'Europe'
+        region: 'Europe',
+        description: 'Adriatic distribution center serving the Croatian market and connecting Central Europe with the Mediterranean region.',
+        image: '/distTest2.png'
       },
       {
         id: 'czech-republic',
@@ -93,7 +105,9 @@ export const distributionData: Filter[] = [
         position: [-2.06, 1.15, 3.15],
         targetRotation: [-0.2, -0.2, 0],
         country: 'Czech Republic',
-        region: 'Europe'
+        region: 'Europe',
+        description: 'Central European logistics hub with modern distribution facilities serving the Czech market and neighboring regions.',
+        image: '/distTest3.png'
       },
       {
         id: 'france',
@@ -105,7 +119,9 @@ export const distributionData: Filter[] = [
         position: [-2.70, 1.02, 2.66],
         targetRotation: [-0.3, -0.1, 0],
         country: 'France',
-        region: 'Europe'
+        region: 'Europe',
+        description: 'Premier French distribution center with extensive logistics network covering Western Europe and Mediterranean markets.',
+        image: '/distTest1.png'
       },
       {
         id: 'estonia',
@@ -117,7 +133,9 @@ export const distributionData: Filter[] = [
         position: [-1.64, 1.60, 3.21],
         targetRotation: [-0.1, -0.1, 0],
         country: 'Estonia',
-        region: 'Europe'
+        region: 'Europe',
+        description: 'Baltic distribution gateway with digital-first logistics solutions and efficient connections to Nordic and Eastern European markets.',
+        image: '/distTest2.png'
       },
       {
         id: 'germany',
@@ -129,7 +147,9 @@ export const distributionData: Filter[] = [
         position: [-2.41, 1.10, 2.90],
         targetRotation: [-0.3, -0.2, 0],
         country: 'Germany',
-        region: 'Europe'
+        region: 'Europe',
+        description: 'Central European distribution powerhouse with advanced logistics infrastructure and comprehensive coverage across German-speaking markets.',
+        image: '/distTest3.png'
       },
       {
         id: 'hungary',
@@ -141,7 +161,9 @@ export const distributionData: Filter[] = [
         position: [-2.05, 0.85, 3.24],
         targetRotation: [-0.2, -0.3, 0],
         country: 'Hungary',
-        region: 'Europe'
+        region: 'Europe',
+        description: 'Central European distribution hub strategically positioned to serve Hungary and surrounding Central European markets with efficient logistics solutions.',
+        image: '/distTest1.png'
       },
       {
         id: 'italy',
@@ -153,7 +175,9 @@ export const distributionData: Filter[] = [
         position: [-2.41, 0.70, 3.02],
         targetRotation: [-0.3, -0.2, 0],
         country: 'Italy',
-        region: 'Europe'
+        region: 'Europe',
+        description: 'Mediterranean distribution excellence with comprehensive logistics network serving Italy and Southern European markets.',
+        image: '/distTest2.png'
       },
       {
         id: 'latvia',
@@ -165,7 +189,9 @@ export const distributionData: Filter[] = [
         position: [-1.71, 1.48, 3.21],
         targetRotation: [-0.1, -0.1, 0],
         country: 'Latvia',
-        region: 'Europe'
+        region: 'Europe',
+        description: 'Baltic distribution center with modern facilities and strategic location for serving Northern and Eastern European markets.',
+        image: '/distTest3.png'
       },
       {
         id: 'malta',
@@ -177,7 +203,9 @@ export const distributionData: Filter[] = [
         position: [-2.43, 0.21, 3.07],
         targetRotation: [-0.3, -0.2, 0],
         country: 'Malta',
-        region: 'Europe'
+        region: 'Europe',
+        description: 'Mediterranean island distribution hub with specialized logistics capabilities for serving Malta and surrounding Mediterranean markets.',
+        image: '/distTest1.png'
       },
       {
         id: 'norway',
@@ -189,7 +217,9 @@ export const distributionData: Filter[] = [
         position: [-2.15, 1.74, 2.78],
         targetRotation: [-0.2, -0.1, 0],
         country: 'Norway',
-        region: 'Europe'
+        region: 'Europe',
+        description: 'Nordic distribution excellence with sustainable logistics solutions and specialized cold chain capabilities for Norwegian markets.',
+        image: '/distTest2.png'
       },
       {
         id: 'poland',
@@ -201,7 +231,9 @@ export const distributionData: Filter[] = [
         position: [-1.89, 1.27, 3.21],
         targetRotation: [-0.2, -0.2, 0],
         country: 'Poland',
-        region: 'Europe'
+        region: 'Europe',
+        description: 'Central European distribution powerhouse with extensive logistics network serving Poland and Eastern European markets.',
+        image: '/distTest3.png'
       },
       {
         id: 'spain',
@@ -213,7 +245,9 @@ export const distributionData: Filter[] = [
         position: [-2.96, 0.77, 2.46],
         targetRotation: [-0.4, -0.1, 0],
         country: 'Spain',
-        region: 'Europe'
+        region: 'Europe',
+        description: 'Iberian Peninsula distribution center with comprehensive logistics network serving Spain and Southern European markets.',
+        image: '/distTest1.png'
       },
       {
         id: 'sweden',
@@ -225,7 +259,9 @@ export const distributionData: Filter[] = [
         position: [-2.01, 1.61, 2.96],
         targetRotation: [-0.2, -0.1, 0],
         country: 'Sweden',
-        region: 'Europe'
+        region: 'Europe',
+        description: 'Nordic distribution excellence with sustainable logistics solutions and advanced cold chain capabilities for Swedish markets.',
+        image: '/distTest2.png'
       },
       {
         id: 'switzerland',
@@ -237,7 +273,9 @@ export const distributionData: Filter[] = [
         position: [-2.42, 0.91, 2.96],
         targetRotation: [-0.3, -0.2, 0],
         country: 'Switzerland',
-        region: 'Europe'
+        region: 'Europe',
+        description: 'Alpine distribution center with precision logistics solutions and specialized capabilities for Swiss and Central European markets.',
+        image: '/distTest3.png'
       },
       {
         id: 'uk',
@@ -249,7 +287,9 @@ export const distributionData: Filter[] = [
         position: [-2.60, 1.46, 2.55],
         targetRotation: [-0.3, -0.1, 0],
         country: 'United Kingdom',
-        region: 'Europe'
+        region: 'Europe',
+        description: 'Premier UK distribution center with comprehensive logistics network and specialized capabilities for British and Irish markets.',
+        image: '/distTest1.png'
       },
 
       // Africa
@@ -263,7 +303,9 @@ export const distributionData: Filter[] = [
         position: [-1.66, -0.46, 3.53],
         targetRotation: [-0.1, -0.2, 0],
         country: 'Egypt',
-        region: 'Africa'
+        region: 'Africa',
+        description: 'North African distribution gateway with strategic location serving Egypt and surrounding Middle Eastern and African markets.',
+        image: '/distTest2.png'
       },
       {
         id: 'morocco',
@@ -275,7 +317,9 @@ export const distributionData: Filter[] = [
         position: [-3.15, 0.34, 2.32],
         targetRotation: [-0.4, -0.1, 0],
         country: 'Morocco',
-        region: 'Africa'
+        region: 'Africa',
+        description: 'North African distribution hub with modern logistics facilities serving Morocco and connecting Africa with Europe.',
+        image: '/distTest3.png'
       },
       {
         id: 'seychelles',
@@ -287,7 +331,9 @@ export const distributionData: Filter[] = [
         position: [0.02, -2.47, 3.05],
         targetRotation: [0.0, -0.3, 0],
         country: 'Seychelles',
-        region: 'Africa'
+        region: 'Africa',
+        description: 'Indian Ocean distribution center with specialized logistics capabilities for serving Seychelles and surrounding island markets.',
+        image: '/distTest1.png'
       },
 
       // America
@@ -301,7 +347,9 @@ export const distributionData: Filter[] = [
         position: [-2.08, 2.46, -2.24],
         targetRotation: [-0.3, 0.3, 0],
         country: 'Mexico',
-        region: 'America'
+        region: 'America',
+        description: 'North American distribution hub with comprehensive logistics network serving Mexico and connecting North and Central American markets.',
+        image: '/distTest2.png'
       },
       {
         id: 'usa',
@@ -313,7 +361,9 @@ export const distributionData: Filter[] = [
         position: [-2.39, 2.85, -1.25],
         targetRotation: [-0.3, 0.4, 0],
         country: 'United States',
-        region: 'America'
+        region: 'America',
+        description: 'Premier North American distribution center with extensive logistics network and advanced capabilities for US and Canadian markets.',
+        image: '/distTest3.png'
       },
       {
         id: 'puerto-rico',
@@ -325,7 +375,9 @@ export const distributionData: Filter[] = [
         position: [-3.47, 1.37, -1.25],
         targetRotation: [-0.4, 0.2, 0],
         country: 'Puerto Rico',
-        region: 'America'
+        region: 'America',
+        description: 'Caribbean distribution center with strategic location serving Puerto Rico and surrounding Caribbean markets.',
+        image: '/distTest1.png'
       },
       {
         id: 'canada',
@@ -337,7 +389,9 @@ export const distributionData: Filter[] = [
         position: [-2.02, 3.31, -0.67],
         targetRotation: [-0.3, 0.5, 0],
         country: 'Canada',
-        region: 'America'
+        region: 'America',
+        description: 'North American distribution excellence with comprehensive logistics network and specialized cold chain capabilities for Canadian markets.',
+        image: '/distTest2.png'
       },
       {
         id: 'argentina',
@@ -349,7 +403,9 @@ export const distributionData: Filter[] = [
         position: [-2.89, -1.17, -2.38],
         targetRotation: [-0.4, -0.2, 0],
         country: 'Argentina',
-        region: 'America'
+        region: 'America',
+        description: 'South American distribution hub with comprehensive logistics network serving Argentina and surrounding Southern Cone markets.',
+        image: '/distTest3.png'
       },
       {
         id: 'brasil',
@@ -361,7 +417,9 @@ export const distributionData: Filter[] = [
         position: [-3.57, -0.70, -1.46],
         targetRotation: [-0.5, -0.1, 0],
         country: 'Brazil',
-        region: 'America'
+        region: 'America',
+        description: 'South American distribution powerhouse with extensive logistics network serving Brazil and surrounding Latin American markets.',
+        image: '/distTest1.png'
       },
       {
         id: 'chile',
@@ -373,7 +431,9 @@ export const distributionData: Filter[] = [
         position: [-2.60, -0.82, -2.82],
         targetRotation: [-0.4, -0.1, 0],
         country: 'Chile',
-        region: 'America'
+        region: 'America',
+        description: 'South American distribution center with strategic location serving Chile and connecting Pacific Rim markets.',
+        image: '/distTest2.png'
       },
       {
         id: 'peru',
@@ -385,7 +445,9 @@ export const distributionData: Filter[] = [
         position: [-2.78, 0.23, -2.76],
         targetRotation: [-0.4, 0.0, 0],
         country: 'Peru',
-        region: 'America'
+        region: 'America',
+        description: 'Andean distribution hub with comprehensive logistics network serving Peru and surrounding South American markets.',
+        image: '/distTest3.png'
       },
       {
         id: 'columbia',
@@ -397,7 +459,9 @@ export const distributionData: Filter[] = [
         position: [-3.06, 0.81, -2.32],
         targetRotation: [-0.4, 0.1, 0],
         country: 'Colombia',
-        region: 'America'
+        region: 'America',
+        description: 'South American distribution center with strategic location serving Colombia and connecting North and South American markets.',
+        image: '/distTest1.png'
       },
       {
         id: 'dominican-republic',
@@ -409,7 +473,9 @@ export const distributionData: Filter[] = [
         position: [-3.33, 1.55, -1.37],
         targetRotation: [-0.4, 0.2, 0],
         country: 'Dominican Republic',
-        region: 'America'
+        region: 'America',
+        description: 'Caribbean distribution hub with strategic location serving Dominican Republic and surrounding Caribbean markets.',
+        image: '/distTest2.png'
       },
 
       // Asia
@@ -423,7 +489,9 @@ export const distributionData: Filter[] = [
         position: [-0.75, 0.50, 3.82],
         targetRotation: [-0.1, -0.1, 0],
         country: 'Azerbaijan',
-        region: 'Asia'
+        region: 'Asia',
+        description: 'Caucasus distribution hub with strategic location serving Azerbaijan and connecting European and Asian markets.',
+        image: '/distTest3.png'
       },
       {
         id: 'bahrain',
@@ -435,7 +503,9 @@ export const distributionData: Filter[] = [
         position: [-0.50, -0.42, 3.88],
         targetRotation: [-0.1, -0.1, 0],
         country: 'Bahrain',
-        region: 'Asia'
+        region: 'Asia',
+        description: 'Gulf distribution center with modern logistics facilities serving Bahrain and surrounding Middle Eastern markets.',
+        image: '/distTest1.png'
       },
       {
         id: 'israel',
@@ -447,7 +517,9 @@ export const distributionData: Filter[] = [
         position: [-1.40, -0.06, 3.67],
         targetRotation: [-0.2, 0.0, 0],
         country: 'Israel',
-        region: 'Asia'
+        region: 'Asia',
+        description: 'Middle Eastern distribution hub with advanced logistics capabilities serving Israel and surrounding regional markets.',
+        image: '/distTest2.png'
       },
       {
         id: 'qatar',
@@ -459,7 +531,9 @@ export const distributionData: Filter[] = [
         position: [-0.47, -0.49, 3.86],
         targetRotation: [-0.1, -0.1, 0],
         country: 'Qatar',
-        region: 'Asia'
+        region: 'Asia',
+        description: 'Gulf distribution center with modern logistics facilities and strategic location serving Qatar and surrounding Middle Eastern markets.',
+        image: '/distTest3.png'
       },
       {
         id: 'saudi-arabia',
@@ -471,7 +545,9 @@ export const distributionData: Filter[] = [
         position: [-0.88, -0.49, 3.79],
         targetRotation: [-0.1, -0.1, 0],
         country: 'Saudi Arabia',
-        region: 'Asia'
+        region: 'Asia',
+        description: 'Gulf distribution powerhouse with extensive logistics network serving Saudi Arabia and surrounding Middle Eastern markets.',
+        image: '/distTest1.png'
       },
       {
         id: 'taiwan',
@@ -483,7 +559,9 @@ export const distributionData: Filter[] = [
         position: [2.91, 1.25, 2.32],
         targetRotation: [0.4, -0.2, 0],
         country: 'Taiwan',
-        region: 'Asia'
+        region: 'Asia',
+        description: 'East Asian distribution hub with advanced logistics capabilities serving Taiwan and connecting Asian markets.',
+        image: '/distTest2.png'
       },
       {
         id: 'uae',
@@ -495,7 +573,9 @@ export const distributionData: Filter[] = [
         position: [-0.35, -0.61, 3.87],
         targetRotation: [-0.1, -0.1, 0],
         country: 'United Arab Emirates',
-        region: 'Asia'
+        region: 'Asia',
+        description: 'Gulf distribution excellence with world-class logistics facilities serving UAE and connecting Middle Eastern and global markets.',
+        image: '/distTest3.png'
       },
       {
         id: 'south-korea',
@@ -507,7 +587,9 @@ export const distributionData: Filter[] = [
         position: [2.53, 2.03, 2.21],
         targetRotation: [0.3, -0.3, 0],
         country: 'South Korea',
-        region: 'Asia'
+        region: 'Asia',
+        description: 'East Asian distribution powerhouse with advanced logistics infrastructure and comprehensive coverage across Korean markets.',
+        image: '/distTest1.png'
       },
       {
         id: 'japan',
@@ -519,7 +601,9 @@ export const distributionData: Filter[] = [
         position: [2.66, 2.25, 1.88],
         targetRotation: [0.4, -0.3, 0],
         country: 'Japan',
-        region: 'Asia'
+        region: 'Asia',
+        description: 'East Asian distribution excellence with precision logistics solutions and advanced capabilities for Japanese markets.',
+        image: '/distTest2.png'
       }
     ]
   },
@@ -537,7 +621,9 @@ export const distributionData: Filter[] = [
         position: [-2.23, 0.97, 3.08],
         targetRotation: [-0.2, -0.4, 0],
         country: 'Austria',
-        region: 'Europe'
+        region: 'Europe',
+        description: 'Strategic distribution hub in the heart of Europe, serving Central and Eastern European markets with state-of-the-art logistics infrastructure.',
+        image: '/distTest1.png'
       },
       {
         id: 'benelux',
@@ -549,7 +635,9 @@ export const distributionData: Filter[] = [
         position: [-2.46, 1.30, 2.77],
         targetRotation: [-0.3, -0.2, 0],
         country: 'Belgium',
-        region: 'Europe'
+        region: 'Europe',
+        description: 'Central European distribution center covering Belgium, Netherlands, and Luxembourg with advanced cross-border logistics capabilities.',
+        image: '/distTest2.png'
       },
       {
         id: 'bulgaria',
@@ -561,7 +649,9 @@ export const distributionData: Filter[] = [
         position: [-1.80, 0.63, 3.43],
         targetRotation: [-0.1, -0.3, 0],
         country: 'Bulgaria',
-        region: 'Europe'
+        region: 'Europe',
+        description: 'Gateway to Southeast Europe, providing efficient distribution services across the Balkan region with modern warehousing facilities.',
+        image: '/distTest3.png'
       },
       {
         id: 'denmark',
@@ -573,7 +663,9 @@ export const distributionData: Filter[] = [
         position: [-2.19, 1.47, 2.91],
         targetRotation: [-0.2, -0.1, 0],
         country: 'Denmark',
-        region: 'Europe'
+        region: 'Europe',
+        description: 'Nordic distribution excellence with sustainable logistics solutions and advanced cold chain capabilities for Scandinavian markets.',
+        image: '/distTest1.png'
       },
       {
         id: 'croatia',
@@ -585,7 +677,9 @@ export const distributionData: Filter[] = [
         position: [-2.25, 0.76, 3.13],
         targetRotation: [-0.2, -0.3, 0],
         country: 'Croatia',
-        region: 'Europe'
+        region: 'Europe',
+        description: 'Adriatic distribution center serving the Croatian market and connecting Central Europe with the Mediterranean region.',
+        image: '/distTest2.png'
       },
       {
         id: 'czech-republic',
@@ -597,7 +691,9 @@ export const distributionData: Filter[] = [
         position: [-2.06, 1.15, 3.15],
         targetRotation: [-0.2, -0.2, 0],
         country: 'Czech Republic',
-        region: 'Europe'
+        region: 'Europe',
+        description: 'Central European logistics hub with modern distribution facilities serving the Czech market and neighboring regions.',
+        image: '/distTest3.png'
       },
       {
         id: 'france',
@@ -609,7 +705,9 @@ export const distributionData: Filter[] = [
         position: [-2.70, 1.02, 2.66],
         targetRotation: [-0.3, -0.1, 0],
         country: 'France',
-        region: 'Europe'
+        region: 'Europe',
+        description: 'Premier French distribution center with extensive logistics network covering Western Europe and Mediterranean markets.',
+        image: '/distTest1.png'
       },
       {
         id: 'estonia',
@@ -621,7 +719,9 @@ export const distributionData: Filter[] = [
         position: [-1.64, 1.60, 3.21],
         targetRotation: [-0.1, -0.1, 0],
         country: 'Estonia',
-        region: 'Europe'
+        region: 'Europe',
+        description: 'Baltic distribution gateway with digital-first logistics solutions and efficient connections to Nordic and Eastern European markets.',
+        image: '/distTest2.png'
       },
       {
         id: 'germany',
@@ -633,7 +733,9 @@ export const distributionData: Filter[] = [
         position: [-2.41, 1.10, 2.90],
         targetRotation: [-0.3, -0.2, 0],
         country: 'Germany',
-        region: 'Europe'
+        region: 'Europe',
+        description: 'Central European distribution powerhouse with advanced logistics infrastructure and comprehensive coverage across German-speaking markets.',
+        image: '/distTest3.png'
       },
       {
         id: 'hungary',
@@ -645,7 +747,9 @@ export const distributionData: Filter[] = [
         position: [-2.05, 0.85, 3.24],
         targetRotation: [-0.2, -0.3, 0],
         country: 'Hungary',
-        region: 'Europe'
+        region: 'Europe',
+        description: 'Central European distribution hub strategically positioned to serve Hungary and surrounding Central European markets with efficient logistics solutions.',
+        image: '/distTest1.png'
       },
       {
         id: 'italy',
@@ -657,7 +761,9 @@ export const distributionData: Filter[] = [
         position: [-2.41, 0.70, 3.02],
         targetRotation: [-0.3, -0.2, 0],
         country: 'Italy',
-        region: 'Europe'
+        region: 'Europe',
+        description: 'Mediterranean distribution excellence with comprehensive logistics network serving Italy and Southern European markets.',
+        image: '/distTest2.png'
       },
       {
         id: 'latvia',
@@ -669,7 +775,9 @@ export const distributionData: Filter[] = [
         position: [-1.71, 1.48, 3.21],
         targetRotation: [-0.1, -0.1, 0],
         country: 'Latvia',
-        region: 'Europe'
+        region: 'Europe',
+        description: 'Baltic distribution center with modern facilities and strategic location for serving Northern and Eastern European markets.',
+        image: '/distTest3.png'
       },
       {
         id: 'malta',
@@ -681,7 +789,9 @@ export const distributionData: Filter[] = [
         position: [-2.43, 0.21, 3.07],
         targetRotation: [-0.3, -0.2, 0],
         country: 'Malta',
-        region: 'Europe'
+        region: 'Europe',
+        description: 'Mediterranean island distribution hub with specialized logistics capabilities for serving Malta and surrounding Mediterranean markets.',
+        image: '/distTest1.png'
       },
       {
         id: 'norway',
@@ -693,7 +803,9 @@ export const distributionData: Filter[] = [
         position: [-2.15, 1.74, 2.78],
         targetRotation: [-0.2, -0.1, 0],
         country: 'Norway',
-        region: 'Europe'
+        region: 'Europe',
+        description: 'Nordic distribution excellence with sustainable logistics solutions and specialized cold chain capabilities for Norwegian markets.',
+        image: '/distTest2.png'
       },
       {
         id: 'poland',
@@ -705,7 +817,9 @@ export const distributionData: Filter[] = [
         position: [-1.89, 1.27, 3.21],
         targetRotation: [-0.2, -0.2, 0],
         country: 'Poland',
-        region: 'Europe'
+        region: 'Europe',
+        description: 'Central European distribution powerhouse with extensive logistics network serving Poland and Eastern European markets.',
+        image: '/distTest3.png'
       },
       {
         id: 'spain',
@@ -717,7 +831,9 @@ export const distributionData: Filter[] = [
         position: [-2.96, 0.77, 2.46],
         targetRotation: [-0.4, -0.1, 0],
         country: 'Spain',
-        region: 'Europe'
+        region: 'Europe',
+        description: 'Iberian Peninsula distribution center with comprehensive logistics network serving Spain and Southern European markets.',
+        image: '/distTest1.png'
       },
       {
         id: 'sweden',
@@ -729,7 +845,9 @@ export const distributionData: Filter[] = [
         position: [-2.01, 1.61, 2.96],
         targetRotation: [-0.2, -0.1, 0],
         country: 'Sweden',
-        region: 'Europe'
+        region: 'Europe',
+        description: 'Nordic distribution excellence with sustainable logistics solutions and advanced cold chain capabilities for Swedish markets.',
+        image: '/distTest2.png'
       },
       {
         id: 'switzerland',
@@ -741,7 +859,9 @@ export const distributionData: Filter[] = [
         position: [-2.42, 0.91, 2.96],
         targetRotation: [-0.3, -0.2, 0],
         country: 'Switzerland',
-        region: 'Europe'
+        region: 'Europe',
+        description: 'Alpine distribution center with precision logistics solutions and specialized capabilities for Swiss and Central European markets.',
+        image: '/distTest3.png'
       },
       {
         id: 'uk',
@@ -753,7 +873,9 @@ export const distributionData: Filter[] = [
         position: [-2.60, 1.46, 2.55],
         targetRotation: [-0.3, -0.1, 0],
         country: 'United Kingdom',
-        region: 'Europe'
+        region: 'Europe',
+        description: 'Premier UK distribution center with comprehensive logistics network and specialized capabilities for British and Irish markets.',
+        image: '/distTest1.png'
       }
     ]
   },
@@ -771,7 +893,9 @@ export const distributionData: Filter[] = [
         position: [-1.66, -0.46, 3.53],
         targetRotation: [-0.1, -0.2, 0],
         country: 'Egypt',
-        region: 'Africa'
+        region: 'Africa',
+        description: 'North African distribution gateway with strategic location serving Egypt and surrounding Middle Eastern and African markets.',
+        image: '/distTest2.png'
       },
       {
         id: 'morocco',
@@ -783,7 +907,9 @@ export const distributionData: Filter[] = [
         position: [-3.15, 0.34, 2.32],
         targetRotation: [-0.4, -0.1, 0],
         country: 'Morocco',
-        region: 'Africa'
+        region: 'Africa',
+        description: 'North African distribution hub with modern logistics facilities serving Morocco and connecting Africa with Europe.',
+        image: '/distTest3.png'
       },
       {
         id: 'seychelles',
@@ -795,7 +921,9 @@ export const distributionData: Filter[] = [
         position: [0.02, -2.47, 3.05],
         targetRotation: [0.0, -0.3, 0],
         country: 'Seychelles',
-        region: 'Africa'
+        region: 'Africa',
+        description: 'Indian Ocean distribution center with specialized logistics capabilities for serving Seychelles and surrounding island markets.',
+        image: '/distTest1.png'
       }
     ]
   },
@@ -813,7 +941,9 @@ export const distributionData: Filter[] = [
         position: [-2.08, 2.46, -2.24],
         targetRotation: [-0.3, 0.3, 0],
         country: 'Mexico',
-        region: 'America'
+        region: 'America',
+        description: 'North American distribution hub with comprehensive logistics network serving Mexico and connecting North and Central American markets.',
+        image: '/distTest2.png'
       },
       {
         id: 'usa',
@@ -825,7 +955,9 @@ export const distributionData: Filter[] = [
         position: [-2.39, 2.85, -1.25],
         targetRotation: [-0.3, 0.4, 0],
         country: 'United States',
-        region: 'America'
+        region: 'America',
+        description: 'Premier North American distribution center with extensive logistics network and advanced capabilities for US and Canadian markets.',
+        image: '/distTest3.png'
       },
       {
         id: 'puerto-rico',
@@ -837,7 +969,9 @@ export const distributionData: Filter[] = [
         position: [-3.47, 1.37, -1.25],
         targetRotation: [-0.4, 0.2, 0],
         country: 'Puerto Rico',
-        region: 'America'
+        region: 'America',
+        description: 'Caribbean distribution center with strategic location serving Puerto Rico and surrounding Caribbean markets.',
+        image: '/distTest1.png'
       },
       {
         id: 'canada',
@@ -849,7 +983,9 @@ export const distributionData: Filter[] = [
         position: [-2.02, 3.31, -0.67],
         targetRotation: [-0.3, 0.5, 0],
         country: 'Canada',
-        region: 'America'
+        region: 'America',
+        description: 'North American distribution excellence with comprehensive logistics network and specialized cold chain capabilities for Canadian markets.',
+        image: '/distTest2.png'
       },
       {
         id: 'argentina',
@@ -861,7 +997,9 @@ export const distributionData: Filter[] = [
         position: [-2.89, -1.17, -2.38],
         targetRotation: [-0.4, -0.2, 0],
         country: 'Argentina',
-        region: 'America'
+        region: 'America',
+        description: 'South American distribution hub with comprehensive logistics network serving Argentina and surrounding Southern Cone markets.',
+        image: '/distTest3.png'
       },
       {
         id: 'brasil',
@@ -873,7 +1011,9 @@ export const distributionData: Filter[] = [
         position: [-3.57, -0.70, -1.46],
         targetRotation: [-0.5, -0.1, 0],
         country: 'Brazil',
-        region: 'America'
+        region: 'America',
+        description: 'South American distribution powerhouse with extensive logistics network serving Brazil and surrounding Latin American markets.',
+        image: '/distTest1.png'
       },
       {
         id: 'chile',
@@ -885,7 +1025,9 @@ export const distributionData: Filter[] = [
         position: [-2.60, -0.82, -2.82],
         targetRotation: [-0.4, -0.1, 0],
         country: 'Chile',
-        region: 'America'
+        region: 'America',
+        description: 'South American distribution center with strategic location serving Chile and connecting Pacific Rim markets.',
+        image: '/distTest2.png'
       },
       {
         id: 'peru',
@@ -897,7 +1039,9 @@ export const distributionData: Filter[] = [
         position: [-2.78, 0.23, -2.76],
         targetRotation: [-0.4, 0.0, 0],
         country: 'Peru',
-        region: 'America'
+        region: 'America',
+        description: 'Andean distribution hub with comprehensive logistics network serving Peru and surrounding South American markets.',
+        image: '/distTest3.png'
       },
       {
         id: 'columbia',
@@ -909,7 +1053,9 @@ export const distributionData: Filter[] = [
         position: [-3.06, 0.81, -2.32],
         targetRotation: [-0.4, 0.1, 0],
         country: 'Colombia',
-        region: 'America'
+        region: 'America',
+        description: 'South American distribution center with strategic location serving Colombia and connecting North and South American markets.',
+        image: '/distTest1.png'
       },
       {
         id: 'dominican-republic',
@@ -921,7 +1067,9 @@ export const distributionData: Filter[] = [
         position: [-3.33, 1.55, -1.37],
         targetRotation: [-0.4, 0.2, 0],
         country: 'Dominican Republic',
-        region: 'America'
+        region: 'America',
+        description: 'Caribbean distribution hub with strategic location serving Dominican Republic and surrounding Caribbean markets.',
+        image: '/distTest2.png'
       }
     ]
   },
@@ -939,7 +1087,9 @@ export const distributionData: Filter[] = [
         position: [-0.75, 0.50, 3.82],
         targetRotation: [-0.1, -0.1, 0],
         country: 'Azerbaijan',
-        region: 'Asia'
+        region: 'Asia',
+        description: 'Caucasus distribution hub with strategic location serving Azerbaijan and connecting European and Asian markets.',
+        image: '/distTest3.png'
       },
       {
         id: 'bahrain',
@@ -951,7 +1101,9 @@ export const distributionData: Filter[] = [
         position: [-0.50, -0.42, 3.88],
         targetRotation: [-0.1, -0.1, 0],
         country: 'Bahrain',
-        region: 'Asia'
+        region: 'Asia',
+        description: 'Gulf distribution center with modern logistics facilities serving Bahrain and surrounding Middle Eastern markets.',
+        image: '/distTest1.png'
       },
       {
         id: 'israel',
@@ -963,7 +1115,9 @@ export const distributionData: Filter[] = [
         position: [-1.40, -0.06, 3.67],
         targetRotation: [-0.2, 0.0, 0],
         country: 'Israel',
-        region: 'Asia'
+        region: 'Asia',
+        description: 'Middle Eastern distribution hub with advanced logistics capabilities serving Israel and surrounding regional markets.',
+        image: '/distTest2.png'
       },
       {
         id: 'qatar',
@@ -975,7 +1129,9 @@ export const distributionData: Filter[] = [
         position: [-0.47, -0.49, 3.86],
         targetRotation: [-0.1, -0.1, 0],
         country: 'Qatar',
-        region: 'Asia'
+        region: 'Asia',
+        description: 'Gulf distribution center with modern logistics facilities and strategic location serving Qatar and surrounding Middle Eastern markets.',
+        image: '/distTest3.png'
       },
       {
         id: 'saudi-arabia',
@@ -987,7 +1143,9 @@ export const distributionData: Filter[] = [
         position: [-0.88, -0.49, 3.79],
         targetRotation: [-0.1, -0.1, 0],
         country: 'Saudi Arabia',
-        region: 'Asia'
+        region: 'Asia',
+        description: 'Gulf distribution powerhouse with extensive logistics network serving Saudi Arabia and surrounding Middle Eastern markets.',
+        image: '/distTest1.png'
       },
       {
         id: 'taiwan',
@@ -999,7 +1157,9 @@ export const distributionData: Filter[] = [
         position: [2.91, 1.25, 2.32],
         targetRotation: [0.4, -0.2, 0],
         country: 'Taiwan',
-        region: 'Asia'
+        region: 'Asia',
+        description: 'East Asian distribution hub with advanced logistics capabilities serving Taiwan and connecting Asian markets.',
+        image: '/distTest2.png'
       },
       {
         id: 'uae',
@@ -1011,7 +1171,9 @@ export const distributionData: Filter[] = [
         position: [-0.35, -0.61, 3.87],
         targetRotation: [-0.1, -0.1, 0],
         country: 'United Arab Emirates',
-        region: 'Asia'
+        region: 'Asia',
+        description: 'Gulf distribution excellence with world-class logistics facilities serving UAE and connecting Middle Eastern and global markets.',
+        image: '/distTest3.png'
       },
       {
         id: 'south-korea',
@@ -1023,7 +1185,9 @@ export const distributionData: Filter[] = [
         position: [2.53, 2.03, 2.21],
         targetRotation: [0.3, -0.3, 0],
         country: 'South Korea',
-        region: 'Asia'
+        region: 'Asia',
+        description: 'East Asian distribution powerhouse with advanced logistics infrastructure and comprehensive coverage across Korean markets.',
+        image: '/distTest1.png'
       },
       {
         id: 'japan',
@@ -1035,7 +1199,9 @@ export const distributionData: Filter[] = [
         position: [2.66, 2.25, 1.88],
         targetRotation: [0.4, -0.3, 0],
         country: 'Japan',
-        region: 'Asia'
+        region: 'Asia',
+        description: 'East Asian distribution excellence with precision logistics solutions and advanced capabilities for Japanese markets.',
+        image: '/distTest2.png'
       }
     ]
   }

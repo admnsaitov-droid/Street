@@ -25,8 +25,8 @@ export const PackagesView = ({ data }: PackagesViewProps) => {
                 ]}
             />
             <StyledTop>
-                <StyledTitle>{data?.title}</StyledTitle>
-                <StyledDescription>{data?.description}</StyledDescription>
+                <StyledTitle tag="h1">{data?.title}</StyledTitle>
+                <StyledDescription tag="p">{data?.description}</StyledDescription>
             </StyledTop>
             <StyledPackages>
                 {data?.package?.map((item: any, index: number) => (

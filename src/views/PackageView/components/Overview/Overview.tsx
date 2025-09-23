@@ -45,11 +45,11 @@ export const Overview = ({ data }: OverviewProps) => {
     return (
         <StyledOverview ref={containerRef}>
             <StyledTop>
-                <StyledAnnotation>{data?.overviewText}</StyledAnnotation>
+                <StyledAnnotation tag="h2">{data?.overviewText}</StyledAnnotation>
                 <div className="right">
-                    <StyledTitle>{data?.mainDescription}</StyledTitle>
+                    <StyledTitle tag="h2">{data?.mainDescription}</StyledTitle>
                     <div className="bottom">
-                        <StyledSubtitle>{data?.descriptionSecondary}</StyledSubtitle>
+                        <StyledSubtitle tag="p">{data?.descriptionSecondary}</StyledSubtitle>
                         <SimpleButton className="button" link={data?.button?.link}>
                             {data?.button?.text}
                         </SimpleButton>
@@ -104,14 +104,14 @@ export const Overview = ({ data }: OverviewProps) => {
                                 }
                             }}
                         >
-                            <span id="title-first" className="first">Explore</span>
-                            <span id="title-second">the line</span>
+                            <h3 id="title-first" className="first">Explore</h3>
+                            <h3 id="title-second">the line</h3>
                         </AnimatedGrid>
                     </StyledExploreHeaderContainer>
                     <StyledLines>
                         {linesData.map((line: any, lineIndex: number) => (
                             <StyledLineGroup key={line?.id || lineIndex}>
-                                <StyledLineName>{line?.name}</StyledLineName>
+                                <StyledLineName as="h4">{line?.name}</StyledLineName>
                                 <StyledProducts>
                                     {line?.products.map((product: any, productIndexWithinLine: number) => {
                                         const globalIndex = (linesData

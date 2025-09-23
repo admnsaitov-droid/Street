@@ -32,7 +32,7 @@ export const Hero = ({ data }: HeroProps) => {
                 <div className="left">
                     <AnimatedText className="description">{data?.description}</AnimatedText>
                     <div className="divider" />
-                    <StyledTitle className="title">
+                    <StyledTitle className="title" tag="h1">
                         {data?.title}
                     </StyledTitle>
                 </div>

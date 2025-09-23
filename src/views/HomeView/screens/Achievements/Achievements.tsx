@@ -58,8 +58,8 @@ export const Achievements = ({ achievementsData }: AchievementsProps) => {
                             }
                         }}
                     >
-                        <span id="title-first" className="first">{achievementsData?.title?.textFirst}</span>
-                        <span id="title-second" className="second">{achievementsData?.title?.textSecond}</span>
+                        <h2 id="title-first" className="first">{achievementsData?.title?.textFirst}</h2>
+                        <h2 id="title-second" className="second">{achievementsData?.title?.textSecond}</h2>
                     </AnimatedGrid>
                 </StyledTitleContainer>
                 <StyledAchievementsList className="rightAchievements">

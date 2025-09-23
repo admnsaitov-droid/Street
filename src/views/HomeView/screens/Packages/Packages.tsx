@@ -143,9 +143,9 @@ export const Packages = ({ packagesData }: PackagesProps) => {
                 <StyledContentLayout>
                     <div className="left">
                         <StyledTopBar>
-                            <p className="title">
+                            <h2 className="title">
                                 {packagesData?.title}
-                            </p>
+                            </h2>
                             <div className="sizes">
                                 {sizes.map((size: string, index: number) => (
                                     <>
@@ -166,9 +166,9 @@ export const Packages = ({ packagesData }: PackagesProps) => {
                             <div className="title-container">
                                 {titleTransitions((style, item) => 
                                     item && (
-                                        <animated.p className="title" style={style}>
+                                        <animated.h3 className="title" style={style}>
                                             {item}
-                                        </animated.p>
+                                        </animated.h3>
                                     )
                                 )}
                             </div>

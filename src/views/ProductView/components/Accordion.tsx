@@ -63,7 +63,7 @@ export const Accordion = ({ title, children }: AccordionProps) => {
                 aria-controls={contentId}
                 className="motion-button"
             >
-                <StyledTitle>{title}</StyledTitle>
+                <StyledTitle as="h3">{title}</StyledTitle>
                 <animated.svg style={rotateSpring} width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M18.12 16.88L12 10.7733L5.88 16.88L4 15L12 7L20 15L18.12 16.88Z" fill="#0040DD"/>
                 </animated.svg>

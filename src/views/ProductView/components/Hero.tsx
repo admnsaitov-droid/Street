@@ -32,8 +32,8 @@ export const Hero = ({ data, colors }: HeroProps) => {
                     ]}
                 />
                 <div className="top">
-                    <StyledTitle>{data?.name}</StyledTitle>
-                    <StyledSubtitle>{data?.model}</StyledSubtitle>
+                    <StyledTitle tag="h1">{data?.name}</StyledTitle>
+                    <StyledSubtitle tag="p">{data?.model}</StyledSubtitle>
                 </div>
             </StyledContent>
             <ProductScene data={data?.model3D} colors={colors} />

@@ -56,9 +56,9 @@ export const Inspiration = ({ data }: InspirationProps) => {
                             }
                         }}
                     >
-                        <span id="title-first">{data?.title?.firstWord}</span>
-                        <span id="title-second" className="first">{data?.title?.secondWord}</span>
-                        <span id="title-third">{data?.title?.thirdWord}</span>
+                        <h2 id="title-first">{data?.title?.firstWord}</h2>
+                        <h2 id="title-second" className="first">{data?.title?.secondWord}</h2>
+                        <h2 id="title-third">{data?.title?.thirdWord}</h2>
                     </AnimatedGrid>
                 </StyledAboutTitleContainer>
                 <div className="right">

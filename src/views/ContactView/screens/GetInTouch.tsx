@@ -14,7 +14,7 @@ export const GetInTouch = ({ data }: GetInTouchProps) => {
     console.log( ' get in touch data', data)
     return (
         <StyledGetInTouch>
-            <StyledAnnotation>
+            <StyledAnnotation tag="h2">
                 {data?.title}
             </StyledAnnotation>
             <StyledContactLeft>
