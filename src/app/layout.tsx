@@ -8,21 +8,18 @@ const onest = Onest({
   subsets: ["latin"],
   variable: "--font-onest",
   display: 'swap',
-  preload: true,
 });
 
 const golosText = Golos_Text({
   subsets: ["latin"],
   variable: "--font-golos-text",
   display: 'swap',
-  preload: true,
 });
 
 const sageGrotesk = localFont({
     src: '../../public/fonts/Sage-Grotesk.woff2',
     variable: "--font-sage-grotesk",
     display: 'swap',
-    preload: true,
   });
 
 export const metadata: Metadata = {
@@ -38,6 +35,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        <link
+          rel="preload"
+          href="/fonts/Sage-Grotesk.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
+        />
         <link
           rel="prefetch"
           crossOrigin="anonymous"

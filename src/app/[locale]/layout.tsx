@@ -33,21 +33,18 @@ const onest = Onest({
   subsets: ["latin"],
   variable: "--font-onest",
   display: 'swap',
-  preload: true,
 });
 
 const golosText = Golos_Text({
   subsets: ["latin"],
   variable: "--font-golos-text",
   display: 'swap',
-  preload: true,
 });
 
 const sageGrotesk = localFont({
     src: '../../../public/fonts/Sage-Grotesk.woff2',
     variable: "--font-sage-grotesk",
     display: 'swap',
-    preload: true,
   });
 
 export const metadata: Metadata = generateMetadata({});
