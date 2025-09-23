@@ -2,34 +2,40 @@ import createMiddleware from 'next-intl/middleware';
 import { NextRequest } from 'next/server';
 import { getLocaleCodes, getDefaultLocale } from './utils/locales';
 
-// Create middleware with dynamic locale configuration
+// Create middleware with optimized locale configuration
 export default async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
   
-  // Enable logging in production to debug Vercel issues
-  console.log('🔥 MIDDLEWARE - incoming request:', pathname);
-  console.log(`🔍 COOKIES: ${request.cookies.get('NEXT_LOCALE')?.value || 'none'}`);
+  // Reduce logging in production for better performance
+  if (process.env.NODE_ENV === 'development') {
+    console.log('🔥 MIDDLEWARE - incoming request:', pathname);
+    console.log(`🔍 COOKIES: ${request.cookies.get('NEXT_LOCALE')?.value || 'none'}`);
+  }
   
   try {
-    // Get dynamic locales from Strapi
-    const locales = await getLocaleCodes();
-    const defaultLocale = await getDefaultLocale();
-    
-    console.log('Middleware - available locales from Strapi:', locales);
-    console.log('Middleware - default locale from Strapi:', defaultLocale);
-
-    // Get safe locales from environment variable or fallback to Strapi
+    // Priority: Use environment variables first (faster than Strapi calls)
     const envLocales = process.env.NEXT_PUBLIC_LOCALES?.split(',').map(l => l.trim()) || [];
     const envDefaultLocale = process.env.NEXT_PUBLIC_DEFAULT_LOCALE || 'en';
     
-    // Use env locales if available, otherwise use Strapi locales, with final fallback
-    const safeLocales = envLocales.length > 0 ? envLocales : (locales.length > 0 ? locales : ['en', 'es']);
-    const safeDefaultLocale = envLocales.length > 0 ? envDefaultLocale : (defaultLocale || 'en');
+    let safeLocales = envLocales;
+    let safeDefaultLocale = envDefaultLocale;
+    
+    // Only call Strapi if env variables are not set
+    if (envLocales.length === 0) {
+      const [locales, defaultLocale] = await Promise.all([
+        getLocaleCodes(),
+        getDefaultLocale()
+      ]);
+      
+      safeLocales = locales.length > 0 ? locales : ['en', 'es'];
+      safeDefaultLocale = defaultLocale || 'en';
+      
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Middleware - fetched from Strapi:', { safeLocales, safeDefaultLocale });
+      }
+    }
 
-    console.log('Middleware - FORCED locales:', safeLocales);
-    console.log('Middleware - FORCED default locale:', safeDefaultLocale);
-
-    // Create the middleware with forced configuration
+    // Create the middleware with optimized configuration
     const handleI18nRouting = createMiddleware({
       locales: safeLocales,
       defaultLocale: safeDefaultLocale,
@@ -38,22 +44,25 @@ export default async function middleware(request: NextRequest) {
 
     const response = handleI18nRouting(request);
     
-    // Log what the middleware decided to do
-    if (response && response.headers.get('x-middleware-rewrite')) {
-      console.log(`🔄 REWRITE TO: ${response.headers.get('x-middleware-rewrite')}`);
-    }
-    if (response && response.headers.get('location')) {
-      console.log(`🔄 REDIRECT TO: ${response.headers.get('location')}`);
+    // Minimal logging in production
+    if (process.env.NODE_ENV === 'development' && response) {
+      if (response.headers.get('x-middleware-rewrite')) {
+        console.log(`🔄 REWRITE TO: ${response.headers.get('x-middleware-rewrite')}`);
+      }
+      if (response.headers.get('location')) {
+        console.log(`🔄 REDIRECT TO: ${response.headers.get('location')}`);
+      }
     }
     
     return response;
   } catch (error) {
-    console.error('🚨 Error in middleware:', error);
+    if (process.env.NODE_ENV === 'development') {
+      console.error('🚨 Error in middleware:', error);
+    }
     
-    // Fallback to basic configuration if Strapi is not available
-    // console.log('🔄 Using fallback middleware configuration');
+    // Fast fallback without logging
     const fallbackMiddleware = createMiddleware({
-      locales: ['en', 'es'], // Add common locales as fallback
+      locales: ['en', 'es'],
       defaultLocale: 'en',
       localePrefix: 'always'
     });
