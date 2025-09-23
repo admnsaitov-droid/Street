@@ -93,7 +93,7 @@ export const Line = forwardRef<HTMLDivElement, LineProps>(({ line, index, onMous
                 </div>
             </StyledType>
             <div className="line-content">
-                <StyledTitle className="title">{line.name}</StyledTitle>
+                <StyledTitle className="title" as="h3">{line.name}</StyledTitle>
                 <StyledDescriptionContainer>
                     <AccordionText 
                         className="description"

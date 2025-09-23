@@ -16,11 +16,11 @@ export const About = ({ aboutData }: AboutProps) => {
     return (
         <StyledAbout>
             <StyledTopContainer>
-                <AnimatedText className="title">{aboutData?.title}</AnimatedText>
+                <AnimatedText className="title" tag="h2">{aboutData?.title}</AnimatedText>
                 <div className="right">
-                    <AnimatedText className="descriptionMain">{aboutData?.description}</AnimatedText>
+                    <AnimatedText className="descriptionMain" tag="h3">{aboutData?.description}</AnimatedText>
                     <div className="bottom">
-                        <AnimatedText className="descriptionSecondary">{aboutData?.descriptionSecondary}</AnimatedText>
+                        <AnimatedText className="descriptionSecondary" tag="p">{aboutData?.descriptionSecondary}</AnimatedText>
                         <BlueButton link={aboutData?.button?.link} isSvg className="button">{aboutData?.button?.text}</BlueButton>
                     </div>
                 </div>

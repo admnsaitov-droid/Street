@@ -30,8 +30,8 @@ export const Hero = ({ data, breadcrumbs }: HeroProps) => {
                         // { label: data?.hero?.title || data?.title || "", href: undefined },
                     ]}
                 />
-                <StyledTitle style={{ userSelect: 'none', pointerEvents: 'none' }}>{data?.hero?.title}</StyledTitle>
-                <StyledDescription style={{ userSelect: 'none', pointerEvents: 'none' }}>{data?.hero?.description}</StyledDescription>
+                <StyledTitle style={{ userSelect: 'none', pointerEvents: 'none' }} tag="h1">{data?.hero?.title}</StyledTitle>
+                <StyledDescription style={{ userSelect: 'none', pointerEvents: 'none' }} tag="p">{data?.hero?.description}</StyledDescription>
             </StyledContent>
         </StyledHero>
     )
@@ -52,7 +52,7 @@ const StyledContent = styled.div`
     flex-direction: column;
     gap: ${rm(20)};
     position: relative;
-    z-index: 1;
+    z-index: 10;
 
     ${media.md`
         padding: ${rm(100)} ${rm(25)};

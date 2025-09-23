@@ -21,11 +21,11 @@ export const Atmosphere = ({ scale, position }: AtmosphereProps) => {
                 centerColor: { value: new THREE.Color('white') }, // Blue at center
                 edgeColor: { value: new THREE.Color('#1F1F96') }, // Purple at edges
                 atmosphereIntensity: { value: 1.0 },
-                bloomIntensity: { value: .3 },
-                bloomRadius: { value: 0.0001 },
+                bloomIntensity: { value: .5 },
+                bloomRadius: { value: 0.001 },
                 time: timeRef.current,
-                pulseSpeed: { value: 2.0 },
-                pulseIntensity: { value: 0.05 }
+                pulseSpeed: { value: 3.0 },
+                pulseIntensity: { value: 0.1 }
             },
         vertexShader: `
             varying vec2 vUv;
@@ -33,9 +33,20 @@ export const Atmosphere = ({ scale, position }: AtmosphereProps) => {
             
             void main() {
                 vUv = uv;
+                vec4 mvPosition = vec4( 0.0, 0.0, 0.0, 1.0 );
+                mvPosition = modelViewMatrix * mvPosition;
+                    vec3 scale = vec3(
+                        length(modelViewMatrix[0].xyz),
+                        length(modelViewMatrix[1].xyz),
+                        length(modelViewMatrix[2].xyz)
+                    );
+
+                mvPosition.xyz += position * scale;
+                gl_Position = projectionMatrix * mvPosition;
+
                 vec4 worldPosition = modelMatrix * vec4(position, 1.0);
+
                 vWorldPosition = worldPosition.xyz;
-                gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
             }
         `,
         fragmentShader: `
@@ -79,7 +90,7 @@ export const Atmosphere = ({ scale, position }: AtmosphereProps) => {
                 vec3 bloomColor = atmosphereColor * (1.0 + totalBloom * 0.5);
                 
                 // Create circular mask with soft edges
-                float circleMask = 1.0 - smoothstep(0.4, 0.5, distanceFromCenter);
+                float circleMask = 1.0 - smoothstep(0.4, 0.9, distanceFromCenter);
                 
                 // Final alpha combines gradient, bloom and circular mask, with pulse effect
                 float finalAlpha = (gradient + totalBloom * bloomRadius) * atmosphereIntensity * circleMask * pulse;

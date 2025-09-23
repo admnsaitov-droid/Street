@@ -58,7 +58,7 @@ const StyledHero = styled.div`
     }
 `
 
-const StyledTitle = styled.p`
+const StyledTitle = styled.h1`
     font-size: ${rm(40)};
     ${fontGolosText(400)};
     color: ${colors.black100};

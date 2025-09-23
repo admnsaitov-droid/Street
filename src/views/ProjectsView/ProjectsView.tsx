@@ -70,8 +70,8 @@ export const ProjectsView = ({ data }: ProjectsViewProps) => {
                             }
                         }}
                     >
-                        <span id="title-first">{data?.projectsPage?.title?.textFirst}</span>
-                        <span id="title-second" className="first">{data?.projectsPage?.title?.textSecond}</span>
+                        <h1 id="title-first">{data?.projectsPage?.title?.textFirst}</h1>
+                        <h1 id="title-second" className="first">{data?.projectsPage?.title?.textSecond}</h1>
                     </AnimatedGrid>
                 </StyledTitleContainer>
             </StyledContent>

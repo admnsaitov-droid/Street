@@ -4,7 +4,7 @@ import { Location as DistributionLocation } from "../data/distributionData"
 
 interface DynamicDistributionSceneProps {
     activeFilterId?: string
-    onLocationClick?: (location: DistributionLocation) => void
+    onLocationClick?: (location: DistributionLocation | null) => void
     selectedLocation?: DistributionLocation | null
 }
 

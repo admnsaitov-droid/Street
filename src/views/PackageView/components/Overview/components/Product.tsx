@@ -68,8 +68,8 @@ export const Product = ({ product, index, onMouseEnter, onMouseLeave }: ProductP
             <StyledHiddenLink href={`/products/${product.slug}`} />
             <StyledTopContainer>
                 <div className="left">
-                    <StyledModel>{product?.model}</StyledModel>
-                    <StyledProductName>{product?.name}</StyledProductName>
+                    <StyledModel as="p">{product?.model}</StyledModel>
+                    <StyledProductName as="h5">{product?.name}</StyledProductName>
                 </div>
                 {width > 768 && <StyledExploreButton style={exploreSpring}>
                     <UnderlineLink href={`/products/${product.slug}`} lineColor="#0040DD" text="Explore"></UnderlineLink>

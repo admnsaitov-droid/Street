@@ -23,7 +23,7 @@ export const ArticleCard = ({ article }: ArticleCardProps) => {
                     {/* <span className="text">{article?.type}</span> */}
                     <span className="text">Event</span>
                 </StyledTitle>
-                <StyledDescription className="description">
+                <StyledDescription className="description" as="h3">
                     {article?.title}
                 </StyledDescription>
                 <StyledImageContainer className="imageContainer">

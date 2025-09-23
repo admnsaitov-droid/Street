@@ -4,9 +4,10 @@ import { Atmosphere } from "./Atmosphere"
 import { Composition } from "./Composition"
 import { useInViewRef } from "@/hooks/useInViewRef"
 import { Environment, PerspectiveCamera } from "@react-three/drei"
-import { useSceneManager } from "@/hooks/useSceneManager"
 import { SceneSkeleton } from "@/components/Skeleton/SceneSkeleton"
-import { Suspense, useEffect } from "react"
+import { Suspense } from "react"
+import { useLazyScene } from "@/hooks/useLazyScene"
+import { SceneReadyDetector } from "@/views/DistributionView/components/SceneReadyDetector"
 
 const scenePosition: [number, number, number] = [4, 0, -1]
 const rotationXSpeed = 0.0001
@@ -15,47 +16,41 @@ const mouseRotationIntensity = 0.05
 
 export const Scene = () => {
     const [ref, inViewRef] = useInViewRef()
-    const sceneManager = useSceneManager({
+    const lazyScene = useLazyScene('home', {
         threshold: 0.1,
-        rootMargin: '100px',
-        renderDelay: 100,
-        minLoadingTime: 700
+        rootMargin: '100px'
     })
 
-    // Mark scene as ready after initial load
-    useEffect(() => {
-        if (sceneManager.shouldRender) {
-            const timer = setTimeout(() => {
-                sceneManager.setSceneReady()
-            }, 600)
-            return () => clearTimeout(timer)
-        }
-    }, [sceneManager.shouldRender, sceneManager])
-
     return (
-        <StyledContainer ref={sceneManager.containerRef}>
-            <SceneSkeleton isLoading={sceneManager.isLoading} className="globe-scene-skeleton" />
-            <StyledScene ref={ref} frameloop={sceneManager.isInView ? "always" : "demand"}>
-                <Suspense fallback={null}>
-                    <ambientLight intensity={1} color={0xFFE6AA} />
-                    <Environment
-                        files="/models/hdr/sky.hdr"
-                        environmentIntensity={1}
-                    />
-                    <directionalLight position={[0, 10, 0]} intensity={1}/> 
-                    {/* <pointLight position={[-2, 0, 5]} intensity={1} decay={0.9}/> */}
-                    <PerspectiveCamera makeDefault position={[0, 0, 8]} fov={40}/>
-                    <Atmosphere scale={5.7} position={scenePosition} />
-                    <Composition 
-                        scale={0.4} 
-                        position={scenePosition} 
-                        inView={inViewRef} 
-                        rotationXSpeed={rotationXSpeed} 
-                        rotationZSpeed={rotationZSpeed} 
-                        mouseRotationIntensity={mouseRotationIntensity} 
-                    />
-                </Suspense>
-            </StyledScene>
+        <StyledContainer ref={lazyScene.containerRef}>
+            <SceneSkeleton 
+                isLoading={lazyScene.isLoading} 
+                progress={lazyScene.progress} 
+                className="globe-scene-skeleton" 
+            />
+            {lazyScene.shouldLoad && (
+                <StyledScene ref={ref} frameloop={lazyScene.isInView ? "always" : "demand"}>
+                    <Suspense fallback={null}>
+                        <SceneReadyDetector sceneType="home" />
+                        <ambientLight intensity={1} color={0xFFE6AA} />
+                        <Environment
+                            files="/models/hdr/sky.hdr"
+                            environmentIntensity={1}
+                        />
+                        <directionalLight position={[0, 10, 0]} intensity={1}/> 
+                        <PerspectiveCamera makeDefault position={[0, 0, 8]} fov={40}/>
+                        <Atmosphere scale={5.7} position={scenePosition} />
+                        <Composition 
+                            scale={0.4} 
+                            position={scenePosition} 
+                            inView={inViewRef} 
+                            rotationXSpeed={rotationXSpeed} 
+                            rotationZSpeed={rotationZSpeed} 
+                            mouseRotationIntensity={mouseRotationIntensity} 
+                        />
+                    </Suspense>
+                </StyledScene>
+            )}
         </StyledContainer>
     )
 }

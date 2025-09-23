@@ -32,8 +32,8 @@ export const Hero = ({ data, colors }: HeroProps) => {
                     ]}
                 />
                 <div className="top">
-                    <StyledTitle>{data?.name}</StyledTitle>
-                    <StyledSubtitle>{data?.model}</StyledSubtitle>
+                    <StyledTitle tag="h1">{data?.name}</StyledTitle>
+                    <StyledSubtitle tag="p">{data?.model}</StyledSubtitle>
                 </div>
             </StyledContent>
             <ProductScene data={data?.model3D} colors={colors} />
@@ -56,7 +56,7 @@ const StyledHero = styled.div`
 const StyledContent = styled.div`
     padding: ${rm(100)} ${rm(50)};
     position: relative;
-    z-index: 2;
+    z-index: 10;
 
     ${media.md`
         padding: ${rm(100)} ${rm(25)};

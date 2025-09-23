@@ -95,12 +95,12 @@ export const Lines = ({ linesData, isTop = true, exploreText }: LinesProps) => {
     <StyledLines ref={containerRef} isTop={isTop}>
         <Preview />
         {isTop && <StyledTopContainer>
-            <AnimatedText className="title">
+            <AnimatedText className="title" tag="h2">
                 {linesData?.title}
             </AnimatedText>
             <div className="right">
                 <div className="descriptionMain">
-                    <AnimatedText className="description-animated">
+                    <AnimatedText className="description-animated" tag="p">
                         {linesData?.description}
                     </AnimatedText>
                 </div>

@@ -87,7 +87,7 @@ export const Composition = ({ scale, position, inView, rotationXSpeed, rotationZ
     }, [isDragging, gl])
 
     useFrame((state, delta) => {
-        if (groupRef.current && mouseGroupRef.current && inView.current) {
+        if (groupRef.current && mouseGroupRef.current) {
             // Update base rotation for groupRef (Y axis only) - continuous auto-rotation
             if (!isDragging) {
                 baseRotation.current.y -= 0.0002

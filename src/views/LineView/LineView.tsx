@@ -33,8 +33,8 @@ export const LineView = ({ data }: LineViewProps) => {
             />
             <StyledHero>
                 <StyledTop>
-                    <StyledTitle>{data?.line?.lineContent?.title}</StyledTitle>
-                    <StyledSubtitle>{data?.line?.lineContent?.description}</StyledSubtitle>
+                    <StyledTitle tag="h1">{data?.line?.lineContent?.title}</StyledTitle>
+                    <StyledSubtitle tag="p">{data?.line?.lineContent?.description}</StyledSubtitle>
                 </StyledTop>
                 <StyledTopImageContainer>
                     <ScaleImageAppear className="image-container">
@@ -76,8 +76,8 @@ export const LineView = ({ data }: LineViewProps) => {
                         }
                     }}
                 >
-                    <span id="title-first" className="first">{data?.line?.exploreTitle?.textFirst}</span>
-                    <span id="title-second">{data?.line?.exploreTitle?.textSecond}</span>
+                    <h2 id="title-first" className="first">{data?.line?.exploreTitle?.textFirst}</h2>
+                    <h2 id="title-second">{data?.line?.exploreTitle?.textSecond}</h2>
                 </AnimatedGrid>
             </StyledProductsTitleContainer>
             <StyledProductsGrid>

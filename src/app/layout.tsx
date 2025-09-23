@@ -31,6 +31,18 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <link
+          rel="prefetch"
+          crossOrigin="anonymous"
+          href="https://www.gstatic.com/draco/versioned/decoders/1.5.5/draco_wasm_wrapper.js"
+        />
+        <link
+          rel="prefetch"
+          crossOrigin="anonymous"
+          href="https://www.gstatic.com/draco/versioned/decoders/1.5.5/draco_decoder.wasm"
+        />
+      </head>
       <body className={`${onest.variable} ${golosText.variable} ${sageGrotesk.variable}`} style={{ margin: 0, padding: 0 }}>
         <HtmlLangSetter />
         {children}

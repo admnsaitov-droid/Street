@@ -24,8 +24,8 @@ export const LinesView = ({ data }: LinesViewProps) => {
                 ]}
             />
             <StyledTop>
-                <StyledTitle>{data?.title}</StyledTitle>
-                <StyledDescription>{data?.description}</StyledDescription>
+                <StyledTitle tag="h1">{data?.title}</StyledTitle>
+                <StyledDescription tag="p">{data?.description}</StyledDescription>
             </StyledTop>
             <Lines linesData={data} isTop={false} exploreText={data?.overviewText}/>
         </StyledLinesView>

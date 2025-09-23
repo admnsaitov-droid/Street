@@ -126,8 +126,8 @@ export const LatestNews = ({ latestNewsData }: LatestNewsProps) => {
                             }
                         }}
                     >
-                        <span id="title-first">{latestNewsData?.title?.textFirst}</span>
-                        <span id="title-second" className="first">{latestNewsData?.title?.textSecond}</span>
+                        <h2 id="title-first">{latestNewsData?.title?.textFirst}</h2>
+                        <h2 id="title-second" className="first">{latestNewsData?.title?.textSecond}</h2>
                     </AnimatedGrid>
                 </StyledTitleContainer>
                 <div style={{display: 'flex', alignItems: 'center', minWidth: 'fit-content', position: 'relative', overflow: 'hidden'}} ref={buttonsInViewRef}>

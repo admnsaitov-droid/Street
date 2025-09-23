@@ -64,8 +64,8 @@ export const Globe = ({ globeData }: GlobeProps) => {
                                 }
                             }}
                         >
-                            <span id="title-first">{globeData?.title?.textFirst}</span>
-                            <span id="title-second" className="first">{globeData?.title?.textSecond}</span>
+                            <h2 id="title-first">{globeData?.title?.textFirst}</h2>
+                            <h2 id="title-second" className="first">{globeData?.title?.textSecond}</h2>
                         </AnimatedGrid>
                     </StyledTitleContainer>
                     <StyledDescription>{globeData?.description}</StyledDescription>

@@ -26,8 +26,8 @@ export const Benefits = ({ benefitsData }: BenefitsProps) => {
             </div>
             <div className="right">
                 <div className="main">
-                    <AnimatedText className="title">{benefitsData?.title}</AnimatedText>
-                    <AnimatedText className="description">{benefitsData?.description}</AnimatedText>
+                    <AnimatedText className="title" tag="h2">{benefitsData?.title}</AnimatedText>
+                    <AnimatedText className="description" tag="p">{benefitsData?.description}</AnimatedText>
                 </div>
                 <StyledBenefitsContainer>
                     {benefitsData?.benefits?.map((benefit: any, index: number) => (

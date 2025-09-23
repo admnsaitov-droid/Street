@@ -11,8 +11,8 @@ interface DescriptionProps {
 export const Description = ({ model, description }: DescriptionProps) => {
     return (
         <StyledDescription>
-            <StyledTitle>{model}</StyledTitle>
-            <StyledSubtitle>{description}</StyledSubtitle>
+            <StyledTitle tag="h3">{model}</StyledTitle>
+            <StyledSubtitle tag="p">{description}</StyledSubtitle>
         </StyledDescription>
     )
 }

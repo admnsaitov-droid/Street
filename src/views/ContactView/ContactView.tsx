@@ -40,11 +40,11 @@ export const ContactView = ({ data }: ContactViewProps) => {
     return (
         <StyledContactView>
             <StyledTop>
-                <StyledTitle>
+                <StyledTitle tag="h1">
                     {data?.title}
                 </StyledTitle>
                 <StyledContactLeft>
-                    <StyledContactDescription>
+                    <StyledContactDescription tag="p">
                         {data.description}
                     </StyledContactDescription>
                     <ContactForm data={data?.contactForm} buttonText={data?.buttonText} />

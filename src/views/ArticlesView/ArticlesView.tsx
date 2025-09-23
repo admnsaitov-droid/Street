@@ -26,7 +26,7 @@ export const ArticlesView = ({ data, pageData }: ArticlesViewProps) => {
                     ...breadcrumbs
                 ]}
             />
-            <StyledTitle>
+            <StyledTitle tag="h1">
                 {pageData?.Title}
             </StyledTitle>
             <StyledArticlesGrid>

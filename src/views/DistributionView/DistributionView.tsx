@@ -3,19 +3,57 @@ import { media, colors, rm } from "@/styles"
 import { fontGolosText, fontSageGrotesk } from "@/styles/fonts"
 import { heightLvh } from "@/styles/utils"
 import styled from "styled-components"
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
 import { DynamicDistributionScene as DistributionScene } from "./components/DynamicScene"
 import AnimatedGrid from "@/components/animated/AnimatedContent"
 import { CountryPanel } from "./components/CountryPanel/CountryPanel"
-import { Location as DistributionLocation } from "./data/distributionData"
+import { Location as DistributionLocation, getAllLocations } from "./data/distributionData"
 
 interface DistributionViewProps {
     data: any
 }
 
+// Helper functions for URL parameter management
+const updateLocationParam = (router: any, locationId: string | null) => {
+    const url = new URL(window.location.href)
+    if (locationId) {
+        url.searchParams.set('location', locationId)
+    } else {
+        url.searchParams.delete('location')
+    }
+    router.replace(url.pathname + url.search, { scroll: false })
+}
+
+const getLocationFromParam = (locationParam: string | null): DistributionLocation | null => {
+    if (!locationParam) return null
+    const allLocations = getAllLocations()
+    return allLocations.find(location => location.id === locationParam) || null
+}
+
 export const DistributionView = ({ data }: DistributionViewProps) => {
+    const router = useRouter()
+    const searchParams = useSearchParams()
     const [activeFilterId, setActiveFilterId] = useState('all')
     const [selectedLocation, setSelectedLocation] = useState<DistributionLocation | null>(null)
+
+    // Check URL parameter on mount and set selected location
+    useEffect(() => {
+        const locationParam = searchParams.get('location')
+        const locationFromParam = getLocationFromParam(locationParam)
+        if (locationFromParam) {
+            setSelectedLocation(locationFromParam)
+            // Set the appropriate filter based on the location's region
+            const regionFilterMap: { [key: string]: string } = {
+                'Europe': 'europe',
+                'Africa': 'africa', 
+                'America': 'america',
+                'Asia': 'asia'
+            }
+            const filterId = regionFilterMap[locationFromParam.region] || 'all'
+            setActiveFilterId(filterId)
+        }
+    }, [searchParams])
 
     const handleFilterChange = (filterId: string) => {
         setActiveFilterId(filterId)
@@ -24,6 +62,8 @@ export const DistributionView = ({ data }: DistributionViewProps) => {
     const handleLocationClick = (location: DistributionLocation | null) => {
         console.log('Location clicked:', location)
         setSelectedLocation(location)
+        // Update URL parameter silently
+        updateLocationParam(router, location?.id || null)
     }
 
     return (
@@ -61,8 +101,8 @@ export const DistributionView = ({ data }: DistributionViewProps) => {
                             }
                         }}
                     >
-                        <span id="title-first">{data?.distributionPage?.title?.textFirst}</span>
-                        <span id="title-second" className="first">{data?.distributionPage?.title?.textSecond}</span>
+                        <h1 id="title-first">{data?.distributionPage?.title?.textFirst}</h1>
+                        <h1 id="title-second" className="first">{data?.distributionPage?.title?.textSecond}</h1>
                     </AnimatedGrid>
                 </StyledTitleContainer>
             </StyledContent>
@@ -71,7 +111,12 @@ export const DistributionView = ({ data }: DistributionViewProps) => {
                 onLocationClick={handleLocationClick}
                 selectedLocation={selectedLocation}
             />
-            <CountryPanel onFilterChange={handleFilterChange} onLocationClick={handleLocationClick} selectedLocation={selectedLocation} />
+            <CountryPanel 
+                activeFilterId={activeFilterId}
+                onFilterChange={handleFilterChange} 
+                onLocationClick={handleLocationClick} 
+                selectedLocation={selectedLocation} 
+            />
         </StyledDistributionView>
     )
 }
@@ -88,6 +133,8 @@ const StyledContent = styled.div`
     width: 100%;
     position: relative;
     z-index: 4;
+    user-select: none;
+    pointer-events: none;
 
     ${media.xsm`
         padding: ${rm(100)} ${rm(16)};

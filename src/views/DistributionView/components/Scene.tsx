@@ -4,13 +4,15 @@ import { Atmosphere } from "./Atmosphere"
 import { Composition } from "./Composition"
 import { Environment, PerspectiveCamera } from "@react-three/drei"
 import { Location as DistributionLocation } from "../data/distributionData"
-import { useSceneManager } from "@/hooks/useSceneManager"
 import { SceneSkeleton } from "@/components/Skeleton/SceneSkeleton"
-import { Suspense, useEffect } from "react"
+import { Suspense } from "react"
+import { useLazyScene } from "@/hooks/useLazyScene"
+import { SceneReadyDetector } from "./SceneReadyDetector"
+import { media } from "@/styles"
 
 interface DistributionSceneProps {
     activeFilterId?: string
-    onLocationClick?: (location: DistributionLocation) => void
+    onLocationClick?: (location: DistributionLocation | null) => void
     selectedLocation?: DistributionLocation | null
 }
 
@@ -21,49 +23,43 @@ const scenePosition: [number, number, number] = [-2.1, -1.5, -1]
 const atmospherePosition: [number, number, number] = [-2.35, -1.5, -1]
 
 export const DistributionScene = ({ activeFilterId = 'all', onLocationClick, selectedLocation }: DistributionSceneProps) => {
-    const sceneManager = useSceneManager({
+    const lazyScene = useLazyScene('distribution', {
         threshold: 0.1,
-        rootMargin: '100px',
-        renderDelay: 150,
-        minLoadingTime: 750
+        rootMargin: '100px'
     })
 
-    // Mark scene as ready after initial load
-    useEffect(() => {
-        if (sceneManager.shouldRender) {
-            const timer = setTimeout(() => {
-                sceneManager.setSceneReady()
-            }, 500)
-            return () => clearTimeout(timer)
-        }
-    }, [sceneManager.shouldRender, sceneManager])
-
     return (
-        <StyledContainer ref={sceneManager.containerRef}>
-            <SceneSkeleton isLoading={sceneManager.isLoading} className="distribution-scene-skeleton" />
-            <StyledScene frameloop={sceneManager.isInView ? "always" : "demand"}>
-                <Suspense fallback={null}>
-                    <ambientLight intensity={1} color={0xFFE6AA} />
-                    <Environment
-                        files="/models/hdr/sky.hdr"
-                        environmentIntensity={1}
-                    />
-                    <directionalLight position={[0, 10, 0]} intensity={1}/> 
-                    {/* <pointLight position={[-2, 0, 5]} intensity={1} decay={1.8}/> */}
-                    <PerspectiveCamera makeDefault position={[0, 0, 8]} fov={40}/>
-                    <Atmosphere scale={6.3} position={atmospherePosition} />
-                    <Composition 
-                        scale={0.37} 
-                        position={scenePosition} 
-                        rotationXSpeed={rotationXSpeed} 
-                        rotationZSpeed={rotationZSpeed}
-                        activeFilterId={activeFilterId}
-                        //@ts-expect-error
-                        onLocationClick={onLocationClick}
-                        selectedLocation={selectedLocation}
-                    />
-                </Suspense>
-            </StyledScene>
+        <StyledContainer ref={lazyScene.containerRef}>
+            <SceneSkeleton 
+                isLoading={lazyScene.isLoading} 
+                progress={lazyScene.progress} 
+                className="distribution-scene-skeleton" 
+                position="left"
+            />
+            {lazyScene.shouldLoad && (
+                <StyledScene frameloop={lazyScene.isInView ? "always" : "demand"}>
+                    <Suspense fallback={null}>
+                        <SceneReadyDetector sceneType="distribution" />
+                        <ambientLight intensity={1} color={0xFFE6AA} />
+                        <Environment
+                            files="/models/hdr/sky.hdr"
+                            environmentIntensity={1}
+                        />
+                        <directionalLight position={[0, 10, 0]} intensity={1}/> 
+                        <PerspectiveCamera makeDefault position={[0, 0, 8]} fov={40}/>
+                        <Atmosphere scale={6.3} position={atmospherePosition} />
+                        <Composition 
+                            scale={0.37} 
+                            position={scenePosition} 
+                            rotationXSpeed={rotationXSpeed} 
+                            rotationZSpeed={rotationZSpeed}
+                            activeFilterId={activeFilterId}
+                            onLocationClick={onLocationClick}
+                            selectedLocation={selectedLocation}
+                        />
+                    </Suspense>
+                </StyledScene>
+            )}
         </StyledContainer>
     )
 }
@@ -75,6 +71,7 @@ const StyledContainer = styled.div`
     top: 0;
     left: 0;
     background-color: black;
+    overflow: hidden;
 
     .distribution-scene-skeleton {
         background: black;
@@ -112,10 +109,15 @@ const StyledContainer = styled.div`
 `
 
 const StyledScene = styled(Canvas)`
-    width: 100%;
-    height: 100%;
+    width: calc(100% + 50rem) !important;
+    height: calc(100% + 10rem) !important;
+    transform: translate(-50rem, 0rem) !important;
     position: absolute !important;
     top: 0;
     left: 0;
     z-index: 1;
+
+    ${media.xsm`
+        left: 25rem
+    `}
 `

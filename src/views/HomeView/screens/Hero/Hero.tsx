@@ -30,7 +30,7 @@ export const Hero = ({ heroData }: HeroProps) => {
             )}
             <StyledContent>
                 <div className="left">
-                    <AnimatedText className="description">{heroData?.description}</AnimatedText>
+                    <AnimatedText className="description" tag="h2">{heroData?.description}</AnimatedText>
                     <div className="divider" />
                     <StyledTitleContainer>
                         <AnimatedGrid
@@ -64,8 +64,8 @@ export const Hero = ({ heroData }: HeroProps) => {
                                 }
                             }}
                         >
-                            <span id="title-first" className="first">{heroData?.title?.textFirst}</span>
-                            <span id="title-second" className="second">{heroData?.title?.textSecond}</span>
+                            <h1 id="title-first" className="first">{heroData?.title?.textFirst}</h1>
+                            <h1 id="title-second" className="second">{heroData?.title?.textSecond}</h1>
                         </AnimatedGrid>
                     </StyledTitleContainer>
                 </div>

@@ -47,8 +47,8 @@ export const Package = ({ data, productsCountText, exploreText }: PackageProps) 
                 <StyledRight>
                     <StyledInfo>
                         <div className="left">
-                            <AnimatedText className="title">{data?.title}</AnimatedText>
-                            <StyledSubtitle>{data?.previewDescription}</StyledSubtitle>
+                            <AnimatedText className="title" tag="h2">{data?.title}</AnimatedText>
+                            <StyledSubtitle tag="p">{data?.previewDescription}</StyledSubtitle>
                         </div>
                         <StyledExploreButton>
                             <UnderlineLink lineColor={colors.blue} href={`/packages/${data?.slug}`} text={exploreText}/>
