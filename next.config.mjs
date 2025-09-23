@@ -13,50 +13,13 @@ const nextConfig = {
         },
       },
     },
-    optimizeCss: true,
-    optimizeServerReact: true,
   },
   compiler: {
     styledComponents: true,
-    removeConsole: process.env.NODE_ENV === 'production',
   },
-  // Performance optimizations
+  // Basic performance optimizations
   compress: true,
   poweredByHeader: false,
-  reactStrictMode: true,
-  
-  // Simplified headers for better performance
-  async headers() {
-    return [
-      {
-        source: '/fonts/:path*',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=31536000, immutable',
-          },
-        ],
-      },
-      {
-        source: '/models/:path*',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=31536000, immutable',
-          },
-        ],
-      },
-      {
-        source: '/cesium/:path*',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=31536000, immutable',
-          },
-        ],
-      },
-    ];
-  },
 
   images: {
     formats: ['image/avif', 'image/webp'],
