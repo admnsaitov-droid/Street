@@ -29,16 +29,28 @@ interface SkeletonImageProps extends ImageProps {
 export const SkeletonImage = ({
     wrapperClassName,
     delay = 300,
+    priority = false,
+    loading = "lazy",
     ...props
 }: SkeletonImageProps) => {
     const [loaded, setLoaded] = useState(false)
     const cachedSrc = useRef(props.src)
+    const timeoutRef = useRef<NodeJS.Timeout>()
+    
     useEffect(() => {
         if (cachedSrc.current !== props.src) {
             setLoaded(false)
             cachedSrc.current = props.src
         }
     }, [props.src])
+
+    useEffect(() => {
+        return () => {
+            if (timeoutRef.current) {
+                clearTimeout(timeoutRef.current)
+            }
+        }
+    }, [])
 
     return (
         <StyledSkeletonImage
@@ -47,10 +59,17 @@ export const SkeletonImage = ({
             <Handle>{!loaded && <SkeletonLoader />}</Handle>
             <Image
                 {...props}
+                priority={priority}
+                loading={loading}
+                placeholder="blur"
+                blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
                 onLoad={() => {
-                    setTimeout(() => {
+                    timeoutRef.current = setTimeout(() => {
                         setLoaded(true)
                     }, delay)
+                }}
+                onError={() => {
+                    setLoaded(true) // Show image even if it fails to load
                 }}
             />
         </StyledSkeletonImage>
