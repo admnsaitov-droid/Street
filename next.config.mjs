@@ -13,19 +13,23 @@ const nextConfig = {
         },
       },
     },
+    optimizeCss: true,
+    optimizeServerReact: true,
   },
   compiler: {
     styledComponents: true,
+    removeConsole: process.env.NODE_ENV === 'production',
   },
   // Performance optimizations
   compress: true,
   poweredByHeader: false,
+  reactStrictMode: true,
   
-  // Headers for better caching
+  // Simplified headers for better performance
   async headers() {
     return [
       {
-        source: '/fonts/(.*)',
+        source: '/fonts/:path*',
         headers: [
           {
             key: 'Cache-Control',
@@ -34,7 +38,7 @@ const nextConfig = {
         ],
       },
       {
-        source: '/models/(.*)',
+        source: '/models/:path*',
         headers: [
           {
             key: 'Cache-Control',
@@ -43,38 +47,11 @@ const nextConfig = {
         ],
       },
       {
-        source: '/textures/(.*)',
+        source: '/cesium/:path*',
         headers: [
           {
             key: 'Cache-Control',
             value: 'public, max-age=31536000, immutable',
-          },
-        ],
-      },
-      {
-        source: '/cesium/(.*)',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=31536000, immutable',
-          },
-        ],
-      },
-      {
-        source: '/(.*)\\.(js|css|woff|woff2|ttf|eot)',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=31536000, immutable',
-          },
-        ],
-      },
-      {
-        source: '/(.*)\\.(png|jpg|jpeg|gif|svg|ico|webp|avif)',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=2592000, stale-while-revalidate=86400',
           },
         ],
       },
