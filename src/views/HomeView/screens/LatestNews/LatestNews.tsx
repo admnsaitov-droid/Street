@@ -96,6 +96,7 @@ export const LatestNews = ({ latestNewsData }: LatestNewsProps) => {
                 <StyledTitleContainer>
                     <h2>
                         <AnimatedGrid
+                            tag="span"
                             type="words"
                             animation={{
                                 from: { opacity: 0, y: '40px' },

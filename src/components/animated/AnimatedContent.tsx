@@ -37,14 +37,22 @@ interface AnimatedGridProps {
   gap?: { horizontal?: string; vertical?: string };
   overflow?: boolean;
   elementAppearanceView?: boolean;
+  tag?: keyof JSX.IntrinsicElements;
 }
 
-const MainContainer = styled.div`
+const MainContainer = styled.div<{ $isSpan?: boolean }>`
   width: 100%;
   box-sizing: border-box;
+  display: ${props => props.$isSpan ? 'inline-block' : 'block'};
 `;
 
-const MeasureContainer = styled.div<{ $gapH: string; $gapV: string }>`
+const MainContainerSpan = styled.span<{ $isSpan?: boolean }>`
+  width: 100%;
+  box-sizing: border-box;
+  display: inline-block;
+`;
+
+const MeasureContainer = styled.div<{ $gapH: string; $gapV: string; $isSpan?: boolean }>`
   box-sizing: border-box;
   display: flex;
   flex-wrap: wrap;
@@ -60,7 +68,39 @@ const MeasureContainer = styled.div<{ $gapH: string; $gapV: string }>`
   height: 0;
 `;
 
-const GridRow = styled.div<{ $debug?: boolean; $gapH: string; $gapV: string }>`
+const MeasureContainerSpan = styled.span<{ $gapH: string; $gapV: string; $isSpan?: boolean }>`
+  box-sizing: border-box;
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  gap: ${(p) => p.$gapV} ${(p) => p.$gapH};
+  align-items: flex-start;
+  visibility: hidden;
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: -1;
+  height: 0;
+`;
+
+const GridRow = styled.div<{ $debug?: boolean; $gapH: string; $gapV: string; $isSpan?: boolean }>`
+  display: flex;
+  flex-wrap: nowrap;
+  width: 100%;
+  gap: ${(p) => p.$gapV} ${(p) => p.$gapH};
+  align-items: flex-start;
+  position: relative;
+  ${(p) =>
+    p.$debug &&
+    `
+    border: 2px solid rgba(0,255,0,0.5);
+    background: rgba(0,255,0,0.1);
+    padding: 0.25em;
+  `}
+`;
+
+const GridRowSpan = styled.span<{ $debug?: boolean; $gapH: string; $gapV: string; $isSpan?: boolean }>`
   display: flex;
   flex-wrap: nowrap;
   width: 100%;
@@ -83,6 +123,13 @@ const WordContainer = styled.div`
   white-space: nowrap;
 `;
 
+const WordContainerSpan = styled.span`
+  display: inline-flex;
+  position: relative;
+  flex-shrink: 0;
+  white-space: nowrap;
+`;
+
 const WordInnerContainer = styled.div<{ $overflow?: string }>`
   display: inline-flex;
   overflow: ${(p) => p.$overflow || "hidden"};
@@ -91,7 +138,21 @@ const WordInnerContainer = styled.div<{ $overflow?: string }>`
   white-space: nowrap;
 `;
 
+const WordInnerContainerSpan = styled.span<{ $overflow?: string }>`
+  display: inline-flex;
+  overflow: ${(p) => p.$overflow || "hidden"};
+  position: relative;
+  flex-shrink: 0;
+  white-space: nowrap;
+`;
+
 const AnimatedContent = styled(animated.div)`
+  display: inline-block;
+  white-space: nowrap;
+  position: relative;
+`;
+
+const AnimatedContentSpan = styled(animated.span)`
   display: inline-block;
   white-space: nowrap;
   position: relative;
@@ -116,6 +177,7 @@ const AnimatedGrid: React.FC<AnimatedGridProps> = ({
   animationElement,
   gap = { horizontal: "0.5em", vertical: "0.25em" },
   elementAppearanceView,
+  tag = "div",
 }) => {
   const [ref, inViewInternal] = useInView({ once, amount: 0.3 });
   const inView = typeof elementAppearanceView === "boolean" ? elementAppearanceView : inViewInternal;
@@ -138,17 +200,22 @@ const AnimatedGrid: React.FC<AnimatedGridProps> = ({
       elementId?: string
     ) => {
       if (elementId) elementIdMap[index] = elementId;
+      
+      const WordContainerComponent = tag === "span" ? WordContainerSpan : WordContainer;
+      const WordInnerContainerComponent = tag === "span" ? WordInnerContainerSpan : WordInnerContainer;
+      const AnimatedContentComponent = tag === "span" ? AnimatedContentSpan : AnimatedContent;
+      
       return (
-        <WordContainer
+        <WordContainerComponent
           key={`${isAnimated ? "animated" : "measure"}-${index}`}
           style={config.style}
           className={config.className}
           data-element-id={elementId}
         >
-          <WordInnerContainer className={containerWrapperWordClassName}>
-            {isAnimated ? <AnimatedContent>{content}</AnimatedContent> : content}
-          </WordInnerContainer>
-        </WordContainer>
+          <WordInnerContainerComponent className={containerWrapperWordClassName}>
+            {isAnimated ? <AnimatedContentComponent>{content}</AnimatedContentComponent> : content}
+          </WordInnerContainerComponent>
+        </WordContainerComponent>
       );
     };
 
@@ -182,8 +249,9 @@ const processNode = (node: React.ReactNode): React.ReactNode[] => {
     };
   
     if (React.isValidElement(node) && node.type === "br") {
+      const BrWrapper = tag === "span" ? "span" : "div";
       return [
-        <div
+        <BrWrapper
           key={`br-${Math.random()}`}
           data-br
           style={{ width: "100%", display: "block", height: 0, padding: 0, margin: 0 }}
@@ -255,15 +323,18 @@ const processNode = (node: React.ReactNode): React.ReactNode[] => {
 
   const animatedRows = useMemo(() => {
     if (elementRows.length === 0) return [];
-    return elementRows.map((rowElementIndices, rowIndex) => (
-      <GridRow
-        key={`row-${rowIndex}`}
-        $debug={debug}
-        $gapH={gap.horizontal || "0.5em"}
-        $gapV={gap.vertical || "0.25em"}
-        className={rowClassName}
-        style={styleRow}
-      >
+    return elementRows.map((rowElementIndices, rowIndex) => {
+      const GridRowComponent = tag === "span" ? GridRowSpan : GridRow;
+      return (
+        <GridRowComponent
+          key={`row-${rowIndex}`}
+          $debug={debug}
+          $gapH={gap.horizontal || "0.5em"}
+          $gapV={gap.vertical || "0.25em"}
+          $isSpan={tag === "span"}
+          className={rowClassName}
+          style={styleRow}
+        >
         {rowElementIndices.map((elementIndex) => {
           const element = animatedElements.elements[elementIndex];
           const elementId = animatedElements.elementIdMap[elementIndex];
@@ -276,14 +347,16 @@ const processNode = (node: React.ReactNode): React.ReactNode[] => {
             config?.animation?.delayStep ??
             (type === "rows" ? rowIndex * (animation.delayStep || 0) : elementIndex * (animation.delayStep || 0));
 
+          const WrapperElement = tag === "span" ? "span" : "div";
           return (
-            <div key={`row-${rowIndex}-element-${elementIndex}-wrapper`}
+            <WrapperElement key={`row-${rowIndex}-element-${elementIndex}-wrapper`}
                 style={{
                   overflow: overflow ? 'hidden' : 'visible',
                 }}
             >
             <Spring
               key={`row-${rowIndex}-element-${elementIndex}-wrapper`}
+              tag={tag === "span" ? "span" : "div"}
               from={wrapperAnimation.from}
               to={wrapperAnimation.to}
               config={wrapperAnimation.config}
@@ -293,6 +366,7 @@ const processNode = (node: React.ReactNode): React.ReactNode[] => {
               immediateOut={true}
             >
               <Spring
+                tag={tag === "span" ? "span" : "div"}
                 from={elementAnimation?.from}
                 to={elementAnimation?.to}
                 config={elementAnimation?.config}
@@ -304,12 +378,13 @@ const processNode = (node: React.ReactNode): React.ReactNode[] => {
                 {element}
               </Spring>
             </Spring>
-          </div>
+          </WrapperElement>
           );
         })}
-      </GridRow>
-    ));
-  }, [elementRows, animatedElements, animation, animationElement, cellConfigs, inView, once, debug, type, gap]);
+        </GridRowComponent>
+      );
+    });
+  }, [elementRows, animatedElements, animation, animationElement, cellConfigs, inView, once, debug, type, gap, tag]);
 
   useEffect(() => {
     if (!measureRef.current || !containerRef.current) return;
@@ -330,6 +405,24 @@ const processNode = (node: React.ReactNode): React.ReactNode[] => {
     return () => observer.disconnect();
   }, [rawElements.length, children, gap.horizontal, gap.vertical]);
 
+  if (tag === "span") {
+    return (
+      <span ref={ref} style={{ position: "relative", width: "100%", boxSizing: "border-box" }}>
+        <MainContainerSpan
+          ref={containerRef}
+          className={containerClassName}
+          style={{ ...style, counterReset: debug ? "row-counter" : undefined }}
+          $isSpan={true}
+        >
+          <MeasureContainerSpan className={className} ref={measureRef} $gapH={gap.horizontal || "0.5em"} $gapV={gap.vertical || "0.25em"} $isSpan={true}>
+            {rawElements}
+          </MeasureContainerSpan>
+          {animatedRows}
+        </MainContainerSpan>
+      </span>
+    );
+  }
+  
   return (
     <div ref={ref} style={{ position: "relative", width: "100%", boxSizing: "border-box" }}>
       <MainContainer

@@ -35,6 +35,7 @@ export const Hero = ({ heroData }: HeroProps) => {
                     <StyledTitleContainer>
                         <h1>
                             <AnimatedGrid
+                                tag="span"
                                 type="words"
                                 animation={{
                                     from: { opacity: 0, y: '40px' },
@@ -67,8 +68,8 @@ export const Hero = ({ heroData }: HeroProps) => {
                             >
                                 <span id="title-first" className="first">{heroData?.title?.textFirst}</span>
                                 <span id="title-second" className="second">{heroData?.title?.textSecond}</span>
-                            </AnimatedGrid>
-                        </h1>
+                        </AnimatedGrid>
+                    </h1>
                     </StyledTitleContainer>
                 </div>
                 <AnimatedTranslate className="button">

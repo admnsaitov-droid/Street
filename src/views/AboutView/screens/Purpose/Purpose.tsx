@@ -46,6 +46,7 @@ export const Purpose = ({ data }: PurposeProps) => {
                         <h2>
                             <div className="first-row">
                                 <AnimatedGrid
+                                    tag="span"
                                     type="words"
                                     animation={{
                                         from: { opacity: 0, y: '40px' },
@@ -71,6 +72,7 @@ export const Purpose = ({ data }: PurposeProps) => {
                             </div>
                             <div className="second-row">
                                 <AnimatedGrid
+                                    tag="span"
                                     type="words"
                                     animation={{
                                         from: { opacity: 0, y: '40px' },

@@ -40,6 +40,7 @@ export const ProjectsView = ({ data }: ProjectsViewProps) => {
                 <StyledTitleContainer>
                     <h1>
                         <AnimatedGrid
+                            tag="span"
                             type="words"
                             animation={{
                                 from: { opacity: 0, y: '40px' },

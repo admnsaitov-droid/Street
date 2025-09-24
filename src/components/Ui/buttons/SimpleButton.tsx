@@ -83,8 +83,9 @@ export const SimpleButton = ({ children, link, onClick, className, isSvg, submit
         <AnimLink href={link ? link : ''} onClick={onClick ? onClick : () => {}} className={className}>
             <StyledButton 
                 ref={inViewRef}
-                type={submit ? 'submit' : 'button'} 
-                disabled={disabled}
+                role="button"
+                tabIndex={0}
+                aria-disabled={disabled}
                 onMouseEnter={() => {
                     if(width <= 768) return;
                     setIsHovered(true)
@@ -98,6 +99,14 @@ export const SimpleButton = ({ children, link, onClick, className, isSvg, submit
                     setCurrentCursor({
                         type: 'default',
                     })
+                }}
+                onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        if (onClick && !disabled) {
+                            onClick();
+                        }
+                    }
                 }}
             >
                 <span>{children}</span>
@@ -146,7 +155,7 @@ const StyledFloatingHoverCircle = styled.div`
     }
 `
 
-const StyledButton = styled.button`
+const StyledButton = styled.div`
     background-color: ${colors.blue};
     border-radius: ${rm(6)};
     display: flex;
@@ -165,6 +174,9 @@ const StyledButton = styled.button`
     width: fit-content;
     overflow: hidden;
     z-index: 1;
+    border: none;
+    outline: none;
+    box-sizing: border-box;
 
     ${media.lg`
         font-size: ${rm(16)};
