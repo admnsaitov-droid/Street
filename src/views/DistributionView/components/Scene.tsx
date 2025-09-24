@@ -40,9 +40,9 @@ export const DistributionScene = ({ activeFilterId = 'all', onLocationClick, sel
                 <StyledScene frameloop={lazyScene.isInView ? "always" : "demand"}>
                     <Suspense fallback={null}>
                         <SceneReadyDetector sceneType="distribution" />
-                        <ambientLight intensity={1} color={0xFFE6AA} />
+                        <ambientLight intensity={2} color={0xFFFFFF} />
                         <Environment
-                            files="/models/hdr/sky.hdr"
+                            files="/models/hdr/adams.hdr"
                             environmentIntensity={1}
                         />
                         <directionalLight position={[0, 10, 0]} intensity={1}/> 
