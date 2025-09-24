@@ -74,6 +74,7 @@ export const Overview = ({ data }: OverviewProps) => {
                     <StyledExploreHeaderContainer>
                         <h3>
                             <AnimatedGrid
+                                tag="span"
                                 type="words"
                                 animation={{
                                     from: { opacity: 0, y: '40px' },
@@ -107,8 +108,8 @@ export const Overview = ({ data }: OverviewProps) => {
                             >
                                 <span id="title-first" className="first">Explore</span>
                                 <span id="title-second">the line</span>
-                            </AnimatedGrid>
-                        </h3>
+                        </AnimatedGrid>
+                    </h3>
                     </StyledExploreHeaderContainer>
                     <StyledLines>
                         {linesData.map((line: any, lineIndex: number) => (

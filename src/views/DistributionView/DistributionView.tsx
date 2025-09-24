@@ -3,7 +3,7 @@ import { media, colors, rm } from "@/styles"
 import { fontGolosText, fontSageGrotesk } from "@/styles/fonts"
 import { heightLvh } from "@/styles/utils"
 import styled from "styled-components"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { DynamicDistributionScene as DistributionScene } from "./components/DynamicScene"
 import AnimatedGrid from "@/components/animated/AnimatedContent"
@@ -36,24 +36,38 @@ export const DistributionView = ({ data }: DistributionViewProps) => {
     const searchParams = useSearchParams()
     const [activeFilterId, setActiveFilterId] = useState('all')
     const [selectedLocation, setSelectedLocation] = useState<DistributionLocation | null>(null)
+    const isInternalLocationChange = useRef(false)
 
     // Check URL parameter on mount and set selected location
     useEffect(() => {
+        // Skip if this is an internal location change to prevent rerender conflicts
+        if (isInternalLocationChange.current) {
+            isInternalLocationChange.current = false
+            return
+        }
+        
         const locationParam = searchParams.get('location')
         const locationFromParam = getLocationFromParam(locationParam)
-        if (locationFromParam) {
-            setSelectedLocation(locationFromParam)
-            // Set the appropriate filter based on the location's region
-            const regionFilterMap: { [key: string]: string } = {
-                'Europe': 'europe',
-                'Africa': 'africa', 
-                'America': 'america',
-                'Asia': 'asia'
+        
+        // Only update if the location is actually different
+        if (locationFromParam?.id !== selectedLocation?.id) {
+            if (locationFromParam) {
+                setSelectedLocation(locationFromParam)
+                // Set the appropriate filter based on the location's region
+                const regionFilterMap: { [key: string]: string } = {
+                    'Europe': 'europe',
+                    'Africa': 'africa', 
+                    'America': 'america',
+                    'Asia': 'asia'
+                }
+                const filterId = regionFilterMap[locationFromParam.region] || 'all'
+                setActiveFilterId(filterId)
+            } else if (selectedLocation) {
+                // Only clear if we had a location before
+                setSelectedLocation(null)
             }
-            const filterId = regionFilterMap[locationFromParam.region] || 'all'
-            setActiveFilterId(filterId)
         }
-    }, [searchParams])
+    }, [searchParams, selectedLocation])
 
     const handleFilterChange = (filterId: string) => {
         setActiveFilterId(filterId)
@@ -61,6 +75,8 @@ export const DistributionView = ({ data }: DistributionViewProps) => {
 
     const handleLocationClick = (location: DistributionLocation | null) => {
         console.log('Location clicked:', location)
+        // Mark this as an internal change to prevent useEffect rerender conflicts
+        isInternalLocationChange.current = true
         setSelectedLocation(location)
         // Update URL parameter silently
         updateLocationParam(router, location?.id || null)
@@ -72,6 +88,7 @@ export const DistributionView = ({ data }: DistributionViewProps) => {
                 <StyledTitleContainer>
                     <h1>
                         <AnimatedGrid
+                            tag="span"
                             type="words"
                             animation={{
                                 from: { opacity: 0, y: '40px' },

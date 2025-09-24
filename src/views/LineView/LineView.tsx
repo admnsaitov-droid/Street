@@ -48,6 +48,7 @@ export const LineView = ({ data }: LineViewProps) => {
             <StyledProductsTitleContainer>
                 <h2>
                     <AnimatedGrid
+                        tag="span"
                         type="words"
                         animation={{
                             from: { opacity: 0, y: '40px' },
@@ -81,8 +82,8 @@ export const LineView = ({ data }: LineViewProps) => {
                     >
                         <span id="title-first" className="first">{data?.line?.exploreTitle?.textFirst}</span>
                         <span id="title-second">{data?.line?.exploreTitle?.textSecond}</span>
-                    </AnimatedGrid>
-                </h2>
+                        </AnimatedGrid>
+                    </h2>
             </StyledProductsTitleContainer>
             <StyledProductsGrid>
                 {data?.line?.products?.map((product: any) => (

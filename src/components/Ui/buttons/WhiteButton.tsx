@@ -84,8 +84,9 @@ export const WhiteButton = ({ children, onClick, isSvg, className, link, submit,
             ref={inViewRef}
             onClick={onClick} 
             className={className} 
-            type={submit ? 'submit' : 'button'} 
-            disabled={disabled}
+            role="button"
+            tabIndex={0}
+            aria-disabled={disabled}
             onMouseEnter={() => {
                 if(width <= 768) return;
                 setIsHovered(true)
@@ -99,6 +100,14 @@ export const WhiteButton = ({ children, onClick, isSvg, className, link, submit,
                 setCurrentCursor({
                     type: 'default',
                 })
+            }}
+            onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    if (onClick && !disabled) {
+                        onClick();
+                    }
+                }
             }}
         >
             <span>{children}</span>
@@ -149,7 +158,7 @@ const StyledFloatingHoverCircle = styled.div`
     }
 `
 
-const StyledWhiteButton = styled.button`
+const StyledWhiteButton = styled.div`
     background-color: ${colors.white100};
     border-radius: ${rm(4)};
     display: flex;
@@ -168,6 +177,9 @@ const StyledWhiteButton = styled.button`
     width: fit-content;
     overflow: hidden;
     z-index: 1;
+    border: none;
+    outline: none;
+    box-sizing: border-box;
 
     ${media.lg`
         font-size: ${rm(16)};

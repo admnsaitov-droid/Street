@@ -86,8 +86,9 @@ export const BlueButton = ({ children, onClick, isSvg, className, link, submit, 
             ref={inViewRef}
             onClick={onClick} 
             className={className} 
-            type={submit ? 'submit' : 'button'} 
-            disabled={disabled}
+            role="button"
+            tabIndex={0}
+            aria-disabled={disabled}
             onMouseEnter={() => {
                 if(width <= 768) return;
                 setIsHovered(true)
@@ -101,6 +102,14 @@ export const BlueButton = ({ children, onClick, isSvg, className, link, submit, 
                 setCurrentCursor({
                     type: 'default',
                 })
+            }}
+            onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    if (onClick && !disabled) {
+                        onClick();
+                    }
+                }
             }}
         >
             <span>{children}</span>
@@ -133,7 +142,7 @@ export const BlueButton = ({ children, onClick, isSvg, className, link, submit, 
     )
 }
 
-const StyledBlueButton = styled.button`
+const StyledBlueButton = styled.div`
     background-color: ${colors.blue};
     border-radius: ${rm(4)};
     display: flex;
@@ -152,6 +161,9 @@ const StyledBlueButton = styled.button`
     width: fit-content;
     overflow: hidden;
     z-index: 1;
+    border: none;
+    outline: none;
+    box-sizing: border-box;
 
     ${media.lg`
         font-size: ${rm(16)};
