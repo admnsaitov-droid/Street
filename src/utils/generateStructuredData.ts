@@ -68,6 +68,10 @@ interface ProductData {
   image?: string[]
   brand?: string
   sku?: string
+  category?: string
+  material?: string
+  weight?: string
+  dimensions?: string
   offers?: {
     price?: string
     currency?: string
@@ -169,6 +173,10 @@ export function generateProductSchema(data: ProductData) {
       }
     }),
     ...(data.sku && { "sku": data.sku }),
+    ...(data.category && { "category": data.category }),
+    ...(data.material && { "material": data.material }),
+    ...(data.weight && { "weight": data.weight }),
+    ...(data.dimensions && { "dimensions": data.dimensions }),
     ...(data.offers && {
       "offers": {
         "@type": "Offer",

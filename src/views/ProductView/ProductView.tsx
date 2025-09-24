@@ -5,6 +5,8 @@ import { Hero } from "./components/Hero"
 import { ProductOverview } from "./components/ProductOverview"
 import styled from "styled-components"
 import { SwiperBlock } from "./components/SwiperBlock"
+import { StructuredData } from "@/components/StructuredData/StructuredData"
+import { generateProductSchema } from "@/utils/generateStructuredData"
 
 interface ProductViewProps {
     data: any
@@ -44,8 +46,24 @@ const testColors = [
 export const ProductView = ({ data }: ProductViewProps) => {
     console.log('data', data)
 
+    // Generate Product schema for SEO
+    const productSchema = generateProductSchema({
+        name: data?.product?.name,
+        description: data?.product?.productInfo?.description || data?.product?.productInfo?.descriptionMain,
+        image: data?.product?.swiperMedias?.map((media: any) => media?.url) || [],
+        brand: "Street Barbell",
+        sku: data?.product?.model,
+        category: "Fitness Equipment",
+        material: "Steel",
+        offers: {
+            availability: "https://schema.org/InStock",
+            url: typeof window !== 'undefined' ? window.location.href : ''
+        }
+    })
+
     return (
         <StyledProductView>
+            <StructuredData schemas={[productSchema]} />
             <Hero data={data?.product} colors={testColors} />
             <StyledWrapper>
                 <ProductOverview data={data?.product} />

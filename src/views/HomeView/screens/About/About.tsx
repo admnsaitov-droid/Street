@@ -18,7 +18,7 @@ export const About = ({ aboutData }: AboutProps) => {
             <StyledTopContainer>
                 <AnimatedText className="title" tag="h2">{aboutData?.title}</AnimatedText>
                 <div className="right">
-                    <AnimatedText className="descriptionMain" tag="h3">{aboutData?.description}</AnimatedText>
+                    <AnimatedText className="descriptionMain" tag="p">{aboutData?.description}</AnimatedText>
                     <div className="bottom">
                         <AnimatedText className="descriptionSecondary" tag="p">{aboutData?.descriptionSecondary}</AnimatedText>
                         <BlueButton link={aboutData?.button?.link} isSvg className="button">{aboutData?.button?.text}</BlueButton>

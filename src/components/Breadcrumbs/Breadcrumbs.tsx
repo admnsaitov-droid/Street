@@ -5,6 +5,8 @@ import { colors, media, rm } from "@/styles";
 import { fontGolosText } from "@/styles/fonts";
 import { AnimLink } from "@/layouts/AnimatedRouterLayout/AnimatedRouterLayout";
 import { usePathname } from "next/navigation";
+import { generateBreadcrumbSchema } from "@/utils/generateStructuredData";
+import { StructuredData } from "@/components/StructuredData/StructuredData";
 
 export interface BreadcrumbItem {
   label: string;
@@ -29,24 +31,38 @@ export function Breadcrumbs({ items, className, separator = "·" }: BreadcrumbsP
   const pathname = usePathname();
   const locale = getFirstPathSegment(pathname) || "en";
 
-  return (
-    <StyledBreadcrumbs className={className} aria-label="Breadcrumb">
-      {items.map((item, idx) => {
-        const isLast = idx === items.length - 1;
-        const href = item.href ?? withLocale(locale, item.slug);
+  // Generate BreadcrumbList schema for SEO
+  const breadcrumbSchema = generateBreadcrumbSchema(
+    items.map((item, idx) => {
+      const href = item.href ?? withLocale(locale, item.slug);
+      return {
+        name: item.label,
+        url: href || `/${locale}`
+      };
+    })
+  );
 
-        return (
-          <StyledItem key={`${item.label}-${idx}`}>
-            {isLast ? (
-              <StyledCurrent aria-current="page">{item.label}</StyledCurrent>
-            ) : (
-              <StyledLink href={href}>{item.label}</StyledLink>
-            )}
-            {!isLast && <StyledSeparator aria-hidden>{separator}</StyledSeparator>}
-          </StyledItem>
-        );
-      })}
-    </StyledBreadcrumbs>
+  return (
+    <>
+      <StructuredData schemas={[breadcrumbSchema]} />
+      <StyledBreadcrumbs className={className} aria-label="Breadcrumb">
+        {items.map((item, idx) => {
+          const isLast = idx === items.length - 1;
+          const href = item.href ?? withLocale(locale, item.slug);
+
+          return (
+            <StyledItem key={`${item.label}-${idx}`}>
+              {isLast ? (
+                <StyledCurrent aria-current="page">{item.label}</StyledCurrent>
+              ) : (
+                <StyledLink href={href}>{item.label}</StyledLink>
+              )}
+              {!isLast && <StyledSeparator aria-hidden>{separator}</StyledSeparator>}
+            </StyledItem>
+          );
+        })}
+      </StyledBreadcrumbs>
+    </>
   );
 }
 

@@ -15,51 +15,53 @@ export const Inspiration = ({ data }: InspirationProps) => {
         <StyledInspiration>
             <StyledTopContainer>
                 <StyledAboutTitleContainer>
-                    <AnimatedGrid
-                        type="words"
-                        animation={{
-                            from: { opacity: 0, y: '40px' },
-                            to: { opacity: 1, y: '0px' },
-                            delayStep: 60
-                        }}  
-                        overflow={true}
-                        gap={{ horizontal: '0.25em', vertical: '0.25em' }}
-                        containerStyle={{ overflow: 'hidden' }}
-                        cellConfigs={{
-                            'title-first': {
-                                style: {
-                                    color: colors.black100,
-                                    fontFamily: 'var(--font-golos-text)',
-                                    fontOpticalSizing: 'auto',
-                                    fontWeight: 600,
-                                    fontStyle: 'normal',
+                    <h2>
+                        <AnimatedGrid
+                            type="words"
+                            animation={{
+                                from: { opacity: 0, y: '40px' },
+                                to: { opacity: 1, y: '0px' },
+                                delayStep: 60
+                            }}  
+                            overflow={true}
+                            gap={{ horizontal: '0.25em', vertical: '0.25em' }}
+                            containerStyle={{ overflow: 'hidden' }}
+                            cellConfigs={{
+                                'title-first': {
+                                    style: {
+                                        color: colors.black100,
+                                        fontFamily: 'var(--font-golos-text)',
+                                        fontOpticalSizing: 'auto',
+                                        fontWeight: 600,
+                                        fontStyle: 'normal',
+                                    }
+                                },
+                                'title-second': {
+                                    style: {
+                                        color: colors.red,
+                                        fontFamily: 'var(--font-sage-grotesk)',
+                                        fontOpticalSizing: 'auto',
+                                        fontWeight: 400,
+                                        fontStyle: 'normal',
+                                        lineHeight: '105%',
+                                    }
+                                },
+                                'title-third': {
+                                    style: {
+                                        color: colors.black100,
+                                        fontFamily: 'var(--font-golos-text)',
+                                        fontOpticalSizing: 'auto',
+                                        fontWeight: 600,
+                                        fontStyle: 'normal',
+                                    }
                                 }
-                            },
-                            'title-second': {
-                                style: {
-                                    color: colors.red,
-                                    fontFamily: 'var(--font-sage-grotesk)',
-                                    fontOpticalSizing: 'auto',
-                                    fontWeight: 400,
-                                    fontStyle: 'normal',
-                                    lineHeight: '105%',
-                                }
-                            },
-                            'title-third': {
-                                style: {
-                                    color: colors.black100,
-                                    fontFamily: 'var(--font-golos-text)',
-                                    fontOpticalSizing: 'auto',
-                                    fontWeight: 600,
-                                    fontStyle: 'normal',
-                                }
-                            }
-                        }}
-                    >
-                        <h2 id="title-first">{data?.title?.firstWord}</h2>
-                        <h2 id="title-second" className="first">{data?.title?.secondWord}</h2>
-                        <h2 id="title-third">{data?.title?.thirdWord}</h2>
-                    </AnimatedGrid>
+                            }}
+                        >
+                            <span id="title-first">{data?.title?.firstWord}</span>
+                            <span id="title-second" className="first">{data?.title?.secondWord}</span>
+                            <span id="title-third">{data?.title?.thirdWord}</span>
+                        </AnimatedGrid>
+                    </h2>
                 </StyledAboutTitleContainer>
                 <div className="right">
                     <StyledSubtitle>
@@ -170,6 +172,17 @@ export const StyledAboutTitleContainer = styled.div`
         font-size: ${rm(32)};
         width: 100%;
     `}
+
+    h2 {
+        margin: 0;
+        padding: 0;
+        font-size: inherit;
+        font-weight: inherit;
+        line-height: inherit;
+        color: inherit;
+        text-transform: inherit;
+        font-family: inherit;
+    }
 
     >:nth-child(3){
         margin-top: ${rm(-40)};

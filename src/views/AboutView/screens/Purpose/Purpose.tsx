@@ -43,68 +43,70 @@ export const Purpose = ({ data }: PurposeProps) => {
                 <StyledAnnotation>{data?.blockName}</StyledAnnotation>
                 <StyledRightTop>
                     <StyledPurposeTitleContainer>
-                        <div className="first-row">
-                            <AnimatedGrid
-                                type="words"
-                                animation={{
-                                    from: { opacity: 0, y: '40px' },
-                                    to: { opacity: 1, y: '0px' },
-                                    delayStep: 60
-                                }}
-                                overflow={true}
-                                containerStyle={{ overflow: 'hidden' }}
-                                cellConfigs={{
-                                    'title-first': {
-                                        style: {
-                                            color: colors.black100,
-                                            fontFamily: 'var(--font-golos-text)',
-                                            fontOpticalSizing: 'auto',
-                                            fontWeight: 600,
-                                            fontStyle: 'normal',
+                        <h2>
+                            <div className="first-row">
+                                <AnimatedGrid
+                                    type="words"
+                                    animation={{
+                                        from: { opacity: 0, y: '40px' },
+                                        to: { opacity: 1, y: '0px' },
+                                        delayStep: 60
+                                    }}
+                                    overflow={true}
+                                    containerStyle={{ overflow: 'hidden' }}
+                                    cellConfigs={{
+                                        'title-first': {
+                                            style: {
+                                                color: colors.black100,
+                                                fontFamily: 'var(--font-golos-text)',
+                                                fontOpticalSizing: 'auto',
+                                                fontWeight: 600,
+                                                fontStyle: 'normal',
+                                            }
                                         }
-                                    }
-                                }}
-                            >
-                                <h2 id="title-first">{data?.title?.firstWord}</h2>
-                            </AnimatedGrid>
-                        </div>
-                        <div className="second-row">
-                            <AnimatedGrid
-                                type="words"
-                                animation={{
-                                    from: { opacity: 0, y: '40px' },
-                                    to: { opacity: 1, y: '0px' },
-                                    delayStep: 60
-                                }}
-                                overflow={true}
-                                gap={{ horizontal: '0.25em', vertical: '0.25em' }}
-                                containerStyle={{ overflow: 'hidden' }}
-                                cellConfigs={{
-                                    'title-second': {
-                                        style: {
-                                            color: colors.black100,
-                                            fontFamily: 'var(--font-golos-text)',
-                                            fontOpticalSizing: 'auto',
-                                            fontWeight: 600,
-                                            fontStyle: 'normal',
+                                    }}
+                                >
+                                    <span id="title-first">{data?.title?.firstWord}</span>
+                                </AnimatedGrid>
+                            </div>
+                            <div className="second-row">
+                                <AnimatedGrid
+                                    type="words"
+                                    animation={{
+                                        from: { opacity: 0, y: '40px' },
+                                        to: { opacity: 1, y: '0px' },
+                                        delayStep: 60
+                                    }}
+                                    overflow={true}
+                                    gap={{ horizontal: '0.25em', vertical: '0.25em' }}
+                                    containerStyle={{ overflow: 'hidden' }}
+                                    cellConfigs={{
+                                        'title-second': {
+                                            style: {
+                                                color: colors.black100,
+                                                fontFamily: 'var(--font-golos-text)',
+                                                fontOpticalSizing: 'auto',
+                                                fontWeight: 600,
+                                                fontStyle: 'normal',
+                                            }
+                                        },
+                                        'title-third': {
+                                            style: {
+                                                color: colors.red,
+                                                fontFamily: 'var(--font-sage-grotesk)',
+                                                fontOpticalSizing: 'auto',
+                                                fontWeight: 400,
+                                                fontStyle: 'normal',
+                                                lineHeight: '105%',
+                                            }
                                         }
-                                    },
-                                    'title-third': {
-                                        style: {
-                                            color: colors.red,
-                                            fontFamily: 'var(--font-sage-grotesk)',
-                                            fontOpticalSizing: 'auto',
-                                            fontWeight: 400,
-                                            fontStyle: 'normal',
-                                            lineHeight: '105%',
-                                        }
-                                    }
-                                }}
-                            >
-                                <h2 id="title-second">{data?.title?.secondWord}</h2>
-                                <h2 id="title-third" className="first">{data?.title?.thirdWord}</h2>
-                            </AnimatedGrid>
-                        </div>
+                                    }}
+                                >
+                                    <span id="title-second">{data?.title?.secondWord}</span>
+                                    <span id="title-third" className="first">{data?.title?.thirdWord}</span>
+                                </AnimatedGrid>
+                            </div>
+                        </h2>
                     </StyledPurposeTitleContainer>
                     <div className="bottom">
                         <StyledSubtitle>{data?.description}</StyledSubtitle>
@@ -222,6 +224,17 @@ export const StyledPurposeTitleContainer = styled.div`
         font-size: ${rm(32)};
         width: ${rm(320)};
     `}
+
+    h2 {
+        margin: 0;
+        padding: 0;
+        font-size: inherit;
+        font-weight: inherit;
+        line-height: inherit;
+        color: inherit;
+        text-transform: inherit;
+        font-family: inherit;
+    }
 
     .first-row {
         width: 100%;

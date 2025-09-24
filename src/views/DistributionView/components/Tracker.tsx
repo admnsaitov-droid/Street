@@ -13,33 +13,58 @@ interface TrackerProps {
     name?: string // Display name for the tracker
     isActive?: boolean
     onClick?: () => void
-    fromRotation?: number
-    toRotation?: number
-    currentRotationRef?: MutableRefObject<number>
+    fromRotation?: [number, number, number]
+    toRotation?: [number, number, number]
+    currentRotationRef?: MutableRefObject<{ x: number; y: number; z: number }>
+    cameraRotationRef?: MutableRefObject<{ x: number; y: number; z: number }>
 }
 
-export const Tracker = ({ position, label, name, isActive = false, onClick, fromRotation, toRotation, currentRotationRef }: TrackerProps) => {
+export const Tracker = ({ position, label, name, isActive = false, onClick, fromRotation, toRotation, currentRotationRef, cameraRotationRef }: TrackerProps) => {
     const [isHovered, setIsHovered] = useState(false)
     const [isVisible, setIsVisible] = useState(true)
 
     const width = useWindowWidth()
 
-    // Add rotation-based visibility logic (same as Globe trackers)
+    // Add rotation-based visibility logic for 3D rotation
     useFrame(() => {
-        if (fromRotation !== undefined && toRotation !== undefined && currentRotationRef?.current !== undefined) {
-            // Normalize rotation to 0-2π range
-            const normalizedRotation = ((currentRotationRef.current % (Math.PI * 2)) + (Math.PI * 2)) % (Math.PI * 2)
-            const normalizedFrom = ((fromRotation % (Math.PI * 2)) + (Math.PI * 2)) % (Math.PI * 2)
-            const normalizedTo = ((toRotation % (Math.PI * 2)) + (Math.PI * 2)) % (Math.PI * 2)
+        if (fromRotation !== undefined && toRotation !== undefined && currentRotationRef?.current !== undefined && cameraRotationRef?.current !== undefined) {
+            const planetRotation = currentRotationRef.current
+            const cameraRotation = cameraRotationRef.current
             
-            let visible = false
+            // Combine planet rotation and camera rotation for total effective rotation
+            const totalRotation = {
+                x: planetRotation.x + cameraRotation.x,
+                y: planetRotation.y + cameraRotation.y,
+                z: planetRotation.z + cameraRotation.z
+            }
             
-            if (normalizedFrom <= normalizedTo) {
-                // Normal case: from 1 to 4 radians
-                visible = normalizedRotation >= normalizedFrom && normalizedRotation <= normalizedTo
-            } else {
-                // Wrap-around case: from 5 to 1 radians (crossing 0)
-                visible = normalizedRotation >= normalizedFrom || normalizedRotation <= normalizedTo
+            // Check visibility for X and Y axes only (OrbitControls doesn't affect Z)
+            let visible = true
+            
+            for (let axis = 0; axis < 2; axis++) { // Only check X and Y (0 and 1)
+                const axisNames = ['x', 'y'] as const
+                const axisName = axisNames[axis]
+                
+                // Normalize rotation to 0-2π range
+                const normalizedRotation = ((totalRotation[axisName] % (Math.PI * 2)) + (Math.PI * 2)) % (Math.PI * 2)
+                const normalizedFrom = ((fromRotation[axis] % (Math.PI * 2)) + (Math.PI * 2)) % (Math.PI * 2)
+                const normalizedTo = ((toRotation[axis] % (Math.PI * 2)) + (Math.PI * 2)) % (Math.PI * 2)
+                
+                let axisVisible = false
+                
+                if (normalizedFrom <= normalizedTo) {
+                    // Normal case: from 1 to 4 radians
+                    axisVisible = normalizedRotation >= normalizedFrom && normalizedRotation <= normalizedTo
+                } else {
+                    // Wrap-around case: from 5 to 1 radians (crossing 0)
+                    axisVisible = normalizedRotation >= normalizedFrom || normalizedRotation <= normalizedTo
+                }
+                
+                // If any axis is not visible, the tracker is not visible
+                if (!axisVisible) {
+                    visible = false
+                    break
+                }
             }
             
             setIsVisible(visible)

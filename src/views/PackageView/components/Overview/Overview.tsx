@@ -72,41 +72,43 @@ export const Overview = ({ data }: OverviewProps) => {
             {Array.isArray(linesData) && linesData.length > 0 && (
                 <StyledExplore>
                     <StyledExploreHeaderContainer>
-                        <AnimatedGrid
-                            type="words"
-                            animation={{
-                                from: { opacity: 0, y: '40px' },
-                                to: { opacity: 1, y: '0px' },
-                                delayStep: 60
-                            }}
-                            overflow={true}
-                            gap={{ horizontal: '0.25em', vertical: '0.25em' }}
-                            containerStyle={{ overflow: 'hidden' }}
-                            cellConfigs={{
-                                'title-first': {
-                                    style: {
-                                        color: colors.red,
-                                        fontFamily: 'var(--font-sage-grotesk)',
-                                        fontOpticalSizing: 'auto',
-                                        fontWeight: 400,
-                                        fontStyle: 'normal',
-                                        lineHeight: '105%',
+                        <h3>
+                            <AnimatedGrid
+                                type="words"
+                                animation={{
+                                    from: { opacity: 0, y: '40px' },
+                                    to: { opacity: 1, y: '0px' },
+                                    delayStep: 60
+                                }}
+                                overflow={true}
+                                gap={{ horizontal: '0.25em', vertical: '0.25em' }}
+                                containerStyle={{ overflow: 'hidden' }}
+                                cellConfigs={{
+                                    'title-first': {
+                                        style: {
+                                            color: colors.red,
+                                            fontFamily: 'var(--font-sage-grotesk)',
+                                            fontOpticalSizing: 'auto',
+                                            fontWeight: 400,
+                                            fontStyle: 'normal',
+                                            lineHeight: '105%',
+                                        }
+                                    },
+                                    'title-second': {
+                                        style: {
+                                            color: colors.black100,
+                                            fontFamily: 'var(--font-golos-text)',
+                                            fontOpticalSizing: 'auto',
+                                            fontWeight: 600,
+                                            fontStyle: 'normal',
+                                        }
                                     }
-                                },
-                                'title-second': {
-                                    style: {
-                                        color: colors.black100,
-                                        fontFamily: 'var(--font-golos-text)',
-                                        fontOpticalSizing: 'auto',
-                                        fontWeight: 600,
-                                        fontStyle: 'normal',
-                                    }
-                                }
-                            }}
-                        >
-                            <h3 id="title-first" className="first">Explore</h3>
-                            <h3 id="title-second">the line</h3>
-                        </AnimatedGrid>
+                                }}
+                            >
+                                <span id="title-first" className="first">Explore</span>
+                                <span id="title-second">the line</span>
+                            </AnimatedGrid>
+                        </h3>
                     </StyledExploreHeaderContainer>
                     <StyledLines>
                         {linesData.map((line: any, lineIndex: number) => (
@@ -319,6 +321,17 @@ const StyledExploreHeaderContainer = styled.div`
     ${media.xsm`
         font-size: ${rm(32)};
     `}
+
+    h3 {
+        margin: 0;
+        padding: 0;
+        font-size: inherit;
+        font-weight: inherit;
+        line-height: inherit;
+        color: inherit;
+        text-transform: inherit;
+        font-family: inherit;
+    }
 `
 
 
