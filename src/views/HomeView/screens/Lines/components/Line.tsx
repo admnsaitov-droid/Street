@@ -85,7 +85,7 @@ export const Line = forwardRef<HTMLDivElement, LineProps>(({ line, index, onMous
             onMouseLeave={handleLeave} 
             data-line-index={index}
         >
-            <StyledHiddenLink href={`/lines/${line.slug}`}></StyledHiddenLink>
+            <StyledHiddenLink href={`/lines/${line.slug}`} aria-label={`View ${line.name} line details`}></StyledHiddenLink>
             <StyledType>
                 <div className="square"></div>
                 <div className="text">

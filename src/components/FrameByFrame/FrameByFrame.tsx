@@ -121,7 +121,7 @@ const FrameByFrame = memo(forwardRef(function FrameByFrame({
             rq = requestAnimationFrame(render)
         })
         return () => cancelAnimationFrame(rq)
-    }, [mode, frames, readyToLoad, onDraw, onRender])
+    }, [mode, frames, readyToLoad, onDraw, onRender, autoplaySpeed, count])
 
     useEffect(() => {
         if (strategy === 'load') {
@@ -132,7 +132,7 @@ const FrameByFrame = memo(forwardRef(function FrameByFrame({
             setReadyToLoad(true)
             return
         }
-    }, [strategy, inView])
+    }, [strategy, inView, readyToLoad])
 
     if (tag === 'div') {
         return (

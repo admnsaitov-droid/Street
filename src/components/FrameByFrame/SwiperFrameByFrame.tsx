@@ -122,7 +122,7 @@ const SwiperFrameByFrame = memo(forwardRef(function SwiperFrameByFrame({
             setReadyToLoad(true)
             return
         }
-    }, [strategy, inView])
+    }, [strategy, inView, readyToLoad])
 
     // Check scroll position and set initial slide
     useEffect(() => {

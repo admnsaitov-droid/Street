@@ -75,7 +75,6 @@ export const AnimatedRouterLayout: NextPage<{ children: any }> = ({
       window.removeEventListener("popstate", handleRouteChange);
     };
     }, [pathname, searchParams, isMounted]);
-  // }, [isMounted]);
 
   // Saves all the time, but could be desibled and then will be saved only on route
   useEffect(() => {

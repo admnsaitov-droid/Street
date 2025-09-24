@@ -65,7 +65,7 @@ export const Product = ({ product, index, onMouseEnter, onMouseLeave }: ProductP
 
     return (
         <StyledProduct onMouseEnter={handleEnter} onMouseLeave={handleLeave} ref={ref}>
-            <StyledHiddenLink href={`/products/${product.slug}`} />
+            <StyledHiddenLink href={`/products/${product.slug}`} aria-label={`View ${product.name} product details`} />
             <StyledTopContainer>
                 <div className="left">
                     <StyledModel as="p">{product?.model}</StyledModel>
