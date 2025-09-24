@@ -141,70 +141,72 @@ export const Packages = ({ packagesData }: PackagesProps) => {
             />
             <StyledStickyContainer>
                 <StyledContentLayout>
-                    <div className="left">
-                        <StyledTopBar>
-                            <h2 className="title">
-                                {packagesData?.title}
-                            </h2>
-                            <div className="sizes">
-                                {sizes.map((size: string, index: number) => (
-                                    <>
-                                        <StyledSizeContainer key={index} isActive={size === activeSize}>
-                                            <p className="text">{size}</p>
-                                            <div className="underline" id={`underline-${index}`}/>
-                                        </StyledSizeContainer>
-                                        {
-                                            index !== sizes.length - 1 && (
-                                                <div className="square"/>
-                                            )
-                                        }
-                                    </>
-                                ))}
-                            </div>
-                        </StyledTopBar>
-                        <StyledMidContent>
-                            <div className="title-container">
-                                {titleTransitions((style, item) => 
-                                    item && (
-                                        <animated.h3 className="title" style={style}>
-                                            {item}
-                                        </animated.h3>
-                                    )
-                                )}
-                            </div>
-                            <div className="description-container">
-                                {descriptionTransitions((style, item) => 
-                                    item && (
-                                        <animated.p className="description" style={style}>
-                                            {item}
-                                        </animated.p>
-                                    )
-                                )}
-                            </div>
-                        </StyledMidContent>
-                        <WhiteButton className="button" link={activePackage?.button?.link} isSvg={true}>
-                            {activePackage?.button?.text}
-                        </WhiteButton>
-                    </div>
-                    <div className="right">
-                        {/* First package image */}
-                        {packagesData?.packages?.[0]?.media && (
-                            <div style={{width: '100%', height: '100%', position: 'absolute', top: 0, left: 0}} ref={firstImageRef}>
-                                <MediaComponent media={packagesData.packages[0].media} className="image" parallax={width > 576} isExtendable={false} />
-                            </div>
-                        )}
-                        {/* Second package image */}
-                        {packagesData?.packages?.[1]?.media && (
-                            <div style={{width: '100%', height: '100%', position: 'absolute', top: 0, left: 0}} ref={secondImageRef}>
-                                <MediaComponent media={packagesData.packages[1].media} className="image" parallax={width > 576} isExtendable={false} />
-                            </div>
-                        )}
-                        {/* Third package image */}
-                        {packagesData?.packages?.[2]?.media && (
-                            <div style={{width: '100%', height: '100%', position: 'absolute', top: 0, left: 0}} ref={thirdImageRef}>
-                                <MediaComponent media={packagesData.packages[2].media} className="image" parallax={width > 576} isExtendable={false} />
-                            </div>
-                        )}
+                    <div className="wrapper">
+                        <div className="left">
+                            <StyledTopBar>
+                                <h2 className="title">
+                                    {packagesData?.title}
+                                </h2>
+                                <div className="sizes">
+                                    {sizes.map((size: string, index: number) => (
+                                        <>
+                                            <StyledSizeContainer key={index} isActive={size === activeSize}>
+                                                <p className="text">{size}</p>
+                                                <div className="underline" id={`underline-${index}`}/>
+                                            </StyledSizeContainer>
+                                            {
+                                                index !== sizes.length - 1 && (
+                                                    <div className="square"/>
+                                                )
+                                            }
+                                        </>
+                                    ))}
+                                </div>
+                            </StyledTopBar>
+                            <StyledMidContent>
+                                <div className="title-container">
+                                    {titleTransitions((style, item) => 
+                                        item && (
+                                            <animated.h3 className="title" style={style}>
+                                                {item}
+                                            </animated.h3>
+                                        )
+                                    )}
+                                </div>
+                                <div className="description-container">
+                                    {descriptionTransitions((style, item) => 
+                                        item && (
+                                            <animated.p className="description" style={style}>
+                                                {item}
+                                            </animated.p>
+                                        )
+                                    )}
+                                </div>
+                            </StyledMidContent>
+                            <WhiteButton className="button" link={activePackage?.button?.link} isSvg={true}>
+                                {activePackage?.button?.text}
+                            </WhiteButton>
+                        </div>
+                        <div className="right">
+                            {/* First package image */}
+                            {packagesData?.packages?.[0]?.media && (
+                                <div style={{width: '100%', height: '100%', position: 'absolute', top: 0, left: 0}} ref={firstImageRef}>
+                                    <MediaComponent media={packagesData.packages[0].media} className="image" parallax={width > 576} isExtendable={false} />
+                                </div>
+                            )}
+                            {/* Second package image */}
+                            {packagesData?.packages?.[1]?.media && (
+                                <div style={{width: '100%', height: '100%', position: 'absolute', top: 0, left: 0}} ref={secondImageRef}>
+                                    <MediaComponent media={packagesData.packages[1].media} className="image" parallax={width > 576} isExtendable={false} />
+                                </div>
+                            )}
+                            {/* Third package image */}
+                            {packagesData?.packages?.[2]?.media && (
+                                <div style={{width: '100%', height: '100%', position: 'absolute', top: 0, left: 0}} ref={thirdImageRef}>
+                                    <MediaComponent media={packagesData.packages[2].media} className="image" parallax={width > 576} isExtendable={false} />
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </StyledContentLayout>
             </StyledStickyContainer>
@@ -248,12 +250,20 @@ const StyledStickyContainer = styled.div`
 
 const StyledContentLayout = styled.div`
     // height: auto;
-    height: 80%;
+    height: 100%;
     width: 100%;
     position: relative;
     display: flex;
-    border-radius: ${rm(10)};
-    overflow: hidden;
+    padding: ${rm(100)} 0 ${rm(50)} 0;
+
+    .wrapper{
+        width: 100%;
+        height: 100%;
+        position: relative;
+        display: flex;
+        border-radius: ${rm(10)};
+        overflow: hidden;
+    }
 
     ${media.md`
         flex-direction: column;
