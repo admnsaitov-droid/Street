@@ -82,10 +82,7 @@ export const SimpleButton = ({ children, link, onClick, className, isSvg, submit
     return (
         <StyledButton 
             ref={inViewRef}
-            onClick={onClick}
             className={className}
-            type={submit ? 'submit' : 'button'} 
-            disabled={disabled}
             onMouseEnter={() => {
                 if(width <= 768) return;
                 setIsHovered(true)
@@ -100,17 +97,16 @@ export const SimpleButton = ({ children, link, onClick, className, isSvg, submit
                     type: 'default',
                 })
             }}
-            onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    if (onClick && !disabled) {
-                        onClick();
-                    }
-                }
-            }}
         >
             {link && (
                 <StyledHiddenLink href={link}/>
+            )}
+            {!link && (
+                <StyledHiddenButton 
+                    onClick={onClick}
+                    type={submit ? 'submit' : 'button'}
+                    disabled={disabled}
+                />
             )}
             <span>{children}</span>
             {isSvg && (
@@ -157,7 +153,7 @@ const StyledFloatingHoverCircle = styled.div`
     }
 `
 
-const StyledButton = styled.button`
+const StyledButton = styled.div`
     background-color: ${colors.blue};
     border-radius: ${rm(6)};
     display: flex;
@@ -213,4 +209,17 @@ const StyledHiddenLink = styled(AnimLink)`
     width: 100%;
     height: 100%;
     z-index: 10;
+`
+
+const StyledHiddenButton = styled.button`
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    outline: none;
 `

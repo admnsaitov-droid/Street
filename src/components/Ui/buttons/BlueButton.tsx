@@ -84,10 +84,7 @@ export const BlueButton = ({ children, onClick, isSvg, className, link, submit, 
     return (
         <StyledBlueButton 
             ref={inViewRef}
-            onClick={onClick} 
-            className={className} 
-            type={submit ? 'submit' : 'button'} 
-            disabled={disabled}
+            className={className}
             onMouseEnter={() => {
                 if(width <= 768) return;
                 setIsHovered(true)
@@ -106,6 +103,13 @@ export const BlueButton = ({ children, onClick, isSvg, className, link, submit, 
             <span style={{zIndex: 2, position: 'relative'}}>{children}</span>
             {link && (
                 <StyledHiddenLink href={link} target="_blank"/>
+            )}
+            {!link && (
+                <StyledHiddenButton 
+                    onClick={onClick}
+                    type={submit ? 'submit' : 'button'}
+                    disabled={disabled}
+                />
             )}
             {isSvg && (
                 <svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -133,7 +137,7 @@ export const BlueButton = ({ children, onClick, isSvg, className, link, submit, 
     )
 }
 
-const StyledBlueButton = styled.button`
+const StyledBlueButton = styled.div`
     background-color: ${colors.blue};
     border-radius: ${rm(4)};
     display: flex;
@@ -209,4 +213,17 @@ const StyledHiddenLink = styled(AnimLink)`
     width: 100%;
     height: 100%;
     z-index: 1;
+`
+
+const StyledHiddenButton = styled.button`
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    outline: none;
 `
