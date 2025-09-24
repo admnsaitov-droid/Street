@@ -10,6 +10,9 @@ interface SimpleInputProps extends InputHTMLAttributes<HTMLInputElement> {
 
 export const SimpleInput = ({ label, value = "", error, ...props }: SimpleInputProps) => {
   const [focused, setFocused] = useState(false)
+  
+  // Generate unique ID for accessibility
+  const inputId = props.id || `input-${Math.random().toString(36).substr(2, 9)}`
 
   const handleFocus = () => setFocused(true)
   const handleBlur = (e: FocusEvent<HTMLInputElement>) => {
@@ -20,22 +23,26 @@ export const SimpleInput = ({ label, value = "", error, ...props }: SimpleInputP
   return (
     <StyledSimpleInput>
       <Label
+        htmlFor={inputId}
         $active={focused || !!value}
       >
         {label}
       </Label>
       <Input
         {...props}
+        id={inputId}
         value={value}
         onChange={e => {
           props.onChange && props.onChange(e)
         }}
         onFocus={handleFocus}
         onBlur={handleBlur}
+        aria-describedby={error ? `${inputId}-error` : undefined}
+        aria-invalid={!!error}
       />
       <Underline $active={focused || !!value} $error={!!error} />
       <StaticUnderline $error={!!error} />
-      {error && <ErrorMessage>{error}</ErrorMessage>}
+      {error && <ErrorMessage id={`${inputId}-error`}>{error}</ErrorMessage>}
     </StyledSimpleInput>
   )
 }

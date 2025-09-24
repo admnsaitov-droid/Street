@@ -57,7 +57,7 @@ export const Header = () => {
                     if (width <= 576) {
                         setIsMegaMenuOpen(false);
                     }
-                }}>
+                }} aria-label="Street Barbell - Home">
                     {headerData?.data && (
                         <Image 
                             src={
@@ -65,7 +65,7 @@ export const Header = () => {
                                     ? getMediaStrapiPath(headerData?.data?.logo) || '/logo.png'
                                     : getMediaStrapiPath(headerData?.data?.logoMobile || headerData?.data?.logo) || '/logo.png'
                             }
-                            alt="logo" 
+                            alt="Street Barbell Logo" 
                             width={100} 
                             height={100} 
                         />
@@ -75,7 +75,7 @@ export const Header = () => {
                     <PackageMenu previewText={headerData?.data?.packagesText} allText={headerData?.data?.packagesAllText}/>
                     <ProductsMenu previewText={headerData?.data?.productsText} allText={headerData?.data?.productsAllText}/>
                     {headerData?.data?.links?.links?.map((item: any, index: number) => (
-                        <AnimatedLink href={item?.link ? item?.link : '#'} key={index}>
+                        <AnimatedLink href={item?.link ? item?.link : '#'} key={index} ariaLabel={item.text}>
                             <span>
                                 {item.text}
                             </span>

@@ -20,9 +20,10 @@ interface SimpleButtonProps {
     isSvg?: boolean;
     submit?: boolean;
     disabled?: boolean;
+    ariaLabel?: string;
 }
 
-export const SimpleButton = ({ children, link, onClick, className, isSvg, submit, disabled }: SimpleButtonProps) => {    
+export const SimpleButton = ({ children, link, onClick, className, isSvg, submit, disabled, ariaLabel }: SimpleButtonProps) => {    
     const ref = useRef<HTMLDivElement>(null)
     const lerpRef = useRef({ x: 0, y: 0 })
     const pointerRef = useRef({ x: 0, y: 0 })
@@ -99,13 +100,17 @@ export const SimpleButton = ({ children, link, onClick, className, isSvg, submit
             }}
         >
             {link && (
-                <StyledHiddenLink href={link}/>
+                <StyledHiddenLink 
+                    href={link}
+                    aria-label={ariaLabel || (typeof children === 'string' ? children : 'Link')}
+                />
             )}
             {!link && (
                 <StyledHiddenButton 
                     onClick={onClick}
                     type={submit ? 'submit' : 'button'}
                     disabled={disabled}
+                    aria-label={ariaLabel || (typeof children === 'string' ? children : 'Button')}
                 />
             )}
             <span>{children}</span>
