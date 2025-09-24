@@ -23,7 +23,7 @@ interface WhiteButtonProps {
 }
 
 export const WhiteButton = ({ children, onClick, isSvg, className, link, submit, disabled }: WhiteButtonProps) => {    
-    const ref = useRef<HTMLDivElement>(null)
+    const ref = useRef<HTMLSpanElement>(null)
     const lerpRef = useRef({ x: 0, y: 0 })
     const pointerRef = useRef({ x: 0, y: 0 })
     const isInViewRef = useRef(false)
@@ -84,9 +84,8 @@ export const WhiteButton = ({ children, onClick, isSvg, className, link, submit,
             ref={inViewRef}
             onClick={onClick} 
             className={className} 
-            role="button"
-            tabIndex={0}
-            aria-disabled={disabled}
+            type={submit ? 'submit' : 'button'} 
+            disabled={disabled}
             onMouseEnter={() => {
                 if(width <= 768) return;
                 setIsHovered(true)
@@ -101,16 +100,8 @@ export const WhiteButton = ({ children, onClick, isSvg, className, link, submit,
                     type: 'default',
                 })
             }}
-            onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    if (onClick && !disabled) {
-                        onClick();
-                    }
-                }
-            }}
         >
-            <span>{children}</span>
+            <span style={{zIndex: 2, position: 'relative'}}>{children}</span>
             {link && (
                 <StyledHiddenLink href={link} target="_blank"/>
             )}
@@ -134,31 +125,35 @@ export const WhiteButton = ({ children, onClick, isSvg, className, link, submit,
                 </svg>
             )}
             <StyledFloatingHoverCircle ref={ref}>
-                <animated.div style={{ scale: circleSpring.scale }} className='hoverCircle' />
+                <animated.span style={{ scale: circleSpring.scale }} className='hoverCircle' />
             </StyledFloatingHoverCircle>
         </StyledWhiteButton>
     )
 }
 
-const StyledFloatingHoverCircle = styled.div`
-    position: absolute;
+const StyledFloatingHoverCircle = styled.span`
+    position: absolute !important;
     top: 0;
     left: 0;
     pointer-events: none;
     user-select: none;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
 
     .hoverCircle {
         position: absolute;
         top: 0;
         left: 0;
         border-radius: 50%;
-        background: ${colors.black100};
+        background: ${colors.white100};
         width: ${CIRCLE_SIZE}px;
         height: ${CIRCLE_SIZE}px;
+        display: block;
     }
 `
 
-const StyledWhiteButton = styled.div`
+const StyledWhiteButton = styled.button`
     background-color: ${colors.white100};
     border-radius: ${rm(4)};
     display: flex;
@@ -177,10 +172,7 @@ const StyledWhiteButton = styled.div`
     width: fit-content;
     overflow: hidden;
     z-index: 1;
-    border: none;
-    outline: none;
-    box-sizing: border-box;
-
+    
     ${media.lg`
         font-size: ${rm(16)};
     `}

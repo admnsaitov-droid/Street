@@ -39,7 +39,6 @@ const LoaderContainer = styled.div<{ $position: 'left' | 'right' | 'center', $th
     gap: ${rm(20)};
     position: absolute;
     top: 50%;
-    transform: translateY(-50%);
     
     ${props => {
         switch (props.$position) {

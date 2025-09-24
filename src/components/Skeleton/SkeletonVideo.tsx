@@ -43,7 +43,7 @@ interface Props {
     style?: any
 }
 
-const StyledPlayer = styled.span`
+const StyledPlayer = styled.div`
     position: relative;
     overflow: hidden;
 

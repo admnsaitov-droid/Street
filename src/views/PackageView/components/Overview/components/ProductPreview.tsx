@@ -175,7 +175,7 @@ export const ProductPreview = () => {
                                 </defs>
                             </svg>
                         </span>
-                        <div className="progress"><animated.div style={progressValues} /></div>
+                        <span className="progress"><animated.span style={progressValues} /></span>
                     </animated.span>
                 </AnimLink>
             </StyledContainer>
