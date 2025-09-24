@@ -80,34 +80,37 @@ const StyledLocationCard = styled.div<{
 
   /* Animation logic - positioning handled by wrapper */
 
-  /* Smooth slide down from top animation */
+  /* Smooth slide up from bottom, slide down to bottom */
   transform: ${({ $animationPhase }) => {
     if ($animationPhase === 'hiding') {
-      return 'translateY(-100%)'; // Start hidden above during fade
+      return 'translateY(30%)'; // Move down to bottom when disappearing
     }
     if ($animationPhase === 'showing') {
-      return 'translateY(0)'; // Animate to final position
+      return 'translateY(0)'; // Slide up from bottom to normal position
     }
     if ($animationPhase === 'idle') {
       return 'translateY(0)'; // Stay in final position
     }
-    return 'translateY(0)'; // Default visible state
+    return 'translateY(30%)'; // Start hidden below (bottom)
   }};
   
   opacity: ${({ $animationPhase }) => {
     if ($animationPhase === 'hiding') {
-      return 0; // Hidden during fade
+      return 0; // Hidden when disappearing
     }
-    if ($animationPhase === 'showing' || $animationPhase === 'idle') {
-      return 1; // Visible when showing or idle
+    if ($animationPhase === 'showing') {
+      return 1; // Visible when showing (animating in)
     }
-    return 1; // Default visible
+    if ($animationPhase === 'idle') {
+      return 1; // Visible when idle
+    }
+    return 0; // Start hidden by default (from bottom)
   }};
   
   transition: ${({ $animationPhase }) => 
-    $animationPhase && $animationPhase !== 'idle' 
+    $animationPhase === 'showing' || $animationPhase === 'hiding'
       ? 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)' 
-      : 'all 0.3s ease'
+      : 'none'
   };
 
   &:hover {

@@ -29,16 +29,34 @@ export const CountryPanel = ({ activeFilterId, onFilterChange, onLocationClick, 
     const [hideAllCards, setHideAllCards] = useState(false)
 
     // Helper function to animate cards out sequentially
-    const animateCardsOut = useCallback((locations: DistributionLocation[], selectedLocationId: string) => {
+    const animateCardsOut = useCallback((locations: DistributionLocation[], selectedLocationId: string, newFilterName?: string) => {
         setAnimationPhase('hiding')
         setIsCardsAnimatingOut(true)
         
-        // After all cards have started animating out, show the selected card
+        // After all cards have started animating out, change filter and show the selected card
         const totalAnimationTime = locations.length * 100 + 400 // 400ms for the slide animation
         setTimeout(() => {
+            // Change filter after cards have animated out
+            if (newFilterName) {
+                setActiveFilter(newFilterName)
+                
+                // Notify parent about filter change after animation
+                const filter = distributionData.find((f: Filter) => f.name === newFilterName)
+                if (filter && onFilterChange) {
+                    onFilterChange(filter.id)
+                }
+                
+                // Get the location from the NEW filter's locations
+                const newFilterData = distributionData.find((f: Filter) => f.name === newFilterName)
+                const newLocations = newFilterData ? newFilterData.locations : []
+                setDisplayedLocation(newLocations.find(loc => loc.id === selectedLocationId) || null)
+            } else {
+                // If no filter change, use the original locations
+                setDisplayedLocation(locations.find(loc => loc.id === selectedLocationId) || null)
+            }
+            
             setHideAllCards(true)
             setAnimationPhase('showing')
-            setDisplayedLocation(locations.find(loc => loc.id === selectedLocationId) || null)
             
             // Mark animation as complete
             setTimeout(() => {
@@ -46,7 +64,7 @@ export const CountryPanel = ({ activeFilterId, onFilterChange, onLocationClick, 
                 setPendingLocation(null)
             }, 500)
         }, totalAnimationTime)
-    }, [])
+    }, [onFilterChange])
 
     // Helper function to animate cards back in when closing
     const animateCardsIn = useCallback((locations: DistributionLocation[]) => {
@@ -73,32 +91,25 @@ export const CountryPanel = ({ activeFilterId, onFilterChange, onLocationClick, 
                 return
             }
             
-            // IMMEDIATE: Set filter immediately for tracker clicks
+            // Determine the new filter name but don't set it immediately
             const regionFilterMap: { [key: string]: string } = {
                 'Europe': 'Europe',
                 'Africa': 'Africa',
                 'America': 'America',
                 'Asia': 'Asia'
             }
-            const filterName = regionFilterMap[selectedLocation.region] || 'All'
-            setActiveFilter(filterName)
+            const newFilterName = regionFilterMap[selectedLocation.region] || 'All'
             
-            // Notify parent about filter change immediately
-            const filter = distributionData.find((f: Filter) => f.name === filterName)
-            if (filter && onFilterChange) {
-                onFilterChange(filter.id)
-            }
-            
-            // Get current locations for animation
-            const activeFilterData = distributionData.find((f: Filter) => f.name === filterName)
+            // Get current locations for animation (from current filter, not new one)
+            const activeFilterData = distributionData.find((f: Filter) => f.name === activeFilter)
             const currentLocations = activeFilterData ? activeFilterData.locations : []
             
             // Set activeCard immediately but start card animation sequence
             setActiveCard(selectedLocation.id)
             setPendingLocation(selectedLocation)
             
-            // Start sequential card animation
-            animateCardsOut(currentLocations, selectedLocation.id)
+            // Start sequential card animation and pass new filter to change after animation
+            animateCardsOut(currentLocations, selectedLocation.id, newFilterName)
         } else {
             // Start fade-out animation when deselecting
             if (activeCard) {
@@ -201,32 +212,25 @@ export const CountryPanel = ({ activeFilterId, onFilterChange, onLocationClick, 
                 onLocationClick(location)
             }
             
-            // IMMEDIATE: Set filter immediately
+            // Determine the new filter name but don't set it immediately
             const regionFilterMap: { [key: string]: string } = {
                 'Europe': 'Europe',
                 'Africa': 'Africa',
                 'America': 'America',
                 'Asia': 'Asia'
             }
-            const filterName = regionFilterMap[location.region] || 'All'
-            setActiveFilter(filterName)
+            const newFilterName = regionFilterMap[location.region] || 'All'
             
-            // Notify parent about filter change immediately
-            const filter = distributionData.find((f: Filter) => f.name === filterName)
-            if (filter && onFilterChange) {
-                onFilterChange(filter.id)
-            }
-            
-            // Get current locations for animation
-            const activeFilterData = distributionData.find((f: Filter) => f.name === filterName)
+            // Get current locations for animation (from current filter, not new one)
+            const activeFilterData = distributionData.find((f: Filter) => f.name === activeFilter)
             const currentLocations = activeFilterData ? activeFilterData.locations : []
             
             // Set activeCard immediately but start card animation sequence
             setActiveCard(location.id)
             setPendingLocation(location)
             
-            // Start sequential card animation
-            animateCardsOut(currentLocations, location.id)
+            // Start sequential card animation and pass new filter to change after animation
+            animateCardsOut(currentLocations, location.id, newFilterName)
         }
     }, [animationPhase, activeCard, onLocationClick, onFilterChange, animateCardsOut, animateCardsIn, activeFilter])
 
@@ -281,11 +285,11 @@ export const CountryPanel = ({ activeFilterId, onFilterChange, onLocationClick, 
                 })}
                 
                 {/* Selected Card Instance - Appears from Top */}
-                {(activeCard || isFadingOut) && (
+                {(activeCard || isFadingOut) && displayedLocation && (
                     <StyledSelectedCardWrapper>
                         <SelectedLocationCard
-                            location={displayedLocation || allLocations.find(loc => loc.id === activeCard)!}
-                            onClick={() => handleCardClick(allLocations.find(loc => loc.id === activeCard)!)}
+                            location={displayedLocation}
+                            onClick={() => handleCardClick(displayedLocation)}
                             isExpanded={true}
                             animationPhase={animationPhase}
                         />
@@ -415,7 +419,7 @@ const StyledCardWrapper = styled.div<{
     
     transform: ${({ $isAnimatingOut, $isAnimatingIn }) => {
         if ($isAnimatingOut) return 'translateY(30%)';
-        if ($isAnimatingIn) return 'translateY(-30%)';
+        if ($isAnimatingIn) return 'translateY(30%)';
         return 'translateY(0)';
     }};
     
@@ -438,5 +442,4 @@ const StyledSelectedCardWrapper = styled.div`
     right: ${rm(50)};
     width: ${rm(440)};
     z-index: 20;
-    overflow: hidden;
 `
