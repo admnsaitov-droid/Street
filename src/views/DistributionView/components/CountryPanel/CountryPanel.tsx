@@ -4,6 +4,7 @@ import styled from "styled-components"
 import { useState, useEffect } from "react"
 import { distributionData, getFilterNames, Filter, getLocationsByFilter, Location as DistributionLocation } from "../../data/distributionData"
 import { LocationCard } from "../LocationCard/LocationCard"
+import { SelectedLocationCard } from "../LocationCard/SelectedLocationCard"
 
 const filters = getFilterNames()
 
@@ -22,6 +23,8 @@ export const CountryPanel = ({ activeFilterId, onFilterChange, onLocationClick, 
     const [animationPhase, setAnimationPhase] = useState<'idle' | 'hiding' | 'showing'>('idle')
     const [pendingLocation, setPendingLocation] = useState<DistributionLocation | null>(null)
     const [fadeContainerHeight, setFadeContainerHeight] = useState(0)
+    const [displayedLocation, setDisplayedLocation] = useState<DistributionLocation | null>(null)
+    const [isFadingOut, setIsFadingOut] = useState(false)
 
     // Sync activeCard state with selectedLocation changes (from tracker clicks)
     useEffect(() => {
@@ -55,6 +58,8 @@ export const CountryPanel = ({ activeFilterId, onFilterChange, onLocationClick, 
             // Phase 2 - After fade-container covers all cards, show selected card (700ms delay)
             setTimeout(() => {
                 setAnimationPhase('showing')
+                // Update displayed location data when animation in starts
+                setDisplayedLocation(selectedLocation)
                 
                 // Keep fade-container at 100% to hide base cards - DON'T remove it
                 // setFadeContainerHeight(0) // Commented out - keep fade visible
@@ -67,18 +72,55 @@ export const CountryPanel = ({ activeFilterId, onFilterChange, onLocationClick, 
                 }, 500)
             }, 700)
         } else {
-            setActiveCard(null)
-            setAnimationPhase('idle')
-            setPendingLocation(null)
-            setFadeContainerHeight(0)
+            // Start fade-out animation when deselecting
+            if (activeCard) {
+                setIsFadingOut(true)
+                setAnimationPhase('hiding')
+                
+                // After fade-out animation completes, reset all states
+                setTimeout(() => {
+                    setActiveCard(null)
+                    setAnimationPhase('idle')
+                    setPendingLocation(null)
+                    setFadeContainerHeight(0)
+                    setDisplayedLocation(null)
+                    setIsFadingOut(false)
+                }, 500) // Match the fade-out duration
+            } else {
+                setActiveCard(null)
+                setAnimationPhase('idle')
+                setPendingLocation(null)
+                setFadeContainerHeight(0)
+                setDisplayedLocation(null)
+                setIsFadingOut(false)
+            }
         }
     }, [selectedLocation, onFilterChange])
 
     const handleFilterClick = (filterName: string) => {
         setActiveFilter(filterName)
-        setActiveCard(null) // Reset active card when filter changes
-        setAnimationPhase('idle')
-        setFadeContainerHeight(0)
+        
+        // Start fade-out animation if there's an active card
+        if (activeCard) {
+            setIsFadingOut(true)
+            setAnimationPhase('hiding')
+            
+            // After fade-out animation completes, reset all states
+            setTimeout(() => {
+                setActiveCard(null)
+                setAnimationPhase('idle')
+                setFadeContainerHeight(0)
+                setDisplayedLocation(null)
+                setIsFadingOut(false)
+            }, 500)
+        } else {
+            setActiveCard(null)
+            setAnimationPhase('idle')
+            setFadeContainerHeight(0)
+            setDisplayedLocation(null)
+            setIsFadingOut(false)
+        }
+        
         // Find the filter ID from the name
         const filter = distributionData.find((f: Filter) => f.name === filterName)
         if (filter && onFilterChange) {
@@ -92,13 +134,23 @@ export const CountryPanel = ({ activeFilterId, onFilterChange, onLocationClick, 
         
         // Toggle card expansion
         if (activeCard === location.id) {
-            setActiveCard(null)
-            setAnimationPhase('idle')
-            setFadeContainerHeight(0)
+            // Start fade-out animation when deselecting
+            setIsFadingOut(true)
+            setAnimationPhase('hiding')
+            
             // Reset planet rotation to initial state
             if (onLocationClick) {
                 onLocationClick(null)
             }
+            
+            // After fade-out animation completes, reset all states
+            setTimeout(() => {
+                setActiveCard(null)
+                setAnimationPhase('idle')
+                setFadeContainerHeight(0)
+                setDisplayedLocation(null)
+                setIsFadingOut(false)
+            }, 500) // Match the fade-out duration
         } else {
             // IMMEDIATE: Select point and rotate planet immediately
             if (onLocationClick) {
@@ -134,6 +186,8 @@ export const CountryPanel = ({ activeFilterId, onFilterChange, onLocationClick, 
             // Phase 2 - After fade-container covers all cards, show selected card (700ms delay)
             setTimeout(() => {
                 setAnimationPhase('showing')
+                // Update displayed location data when animation in starts
+                setDisplayedLocation(location)
                 
                 // Keep fade-container at 100% to hide base cards - DON'T remove it
                 // setFadeContainerHeight(0) // Commented out - keep fade visible
@@ -198,14 +252,13 @@ export const CountryPanel = ({ activeFilterId, onFilterChange, onLocationClick, 
                 ))}
                 
                 {/* Selected Card Instance - Appears from Top */}
-                {activeCard && allLocations.find(loc => loc.id === activeCard) && (
-                    <StyledSelectedCardWrapper
-                        $animationPhase={animationPhase}
-                    >
-                        <LocationCard 
-                            location={allLocations.find(loc => loc.id === activeCard)!}
+                {(activeCard || isFadingOut) && (
+                    <StyledSelectedCardWrapper>
+                        <SelectedLocationCard
+                            location={displayedLocation || allLocations.find(loc => loc.id === activeCard)!}
                             onClick={() => handleCardClick(allLocations.find(loc => loc.id === activeCard)!)}
                             isExpanded={true}
+                            animationPhase={animationPhase}
                         />
                     </StyledSelectedCardWrapper>
                 )}
@@ -282,6 +335,7 @@ const StyledCardsContainer = styled.div<{ $hasActiveCard: boolean }>`
     flex: 1;
     overflow-y: auto;
     position: relative;
+    border-radius: ${rm(8)};
     
     /* Prevent scroll from bubbling to parent */
     overscroll-behavior: contain;
@@ -352,9 +406,7 @@ const StyledCardWrapper = styled.div`
     }
 `
 
-const StyledSelectedCardWrapper = styled.div<{ 
-    $animationPhase: 'idle' | 'hiding' | 'showing' 
-}>`
+const StyledSelectedCardWrapper = styled.div`
     position: fixed;
     top: calc(${rm(113)} + ${rm(60)}); /* CountryPanel top + cards margin + filter height */
     left: calc(100vw - ${rm(440)} - ${rm(50)});
@@ -362,30 +414,4 @@ const StyledSelectedCardWrapper = styled.div<{
     width: ${rm(440)};
     z-index: 20;
     overflow: hidden;
-    
-    /* Smooth slide down from top animation */
-    transform: ${({ $animationPhase }) => {
-        if ($animationPhase === 'hiding') {
-            return 'translateY(-100%)'; // Start hidden above during fade
-        }
-        if ($animationPhase === 'showing') {
-            return 'translateY(0)'; // Animate to final position
-        }
-        if ($animationPhase === 'idle') {
-            return 'translateY(0)'; // Stay in final position
-        }
-        return 'translateY(-100%)'; // Default hidden state
-    }};
-    
-    opacity: ${({ $animationPhase }) => {
-        if ($animationPhase === 'hiding') {
-            return 0; // Hidden during fade
-        }
-        if ($animationPhase === 'showing' || $animationPhase === 'idle') {
-            return 1; // Visible when showing or idle
-        }
-        return 0; // Default hidden
-    }};
-    
-    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 `

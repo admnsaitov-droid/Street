@@ -18,7 +18,7 @@ export const ProductCard = ({ data }: ProductCardProps) => {
                     <Image src={getMediaStrapiPath(data?.previewImage)} alt={data?.name} fill />
                 </StyledImageContainer>
                 <StyledContent>
-                    <h1 className="title">{data?.name}</h1>
+                    <h3 className="title">{data?.name}</h3>
                         <p className="subtitle">{data?.model}</p>
                     </StyledContent>
                 </StyledWrapper>
@@ -106,6 +106,10 @@ const StyledContent = styled.div`
         letter-spacing: -0.01em;
         color: ${colors.black100};
         text-transform: uppercase;
+        margin: 0;
+        padding: 0;
+        font-weight: inherit;
+        font-family: inherit;
 
         transition: color 0.3s ease-in-out;
 

@@ -7,6 +7,8 @@ import { ContactForm } from "./screens/ContactForm"
 import { GetInTouch } from "./screens/GetInTouch"
 import { AnimatedText } from "@/components/animated/AnimatedText/AnimatedText"
 import { ContactMap } from "./screens/ContactMap"
+import { StructuredData } from "@/components/StructuredData/StructuredData"
+import { generateOrganizationSchema } from "@/utils/generateStructuredData"
 
 interface ContactViewProps {
     data: any
@@ -37,8 +39,21 @@ export const ContactView = ({ data }: ContactViewProps) => {
 
     console.log(mapCenter, zoom, marker)
     
+    // Generate Organization schema for SEO
+    const organizationSchema = generateOrganizationSchema({
+        name: "Street Barbell",
+        url: typeof window !== 'undefined' ? window.location.origin : 'https://street-barbell.vercel.app',
+        description: data?.description,
+        contactPoint: {
+            telephone: data?.getInTouchBlock?.phone,
+            email: data?.getInTouchBlock?.inquries,
+            contactType: "customer service"
+        }
+    })
+    
     return (
         <StyledContactView>
+            <StructuredData schemas={[organizationSchema]} />
             <StyledTop>
                 <StyledTitle tag="h1">
                     {data?.title}

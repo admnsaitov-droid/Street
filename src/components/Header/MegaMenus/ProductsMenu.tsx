@@ -169,15 +169,15 @@ export const ProductsMenu = ({ previewText, allText }: { previewText: string, al
                                 <div className="imageContainer">
                                     <Image src={getMediaStrapiPath(currentPackage?.products?.[0]?.previewImage)} alt="Package" width={760} height={420} />
                                 </div>
-                                <div className="name">{currentPackage?.products?.[0]?.name}</div>
-                                <div className="model">{currentPackage?.products?.[0]?.model}</div>
+                                {/* <div className="name">{currentPackage?.products?.[0]?.name}</div>
+                                <div className="model">{currentPackage?.products?.[0]?.model}</div> */}
                             </StyledProduct>
                             <StyledProduct href={`/products/${currentPackage?.products?.[1]?.slug}`}>
                                 <div className="imageContainer">
                                     <Image src={getMediaStrapiPath(currentPackage?.products?.[1]?.previewImage)} alt="Package" width={760} height={420} />
                                 </div>
-                                <div className="name">{currentPackage?.products?.[1]?.name}</div>
-                                <div className="model">{currentPackage?.products?.[1]?.model}</div>
+                                {/* <div className="name">{currentPackage?.products?.[1]?.name}</div>
+                                <div className="model">{currentPackage?.products?.[1]?.model}</div> */}
                             </StyledProduct>
                         </StyledRight>
                     </StyledLayout>

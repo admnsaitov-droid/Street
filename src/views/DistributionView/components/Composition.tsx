@@ -32,7 +32,9 @@ export const Composition = ({ scale, position, rotationXSpeed, rotationZSpeed, a
     const [isRotating, setIsRotating] = useState(false)
     const [targetZoom, setTargetZoom] = useState(10) // Default camera distance
     const [isZooming, setIsZooming] = useState(false)
-    const currentRotationRef = useRef(0)
+    const currentRotationRef = useRef({ x: 0, y: 0, z: 0 })
+    const cameraRotationRef = useRef({ x: 0, y: 0, z: 0 })
+    const lastLogTime = useRef(0)
     const [isProgrammaticControl, setIsProgrammaticControl] = useState(false)
     const [isZoomedIn, setIsZoomedIn] = useState(false)
     const zoomCheckTimeout = useRef<NodeJS.Timeout | null>(null)
@@ -250,9 +252,43 @@ export const Composition = ({ scale, position, rotationXSpeed, rotationZSpeed, a
                 delta * 3
             )
             
-            // Update the rotation ref for trackers (use Y rotation from planet group)
+            // Update the rotation ref for trackers (track all three axes)
             if (planetGroupRef.current) {
-                currentRotationRef.current = planetGroupRef.current.rotation.y
+                currentRotationRef.current = {
+                    x: planetGroupRef.current.rotation.x,
+                    y: planetGroupRef.current.rotation.y,
+                    z: planetGroupRef.current.rotation.z
+                }
+            }
+
+            // Track camera rotation from OrbitControls
+            if (camera) {
+                const spherical = new THREE.Spherical()
+                spherical.setFromVector3(camera.position)
+                
+                // Convert spherical coordinates to rotation angles
+                // theta is azimuth (Y rotation), phi is elevation (X rotation)
+                cameraRotationRef.current = {
+                    x: Math.PI/2 - spherical.phi, // Convert phi to X rotation
+                    y: -spherical.theta, // Invert theta for Y rotation
+                    z: 0 // Z rotation is not used in OrbitControls
+                }
+            }
+
+            // Log combined rotation every 2 seconds
+            const currentTime = Date.now()
+            if (currentTime - lastLogTime.current >= 2000) {
+                const combinedRotation = {
+                    x: currentRotationRef.current.x + cameraRotationRef.current.x,
+                    y: currentRotationRef.current.y + cameraRotationRef.current.y,
+                    z: currentRotationRef.current.z + cameraRotationRef.current.z
+                }
+                console.log('Combined Rotation:', {
+                    planet: currentRotationRef.current,
+                    camera: cameraRotationRef.current,
+                    total: combinedRotation
+                })
+                lastLogTime.current = currentTime
             }
         }
 
@@ -337,7 +373,6 @@ export const Composition = ({ scale, position, rotationXSpeed, rotationZSpeed, a
                 rotateSpeed={0.5}
                 zoomSpeed={1}
                 panSpeed={0.8}
-                key={`controls-${isZoomedIn}-${isProgrammaticControl}`} // Force re-render when state changes
             />
             
             <group ref={groupRef} position={position}>
@@ -351,7 +386,7 @@ export const Composition = ({ scale, position, rotationXSpeed, rotationZSpeed, a
                             <PlanetModel scale={scale} />
                             <SphereClouds size={3.75} />
                         </group>
-                        <Trackers onLocationClick={onLocationClick} selectedLocation={selectedLocation} currentRotationRef={currentRotationRef} />
+                        <Trackers onLocationClick={onLocationClick} selectedLocation={selectedLocation} currentRotationRef={currentRotationRef} cameraRotationRef={cameraRotationRef} />
                     </group>
                 </group>
             </group>

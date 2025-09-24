@@ -10,7 +10,7 @@ interface HeroProps {
 export const Hero = ({ heroData }: HeroProps) => {
     return (
         <StyledHero>
-            <h1>Packages</h1>
+            <h2>Packages</h2>
         </StyledHero>
     )
 }

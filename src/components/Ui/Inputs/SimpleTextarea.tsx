@@ -44,6 +44,22 @@ const StyledSimpleTextarea = styled.div`
   position: relative;
   width: 100%;
   max-width: 100%;
+
+  /* Handle autocomplete state - move label up when autocomplete is active */
+  &:has(textarea:-webkit-autofill) label {
+    font-size: ${rm(18)} !important;
+    transform: translateY(-${rm(18)}) !important;
+    color: #B7BCCA !important;
+
+    ${media.lg`
+      font-size: ${rm(18)} !important;
+    `}
+
+    ${media.md`
+      font-size: ${rm(12)} !important;
+      transform: translateY(-${rm(20)}) !important;
+    `}
+  }
 `
 
 const Label = styled.label<{ $active: boolean }>`

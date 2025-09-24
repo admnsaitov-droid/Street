@@ -70,40 +70,42 @@ export const DistributionView = ({ data }: DistributionViewProps) => {
         <StyledDistributionView>
             <StyledContent>
                 <StyledTitleContainer>
-                    <AnimatedGrid
-                        type="words"
-                        animation={{
-                            from: { opacity: 0, y: '40px' },
-                            to: { opacity: 1, y: '0px' },
-                            delayStep: 60
-                        }}
-                        overflow={true}
-                        gap={{ horizontal: '0.25em', vertical: '0.25em' }}
-                        containerStyle={{ overflow: 'hidden' }}
-                        cellConfigs={{
-                            'title-first': {
-                                style: {
-                                    color: colors.red,
-                                    fontFamily: 'var(--font-sage-grotesk)',
-                                    fontOpticalSizing: 'auto',
-                                    fontWeight: 400,
-                                    fontStyle: 'normal',
+                    <h1>
+                        <AnimatedGrid
+                            type="words"
+                            animation={{
+                                from: { opacity: 0, y: '40px' },
+                                to: { opacity: 1, y: '0px' },
+                                delayStep: 60
+                            }}
+                            overflow={true}
+                            gap={{ horizontal: '0.25em', vertical: '0.25em' }}
+                            containerStyle={{ overflow: 'hidden' }}
+                            cellConfigs={{
+                                'title-first': {
+                                    style: {
+                                        color: colors.red,
+                                        fontFamily: 'var(--font-sage-grotesk)',
+                                        fontOpticalSizing: 'auto',
+                                        fontWeight: 400,
+                                        fontStyle: 'normal',
+                                    }
+                                },
+                                'title-second': {
+                                    style: {
+                                        color: colors.white100,
+                                        fontFamily: 'var(--font-sage-grotesk)',
+                                        fontOpticalSizing: 'auto',
+                                        fontWeight: 400,
+                                        fontStyle: 'normal',
+                                    }
                                 }
-                            },
-                            'title-second': {
-                                style: {
-                                    color: colors.white100,
-                                    fontFamily: 'var(--font-sage-grotesk)',
-                                    fontOpticalSizing: 'auto',
-                                    fontWeight: 400,
-                                    fontStyle: 'normal',
-                                }
-                            }
-                        }}
-                    >
-                        <h1 id="title-first">{data?.distributionPage?.title?.textFirst}</h1>
-                        <h1 id="title-second" className="first">{data?.distributionPage?.title?.textSecond}</h1>
-                    </AnimatedGrid>
+                            }}
+                        >
+                            <span id="title-first">{data?.distributionPage?.title?.textFirst}</span>
+                            <span id="title-second" className="first">{data?.distributionPage?.title?.textSecond}</span>
+                        </AnimatedGrid>
+                    </h1>
                 </StyledTitleContainer>
             </StyledContent>
             <DistributionScene 
@@ -162,4 +164,15 @@ const StyledTitleContainer = styled.div`
         width: 100%;
         font-size: ${rm(32)};
     `}
+
+    h1 {
+        margin: 0;
+        padding: 0;
+        font-size: inherit;
+        font-weight: inherit;
+        line-height: inherit;
+        color: inherit;
+        text-transform: inherit;
+        font-family: inherit;
+    }
 `

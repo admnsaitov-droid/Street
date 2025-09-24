@@ -44,6 +44,23 @@ const StyledContactInput = styled.div`
   position: relative;
   width: 100%;
   max-width: 100%;
+
+  /* Handle autocomplete state - move label up when autocomplete is active */
+  &:has(input:-webkit-autofill) label {
+    font-size: ${rm(18)} !important;
+    transform: translateY(-${rm(32)}) !important;
+    color: #B7BCCA !important;
+
+    ${media.lg`
+      font-size: ${rm(18)} !important;
+      transform: translateY(-${rm(20)}) !important;
+    `}
+
+    ${media.xsm`
+      font-size: ${rm(12)} !important;
+      transform: translateY(-${rm(20)}) !important;
+    `}
+  }
 ` 
 
 const Label = styled.label<{ $active: boolean }>`
