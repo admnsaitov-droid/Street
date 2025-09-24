@@ -1,5 +1,8 @@
 import axios from "axios";
 
+// Request deduplication cache
+const requestCache = new Map<string, Promise<any>>();
+
 export const getStrapiData = async (path: string, locale?: string) => {
     try {
       const baseUrl = getBaseUrl();
@@ -12,14 +15,35 @@ export const getStrapiData = async (path: string, locale?: string) => {
       const separator = path.includes('?') ? '&' : '?';
       const localeParam = `${separator}locale=${currentLocale}`;
       const pathWithLocale = `${path}${localeParam}`;
+      
+      // Create cache key for deduplication
+      const cacheKey = `${baseUrl}/api/${pathWithLocale}`;
+      
+      // Check if request is already in progress
+      if (requestCache.has(cacheKey)) {
+        return await requestCache.get(cacheKey);
+      }
 
-      const response = await axios.get(`${baseUrl}/api/${pathWithLocale}`, {
+      // Create new request and cache it
+      const requestPromise = axios.get(cacheKey, {
         headers: {
           'Accept': 'application/json',
         },
-        timeout: 5000, // 5 second timeout
+        timeout: 10000, // 10 second timeout
+      }).then(response => {
+        // Remove from cache after completion
+        requestCache.delete(cacheKey);
+        return response.data;
+      }).catch(error => {
+        // Remove from cache on error
+        requestCache.delete(cacheKey);
+        throw error;
       });
-      return response.data;
+      
+      // Cache the request
+      requestCache.set(cacheKey, requestPromise);
+      
+      return await requestPromise;
     } catch (error) {
       console.error('Error getting strapi data:', error);
       

@@ -131,7 +131,7 @@ export const ProductPreview = () => {
     return (
         <>
             <StyledContainer as={animated.div} ref={innerRef} style={{...moveValues, pointerEvents: url === 'poster-only' && poster && width <= 576 ? 'all' : 'none'}}>
-                <AnimLink href={`/products/${route}`}>
+                <AnimLink href={`/products/${route}`} aria-label={`View product details`}>
                     <animated.span style={values}>
                         { allUrls.map((item, idx) => 
                             <VideoPlayer 

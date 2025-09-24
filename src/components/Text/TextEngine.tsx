@@ -413,7 +413,7 @@ const Engine = forwardRef(
           rerendering.current = false;
         }, 50);
       }, 50);
-    }, [newWords, immediateOut]);
+    }, [newWords, immediateOut, words]);
 
     const letters = useMemo(() => words.flat(), [words]);
     const [lines, _setLines] = useState<

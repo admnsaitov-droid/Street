@@ -129,6 +129,7 @@ export const InfoWindow = ({
                             href={`https://www.google.com/maps?q=${lat},${lng}`}
                             target="_blank"
                             rel="noopener noreferrer"
+                            aria-label={`Open location in Google Maps: ${linkText}`}
                         >
                             {linkText}
                         </GoogleMapsButton>

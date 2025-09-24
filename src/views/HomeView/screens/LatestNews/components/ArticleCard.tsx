@@ -15,7 +15,7 @@ export const ArticleCard = ({ article }: ArticleCardProps) => {
 
     return (
         <StyledArticleCard>
-            <StyledHiddenLink href={`/articles/${article?.slug}`} />
+            <StyledHiddenLink href={`/articles/${article?.slug}`} aria-label={`Read article: ${article?.title}`} />
             <div className="dividerMain" />
             <StyledContent>
                 <StyledTitle>

@@ -13,13 +13,21 @@ const nextConfig = {
         },
       },
     },
+    // Enable server components optimizations
+    serverComponentsExternalPackages: ['axios'],
   },
   compiler: {
     styledComponents: true,
+    // Remove console.log in production
+    removeConsole: process.env.NODE_ENV === 'production',
   },
-  // Basic performance optimizations
+  // Performance optimizations
   compress: true,
   poweredByHeader: false,
+  // Enable static optimization
+  output: 'standalone',
+  // Optimize bundle
+  swcMinify: true,
 
   images: {
     formats: ['image/avif', 'image/webp'],

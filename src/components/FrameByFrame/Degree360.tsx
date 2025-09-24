@@ -170,7 +170,7 @@ export default function Degree360({
             setReadyToLoad(true)
             return
         }
-    }, [strategy, inView, play])
+    }, [strategy, inView, play, readyToLoad])
 
     if (tag === 'div') {
         return(

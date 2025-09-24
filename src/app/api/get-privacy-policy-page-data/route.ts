@@ -2,6 +2,7 @@ import { NextResponse, NextRequest } from 'next/server';
 import axios from 'axios';
 
 export const dynamic = 'force-dynamic';
+export const revalidate = 300; // Cache for 5 minutes
 
 export async function GET(request: NextRequest) {
   try {
@@ -14,13 +15,15 @@ export async function GET(request: NextRequest) {
       {
         headers: {
           'Accept': 'application/json',
-        }
+        },
+        timeout: 10000, // 10 second timeout
       }
     );
 
     const res = NextResponse.json(response.data);
 
-    res.headers.set('Cache-Control', 'no-store');
+    // Enable caching for 5 minutes
+    res.headers.set('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600');
     
     return res;
   } catch (error) {
