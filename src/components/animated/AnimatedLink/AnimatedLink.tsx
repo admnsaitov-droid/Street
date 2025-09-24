@@ -26,7 +26,7 @@ const StyledHiddenlink = styled(AnimLink)`
     height: 100%;
 `
 
-export default function AnimatedLink({children ,style, href}: {children: any, style?: any, href?: string}) {
+export default function AnimatedLink({children ,style, href, ariaLabel}: {children: any, style?: any, href?: string, ariaLabel?: string}) {
     
     const [isHovered, setIsHovered] = useState<boolean>(false)
 
@@ -41,6 +41,14 @@ export default function AnimatedLink({children ,style, href}: {children: any, st
         transform: `translateY(${!isHovered ? '130%' : `0%`}) rotate(${!isHovered ? '10deg' : '0deg'})`,
         config: {duration: 100, easing: easings.easeInOutCubic}
     })
+
+    // Extract accessible text from children
+    const getAccessibleText = () => {
+        if (ariaLabel) return ariaLabel;
+        if (typeof children === 'string') return children;
+        if (children?.props?.children) return children.props.children;
+        return 'Link';
+    };
 
     return(
         <span 
@@ -59,7 +67,7 @@ export default function AnimatedLink({children ,style, href}: {children: any, st
                     <span>{ children }</span>
                 </StyledLinkContainer>
             </StyledLink>
-            {href && <StyledHiddenlink href={href}/>}
+            {href && <StyledHiddenlink href={href} aria-label={getAccessibleText()}/>}
         </span>
     )
 }

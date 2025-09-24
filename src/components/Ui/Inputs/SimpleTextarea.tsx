@@ -10,6 +10,9 @@ interface SimpleTextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement
 
 export const SimpleTextarea = ({ label, value = "", error, ...props }: SimpleTextareaProps) => {
   const [focused, setFocused] = useState(false)
+  
+  // Generate unique ID for accessibility
+  const textareaId = props.id || `textarea-${Math.random().toString(36).substr(2, 9)}`
 
   const handleFocus = () => setFocused(true)
   const handleBlur = (e: FocusEvent<HTMLTextAreaElement>) => {
@@ -20,22 +23,26 @@ export const SimpleTextarea = ({ label, value = "", error, ...props }: SimpleTex
   return (
     <StyledSimpleTextarea>
       <Label
+        htmlFor={textareaId}
         $active={focused || !!value}
       >
         {label}
       </Label>
       <Textarea
         {...props}
+        id={textareaId}
         value={value}
         onChange={e => {
           props.onChange && props.onChange(e)
         }}
         onFocus={handleFocus}
         onBlur={handleBlur}
+        aria-describedby={error ? `${textareaId}-error` : undefined}
+        aria-invalid={!!error}
       />
       <Underline $active={focused || !!value} $error={!!error} />
       <StaticUnderline $error={!!error} />
-      {error && <ErrorMessage>{error}</ErrorMessage>}
+      {error && <ErrorMessage id={`${textareaId}-error`}>{error}</ErrorMessage>}
     </StyledSimpleTextarea>
   )
 }

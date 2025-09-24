@@ -73,7 +73,7 @@ export const Footer = () => {
                         <p className="title">{footerData?.packages?.title}</p>
                         <div className="content">
                             {footerData?.packages?.links?.map((item: any, index: number) => (
-                                <AnimatedLink href={item?.link} key={index}>
+                                <AnimatedLink href={item?.link} key={index} ariaLabel={item?.text}>
                                     <span className="text">{item?.text}</span>
                                 </AnimatedLink>
                             ))}
@@ -83,7 +83,7 @@ export const Footer = () => {
                         <p className="title">{footerData?.company?.title}</p>
                         <div className="content">
                             {footerData?.company?.links?.map((item: any, index: number) => (
-                                <AnimatedLink href={item?.link} key={index}>
+                                <AnimatedLink href={item?.link} key={index} ariaLabel={item?.text}>
                                     <span className="text">{item?.text}</span>
                                 </AnimatedLink>
                             ))}
@@ -93,7 +93,7 @@ export const Footer = () => {
                         <p className="title">{footerData?.products?.title}</p>
                         <div className="content">
                             {footerData?.products?.links?.map((item: any, index: number) => (
-                                <AnimatedLink href={item?.link ? item?.link : ''} key={index}>
+                                <AnimatedLink href={item?.link ? item?.link : ''} key={index} ariaLabel={item?.text}>
                                     <span className="text">{item?.text}</span>
                                 </AnimatedLink>
                             ))}
@@ -104,7 +104,7 @@ export const Footer = () => {
                         <div className="content">
                             {footerData?.socials?.links?.map((item: any, index: number) => (
                                 <AnimatedLink key={index}> 
-                                    <a href={item?.link} target="_blank" className="text">{item?.text}</a>
+                                    <a href={item?.link} target="_blank" className="text" aria-label={`${item?.text} - opens in new tab`}>{item?.text}</a>
                                 </AnimatedLink>
                             ))}
                         </div>
@@ -144,7 +144,7 @@ export const Footer = () => {
                 </div>
                 <div className="second">
                     {footerData?.bottomBlock?.links?.map((item: any, index: number) => (
-                        <AnimatedLink href={item?.link ? item?.link : ''} key={index}>
+                        <AnimatedLink href={item?.link ? item?.link : ''} key={index} ariaLabel={item?.text}>
                             <span className="link">{item?.text}</span>
                         </AnimatedLink>
                     ))}

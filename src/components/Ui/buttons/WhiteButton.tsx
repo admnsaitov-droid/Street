@@ -20,9 +20,10 @@ interface WhiteButtonProps {
     link?: string;
     submit?: boolean;
     disabled?: boolean;
+    ariaLabel?: string;
 }
 
-export const WhiteButton = ({ children, onClick, isSvg, className, link, submit, disabled }: WhiteButtonProps) => {    
+export const WhiteButton = ({ children, onClick, isSvg, className, link, submit, disabled, ariaLabel }: WhiteButtonProps) => {    
     const ref = useRef<HTMLSpanElement>(null)
     const lerpRef = useRef({ x: 0, y: 0 })
     const pointerRef = useRef({ x: 0, y: 0 })
@@ -100,13 +101,18 @@ export const WhiteButton = ({ children, onClick, isSvg, className, link, submit,
         >
             <span style={{zIndex: 2, position: 'relative'}}>{children}</span>
             {link && (
-                <StyledHiddenLink href={link} target="_blank"/>
+                <StyledHiddenLink 
+                    href={link} 
+                    target="_blank"
+                    aria-label={ariaLabel || (typeof children === 'string' ? children : 'Link')}
+                />
             )}
             {!link && (
                 <StyledHiddenButton 
                     onClick={onClick}
                     type={submit ? 'submit' : 'button'}
                     disabled={disabled}
+                    aria-label={ariaLabel || (typeof children === 'string' ? children : 'Button')}
                 />
             )}
             {isSvg && (
