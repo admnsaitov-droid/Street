@@ -80,60 +80,63 @@ export const SimpleButton = ({ children, link, onClick, className, isSvg, submit
     }, [isHovered, api, path1Api, path2Api, path3Api])
 
     return (
-        <AnimLink href={link ? link : ''} onClick={onClick ? onClick : () => {}} className={className}>
-            <StyledButton 
-                ref={inViewRef}
-                role="button"
-                tabIndex={0}
-                aria-disabled={disabled}
-                onMouseEnter={() => {
-                    if(width <= 768) return;
-                    setIsHovered(true)
-                    setCurrentCursor({
-                        type: 'hover',
-                    })
-                }}
-                onMouseLeave={() => {
-                    if(width <= 768) return;
-                    setIsHovered(false)
-                    setCurrentCursor({
-                        type: 'default',
-                    })
-                }}
-                onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
-                        if (onClick && !disabled) {
-                            onClick();
-                        }
+        <StyledButton 
+            ref={inViewRef}
+            onClick={onClick}
+            className={className}
+            role="button"
+            tabIndex={0}
+            aria-disabled={disabled}
+            onMouseEnter={() => {
+                if(width <= 768) return;
+                setIsHovered(true)
+                setCurrentCursor({
+                    type: 'hover',
+                })
+            }}
+            onMouseLeave={() => {
+                if(width <= 768) return;
+                setIsHovered(false)
+                setCurrentCursor({
+                    type: 'default',
+                })
+            }}
+            onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    if (onClick && !disabled) {
+                        onClick();
                     }
-                }}
-            >
-                <span>{children}</span>
-                {isSvg && (
-                    <svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <animated.path 
-                            d="M10.1092 9.21504L13.7168 5.60742L10.1092 1.99981L6.50157 5.60742L10.1092 9.21504Z" 
-                            fill={colors.white100}
-                            style={{ transform: path1Spring.transform }}
-                        />
-                        <animated.path 
-                            d="M13.715 19.1799L10.1074 15.5723L6.49981 19.1799L10.1074 22.7875L13.715 19.1799Z" 
-                            fill={colors.white100}
-                            style={{ transform: path3Spring.transform }}
-                        />
-                        <animated.path 
-                            d="M16.8927 16.0023L13.2852 12.3947L16.8927 8.78711L20.5003 12.3947" 
-                            fill={colors.white100}
-                            style={{ transform: path2Spring.transform }}
-                        />
-                    </svg>
-                )}
-                <StyledFloatingHoverCircle ref={ref}>
-                    <animated.div style={{ scale: circleSpring.scale }} className='hoverCircle' />
-                </StyledFloatingHoverCircle>
-            </StyledButton>
-        </AnimLink>
+                }
+            }}
+        >
+            <span>{children}</span>
+            {link && (
+                <StyledHiddenLink href={link} />
+            )}
+            {isSvg && (
+                <svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <animated.path 
+                        d="M10.1092 9.21504L13.7168 5.60742L10.1092 1.99981L6.50157 5.60742L10.1092 9.21504Z" 
+                        fill={colors.white100}
+                        style={{ transform: path1Spring.transform }}
+                    />
+                    <animated.path 
+                        d="M13.715 19.1799L10.1074 15.5723L6.49981 19.1799L10.1074 22.7875L13.715 19.1799Z" 
+                        fill={colors.white100}
+                        style={{ transform: path3Spring.transform }}
+                    />
+                    <animated.path 
+                        d="M16.8927 16.0023L13.2852 12.3947L16.8927 8.78711L20.5003 12.3947" 
+                        fill={colors.white100}
+                        style={{ transform: path2Spring.transform }}
+                    />
+                </svg>
+            )}
+            <StyledFloatingHoverCircle ref={ref}>
+                <animated.div style={{ scale: circleSpring.scale }} className='hoverCircle' />
+            </StyledFloatingHoverCircle>
+        </StyledButton>
     )
 }
 
@@ -202,4 +205,13 @@ const StyledButton = styled.div`
         opacity: 0.5;
         cursor: not-allowed;
     }
+`
+
+const StyledHiddenLink = styled(AnimLink)`
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
 `
