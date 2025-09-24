@@ -3,17 +3,17 @@
 import { useGLTF, useTexture } from "@react-three/drei"
 import { useFrame } from "@react-three/fiber"
 import { Group } from "three"
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import * as THREE from 'three'
 import { DRACOLoader, GLTF, GLTFLoader } from 'three-stdlib'
 import { sNoise } from "@/utils/sNoise"
 
 type GLTFResult = GLTF & {
     nodes: {
-      Sphere: THREE.Mesh
+        Icosphere001: THREE.Mesh
     }
     materials: {
-      ['Material.001']: THREE.MeshStandardMaterial
+      ['Material.002']: THREE.MeshStandardMaterial
     }
 }
 
@@ -27,7 +27,10 @@ export const PlanetModel = ({ scale }: PlanetModelProps) => {
     const time = useRef({value: 0})
 
     // Night blend texture
-    const nightBlendTexture = useTexture('/models/textures/night_city.jpg')
+    // const nightBlendTexture = useTexture('/models/textures/earth_night_Diffuse.webp')
+    
+    const { materials: { 'Material.002': nightBlendMaterials } } = useGLTF('/models/earth_lights.glb') as GLTFResult
+    const nightBlendTexture = useMemo(() => nightBlendMaterials.map, [nightBlendMaterials]) as THREE.Texture
 
     const { nodes, materials } = useGLTF('/models/low_res_earth.glb') as GLTFResult
     const meshRef = useRef<THREE.Mesh>(null)
@@ -35,7 +38,7 @@ export const PlanetModel = ({ scale }: PlanetModelProps) => {
     
     // Load high res model
     useEffect(() => {
-        if (materials['Material.001']) {
+        if (materials['Material.002']) {
             // console.log('Material loaded')
             // Load low res model directly
             setTimeout(() => {
@@ -72,22 +75,21 @@ export const PlanetModel = ({ scale }: PlanetModelProps) => {
 
     // Apply planet shader to model materials
     useEffect(() => {
-        const material = appllyShaders(materials['Material.001'], nightBlendTexture)
+        const material = appllyShaders(materials['Material.002'], nightBlendTexture)
         if (!material) return
         meshRef.current && ((meshRef.current as THREE.Mesh).material = material);
     }, [materials, nightBlendTexture])
 
     const appllyShaders = useCallback((material: THREE.MeshStandardMaterial, nightBlendTexture: THREE.Texture) => {
         if (!material) return
-        console.log('nightBlendTexture', nightBlendTexture)
         material.onBeforeCompile = (shader) => {
             shader.uniforms.time = time.current;
-            shader.uniforms.targetColor = { value: new THREE.Color('#080620') };
-            shader.uniforms.noiseScale = { value: 800.0 };  // Smaller, more detailed patterns
+            shader.uniforms.targetColor = { value: new THREE.Color('#635ec1') };
+            shader.uniforms.noiseScale = { value: 30.0 };  // Smaller, more detailed patterns
             shader.uniforms.colorVariation = { value: 0.4 }; // Reduced variation
-            shader.uniforms.speedX = { value: 3.5 };        // Slower, more gentle
-            shader.uniforms.speedY = { value: 5.0 };        // Slower, more gentle
-            shader.uniforms.speedZ = { value: 5.5 };        // Slower, more gentle
+            shader.uniforms.speedX = { value: 1.5 };        // Slower, more gentle
+            shader.uniforms.speedY = { value: 2.0 };        // Slower, more gentle
+            shader.uniforms.speedZ = { value: 2.5 };        // Slower, more gentle
             shader.uniforms.mixStrength = { value: 0.3 }; 
             shader.uniforms.colorThreshold = { value: 0.15 }; 
             shader.uniforms.baseTexture = { value: null };
@@ -183,13 +185,15 @@ export const PlanetModel = ({ scale }: PlanetModelProps) => {
                 vec3 blendedColor = blendTexture(gl_FragColor.rgb) * 4.0;
                 
                 // Use vViewPosition for darkening effect based on view angle
-                float nightAppearFactor = smoothstep(1.0, -3.0, vViewPosition.x);
+                float nightAppearFactor = smoothstep(.0, -2.0, vViewPosition.x - vViewPosition.y);
+                float lightsAppearFactor = smoothstep(1.0, -4.0, vViewPosition.x - vViewPosition.y);
+
                 
                 // Smoothly darken the color and increase blend texture influence based on view angle
                 gl_FragColor.rgb = mix(gl_FragColor.rgb, gl_FragColor.rgb * 0.1, nightAppearFactor);
 
                 // Apply nightDisappearFactor only to the blended night texture
-                blendedColor *= nightAppearFactor;
+                blendedColor *= lightsAppearFactor;
                 gl_FragColor.rgb += blendedColor;
                 `
             );
@@ -206,7 +210,7 @@ export const PlanetModel = ({ scale }: PlanetModelProps) => {
     return (
         <group ref={groupRef}>
             <group dispose={null} scale={scale}>
-                <mesh ref={meshRef} name="Sphere" geometry={nodes.Sphere.geometry}/>
+                <mesh ref={meshRef} name="Sphere" geometry={nodes.Icosphere001.geometry} scale={9.765}/>
             </group>
         </group>
     )
