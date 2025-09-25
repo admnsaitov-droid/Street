@@ -12,7 +12,7 @@ interface ProductCardProps {
 export const ProductCard = ({ data }: ProductCardProps) => {
     return (
         <StyledProductCard>
-            <StyledHiddenLink href={`/products/${data?.slug}`}/>
+            <StyledHiddenLink href={`/products/${data?.slug}`} aria-label={`View ${data?.name} product details`}/>
             <StyledWrapper>
                 <StyledImageContainer>
                     <Image src={getMediaStrapiPath(data?.previewImage)} alt={data?.name} fill />
