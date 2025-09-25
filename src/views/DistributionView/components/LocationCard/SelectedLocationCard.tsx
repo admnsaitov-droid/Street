@@ -75,6 +75,7 @@ const StyledLocationCard = styled.div<{
 //   background-color: #6F768526;
   background-color: rgba(0, 0, 0, 0.9);
   transition: all 0.3s ease;
+  -webkit-backdrop-filter: blur(32px);
   backdrop-filter: blur(32px);
   cursor: ${({ $isExpanded }) => $isExpanded ? 'default' : 'pointer'};
 
@@ -155,6 +156,11 @@ const StyledTitle = styled.div`
   // margin-bottom: ${rm(16)};
   letter-spacing: -0.01em;
   width: 70%;
+  
+  /* Safari font rendering fixes */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 
   ${media.xsm`
     font-size: ${rm(20)};

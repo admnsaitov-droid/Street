@@ -112,7 +112,12 @@ export const Composition = ({ scale, position, rotationXSpeed, rotationZSpeed, a
             console.log('(Base targetRotation ignored:', location.targetRotation, ')')
             
             setTargetRotation({ x: targetX, y: targetY, z: targetZ })
-            setTargetZoom(7) // Zoom in slightly when location is selected
+            
+            // Adjust zoom based on continent - America gets less zoom (more zoomed out)
+            const zoomLevel = location.region === 'America' ? 9 : 7
+            console.log('Region:', location.region, 'Zoom level:', zoomLevel)
+            setTargetZoom(zoomLevel)
+            
             setIsRotating(true)
             setIsZooming(true)
             setIsZoomedIn(true) // Mark as zoomed in
@@ -201,7 +206,9 @@ export const Composition = ({ scale, position, rotationXSpeed, rotationZSpeed, a
         // Track zoom level in real-time for auto-rotation control
         if (!isProgrammaticControl && camera) {
             const currentDistance = camera.position.length()
-            const shouldBeZoomedIn = currentDistance < 8.5
+            // Adjust threshold based on selected location's region
+            const zoomThreshold = selectedLocation?.region === 'America' ? 9.0 : 8.5
+            const shouldBeZoomedIn = currentDistance < zoomThreshold
             
             if (shouldBeZoomedIn !== isZoomedIn) {
                 // Clear any existing timeout
@@ -337,8 +344,9 @@ export const Composition = ({ scale, position, rotationXSpeed, rotationZSpeed, a
                 
                 // Update zoom state based on final distance
                 const finalDistance = camera.position.length()
-                const newZoomedInState = finalDistance < 8.5
-                setIsZoomedIn(newZoomedInState) // Consider zoomed in if distance < 8.5
+                const zoomThreshold = selectedLocation?.region === 'America' ? 9.0 : 8.5
+                const newZoomedInState = finalDistance < zoomThreshold
+                setIsZoomedIn(newZoomedInState) // Consider zoomed in based on region-specific threshold
                 
                 // Ensure OrbitControls are properly updated
                 if (controlsRef.current) {
