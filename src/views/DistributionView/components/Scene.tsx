@@ -127,7 +127,7 @@ const StyledScene = styled(Canvas)`
         left: 25rem
     `}
 `
-
+// 
 const StyledMobileFadeContainer = styled.div`
     position: absolute;
     bottom: 0;
