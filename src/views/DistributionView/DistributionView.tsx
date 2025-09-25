@@ -84,52 +84,54 @@ export const DistributionView = ({ data }: DistributionViewProps) => {
 
     return (
         <StyledDistributionView>
-            <StyledContent>
-                <StyledTitleContainer>
-                    <h1>
-                        <AnimatedGrid
-                            tag="span"
-                            type="words"
-                            animation={{
-                                from: { opacity: 0, y: '40px' },
-                                to: { opacity: 1, y: '0px' },
-                                delayStep: 60
-                            }}
-                            overflow={true}
-                            gap={{ horizontal: '0.25em', vertical: '0.25em' }}
-                            containerStyle={{ overflow: 'hidden' }}
-                            cellConfigs={{
-                                'title-first': {
-                                    style: {
-                                        color: colors.red,
-                                        fontFamily: 'var(--font-sage-grotesk)',
-                                        fontOpticalSizing: 'auto',
-                                        fontWeight: 400,
-                                        fontStyle: 'normal',
+            <StyledSceneWrapper>
+                <StyledContent>
+                    <StyledTitleContainer>
+                        <h1>
+                            <AnimatedGrid
+                                tag="span"
+                                type="words"
+                                animation={{
+                                    from: { opacity: 0, y: '40px' },
+                                    to: { opacity: 1, y: '0px' },
+                                    delayStep: 60
+                                }}
+                                overflow={true}
+                                gap={{ horizontal: '0.25em', vertical: '0.25em' }}
+                                containerStyle={{ overflow: 'hidden' }}
+                                cellConfigs={{
+                                    'title-first': {
+                                        style: {
+                                            color: colors.red,
+                                            fontFamily: 'var(--font-sage-grotesk)',
+                                            fontOpticalSizing: 'auto',
+                                            fontWeight: 400,
+                                            fontStyle: 'normal',
+                                        }
+                                    },
+                                    'title-second': {
+                                        style: {
+                                            color: colors.white100,
+                                            fontFamily: 'var(--font-sage-grotesk)',
+                                            fontOpticalSizing: 'auto',
+                                            fontWeight: 400,
+                                            fontStyle: 'normal',
+                                        }
                                     }
-                                },
-                                'title-second': {
-                                    style: {
-                                        color: colors.white100,
-                                        fontFamily: 'var(--font-sage-grotesk)',
-                                        fontOpticalSizing: 'auto',
-                                        fontWeight: 400,
-                                        fontStyle: 'normal',
-                                    }
-                                }
-                            }}
-                        >
-                            <span id="title-first">{data?.distributionPage?.title?.textFirst}</span>
-                            <span id="title-second" className="first">{data?.distributionPage?.title?.textSecond}</span>
-                        </AnimatedGrid>
-                    </h1>
-                </StyledTitleContainer>
-            </StyledContent>
-            <DistributionScene 
-                activeFilterId={activeFilterId} 
-                onLocationClick={handleLocationClick}
-                selectedLocation={selectedLocation}
-            />
+                                }}
+                            >
+                                <span id="title-first">{data?.distributionPage?.title?.textFirst}</span>
+                                <span id="title-second" className="first">{data?.distributionPage?.title?.textSecond}</span>
+                            </AnimatedGrid>
+                        </h1>
+                    </StyledTitleContainer>
+                </StyledContent>
+                <DistributionScene 
+                    activeFilterId={activeFilterId} 
+                    onLocationClick={handleLocationClick}
+                    selectedLocation={selectedLocation}
+                />
+            </StyledSceneWrapper>
             <CountryPanel 
                 activeFilterId={activeFilterId}
                 onFilterChange={handleFilterChange} 
@@ -145,6 +147,20 @@ const StyledDistributionView = styled.div`
     ${heightLvh(100)};
     background-color: ${colors.black100};
     position: relative;
+
+    ${media.md`
+        height: auto;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+    `}
+
+    ${media.xsm`
+        height: auto;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+    `}
 `
 
 const StyledContent = styled.div`
@@ -157,6 +173,22 @@ const StyledContent = styled.div`
 
     ${media.xsm`
         padding: ${rm(100)} ${rm(16)};
+    `}
+`
+
+const StyledSceneWrapper = styled.div`
+    width: 100%;
+    height: 100%;
+    position: relative;
+
+    ${media.md`
+        ${heightLvh(100)};
+        min-height: 100vh;
+    `}
+
+    ${media.xsm`
+        ${heightLvh(100)};
+        min-height: 100vh;
     `}
 `
 

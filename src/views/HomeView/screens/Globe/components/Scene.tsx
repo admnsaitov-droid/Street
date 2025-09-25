@@ -27,6 +27,7 @@ export const Scene = () => {
                 isLoading={lazyScene.isLoading} 
                 progress={lazyScene.progress} 
                 className="globe-scene-skeleton" 
+                // previewSrc="/globePreview.png"
             />
             {lazyScene.shouldLoad && (
                 <StyledScene ref={ref} frameloop={lazyScene.isInView ? "always" : "demand"}>

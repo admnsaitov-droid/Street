@@ -8,7 +8,9 @@ import { SceneSkeleton } from "@/components/Skeleton/SceneSkeleton"
 import { Suspense } from "react"
 import { useLazyScene } from "@/hooks/useLazyScene"
 import { SceneReadyDetector } from "./SceneReadyDetector"
-import { media } from "@/styles"
+import { media, rm } from "@/styles"
+import { useWindowWidth } from "@react-hook/window-size"
+import { heightLvh } from "@/styles/utils"
 
 interface DistributionSceneProps {
     activeFilterId?: string
@@ -28,13 +30,15 @@ export const DistributionScene = ({ activeFilterId = 'all', onLocationClick, sel
         rootMargin: '100px'
     })
 
+    const width = useWindowWidth()
+
     return (
         <StyledContainer ref={lazyScene.containerRef}>
             <SceneSkeleton 
                 isLoading={lazyScene.isLoading} 
                 progress={lazyScene.progress} 
                 className="distribution-scene-skeleton" 
-                position="left"
+                position={width > 768 ? "left" : "center"}
             />
             {lazyScene.shouldLoad && (
                 <StyledScene frameloop={lazyScene.isInView ? "always" : "demand"}>
@@ -59,7 +63,9 @@ export const DistributionScene = ({ activeFilterId = 'all', onLocationClick, sel
                         />
                     </Suspense>
                 </StyledScene>
+                
             )}
+            <StyledMobileFadeContainer />
         </StyledContainer>
     )
 }
@@ -85,7 +91,7 @@ const StyledContainer = styled.div`
             top: 50%;
             transform: translateY(-50%);
             width: 20%;
-            height: 80%;
+            height: 10к470%;
             background: linear-gradient(90deg, rgba(0,0,0,0.1) 0%, transparent 100%);
             border-radius: 0 10px 10px 0;
             z-index: 10;
@@ -99,7 +105,7 @@ const StyledContainer = styled.div`
             top: 50%;
             transform: translateY(-50%);
             width: 20%;
-            height: 80%;
+            height: 100%;
             background: linear-gradient(270deg, rgba(0,0,0,0.1) 0%, transparent 100%);
             border-radius: 10px 0 0 10px;
             z-index: 10;
@@ -119,5 +125,27 @@ const StyledScene = styled(Canvas)`
 
     ${media.xsm`
         left: 25rem
+    `}
+`
+
+const StyledMobileFadeContainer = styled.div`
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: ${rm(120)};
+    z-index: 10;
+    background: linear-gradient(to top, black 0%, transparent 100%);
+    pointer-events: none;
+    display: none;
+    
+    ${media.md`
+        display: block;
+        height: ${rm(100)};
+    `}
+    
+    ${media.xsm`
+        display: block;
+        height: ${rm(80)};
     `}
 `

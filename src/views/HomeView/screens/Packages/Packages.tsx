@@ -263,17 +263,19 @@ const StyledContentLayout = styled.div`
         display: flex;
         border-radius: ${rm(10)};
         overflow: hidden;
+
+        ${media.md`
+            flex-direction: column;
+            flex-direction: column-reverse;
+        `}
     }
 
     ${media.md`
-        flex-direction: column;
-        flex-direction: column-reverse;
-        height: 100%;
         padding: ${rm(100)} 0 ${rm(50)} 0;
     `}
 
     ${media.xsm`
-        padding: ${rm(80)} 0 ${rm(10)} 0;
+        padding: ${rm(80)} 0 ${rm(15)} 0;
     `}
 
     .left{

@@ -14,15 +14,13 @@ interface ProductViewProps {
 
 const testColors = [
     {
-        name: "Orange",
-        color: "rgb(236, 100, 10)"
-    },
-    
-    {
         name: "Blue",
         color: "rgb(60, 97, 206)"
     },
-    
+    {
+        name: "Orange",
+        color: "rgb(236, 100, 10)"
+    },
     {
         name: "Green",
         color: "rgb(74, 203, 98)"
