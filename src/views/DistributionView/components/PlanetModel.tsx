@@ -7,6 +7,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import * as THREE from 'three'
 import { DRACOLoader, GLTF, GLTFLoader } from 'three-stdlib'
 import { sNoise } from "@/utils/sNoise"
+import { useWindowWidth } from "@react-hook/window-size"
 
 type GLTFResult = GLTF & {
     nodes: {
@@ -25,6 +26,7 @@ interface PlanetModelProps {
 export const PlanetModel = ({ scale }: PlanetModelProps) => {
     const groupRef = useRef<Group>(null)
     const time = useRef({value: 0})
+    const windowWidth = useWindowWidth()
 
     // Night blend texture
     // const nightBlendTexture = useTexture('/models/textures/earth_night_Diffuse.webp')
@@ -36,11 +38,11 @@ export const PlanetModel = ({ scale }: PlanetModelProps) => {
     const meshRef = useRef<THREE.Mesh>(null)
     const [highResMaterial, setHighResMaterial] = useState<THREE.MeshStandardMaterial | null>(null)
     
-    // Load high res model
+    // Load high res model only for screens wider than 576px
     useEffect(() => {
-        if (materials['Material.002']) {
+        if (materials['Material.002'] && windowWidth > 576) {
             // console.log('Material loaded')
-            // Load low res model directly
+            // Load high res model only for larger screens
             setTimeout(() => {
                 const dracoLoader = new DRACOLoader();
                 dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.5/');
@@ -62,16 +64,16 @@ export const PlanetModel = ({ scale }: PlanetModelProps) => {
                 });
             }, 0)
         }
-    }, [materials])
+    }, [materials, windowWidth])
 
-    // Replace low res material with high res material
+    // Replace low res material with high res material only for screens wider than 576px
     useEffect(() => {
-        if (highResMaterial) {
+        if (highResMaterial && windowWidth > 576) {
             const material = appllyShaders(highResMaterial, nightBlendTexture)
             if (!material) return
             meshRef.current && ((meshRef.current as THREE.Mesh).material = material);
         }
-    }, [highResMaterial, nightBlendTexture])
+    }, [highResMaterial, nightBlendTexture, windowWidth])
 
     // Apply planet shader to model materials
     useEffect(() => {

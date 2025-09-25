@@ -14,6 +14,7 @@ import { useInView } from "@react-spring/web"
 import styled from "styled-components"
 import { SkeletonIcon } from "./SkeletonIcon"
 import { rm } from "@/styles"
+import Image from "next/image"
 
 const StyledSceneSkeleton = styled.div`
     position: absolute;
@@ -39,6 +40,15 @@ const LoaderContainer = styled.div<{ $position: 'left' | 'right' | 'center', $th
     gap: ${rm(20)};
     position: absolute;
     top: 50%;
+
+
+    .preview {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width ${ rm(1139)};
+        height: 100%;
+    }
     
     ${props => {
         switch (props.$position) {
@@ -123,9 +133,10 @@ interface SceneSkeletonProps {
     className?: string
     position?: 'left' | 'right' | 'center' // Position of the loader
     theme?: 'light' | 'dark'
+    previewSrc?: string
 }
 
-export const SceneSkeleton = ({ isLoading, progress = 0, className, position = 'center', theme = 'light' }: SceneSkeletonProps) => {
+export const SceneSkeleton = ({ isLoading, progress = 0, className, position = 'center', theme = 'light', previewSrc }: SceneSkeletonProps) => {
     const [ref, inView] = useInView()
     
     return (
@@ -147,6 +158,7 @@ export const SceneSkeleton = ({ isLoading, progress = 0, className, position = '
                         </ProgressRing>
                     </IconContainer>
                 </StyledIconsContainer>
+                {previewSrc && <Image className="preview" src={previewSrc} alt="Preview" width={127} height={127} />}
                 <PercentageText $theme={theme}>{Math.round(progress)}%</PercentageText>
             </LoaderContainer>
         </StyledSceneSkeleton>

@@ -34,7 +34,7 @@ export const CountryPanel = ({ activeFilterId, onFilterChange, onLocationClick, 
         setIsCardsAnimatingOut(true)
         
         // After all cards have started animating out, change filter and show the selected card
-        const totalAnimationTime = locations.length * 100 + 400 // 400ms for the slide animation
+        const totalAnimationTime = Math.min(locations.length * 50 + 200, 600) // Max 600ms, faster timing
         setTimeout(() => {
             // Change filter after cards have animated out
             if (newFilterName) {
@@ -56,13 +56,17 @@ export const CountryPanel = ({ activeFilterId, onFilterChange, onLocationClick, 
             }
             
             setHideAllCards(true)
-            setAnimationPhase('showing')
             
-            // Mark animation as complete
+            // Small delay to ensure card starts from bottom position before animating
             setTimeout(() => {
-                setAnimationPhase('idle')
-                setPendingLocation(null)
-            }, 500)
+                setAnimationPhase('showing')
+                
+                // Mark animation as complete
+                setTimeout(() => {
+                    setAnimationPhase('idle')
+                    setPendingLocation(null)
+                }, 500)
+            }, 50)
         }, totalAnimationTime)
     }, [onFilterChange])
 
@@ -273,7 +277,7 @@ export const CountryPanel = ({ activeFilterId, onFilterChange, onLocationClick, 
                             key={location.id}
                             $isAnimatingOut={isCardsAnimatingOut}
                             $isAnimatingIn={isCardsAnimatingIn}
-                            $animationDelay={index * 100}
+                            $animationDelay={index * 50}
                         >
                         <LocationCard 
                             location={location} 
@@ -314,8 +318,29 @@ const StyledCountryPanel = styled.div`
     mask: linear-gradient(to bottom, black 0%, black calc(100% - ${rm(60)}), transparent 100%);
     -webkit-mask: linear-gradient(to bottom, black 0%, black calc(100% - ${rm(60)}), transparent 100%);
 
+    ${media.md`
+        position: relative;
+        top: auto;
+        right: auto;
+        height: auto;
+        width: 100%;
+        margin-top: ${rm(40)};
+        padding: 0 ${rm(16)};
+        mask: none;
+        -webkit-mask: none;
+        z-index: 40;
+    `}
+
     ${media.xsm`
-        display: none;
+        position: relative;
+        top: auto;
+        right: auto;
+        height: auto;
+        width: 100%;
+        margin-top: ${rm(40)};
+        padding: 0 ${rm(16)};
+        mask: none;
+        -webkit-mask: none;
     `}
 `
 
@@ -327,6 +352,15 @@ const StyledTopContainer = styled.div`
     background-color: #6F768526;
     backdrop-filter: blur(32px);
     border-radius: ${rm(8)};
+
+    ${media.md`
+        gap: ${rm(2)};
+    `}
+
+    ${media.xsm`
+        gap: ${rm(2)};
+        flex-wrap: wrap;
+    `}
 
     .filter{
         width: 20%;
@@ -346,6 +380,18 @@ const StyledTopContainer = styled.div`
 
         ${media.lg`
             font-size: ${rm(14)};
+        `}
+
+        ${media.md`
+            font-size: ${rm(12)};
+            padding: ${rm(12)} 0;
+        `}
+
+        ${media.xsm`
+            font-size: ${rm(12)};
+            padding: ${rm(10)} 0;
+            width: calc(20% - ${rm(2)});
+            min-width: ${rm(60)};
         `}
 
         transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out, transform 0.2s ease-in-out;
@@ -372,6 +418,18 @@ const StyledCardsContainer = styled.div<{ $hasActiveCard: boolean }>`
     
     /* Prevent scroll from bubbling to parent */
     overscroll-behavior: contain;
+    
+    ${media.md`
+        max-height: ${rm(800)};
+        padding-bottom: ${rm(20)};
+        min-height: ${rm(800)};
+    `}
+
+    ${media.xsm`
+        max-height: ${rm(750)};
+        padding-bottom: ${rm(20)};
+        min-height: ${rm(750)};
+    `}
     
     /* Custom scrollbar styling */
     &::-webkit-scrollbar {
@@ -442,4 +500,22 @@ const StyledSelectedCardWrapper = styled.div`
     right: ${rm(50)};
     width: ${rm(440)};
     z-index: 20;
+
+    ${media.md`
+        position: static;
+        top: auto;
+        left: auto;
+        right: auto;
+        width: 100%;
+        margin-top: ${rm(12)};
+    `}
+
+    ${media.xsm`
+        position: static;
+        top: auto;
+        left: auto;
+        right: auto;
+        width: 100%;
+        margin-top: ${rm(12)};
+    `}
 `
