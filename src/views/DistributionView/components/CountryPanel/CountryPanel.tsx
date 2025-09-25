@@ -313,10 +313,17 @@ const StyledCountryPanel = styled.div`
     z-index: 1000;
     display: flex;
     flex-direction: column;
+    
+    /* Safari font rendering fixes */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
 
-    /* Mask for transparency effect at the bottom */
-    mask: linear-gradient(to bottom, black 0%, black calc(100% - ${rm(60)}), transparent 100%);
+    /* Mask for transparency effect at the bottom - Safari compatible */
     -webkit-mask: linear-gradient(to bottom, black 0%, black calc(100% - ${rm(60)}), transparent 100%);
+    mask: linear-gradient(to bottom, black 0%, black calc(100% - ${rm(60)}), transparent 100%);
+    -webkit-mask-composite: source-over;
+    mask-composite: intersect;
 
     ${media.md`
         position: relative;
@@ -350,6 +357,7 @@ const StyledTopContainer = styled.div`
     gap: ${rm(4)};
     border: 1px solid #B7BCCA33;
     background-color: #6F768526;
+    -webkit-backdrop-filter: blur(32px);
     backdrop-filter: blur(32px);
     border-radius: ${rm(8)};
 
@@ -431,24 +439,31 @@ const StyledCardsContainer = styled.div<{ $hasActiveCard: boolean }>`
         min-height: ${rm(750)};
     `}
     
-    /* Custom scrollbar styling */
+    /* Custom scrollbar styling - Safari compatible */
     &::-webkit-scrollbar {
         width: ${rm(6)};
+        -webkit-appearance: none;
     }
     
     &::-webkit-scrollbar-track {
         background: rgba(255, 255, 255, 0.05);
         border-radius: ${rm(3)};
+        -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
     }
     
     &::-webkit-scrollbar-thumb {
         background: rgba(255, 255, 255, 0.2);
         border-radius: ${rm(3)};
+        -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
         transition: background 0.2s ease;
     }
     
     &::-webkit-scrollbar-thumb:hover {
         background: rgba(255, 255, 255, 0.4);
+    }
+    
+    &::-webkit-scrollbar-thumb:window-inactive {
+        background: rgba(255, 255, 255, 0.1);
     }
     
     /* Smooth scrolling */
