@@ -101,6 +101,10 @@ const StyledContent = styled.div`
     z-index: 1;
     user-select: none;
     pointer-events: none;
+
+    ${media.xsm`
+        padding: ${rm(92)} ${rm(16)};
+    `}
 `
 
 const StyledTitleContainer = styled.div`
@@ -123,7 +127,7 @@ const StyledTitleContainer = styled.div`
 
     ${media.xsm`
         width: 100%;
-        font-size: ${rm(40)};
+        font-size: ${rm(38)};
     `}
 
     h1 {

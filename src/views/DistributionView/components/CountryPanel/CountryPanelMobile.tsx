@@ -5,19 +5,20 @@ import { useState, useEffect, useCallback } from "react"
 import { distributionData, getFilterNames, Filter, getLocationsByFilter, Location as DistributionLocation } from "../../data/distributionData"
 import { LocationCard } from "../LocationCard/LocationCard"
 import { SelectedLocationCard } from "../LocationCard/SelectedLocationCard"
+import { SelectedLocationCardMobile } from "../LocationCard/SelectedLocationCardMobile"
 
 const filters = getFilterNames()
 
 
 
-interface CountryPanelProps {
+interface CountryPanelMobileProps {
     activeFilterId?: string
     onFilterChange?: (filterId: string) => void
     onLocationClick?: (location: DistributionLocation | null) => void
     selectedLocation?: DistributionLocation | null
 }
 
-export const CountryPanel = ({ activeFilterId, onFilterChange, onLocationClick, selectedLocation }: CountryPanelProps) => {
+export const CountryPanelMobile = ({ activeFilterId, onFilterChange, onLocationClick, selectedLocation }: CountryPanelMobileProps) => {
     const [activeFilter, setActiveFilter] = useState('All')
     const [activeCard, setActiveCard] = useState<string | null>(null)
     const [animationPhase, setAnimationPhase] = useState<'idle' | 'hiding' | 'showing'>('idle')
@@ -270,14 +271,28 @@ export const CountryPanel = ({ activeFilterId, onFilterChange, onLocationClick, 
                 }}
                 $hasActiveCard={!!activeCard}
             >
+                {/* Selected Card Instance - Sticky at Top */}
+                {(activeCard || isFadingOut) && displayedLocation && (
+                    <StyledSelectedCardWrapper>
+                        <SelectedLocationCardMobile
+                            location={displayedLocation}
+                            onClick={() => handleCardClick(displayedLocation)}
+                            isExpanded={true}
+                            animationPhase={animationPhase}
+                        />
+                    </StyledSelectedCardWrapper>
+                )}
+                
                 {/* All Cards with Individual Animations */}
-                {!hideAllCards && allLocations.map((location, index) => {
+                {allLocations.map((location, index) => {
                     return (
                         <StyledCardWrapper 
                             key={location.id}
                             $isAnimatingOut={isCardsAnimatingOut}
                             $isAnimatingIn={isCardsAnimatingIn}
                             $animationDelay={index * 50}
+                            $isHidden={hideAllCards}
+                            $isSelected={activeCard === location.id}
                         >
                         <LocationCard 
                             location={location} 
@@ -287,18 +302,6 @@ export const CountryPanel = ({ activeFilterId, onFilterChange, onLocationClick, 
                     </StyledCardWrapper>
                     )
                 })}
-                
-                {/* Selected Card Instance - Appears from Top */}
-                {(activeCard || isFadingOut) && displayedLocation && (
-                    <StyledSelectedCardWrapper>
-                        <SelectedLocationCard
-                            location={displayedLocation}
-                            onClick={() => handleCardClick(displayedLocation)}
-                            isExpanded={true}
-                            animationPhase={animationPhase}
-                        />
-                    </StyledSelectedCardWrapper>
-                )}
             </StyledCardsContainer>
         </StyledCountryPanel>
     )
@@ -420,7 +423,6 @@ const StyledCardsContainer = styled.div<{ $hasActiveCard: boolean }>`
     // padding-right: ${rm(8)};
     padding-bottom: ${rm(40)};
     flex: 1;
-    overflow-y: auto;
     position: relative;
     border-radius: ${rm(8)};
     
@@ -478,29 +480,40 @@ const StyledCardsContainer = styled.div<{ $hasActiveCard: boolean }>`
 const StyledCardWrapper = styled.div<{ 
     $isAnimatingOut: boolean; 
     $isAnimatingIn: boolean;
-    $animationDelay: number; 
+    $animationDelay: number;
+    $isHidden: boolean;
+    $isSelected: boolean;
 }>`
     /* Base cards - always visible and untouched */
     margin-bottom: 10px;
     
     /* CSS-based animation for better performance */
-    opacity: ${({ $isAnimatingOut, $isAnimatingIn }) => {
+    opacity: ${({ $isAnimatingOut, $isAnimatingIn, $isHidden, $isSelected }) => {
         if ($isAnimatingOut) return 0;
         if ($isAnimatingIn) return 0;
+        if ($isHidden && !$isSelected) return 0; // Hide unselected cards when hiding all
         return 1;
     }};
     
-    transform: ${({ $isAnimatingOut, $isAnimatingIn }) => {
+    transform: ${({ $isAnimatingOut, $isAnimatingIn, $isHidden, $isSelected }) => {
         if ($isAnimatingOut) return 'translateY(30%)';
         if ($isAnimatingIn) return 'translateY(30%)';
+        if ($isHidden && !$isSelected) return 'translateY(30%)'; // Move unselected cards down when hiding
         return 'translateY(0)';
     }};
     
     transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    transition-delay: ${({ $animationDelay, $isAnimatingOut, $isAnimatingIn }) => {
+    transition-delay: ${({ $animationDelay, $isAnimatingOut, $isAnimatingIn, $isHidden }) => {
         if ($isAnimatingOut) return `${$animationDelay}ms`;
         if ($isAnimatingIn) return `${$animationDelay}ms`;
+        if ($isHidden) return `${$animationDelay}ms`; // Apply delay when hiding cards
         return '0ms';
+    }};
+    
+    /* Ensure cards remain in layout but are visually hidden */
+    visibility: ${({ $isHidden, $isSelected }) => {
+        if ($isHidden && !$isSelected) return 'hidden';
+        return 'visible';
     }};
     
     &:last-child {
@@ -509,27 +522,25 @@ const StyledCardWrapper = styled.div<{
 `
 
 const StyledSelectedCardWrapper = styled.div`
-    position: fixed;
-    top: calc(${rm(113)} + ${rm(60)}); /* CountryPanel top + cards margin + filter height */
-    left: calc(100vw - ${rm(440)} - ${rm(50)});
-    right: ${rm(50)};
-    width: ${rm(440)};
+    position: sticky;
+    top: ${rm(100)};
     z-index: 20;
+    margin-bottom: ${rm(10)};
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.95) 100%);
+    // -webkit-backdrop-filter: blur(32px);
+    // backdrop-filter: blur(32px);
+    border-radius: ${rm(8)};
+    border: 1px solid #B7BCCA33;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 
     ${media.md`
-        position: static;
-        top: auto;
-        left: auto;
-        right: auto;
+        position: sticky;
         width: 100%;
         margin-top: ${rm(12)};
     `}
 
     ${media.xsm`
-        position: static;
-        top: auto;
-        left: auto;
-        right: auto;
+        position: sticky;
         width: 100%;
         margin-top: ${rm(12)};
     `}

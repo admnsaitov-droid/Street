@@ -7,7 +7,7 @@ import { fontGolosText } from "@/styles/fonts";
 import { AnimLink } from "@/layouts/AnimatedRouterLayout/AnimatedRouterLayout";
 import { LanguageSelect } from "@/components/Header/LanguageSelect/LanguageSelect";
 import { SimpleButton } from "@/components/Ui/buttons/SimpleButton";
-import { animated, useSpring } from "@react-spring/web";
+import { animated, easings, useSpring } from "@react-spring/web";
 import { PackageMenuMobile } from "./MegaMenus/PackageMenuMobile";
 import { ProductsMenuMobile } from "./MegaMenus/ProductsMenuMobile";
 
@@ -120,7 +120,10 @@ export const Menu = ({ data }: MenuProps) => {
 
     const menuAnimation = useSpring({
         height: openMenu ? contentHeight : 0,
-        config: { tension: 300, friction: 30 }
+        config: {
+            duration: 300,
+            easing: easings.easeOutCubic,
+        }
     });
 
     return (

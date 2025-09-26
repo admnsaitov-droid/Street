@@ -75,8 +75,7 @@ const StyledContainer = styled.div`
             top: 50%;
             transform: translateY(-50%);
             width: 20%;
-            height: 80%;
-            background: linear-gradient(90deg, rgba(0,0,0,0.1) 0%, transparent 100%);
+            height: 100%;
             border-radius: 0 10px 10px 0;
             z-index: 10;
             pointer-events: all;
@@ -89,8 +88,7 @@ const StyledContainer = styled.div`
             top: 50%;
             transform: translateY(-50%);
             width: 20%;
-            height: 80%;
-            background: linear-gradient(270deg, rgba(0,0,0,0.1) 0%, transparent 100%);
+            height: 100%;
             border-radius: 10px 0 0 10px;
             z-index: 10;
             pointer-events: all;

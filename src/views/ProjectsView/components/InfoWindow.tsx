@@ -19,7 +19,9 @@ const StyledInfoWindow = styled.div`
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
     border: 2px solid #B7BCCA33;
     overflow: hidden;
-    width: ${rm(324)};
+    // width: ${rm(324)};
+    width: 100%;
+    z-index: 1000;
 `
 
 const ImageContainer = styled.div`
@@ -126,12 +128,12 @@ export const InfoWindow = ({
                     </LinkButton> */}
                     {lat && lng && (
                         <GoogleMapsButton 
-                            href={`https://www.google.com/maps?q=${lat},${lng}`}
+                            href={`https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            aria-label={`Open location in Google Maps: ${linkText}`}
+                            aria-label="Построить маршрут в Google Maps"
                         >
-                            {linkText}
+                            Adjust the route
                         </GoogleMapsButton>
                     )}
                 </ButtonContainer>

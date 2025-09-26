@@ -19,18 +19,19 @@ interface CompositionProps {
     activeFilterId?: string
     onLocationClick?: (location: DistributionLocation | null) => void
     selectedLocation?: DistributionLocation | null
+    width: number
 }
 
 const mouseRotationIntensity = 0.05
 
-export const Composition = ({ scale, position, rotationXSpeed, rotationZSpeed, activeFilterId = 'all', onLocationClick, selectedLocation }: CompositionProps) => {
+export const Composition = ({ scale, position, rotationXSpeed, rotationZSpeed, activeFilterId = 'all', onLocationClick, selectedLocation, width }: CompositionProps) => {
     const groupRef = useRef<Group>(null)
     const planetGroupRef = useRef<Group>(null)
     const mouseRef = useRef({ x: 0, y: 0 })
     const baseRotation = useRef({ x: 0, z: 0 })
     const [targetRotation, setTargetRotation] = useState({ x: 0, y: 0, z: 0 })
     const [isRotating, setIsRotating] = useState(false)
-    const [targetZoom, setTargetZoom] = useState(10) // Default camera distance
+    const [targetZoom, setTargetZoom] = useState(width <= 768 ? 16 : 10) // Default camera distance - 2x smaller on mobile
     const [isZooming, setIsZooming] = useState(false)
     const currentRotationRef = useRef({ x: 0, y: 0, z: 0 })
     const cameraRotationRef = useRef({ x: 0, y: 0, z: 0 })
@@ -66,14 +67,14 @@ export const Composition = ({ scale, position, rotationXSpeed, rotationZSpeed, a
                 y: -currentSpherical.theta, // Invert theta back to Y
                 z: 0 
             })
-            setTargetZoom(10) // Reset to default zoom distance
+            setTargetZoom(width <= 768 ? 16 : 10) // Reset to default zoom distance - 2x smaller on mobile
             setIsRotating(true)
             setIsZooming(true)
             setIsZoomedIn(false) // Mark as not zoomed in
         } else {
             // Fallback to default view if camera not available
             setTargetRotation({ x: 0, y: 0, z: 0 })
-            setTargetZoom(10)
+            setTargetZoom(width <= 768 ? 16 : 10)
             setIsRotating(true)
             setIsZooming(true)
             setIsZoomedIn(false)
@@ -99,7 +100,7 @@ export const Composition = ({ scale, position, rotationXSpeed, rotationZSpeed, a
             // Reset to initial rotation and zoom
             console.log('Resetting to initial rotation and zoom')
             setTargetRotation({ x: 0, y: 0, z: 0 })
-            setTargetZoom(10) // Reset to default zoom
+            setTargetZoom(width <= 768 ? 16 : 10) // Reset to default zoom - 2x smaller on mobile
             setIsRotating(true)
             setIsZooming(true)
             setIsZoomedIn(false) // Mark as not zoomed in
@@ -113,8 +114,8 @@ export const Composition = ({ scale, position, rotationXSpeed, rotationZSpeed, a
             
             setTargetRotation({ x: targetX, y: targetY, z: targetZ })
             
-            // Adjust zoom based on continent - America gets less zoom (more zoomed out)
-            const zoomLevel = location.region === 'America' ? 9 : 7
+            // Adjust zoom based on continent - America gets less zoom (more zoomed out) - 2x smaller on mobile
+            const zoomLevel = location.region === 'America' ? (width <= 768 ? 14 : 9) : (width <= 768 ? 10 : 7)
             console.log('Region:', location.region, 'Zoom level:', zoomLevel)
             setTargetZoom(zoomLevel)
             
@@ -206,8 +207,8 @@ export const Composition = ({ scale, position, rotationXSpeed, rotationZSpeed, a
         // Track zoom level in real-time for auto-rotation control
         if (!isProgrammaticControl && camera) {
             const currentDistance = camera.position.length()
-            // Adjust threshold based on selected location's region
-            const zoomThreshold = selectedLocation?.region === 'America' ? 9.0 : 8.5
+            // Adjust threshold based on selected location's region - 2x smaller on mobile
+            const zoomThreshold = selectedLocation?.region === 'America' ? (width <= 768 ? 14 : 9.0) : (width <= 768 ? 10 : 8.5)
             const shouldBeZoomedIn = currentDistance < zoomThreshold
             
             if (shouldBeZoomedIn !== isZoomedIn) {
@@ -342,9 +343,9 @@ export const Composition = ({ scale, position, rotationXSpeed, rotationZSpeed, a
                 setIsZooming(false)
                 setIsProgrammaticControl(false) // Re-enable user control
                 
-                // Update zoom state based on final distance
+                // Update zoom state based on final distance - 2x smaller on mobile
                 const finalDistance = camera.position.length()
-                const zoomThreshold = selectedLocation?.region === 'America' ? 9.0 : 8.5
+                const zoomThreshold = selectedLocation?.region === 'America' ? (width <= 768 ? 14 : 9.0) : (width <= 768 ? 10 : 8.5)
                 const newZoomedInState = finalDistance < zoomThreshold
                 setIsZoomedIn(newZoomedInState) // Consider zoomed in based on region-specific threshold
                 
