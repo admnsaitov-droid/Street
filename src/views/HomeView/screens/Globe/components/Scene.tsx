@@ -8,8 +8,10 @@ import { SceneSkeleton } from "@/components/Skeleton/SceneSkeleton"
 import { Suspense } from "react"
 import { useLazyScene } from "@/hooks/useLazyScene"
 import { SceneReadyDetector } from "@/views/DistributionView/components/SceneReadyDetector"
+import { media, rm } from "@/styles"
+import { heightLvh } from "@/styles/utils"
+import { useWindowWidth } from "@react-hook/window-size"
 
-const scenePosition: [number, number, number] = [4, 0, -1]
 const rotationXSpeed = 0.0001
 const rotationZSpeed = 0.00001
 const mouseRotationIntensity = 0.05
@@ -20,8 +22,14 @@ export const Scene = () => {
         threshold: 0.1,
         rootMargin: '100px'
     })
+    
+    const width = useWindowWidth()
 
-    return (
+    const scenePosition: [number, number, number] = width > 768 ? [4, 0, -1] : [0, 0, 0]
+    const cameraPosition: [number, number, number] = width > 768 ? [0, 0, 8] : [0, 0, 15]
+
+
+    return (    
         <StyledContainer ref={lazyScene.containerRef}>
             <SceneSkeleton 
                 isLoading={lazyScene.isLoading} 
@@ -39,7 +47,7 @@ export const Scene = () => {
                             environmentIntensity={1}
                         />
                         <directionalLight position={[0, 10, 0]} intensity={1}/> 
-                        <PerspectiveCamera makeDefault position={[0, 0, 8]} fov={40}/>
+                        <PerspectiveCamera makeDefault position={cameraPosition} fov={40}/>
                         <Atmosphere scale={5.7} position={scenePosition} />
                         <Composition 
                             scale={0.4} 
@@ -63,6 +71,12 @@ const StyledContainer = styled.div`
     top: 0;
     left: 0;
 
+    ${media.md`
+        position: relative;
+        ${heightLvh(100)};
+        margin-bottom: ${rm(100)};
+    `}
+
     .globe-scene-skeleton {
         background: black;
     }
@@ -75,8 +89,7 @@ const StyledContainer = styled.div`
             top: 50%;
             transform: translateY(-50%);
             width: 20%;
-            height: 80%;
-            background: linear-gradient(90deg, rgba(0,0,0,0.1) 0%, transparent 100%);
+            height: 100%;
             border-radius: 0 10px 10px 0;
             z-index: 10;
             pointer-events: all;
@@ -89,8 +102,7 @@ const StyledContainer = styled.div`
             top: 50%;
             transform: translateY(-50%);
             width: 20%;
-            height: 80%;
-            background: linear-gradient(270deg, rgba(0,0,0,0.1) 0%, transparent 100%);
+            height: 100%;
             border-radius: 10px 0 0 10px;
             z-index: 10;
             pointer-events: all;
@@ -105,4 +117,30 @@ const StyledScene = styled(Canvas)`
     top: 0;
     left: 0;
     z-index: 1;
+
+    ${media.md`
+        &:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100px;
+            background: linear-gradient(to bottom, black, transparent);
+            z-index: 2;
+            pointer-events: none;
+        }
+        
+        &:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 100px;
+            background: linear-gradient(to top, black, transparent);
+            z-index: 2;
+            pointer-events: none;
+        }
+    `}
 `

@@ -3,7 +3,7 @@ import { colors, media, rm } from "@/styles"
 import { fontGolosText } from "@/styles/fonts"
 import styled from "styled-components"
 import { useEffect, useState, useRef } from "react"
-import { animated, useSpring } from "@react-spring/web"
+import { animated, easings, useSpring } from "@react-spring/web"
 import { useLocale } from "next-intl"
 import { getStrapiData } from "@/utils/strapi"
 import UnderlineLink from "@/components/animated/UnderlineLink/UnderlineLink"
@@ -115,7 +115,12 @@ export const PackageMenu = ({ previewText, allText }: { previewText: string, all
 
     const menuAnimation = useSpring({
         height: isHovered ? contentHeight : 0,
-        config: { tension: 300, friction: 30 }
+        minHeight: 0,
+        // config: { tension: 300, friction: 30 }
+        config: {
+            duration: 300,
+            easing: easings.easeOutCubic,
+        }
     })
 
     return (
@@ -182,7 +187,7 @@ const StyledVisibleContainer = styled(AnimatedLink)`
     font-size: ${rm(16)};
     color: ${colors.black100};
     ${fontGolosText(400)};
-    margin-bottom: ${rm(-2)};
+    // margin-bottom: ${rm(-2)};
 
     ${media.lg`
         font-size: ${rm(14)};
@@ -206,6 +211,7 @@ const StyledMenuContainer = styled(animated.div)`
     position: relative;
     border-radius: ${rm(10)};
     overflow: hidden;
+    transform: translateZ(0);
 `
 
 const StyledLayout = styled.div`

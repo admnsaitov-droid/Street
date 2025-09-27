@@ -6,6 +6,8 @@ import styled from "styled-components"
 import { DynamicProductScene as ProductScene } from "./Scene/DynamicProductScene"
 import { ColorPaletre } from "./ColorPaletre/ColoPaletre"
 import { AnimatedText } from "@/components/animated/AnimatedText/AnimatedText"
+import { useWindowWidth } from "@react-hook/window-size"
+import { SimpleButton } from "@/components/Ui/buttons/SimpleButton"
 
 
 interface HeroProps {
@@ -22,6 +24,8 @@ export const Hero = ({ data, colors }: HeroProps) => {
         { label: breadcrumb.text, slug: breadcrumb.link }
     ))
 
+    const width = useWindowWidth()
+
     return (
         <StyledHero>
             <StyledContent>
@@ -37,7 +41,12 @@ export const Hero = ({ data, colors }: HeroProps) => {
                 </div>
             </StyledContent>
             <ProductScene data={data?.model3D} colors={colors} />
-            <ColorPaletre colors={colors} />
+            {width > 768 ? <ColorPaletre colors={colors} /> : null}
+            {width > 768 ? <StyledQuoteButtonWrapper>
+                <SimpleButton isSvg link={data?.quoteButton?.link}>
+                    {data?.quoteButton?.text}
+                </SimpleButton>
+            </StyledQuoteButtonWrapper> : null}
         </StyledHero>
     )
 }
@@ -107,4 +116,11 @@ const StyledSubtitle = styled(AnimatedText)`
     ${media.xsm`
         font-size: ${rm(14)};
     `}
+`
+
+const StyledQuoteButtonWrapper = styled.div`
+    position: absolute;
+    right: ${rm(50)};
+    bottom: ${rm(50)};
+    z-index: 2;
 `

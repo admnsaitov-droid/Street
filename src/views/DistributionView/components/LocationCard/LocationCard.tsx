@@ -66,8 +66,8 @@ const StyledLocationCard = styled.div<{ $isExpanded: boolean }>`
   border: 1px solid #B7BCCA33;
   background-color: #6F768526;
   transition: all 0.3s ease;
-  -webkit-backdrop-filter: blur(32px);
-  backdrop-filter: blur(32px);
+  // -webkit-backdrop-filter: blur(32px);
+  // backdrop-filter: blur(32px);
   cursor: ${({ $isExpanded }) => $isExpanded ? 'default' : 'pointer'};
 
   &:hover {

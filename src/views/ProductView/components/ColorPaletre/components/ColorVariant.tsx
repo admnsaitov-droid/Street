@@ -29,9 +29,10 @@ const StyledColorVariant = styled.div<{ active: boolean }>`
     display: flex;
     align-items: center;
     justify-content: center;
-    border: ${rm(8)} solid #FFFFFFE5;
+    border: ${rm(5)} solid #FFFFFFE5;
     position: relative;
     cursor: pointer;
+    border-radius: ${rm(4)};
 
     transition: border-color 0.3s ease-in-out;
 

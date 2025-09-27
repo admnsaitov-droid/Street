@@ -33,6 +33,10 @@ export const Composition = ({ scale, position, inView, rotationXSpeed, rotationZ
     // Rotation settings - only Y-axis rotation allowed
     const dampingFactor = 0.95
     const smoothingFactor = 0.1
+    
+    // Mobile-specific settings
+    const isMobile = typeof window !== 'undefined' && 'ontouchstart' in window
+    const touchSensitivity = isMobile ? 0.004 : 0.008 // Slightly higher sensitivity for mobile
 
     // Use GUI controls if available, otherwise fallback to props
     const effectiveRotationZSpeed = rotationControls.rotationZSpeed || rotationZSpeed
@@ -54,8 +58,8 @@ export const Composition = ({ scale, position, inView, rotationXSpeed, rotationZ
             const deltaX = event.clientX - dragStart.current.x
 
             // Convert pixel movement to rotation - only horizontal (Y-axis)
-            const sensitivity = 0.008
-            const deltaRotationY = deltaX * sensitivity
+            // Use appropriate sensitivity based on device type
+            const deltaRotationY = deltaX * (isMobile ? 0.008 : 0.008)
 
             // Update velocity for momentum
             velocity.current.y = deltaRotationY
@@ -72,17 +76,64 @@ export const Composition = ({ scale, position, inView, rotationXSpeed, rotationZ
             canvas.style.cursor = 'grab'
         }
 
+        // Touch event handlers for mobile support
+        const handleTouchStart = (event: TouchEvent) => {
+            event.preventDefault() // Prevent scrolling
+            setIsDragging(true)
+            const touch = event.touches[0]
+            dragStart.current.x = touch.clientX
+            dragStart.current.y = touch.clientY
+        }
+
+        const handleTouchMove = (event: TouchEvent) => {
+            if (!isDragging) return
+            event.preventDefault() // Prevent scrolling
+
+            const touch = event.touches[0]
+            const deltaX = touch.clientX - dragStart.current.x
+
+            // Convert pixel movement to rotation - only horizontal (Y-axis)
+            // Use mobile-specific sensitivity
+            const deltaRotationY = deltaX * touchSensitivity
+
+            // Update velocity for momentum
+            velocity.current.y = deltaRotationY
+
+            // Update target rotation - unlimited Y-axis rotation
+            targetRotation.current.y += deltaRotationY
+
+            dragStart.current.x = touch.clientX
+            dragStart.current.y = touch.clientY
+        }
+
+        const handleTouchEnd = (event: TouchEvent) => {
+            event.preventDefault() // Prevent scrolling
+            setIsDragging(false)
+        }
+
+        // Mouse events
         canvas.addEventListener('mousedown', handleMouseDown)
         window.addEventListener('mousemove', handleMouseMove)
         window.addEventListener('mouseup', handleMouseUp)
+        
+        // Touch events
+        canvas.addEventListener('touchstart', handleTouchStart, { passive: false })
+        canvas.addEventListener('touchmove', handleTouchMove, { passive: false })
+        canvas.addEventListener('touchend', handleTouchEnd, { passive: false })
         
         // Set initial cursor
         canvas.style.cursor = 'grab'
 
         return () => {
+            // Mouse events cleanup
             canvas.removeEventListener('mousedown', handleMouseDown)
             window.removeEventListener('mousemove', handleMouseMove)
             window.removeEventListener('mouseup', handleMouseUp)
+            
+            // Touch events cleanup
+            canvas.removeEventListener('touchstart', handleTouchStart)
+            canvas.removeEventListener('touchmove', handleTouchMove)
+            canvas.removeEventListener('touchend', handleTouchEnd)
         }
     }, [isDragging, gl])
 

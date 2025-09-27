@@ -195,6 +195,7 @@ const StyledButton = styled.div`
     span{
         position: relative;
         z-index: 1;
+        text-align: center;
     }
 
     &:hover{

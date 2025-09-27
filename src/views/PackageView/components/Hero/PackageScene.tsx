@@ -8,12 +8,15 @@ import { SceneSkeleton } from "@/components/Skeleton/SceneSkeleton"
 import { Suspense } from "react"
 import { useLazyScene } from "@/hooks/useLazyScene"
 import { SceneReadyDetector } from "@/views/DistributionView/components/SceneReadyDetector"
+import { useWindowWidth } from "@react-hook/window-size"
 
 export const PackageScene = () => {
     const lazyScene = useLazyScene('package', {
         threshold: 0.2,
         rootMargin: '100px'
     })
+
+    const width = useWindowWidth()
 
     return (
         <StyledContainer ref={lazyScene.containerRef}>
@@ -42,8 +45,8 @@ export const PackageScene = () => {
                             enableZoom={false} 
                             enableRotate={true}
                             target={[0, 0, 0]}
-                            minPolarAngle={Math.PI / 2 - 0.5}
-                            maxPolarAngle={Math.PI / 2 - 0.5}
+                            minPolarAngle={width <= 768 ? Math.PI / 2 - 0.3 : Math.PI / 2 - 0.5}
+                            maxPolarAngle={width <= 768 ? Math.PI / 2 - 0.3 : Math.PI / 2 - 0.5}
                         />
                         {/* <ambientLight intensity={5} /> */}
                         <PerspectiveCamera makeDefault position={[0, 15, -30]} fov={36} rotation={[0, 0, 0]} />
@@ -52,7 +55,9 @@ export const PackageScene = () => {
                             files="/models/hadrMap.hdr"
                             environmentIntensity={1}
                         />
-                        <Tracker position={[0.5, 1.5, -0.8]} label="Package" />
+                        <group position={ width <= 768 ? [0, -3, 0] : [0, 0, 0]}>
+                            <Tracker position={[0.5, 1.5, -0.8]} label="Package" />
+                        </group>
                     </Suspense>
                 </StyledPackageScene>
             )}
@@ -75,8 +80,7 @@ const StyledContainer = styled.div`
             top: 50%;
             transform: translateY(-50%);
             width: 20%;
-            height: 80%;
-            background: linear-gradient(90deg, rgba(0,0,0,0.1) 0%, transparent 100%);
+            height: 100%;
             border-radius: 0 10px 10px 0;
             z-index: 10;
             pointer-events: all;
@@ -89,8 +93,7 @@ const StyledContainer = styled.div`
             top: 50%;
             transform: translateY(-50%);
             width: 20%;
-            height: 80%;
-            background: linear-gradient(270deg, rgba(0,0,0,0.1) 0%, transparent 100%);
+            height: 100%;
             border-radius: 10px 0 0 10px;
             z-index: 10;
             pointer-events: all;

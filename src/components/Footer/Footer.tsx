@@ -167,6 +167,7 @@ const StyledFooter = styled.div`
 
     ${media.xsm`
         padding: ${rm(70)} ${rm(16)} ${rm(15)} ${rm(16)};
+        z-index: 49;
     `}
 `
 

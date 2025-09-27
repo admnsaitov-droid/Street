@@ -9,6 +9,8 @@ import { DynamicDistributionScene as DistributionScene } from "./components/Dyna
 import AnimatedGrid from "@/components/animated/AnimatedContent"
 import { CountryPanel } from "./components/CountryPanel/CountryPanel"
 import { Location as DistributionLocation, getAllLocations } from "./data/distributionData"
+import { CountryPanelMobile } from "./components/CountryPanel/CountryPanelMobile"
+import { useWindowWidth } from "@react-hook/window-size"
 
 interface DistributionViewProps {
     data: any
@@ -37,7 +39,8 @@ export const DistributionView = ({ data }: DistributionViewProps) => {
     const [activeFilterId, setActiveFilterId] = useState('all')
     const [selectedLocation, setSelectedLocation] = useState<DistributionLocation | null>(null)
     const isInternalLocationChange = useRef(false)
-
+    const countryPanelMobileRef = useRef<HTMLDivElement>(null)
+    const width = useWindowWidth()
     // Check URL parameter on mount and set selected location
     useEffect(() => {
         // Skip if this is an internal location change to prevent rerender conflicts
@@ -80,6 +83,18 @@ export const DistributionView = ({ data }: DistributionViewProps) => {
         setSelectedLocation(location)
         // Update URL parameter silently
         updateLocationParam(router, location?.id || null)
+        
+        // Scroll to CountryPanelMobile on mobile devices when a location is selected
+        if (location && width <= 768 && countryPanelMobileRef.current) {
+            const element = countryPanelMobileRef.current
+            const elementPosition = element.offsetTop
+            const offsetPosition = elementPosition - 50
+            
+            window.scrollTo({
+                top: offsetPosition,
+                behavior: 'smooth'
+            })
+        }
     }
 
     return (
@@ -132,12 +147,19 @@ export const DistributionView = ({ data }: DistributionViewProps) => {
                     selectedLocation={selectedLocation}
                 />
             </StyledSceneWrapper>
-            <CountryPanel 
+            {width > 768 ? <CountryPanel 
                 activeFilterId={activeFilterId}
                 onFilterChange={handleFilterChange} 
                 onLocationClick={handleLocationClick} 
                 selectedLocation={selectedLocation} 
-            />
+            /> : <div ref={countryPanelMobileRef}>
+                <CountryPanelMobile 
+                    activeFilterId={activeFilterId}
+                    onFilterChange={handleFilterChange}
+                    onLocationClick={handleLocationClick}
+                    selectedLocation={selectedLocation}
+                />
+            </div>}
         </StyledDistributionView>
     )
 }

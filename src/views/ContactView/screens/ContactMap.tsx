@@ -577,6 +577,10 @@ const MapContainer = styled.div`
   .gm-style div a img[src*="google_white"] {
     display: none !important;
   }
+
+  div gmp-internal-camera-control {
+    display: none !important;
+  }
   
   /* Hide the entire logo container */
   .gm-style-cc {

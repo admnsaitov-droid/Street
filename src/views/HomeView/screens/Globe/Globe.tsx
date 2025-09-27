@@ -2,12 +2,13 @@ import { AnimatedDivider } from "@/components/animated/AnimatedDivider/AnimatedD
 import { BlueButton } from "@/components/Ui/buttons/BlueButton";
 import { colors, media, rm } from "@/styles";
 import { fontGolosText, fontSageGrotesk } from "@/styles/fonts";
-import { heightLvh } from "@/styles/utils";
+import { heightLvh, minHeightLvh } from "@/styles/utils";
 import styled from "styled-components"
 import { AnimatedText } from "@/components/animated/AnimatedText/AnimatedText";
 import { AnimatedTranslate } from "@/components/animated/AnimatedTranslate/AnimatedTranslate";
 import AnimatedGrid from "@/components/animated/AnimatedContent"
 import dynamic from "next/dynamic"
+import { useWindowWidth } from "@react-hook/window-size";
 
 const Scene = dynamic(() => import("./components/DynamicScene").then((mod) => mod.DynamicScene), {
     ssr: false,
@@ -27,6 +28,7 @@ interface GlobeProps {
 // ]
 
 export const Globe = ({ globeData }: GlobeProps) => {
+    const width = useWindowWidth()
     return (
         <StyledGlobe>
             <div className="left">
@@ -70,6 +72,7 @@ export const Globe = ({ globeData }: GlobeProps) => {
                     </StyledTitleContainer>
                     <StyledDescription>{globeData?.description}</StyledDescription>
                 </div>
+                {width <= 768 ? <Scene /> : null}
                 <div>
                     <StyledContinents style={{pointerEvents: 'none', userSelect: 'none'}}>
                         {globeData?.continents?.map((continent: any) => (
@@ -83,12 +86,12 @@ export const Globe = ({ globeData }: GlobeProps) => {
                             </StyledContinent>
                         ))}
                     </StyledContinents>
-                    <AnimatedTranslate>
+                    <AnimatedTranslate className="button-container">
                         <BlueButton link={globeData?.button?.link} isSvg className="button">{globeData?.button?.text}</BlueButton>
                     </AnimatedTranslate>
                 </div>
             </div>
-            <Scene />
+            {width <= 768 ? null : <Scene />}
         </StyledGlobe>
     )
 }
@@ -99,7 +102,24 @@ const StyledGlobe = styled.div`
     position: relative;
     ${heightLvh(100)};
     overflow: hidden;
+
+    ${media.md`
+        height: auto;
+        ${minHeightLvh(100)};
+    `}
     
+    .button-container{
+        ${media.md`
+            margin: ${rm(0)} ${rm(25)};
+            padding-bottom: ${rm(100)};
+        `}
+
+        ${media.xsm`
+            margin: ${rm(0)} ${rm(16)};
+            padding-bottom: ${rm(70)};
+        `}
+    }
+
     .button{
         width: fit-content;
         width: ${rm(550 * 0.46)};
@@ -125,12 +145,13 @@ const StyledGlobe = styled.div`
         width: 50%;
 
         ${media.md`
-            padding: ${rm(100)} ${rm(25)};
+            // padding: ${rm(100)} ${rm(25)};
+            padding: 0;
             width: 100%;
         `}
 
         ${media.xsm`
-            padding: ${rm(70)} ${rm(16)};
+            // padding: ${rm(70)} ${rm(16)};
         `}
     }
 `
@@ -142,11 +163,13 @@ const StyledTitleContainer = styled.div`
     ${media.lg`
         width: ${rm(450)};
         font-size: ${rm(40)};
+        padding: ${rm(100)} ${rm(25)} ${rm(0)} ${rm(25)};
     `}
 
     ${media.xsm`
         width: 100%;
         font-size: ${rm(32)};
+        padding: ${rm(70)} ${rm(16)} ${rm(0)} ${rm(16)};
     `}
 
     line-height: 90%;
@@ -167,11 +190,16 @@ const StyledContinents = styled.div`
         width: ${rm(440)};
     `}
 
+    ${media.md`
+        padding: ${rm(10)} ${rm(25)} ${rm(0)} ${rm(25)};
+    `}
+
     ${media.xsm`
         width: 100%;
         margin-bottom: ${rm(30)};
         row-gap: ${rm(30)};
         column-gap: ${rm(8)};
+        padding: ${rm(10)} ${rm(16)} ${rm(0)} ${rm(16)};
     `}
 `
 
@@ -188,9 +216,14 @@ const StyledDescription = styled(AnimatedText)`
         font-size: ${rm(16)};
     `}
 
+    ${media.md`
+        padding: ${rm(0)} ${rm(25)} ${rm(0)} ${rm(25)};
+    `}
+
     ${media.xsm`
         width: ${rm(272)};
         font-size: ${rm(14)};
+        padding: ${rm(0)} ${rm(16)} ${rm(0)} ${rm(16)};
     `}
 `
 

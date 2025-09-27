@@ -4,14 +4,14 @@ import styled from "styled-components"
 import { Location as DistributionLocation } from "../../data/distributionData"
 import { BlueButton } from "@/components/Ui/buttons/BlueButton"
 
-interface SelectedLocationCardProps {
+interface SelectedLocationCardMobileProps {
   location: DistributionLocation
   onClick?: () => void
   isExpanded?: boolean
   animationPhase?: 'idle' | 'hiding' | 'showing'
 }
 
-export const SelectedLocationCard = ({ location, onClick, isExpanded = false, animationPhase = 'idle' }: SelectedLocationCardProps) => {
+export const SelectedLocationCardMobile = ({ location, onClick, isExpanded = false, animationPhase = 'idle' }: SelectedLocationCardMobileProps) => {
   const handleClick = () => {
     if (onClick) {
       onClick()
@@ -68,15 +68,10 @@ const StyledLocationCard = styled.div<{
   $isExpanded: boolean
   $animationPhase?: 'idle' | 'hiding' | 'showing'
 }>`
-  border-radius: ${rm(8)};
   padding: ${rm(20)};
-  margin-bottom: ${rm(10)};
-  border: 1px solid #B7BCCA33;
-//   background-color: #6F768526;
-  background-color: rgba(0, 0, 0, 0.9);
+  margin-bottom: 0;
+  background-color: transparent;
   transition: all 0.3s ease;
-  // -webkit-backdrop-filter: blur(32px);
-  // backdrop-filter: blur(32px);
   cursor: ${({ $isExpanded }) => $isExpanded ? 'default' : 'pointer'};
 
   /* Animation logic - positioning handled by wrapper */

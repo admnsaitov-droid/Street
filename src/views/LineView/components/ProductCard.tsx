@@ -108,8 +108,6 @@ const StyledContent = styled.div`
         text-transform: uppercase;
         margin: 0;
         padding: 0;
-        font-weight: inherit;
-        font-family: inherit;
 
         transition: color 0.3s ease-in-out;
 
