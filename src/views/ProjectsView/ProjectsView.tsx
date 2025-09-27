@@ -53,7 +53,7 @@ export const ProjectsView = ({ data }: ProjectsViewProps) => {
                             cellConfigs={{
                                 'title-first': {
                                     style: {
-                                        color: colors.white100,
+                                        color: colors.black100,
                                         fontFamily: 'var(--font-golos-text)',
                                         fontOpticalSizing: 'auto',
                                         fontWeight: 600,
@@ -78,24 +78,26 @@ export const ProjectsView = ({ data }: ProjectsViewProps) => {
                     </h1>
                 </StyledTitleContainer>
             </StyledContent>
-            <ProjectsMap
-                center={mapCenter}
-                zoom={zoom}
-                markers={markers}
-            />
+            <MapContainer>
+                <ProjectsMap
+                    center={mapCenter}
+                    zoom={zoom}
+                    markers={markers}
+                />
+            </MapContainer>
         </StyledProjectsView>
     )
 }
 
 const StyledProjectsView = styled.div`
     width: 100%;
-    ${heightLvh(100)};
-    background-color: #0000004D;
+    background-color: #F8F9FC;
     position: relative;
 `
 
 const StyledContent = styled.div`
     padding: ${rm(110)} ${rm(50)};
+    padding-bottom: ${rm(25)};
     width: 100%;
     position: relative;
     z-index: 1;
@@ -104,6 +106,7 @@ const StyledContent = styled.div`
 
     ${media.xsm`
         padding: ${rm(92)} ${rm(16)};
+        padding-bottom: ${rm(25)};
     `}
 `
 
@@ -140,4 +143,11 @@ const StyledTitleContainer = styled.div`
         text-transform: inherit;
         font-family: inherit;
     }
+`
+
+const MapContainer = styled.div`
+    ${heightLvh(100)};
+    width: 100%;
+    position: relative;
+    overflow: hidden;
 `

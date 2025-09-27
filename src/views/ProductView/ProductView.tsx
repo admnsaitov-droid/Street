@@ -7,6 +7,8 @@ import styled from "styled-components"
 import { SwiperBlock } from "./components/SwiperBlock"
 import { StructuredData } from "@/components/StructuredData/StructuredData"
 import { generateProductSchema } from "@/utils/generateStructuredData"
+import { ColorPaletre } from "./components/ColorPaletre/ColoPaletre"
+import { useWindowWidth } from "@react-hook/window-size"
 
 interface ProductViewProps {
     data: any
@@ -59,10 +61,13 @@ export const ProductView = ({ data }: ProductViewProps) => {
         }
     })
 
+    const width = useWindowWidth()
+
     return (
         <StyledProductView>
             <StructuredData schemas={[productSchema]} />
             <Hero data={data?.product} colors={testColors} />
+            {width <= 768 ? <ColorPaletre colors={testColors} /> : null}
             <StyledWrapper>
                 <ProductOverview data={data?.product} />
             </StyledWrapper>

@@ -50,7 +50,7 @@ export const Overview = ({ data }: OverviewProps) => {
                     <StyledTitle tag="h2">{data?.mainDescription}</StyledTitle>
                     <div className="bottom">
                         <StyledSubtitle tag="p">{data?.descriptionSecondary}</StyledSubtitle>
-                        <SimpleButton className="button" link={data?.button?.link}>
+                        <SimpleButton className="button" link={data?.button?.link} isSvg>
                             {data?.button?.text}
                         </SimpleButton>
                     </div>
@@ -155,9 +155,9 @@ const StyledOverview = styled.div`
         ${media.xsm`
             width: 100%;
 
-            >*{
-                width: 100%;
-            }
+            // >*{
+            //     width: 100%;
+            // }
         `}
     }
 `
