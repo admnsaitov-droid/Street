@@ -206,6 +206,15 @@ const AnimatedGrid: React.FC<AnimatedGridProps> = ({
     return '';
   };
 
+  // Function to process text for measurement (same logic as processText but for measurement)
+  const processTextForMeasurement = (text: string): string[] => {
+    const words = text.split(/\s+/).filter(Boolean);
+    return words.map((word, wordIndex) => {
+      // Add a space after each word except the last one
+      return wordIndex < words.length - 1 ? word + ' ' : word;
+    });
+  };
+
   const parseChildren = (isAnimated = false) => {
     let globalIndex = 0;
     const elementIdMap: { [index: number]: string | undefined } = {};
@@ -236,14 +245,26 @@ const AnimatedGrid: React.FC<AnimatedGridProps> = ({
       );
     };
 
-    const processText = (text: string, config: CellConfig = {}, elementId?: string) =>
-      text
-        .split(/\s+/)
-        .filter(Boolean)
-        .map((word) => {
-          const index = globalIndex++;
-          return createAnimatedElement(word, index, config, elementId);
-        });
+    const processText = (text: string, config: CellConfig = {}, elementId?: string) => {
+      const words = text.split(/\s+/).filter(Boolean);
+      
+      // Show how it used to work (OLD WAY - no spaces)
+      const oldWay = words.join('');
+      
+      const processedWords = words.map((word, wordIndex) => {
+        const index = globalIndex++;
+        // Add a space after each word except the last one
+        const wordWithSpace = wordIndex < words.length - 1 ? word + ' ' : word;
+        return { word, wordWithSpace, index };
+      });
+      
+      // Show how it works now (NEW WAY - with spaces)
+      const newWay = processedWords.map(p => p.wordWithSpace).join('');
+      
+      return processedWords.map(({ wordWithSpace, index }) => 
+        createAnimatedElement(wordWithSpace, index, config, elementId)
+      );
+    };
 
 const processNode = (node: React.ReactNode): React.ReactNode[] => {
     if (typeof node === "string") return processText(node);
@@ -318,13 +339,19 @@ const processNode = (node: React.ReactNode): React.ReactNode[] => {
         const element = elements[i];
         
         if (typeof element === 'string') {
-          // For text nodes, measure using temporary element with actual styles
-          widths.push(measureTextWidth(element));
+          // For text nodes, process and measure each word with spaces
+          const processedWords = processTextForMeasurement(element);
+          processedWords.forEach(word => {
+            widths.push(measureTextWidth(word));
+          });
         } else if (React.isValidElement(element)) {
           // For React elements, try to extract text content and measure
           const textContent = extractTextContent(element);
           if (textContent) {
-            widths.push(measureTextWidth(textContent));
+            const processedWords = processTextForMeasurement(textContent);
+            processedWords.forEach(word => {
+              widths.push(measureTextWidth(word));
+            });
           } else {
             // Fallback: create a temporary element to measure the actual React element
             const tempDiv = document.createElement('div');
@@ -480,11 +507,18 @@ const processNode = (node: React.ReactNode): React.ReactNode[] => {
           const element = elements[i];
           
           if (typeof element === 'string') {
-            widths.push(measureTextWidth(element));
+            // For text nodes, process and measure each word with spaces
+            const processedWords = processTextForMeasurement(element);
+            processedWords.forEach(word => {
+              widths.push(measureTextWidth(word));
+            });
           } else if (React.isValidElement(element)) {
             const textContent = extractTextContent(element);
             if (textContent) {
-              widths.push(measureTextWidth(textContent));
+              const processedWords = processTextForMeasurement(textContent);
+              processedWords.forEach(word => {
+                widths.push(measureTextWidth(word));
+              });
             } else {
               // Fallback: create a temporary element to measure the actual React element
               const tempDiv = document.createElement('div');

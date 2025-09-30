@@ -149,38 +149,73 @@ export const CountryPanel = ({ activeFilterId, onFilterChange, onLocationClick, 
     }, [selectedLocation, onFilterChange, animateCardsOut, animateCardsIn, animationPhase, activeCard, activeFilter])
 
     const handleFilterClick = useCallback((filterName: string) => {
-        setActiveFilter(filterName)
+        // Prevent clicks during animation
+        if (animationPhase !== 'idle') return
         
-        // Start fade-out animation if there's an active card
+        // If there's an active card, start the animation sequence
         if (activeCard) {
+            // Step 1: Animate out the selected card first
             setIsFadingOut(true)
             setAnimationPhase('hiding')
             
-            // After fade-out animation completes, reset all states
+            // Step 2: After selected card fades out, change filter and animate in new cards
             setTimeout(() => {
+                // Clear the selected card and notify parent
                 setActiveCard(null)
-                setAnimationPhase('idle')
                 setDisplayedLocation(null)
                 setIsFadingOut(false)
-                setIsCardsAnimatingOut(false)
-                setIsCardsAnimatingIn(false)
+                
+                // Notify parent to clear selected location
+                if (onLocationClick) {
+                    onLocationClick(null)
+                }
+                
+                // Change the filter
+                setActiveFilter(filterName)
+                
+                // Find the filter ID from the name
+                const filter = distributionData.find((f: Filter) => f.name === filterName)
+                if (filter && onFilterChange) {
+                    onFilterChange(filter.id)
+                }
+                
+                // Step 3: Animate in the new category's cards
+                const newFilterData = distributionData.find((f: Filter) => f.name === filterName)
+                const newLocations = newFilterData ? newFilterData.locations : []
+                
+                // Start cards animation in
                 setHideAllCards(false)
-            }, 500)
+                setIsCardsAnimatingIn(true)
+                
+                // Trigger the animation
+                setTimeout(() => {
+                    setIsCardsAnimatingIn(false)
+                    setAnimationPhase('idle')
+                }, 50)
+            }, 500) // Match the fade-out duration
         } else {
-            setActiveCard(null)
-            setAnimationPhase('idle')
-            setDisplayedLocation(null)
-            setIsFadingOut(false)
-            setIsCardsAnimatingOut(false)
+            // No active card, just change filter and animate in new cards
+            setActiveFilter(filterName)
+            
+            // Find the filter ID from the name
+            const filter = distributionData.find((f: Filter) => f.name === filterName)
+            if (filter && onFilterChange) {
+                onFilterChange(filter.id)
+            }
+            
+            // Animate in the new category's cards
+            const newFilterData = distributionData.find((f: Filter) => f.name === filterName)
+            const newLocations = newFilterData ? newFilterData.locations : []
+            
             setHideAllCards(false)
+            setIsCardsAnimatingIn(true)
+            
+            setTimeout(() => {
+                setIsCardsAnimatingIn(false)
+                setAnimationPhase('idle')
+            }, 50)
         }
-        
-        // Find the filter ID from the name
-        const filter = distributionData.find((f: Filter) => f.name === filterName)
-        if (filter && onFilterChange) {
-            onFilterChange(filter.id)
-        }
-    }, [activeCard, onFilterChange])
+    }, [activeCard, onFilterChange, animationPhase])
 
     const handleCardClick = useCallback((location: DistributionLocation) => {
         // Prevent clicks during animation
