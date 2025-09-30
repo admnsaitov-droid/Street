@@ -34,7 +34,7 @@ export const AnimatedText: NextPage<Props & EngineProps> = memo(({
             lineConfig={config.slow}
             overflow
             showSeoText={false}
-            seo={true}
+            seo={false}
             columnGap={0.2}
             mode="once"
             {...props}

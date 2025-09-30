@@ -522,7 +522,7 @@ const StyledCardWrapper = styled.div<{
 `
 
 const StyledSelectedCardWrapper = styled.div`
-    position: sticky;
+    // position: sticky;
     top: ${rm(100)};
     z-index: 20;
     margin-bottom: ${rm(10)};
@@ -534,13 +534,11 @@ const StyledSelectedCardWrapper = styled.div`
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 
     ${media.md`
-        position: sticky;
         width: 100%;
         margin-top: ${rm(12)};
     `}
 
     ${media.xsm`
-        position: sticky;
         width: 100%;
         margin-top: ${rm(12)};
     `}

@@ -10,7 +10,7 @@ import { AnimLink } from "@/layouts/AnimatedRouterLayout/AnimatedRouterLayout";
 import useLoadingStore from "@/store/store";
 import { colors, media, rm } from "@/styles";
 import { fontGolosText } from "@/styles/fonts";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import styled from "styled-components"
 
 interface ContactFormProps {
@@ -39,6 +39,14 @@ export const ContactForm = ({ data, buttonText }: ContactFormProps) => {
         policy: false
     })
 
+    // Refs for form fields to enable scrolling to errors
+    const firstNameRef = useRef<HTMLInputElement>(null)
+    const lastNameRef = useRef<HTMLInputElement>(null)
+    const emailRef = useRef<HTMLInputElement>(null)
+    const phoneNumberRef = useRef<HTMLInputElement>(null)
+    const bodyRef = useRef<HTMLTextAreaElement>(null)
+    const policyRef = useRef<HTMLDivElement>(null)
+
     const validateForm = () => {
         const newErrors = {
             firstName: '',
@@ -49,48 +57,68 @@ export const ContactForm = ({ data, buttonText }: ContactFormProps) => {
             policy: false
         }
         let isValid = true
+        let firstErrorRef = null
 
         if (!formData.firstName.trim()) {
             newErrors.firstName = data?.firstNameErrorText
             isValid = false
+            if (!firstErrorRef) firstErrorRef = firstNameRef
         }
 
         if (!formData.lastName.trim()) {
             newErrors.lastName = data?.lastNameErrorText
             isValid = false
+            if (!firstErrorRef) firstErrorRef = lastNameRef
         }
 
         if (!formData.email.trim()) {
             newErrors.email = data?.mailErrorText
             isValid = false
+            if (!firstErrorRef) firstErrorRef = emailRef
         } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
             newErrors.email = data?.mailErrorText
             isValid = false
+            if (!firstErrorRef) firstErrorRef = emailRef
         }
 
         if (!formData.phoneNumber.trim()) {
             newErrors.phoneNumber = data?.phoneErrorText
             isValid = false
+            if (!firstErrorRef) firstErrorRef = phoneNumberRef
         } else {
             // Check if phone number contains only numbers and has more than 6 digits
             const phoneNumbers = formData.phoneNumber.replace(/\D/g, '') // Remove all non-digits
             if (phoneNumbers.length <= 6) {
                 newErrors.phoneNumber = data?.phoneErrorText
                 isValid = false
+                if (!firstErrorRef) firstErrorRef = phoneNumberRef
             }
         }
 
         if (!formData.body.trim()) {
             newErrors.body = data?.messageErrorText
             isValid = false
+            if (!firstErrorRef) firstErrorRef = bodyRef
         }
 
         if (!formData.policy) {
             newErrors.policy = data?.policyErrorText
             isValid = false
+            if (!firstErrorRef) firstErrorRef = policyRef
         }
 
         setErrors(newErrors)
+        
+        // Scroll to first error if validation fails
+        if (!isValid && firstErrorRef?.current) {
+            setTimeout(() => {
+                firstErrorRef.current?.scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'center' 
+                })
+            }, 100)
+        }
+        
         return isValid
     }
 
@@ -166,17 +194,17 @@ export const ContactForm = ({ data, buttonText }: ContactFormProps) => {
         <StyledContactForm onSubmit={handleSubmit}>
             <StyledInputs>
                 <StyledSection>
-                    <ContactInput label={data?.firstNamePlaceholder} name="firstName" value={formData.firstName} onChange={handleInputChange} error={errors.firstName} />
-                    <ContactInput label={data?.lastNamePlaceholder} name="lastName" value={formData.lastName} onChange={handleInputChange} error={errors.lastName} />
+                    <ContactInput ref={firstNameRef} label={data?.firstNamePlaceholder} name="firstName" value={formData.firstName} onChange={handleInputChange} error={errors.firstName} />
+                    <ContactInput ref={lastNameRef} label={data?.lastNamePlaceholder} name="lastName" value={formData.lastName} onChange={handleInputChange} error={errors.lastName} />
                 </StyledSection>
                 <StyledSection>
-                    <ContactInput label={data?.mailPlaceholder} name="email" value={formData.email} onChange={handleInputChange} error={errors.email} />
-                    <ContactInput label={data?.phonePlaceholder} name="phoneNumber" value={formData.phoneNumber} onChange={handleInputChange} error={errors.phoneNumber} />
+                    <ContactInput ref={emailRef} label={data?.mailPlaceholder} name="email" value={formData.email} onChange={handleInputChange} error={errors.email} />
+                    <ContactInput ref={phoneNumberRef} label={data?.phonePlaceholder} name="phoneNumber" value={formData.phoneNumber} onChange={handleInputChange} error={errors.phoneNumber} />
                 </StyledSection>
-                <SimpleTextarea label={data?.messagePlaceholder} name="body" value={formData.body} onChange={handleTextareaChange} error={errors.body} />
+                <SimpleTextarea ref={bodyRef} label={data?.messagePlaceholder} name="body" value={formData.body} onChange={handleTextareaChange} error={errors.body} />
             </StyledInputs>
             <StyledBottom>
-                <div className="left" onClick={() => {
+                <div ref={policyRef} className="left" onClick={() => {
                     setFormData({ ...formData, policy: !formData.policy })
                     // Clear error when user toggles checkbox
                     if (errors.policy) {

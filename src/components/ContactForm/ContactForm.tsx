@@ -1,7 +1,7 @@
 'use client'
 import styled from "styled-components"
 import { colors } from "@/styles/colors"
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import { useLocale } from "next-intl"
 import { getStrapiData } from "@/utils/strapi"
 import { media, rm } from "@/styles"
@@ -17,6 +17,7 @@ import UnderlineLink from "../animated/UnderlineLink/UnderlineLink"
 import { useWindowWidth } from "@react-hook/window-size"
 import AnimatedGrid from "@/components/animated/AnimatedContent"
 import { LineAppear } from "./components/LineAppear"
+import { scrollTo } from "@/utils/scrollTo"
 
 export const ContactForm = () => {
     const [data, setData] = useState<any>(null)
@@ -44,6 +45,14 @@ export const ContactForm = () => {
         policy: false
     })
 
+    // Refs for form fields to enable scrolling to errors
+    const fullNameRef = useRef<HTMLInputElement>(null)
+    const emailRef = useRef<HTMLInputElement>(null)
+    const phoneNumberRef = useRef<HTMLInputElement>(null)
+    const subjectRef = useRef<HTMLInputElement>(null)
+    const bodyRef = useRef<HTMLTextAreaElement>(null)
+    const policyRef = useRef<HTMLDivElement>(null)
+
     useEffect(() => {
         const fetchData = async () => {
             const data = await getStrapiData('get-contact-data', locale)
@@ -63,48 +72,68 @@ export const ContactForm = () => {
             policy: false
         }
         let isValid = true
+        let firstErrorRef = null
 
         if (!formData.fullName.trim()) {
             newErrors.fullName = data?.data?.contactForm?.nameErrorText
             isValid = false
+            if (!firstErrorRef) firstErrorRef = fullNameRef
         }
 
         if (!formData.email.trim()) {
             newErrors.email = data?.data?.contactForm?.mailErrorText
             isValid = false
+            if (!firstErrorRef) firstErrorRef = emailRef
         } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
             newErrors.email = data?.data?.contactForm?.mailErrorText
             isValid = false
+            if (!firstErrorRef) firstErrorRef = emailRef
         }
 
         if (!formData.phoneNumber.trim()) {
             newErrors.phoneNumber = data?.data?.contactForm?.phoneErrorMessage
             isValid = false
+            if (!firstErrorRef) firstErrorRef = phoneNumberRef
         } else {
             // Check if phone number contains only numbers and has more than 6 digits
             const phoneNumbers = formData.phoneNumber.replace(/\D/g, '') // Remove all non-digits
             if (phoneNumbers.length <= 6) {
                 newErrors.phoneNumber = data?.data?.contactForm?.phoneErrorMessage
                 isValid = false
+                if (!firstErrorRef) firstErrorRef = phoneNumberRef
             }
         }
 
         if (!formData.subject.trim()) {
             newErrors.subject = data?.data?.contactForm?.subjectErrorText
             isValid = false
+            if (!firstErrorRef) firstErrorRef = subjectRef
         }
 
         if (!formData.body.trim()) {
             newErrors.body = data?.data?.contactForm?.messageErrorText
             isValid = false
+            if (!firstErrorRef) firstErrorRef = bodyRef
         }
 
         if (!formData.policy) {
             newErrors.policy = true
             isValid = false
+            if (!firstErrorRef) firstErrorRef = policyRef
         }
 
         setErrors(newErrors)
+        
+        // Scroll to first error if validation fails
+        if (!isValid && firstErrorRef?.current) {
+            setTimeout(() => {
+                firstErrorRef.current?.scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'center' 
+                })
+            }, 100)
+        }
+        
         return isValid
     }
 
@@ -222,7 +251,7 @@ export const ContactForm = () => {
                         <StyledSection>
                             <StyledFormText>{data?.data?.contactForm?.nameText}</StyledFormText>
                             <StyledInputWrapper>
-                                <SimpleInput label={data?.data?.contactForm?.namePlaceholder} name="fullName" value={formData.fullName} onChange={handleInputChange} error={errors.fullName} />
+                                <SimpleInput ref={fullNameRef} label={data?.data?.contactForm?.namePlaceholder} name="fullName" value={formData.fullName} onChange={handleInputChange} error={errors.fullName} />
                             </StyledInputWrapper>
                         </StyledSection>
                     </LineAppear>
@@ -230,11 +259,11 @@ export const ContactForm = () => {
                         <StyledSection> 
                             <StyledFormText>{data?.data?.contactForm?.mailText}</StyledFormText>
                             <StyledInputWrapper>
-                                <SimpleInput label={data?.data?.contactForm?.mailPlaceholder} name="email" value={formData.email} onChange={handleInputChange} error={errors.email} />
+                                <SimpleInput ref={emailRef} label={data?.data?.contactForm?.mailPlaceholder} name="email" value={formData.email} onChange={handleInputChange} error={errors.email} />
                             </StyledInputWrapper>
                             <StyledFormText>{data?.data?.contactForm?.phoneText}</StyledFormText>
                             <StyledInputWrapper>
-                                <SimpleInput label={data?.data?.contactForm?.phonePlaceholder} name="phoneNumber" value={formData.phoneNumber} onChange={handleInputChange} error={errors.phoneNumber} />
+                                <SimpleInput ref={phoneNumberRef} label={data?.data?.contactForm?.phonePlaceholder} name="phoneNumber" value={formData.phoneNumber} onChange={handleInputChange} error={errors.phoneNumber} />
                             </StyledInputWrapper>
                         </StyledSection>
                     </LineAppear>
@@ -242,7 +271,7 @@ export const ContactForm = () => {
                         <StyledSection>
                             <StyledFormText>{data?.data?.contactForm?.subjectText}</StyledFormText>
                             <StyledInputWrapper>
-                                <SimpleInput label={data?.data?.contactForm?.subjectPlaceholder} name="subject" value={formData.subject} onChange={handleInputChange} error={errors.subject} />
+                                <SimpleInput ref={subjectRef} label={data?.data?.contactForm?.subjectPlaceholder} name="subject" value={formData.subject} onChange={handleInputChange} error={errors.subject} />
                             </StyledInputWrapper>
                         </StyledSection>
                     </LineAppear>
@@ -250,7 +279,7 @@ export const ContactForm = () => {
                         <StyledSection>
                             <StyledFormText>{data?.data?.contactForm?.questionText}</StyledFormText>
                             <StyledInputWrapper>
-                                <SimpleTextarea label={data?.data?.contactForm?.questionPlaceholder} name="body" value={formData.body} onChange={handleTextareaChange} error={errors.body} />
+                                <SimpleTextarea ref={bodyRef} label={data?.data?.contactForm?.questionPlaceholder} name="body" value={formData.body} onChange={handleTextareaChange} error={errors.body} />
                             </StyledInputWrapper>
                         </StyledSection>
                     </LineAppear>
@@ -260,7 +289,7 @@ export const ContactForm = () => {
                         <StyledSection>
                             <StyledFormText>{data?.data?.contactForm?.nameText}</StyledFormText>
                             <StyledInputWrapper>
-                                <SimpleInput label={data?.data?.contactForm?.namePlaceholder} name="fullName" value={formData.fullName} onChange={handleInputChange} error={errors.fullName} />
+                                <SimpleInput ref={fullNameRef} label={data?.data?.contactForm?.namePlaceholder} name="fullName" value={formData.fullName} onChange={handleInputChange} error={errors.fullName} />
                             </StyledInputWrapper>
                         </StyledSection>
                     </LineAppear>
@@ -268,7 +297,7 @@ export const ContactForm = () => {
                         <StyledSection> 
                             <StyledFormText>{data?.data?.contactForm?.mailText}</StyledFormText>
                             <StyledInputWrapper>
-                                <SimpleInput label={data?.data?.contactForm?.mailPlaceholder} name="email" value={formData.email} onChange={handleInputChange} error={errors.email} />
+                                <SimpleInput ref={emailRef} label={data?.data?.contactForm?.mailPlaceholder} name="email" value={formData.email} onChange={handleInputChange} error={errors.email} />
                             </StyledInputWrapper>
                         </StyledSection>
                     </LineAppear>
@@ -276,7 +305,7 @@ export const ContactForm = () => {
                         <StyledSection>
                             <StyledFormText>{data?.data?.contactForm?.phoneText}</StyledFormText>
                             <StyledInputWrapper>
-                                <SimpleInput label={data?.data?.contactForm?.phonePlaceholder} name="phoneNumber" value={formData.phoneNumber} onChange={handleInputChange} error={errors.phoneNumber} />
+                                <SimpleInput ref={phoneNumberRef} label={data?.data?.contactForm?.phonePlaceholder} name="phoneNumber" value={formData.phoneNumber} onChange={handleInputChange} error={errors.phoneNumber} />
                             </StyledInputWrapper>
                         </StyledSection>
                     </LineAppear>
@@ -284,7 +313,7 @@ export const ContactForm = () => {
                         <StyledSection>
                             <StyledFormText>{data?.data?.contactForm?.subjectText}</StyledFormText>
                             <StyledInputWrapper>
-                                <SimpleInput label={data?.data?.contactForm?.subjectPlaceholder} name="subject" value={formData.subject} onChange={handleInputChange} error={errors.subject} />
+                                <SimpleInput ref={subjectRef} label={data?.data?.contactForm?.subjectPlaceholder} name="subject" value={formData.subject} onChange={handleInputChange} error={errors.subject} />
                             </StyledInputWrapper>
                         </StyledSection>
                     </LineAppear>
@@ -292,13 +321,13 @@ export const ContactForm = () => {
                         <StyledSection>
                             <StyledFormText>{data?.data?.contactForm?.questionText}</StyledFormText>
                             <StyledInputWrapper>
-                                <SimpleTextarea label={data?.data?.contactForm?.questionPlaceholder} name="body" value={formData.body} onChange={handleTextareaChange} error={errors.body} />
+                                <SimpleTextarea ref={bodyRef} label={data?.data?.contactForm?.questionPlaceholder} name="body" value={formData.body} onChange={handleTextareaChange} error={errors.body} />
                             </StyledInputWrapper>
                         </StyledSection>
                     </LineAppear>
                 </>}
                 <StyledBottom>
-                    <div className="left" onClick={() => {
+                    <div ref={policyRef} className="left" onClick={() => {
                         setFormData({ ...formData, policy: !formData.policy })
                         // Clear error when user toggles checkbox
                         if (errors.policy) {

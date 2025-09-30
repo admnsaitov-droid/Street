@@ -163,7 +163,7 @@ const StyledTitleContainer = styled.div`
     ${media.lg`
         width: ${rm(450)};
         font-size: ${rm(40)};
-        padding: ${rm(100)} ${rm(25)} ${rm(0)} ${rm(25)};
+        // padding: ${rm(100)} ${rm(25)} ${rm(0)} ${rm(25)};
     `}
 
     ${media.xsm`

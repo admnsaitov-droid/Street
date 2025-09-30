@@ -87,8 +87,10 @@ const StyledTitle = styled(AnimatedText)`
     letter-spacing: -0.01em;
     color: ${colors.black100};
 
-    span:nth-child(2){
-        padding-left: ${rm(113)} !important;
+    span:nth-child(1){
+        >:nth-child(1){
+            padding-left: ${rm(113)} !important;
+        }
     }
 
     ${media.lg`
@@ -98,8 +100,10 @@ const StyledTitle = styled(AnimatedText)`
     ${media.md`
         font-size: ${rm(24)};
 
-        span:nth-child(2){
-            padding-left: ${rm(0)} !important;
+        span:nth-child(1){
+            >:nth-child(1){
+                padding-left: ${rm(0)} !important;
+            }
         }
     `}
 

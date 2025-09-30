@@ -1,6 +1,6 @@
 import styled from "styled-components"
 import { rm, colors, media } from "@/styles"
-import { useState, FocusEvent, InputHTMLAttributes } from "react"
+import { useState, FocusEvent, InputHTMLAttributes, forwardRef } from "react"
 import { fontGolosText } from "@/styles/fonts"
 
 interface SimpleInputProps extends InputHTMLAttributes<HTMLInputElement> {
@@ -8,7 +8,7 @@ interface SimpleInputProps extends InputHTMLAttributes<HTMLInputElement> {
   error?: string
 }
 
-export const SimpleInput = ({ label, value = "", error, ...props }: SimpleInputProps) => {
+export const SimpleInput = forwardRef<HTMLInputElement, SimpleInputProps>(({ label, value = "", error, ...props }, ref) => {
   const [focused, setFocused] = useState(false)
   
   // Generate unique ID for accessibility
@@ -30,6 +30,7 @@ export const SimpleInput = ({ label, value = "", error, ...props }: SimpleInputP
       </Label>
       <Input
         {...props}
+        ref={ref}
         id={inputId}
         value={value}
         onChange={e => {
@@ -45,7 +46,7 @@ export const SimpleInput = ({ label, value = "", error, ...props }: SimpleInputP
       {error && <ErrorMessage id={`${inputId}-error`}>{error}</ErrorMessage>}
     </StyledSimpleInput>
   )
-}
+})
 
 const StyledSimpleInput = styled.div`
   position: relative;

@@ -4,6 +4,7 @@ import React, { Children, useMemo, useLayoutEffect, useState, useRef, useEffect 
 import { animated, useInView } from "@react-spring/web";
 import styled from "styled-components";
 import { Spring } from "../Springs/Spring";
+import ReactDOM from "react-dom";
 
 interface AnimationSettings {
   from?: Record<string, any>;
@@ -52,37 +53,6 @@ const MainContainerSpan = styled.span<{ $isSpan?: boolean }>`
   display: inline-block;
 `;
 
-const MeasureContainer = styled.div<{ $gapH: string; $gapV: string; $isSpan?: boolean }>`
-  box-sizing: border-box;
-  display: flex;
-  flex-wrap: wrap;
-  width: 100%;
-  gap: ${(p) => p.$gapV} ${(p) => p.$gapH};
-  align-items: flex-start;
-  visibility: hidden;
-  position: absolute;
-  top: 0;
-  left: 0;
-  pointer-events: none;
-  z-index: -1;
-  height: 0;
-`;
-
-const MeasureContainerSpan = styled.span<{ $gapH: string; $gapV: string; $isSpan?: boolean }>`
-  box-sizing: border-box;
-  display: flex;
-  flex-wrap: wrap;
-  width: 100%;
-  gap: ${(p) => p.$gapV} ${(p) => p.$gapH};
-  align-items: flex-start;
-  visibility: hidden;
-  position: absolute;
-  top: 0;
-  left: 0;
-  pointer-events: none;
-  z-index: -1;
-  height: 0;
-`;
 
 const GridRow = styled.div<{ $debug?: boolean; $gapH: string; $gapV: string; $isSpan?: boolean }>`
   display: flex;
@@ -182,12 +152,59 @@ const AnimatedGrid: React.FC<AnimatedGridProps> = ({
   const [ref, inViewInternal] = useInView({ once, amount: 0.3 });
   const inView = typeof elementAppearanceView === "boolean" ? elementAppearanceView : inViewInternal;
 
-  const measureRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const [elementRows, setElementRows] = useState<number[][]>([]);
   const [containerWidth, setContainerWidth] = useState(0);
   const [elementWidths, setElementWidths] = useState<number[]>([]);
+
+  // Function to measure text using temporary DOM elements with actual styles
+  const measureTextWidth = (text: string, element: React.ReactElement | null = null): number => {
+    if (!containerRef.current) return 0;
+    
+    const tempDiv = document.createElement('div');
+    tempDiv.style.position = 'absolute';
+    tempDiv.style.visibility = 'hidden';
+    tempDiv.style.whiteSpace = 'nowrap';
+    tempDiv.style.top = '-9999px';
+    tempDiv.style.left = '-9999px';
+    tempDiv.style.pointerEvents = 'none';
+    tempDiv.textContent = text;
+    
+    // Apply styles from the container to get accurate measurements
+    const containerStyles = window.getComputedStyle(containerRef.current);
+    tempDiv.style.fontFamily = containerStyles.fontFamily;
+    tempDiv.style.fontSize = containerStyles.fontSize;
+    tempDiv.style.fontWeight = containerStyles.fontWeight;
+    tempDiv.style.fontStyle = containerStyles.fontStyle;
+    tempDiv.style.letterSpacing = containerStyles.letterSpacing;
+    tempDiv.style.textTransform = containerStyles.textTransform;
+    
+    document.body.appendChild(tempDiv);
+    const width = tempDiv.getBoundingClientRect().width;
+    document.body.removeChild(tempDiv);
+    
+    return width;
+  };
+
+  // Function to extract text content from React elements
+  const extractTextContent = (element: React.ReactNode): string => {
+    if (typeof element === 'string') return element;
+    if (typeof element === 'number') return element.toString();
+    if (!React.isValidElement(element)) return '';
+    
+    if (element.props.children) {
+      if (typeof element.props.children === 'string') {
+        return element.props.children;
+      }
+      if (Array.isArray(element.props.children)) {
+        return element.props.children.map(extractTextContent).join('');
+      }
+      return extractTextContent(element.props.children);
+    }
+    
+    return '';
+  };
 
   const parseChildren = (isAnimated = false) => {
     let globalIndex = 0;
@@ -283,17 +300,71 @@ const processNode = (node: React.ReactNode): React.ReactNode[] => {
     return isAnimated ? { elements, elementIdMap } : elements;
   };
 
-  const rawElements = useMemo(() => parseChildren(false), [children, containerWrapperWordClassName, cellConfigs]) as React.ReactNode[];
   const animatedElements = useMemo(
     () => parseChildren(true),
     [children, containerWrapperWordClassName, cellConfigs]
   ) as { elements: React.ReactNode[]; elementIdMap: { [index: number]: string | undefined } };
 
   useLayoutEffect(() => {
-    if (!measureRef.current || !containerRef.current) return;
+    if (!containerRef.current) return;
     setContainerWidth(containerRef.current.getBoundingClientRect().width);
-    setElementWidths(Array.from(measureRef.current.children).map((el) => (el as HTMLElement).getBoundingClientRect().width));
-  }, [rawElements.length, children, gap.horizontal, gap.vertical]);
+    
+    // Measure text elements using temporary DOM elements
+    const measureElements = () => {
+      const widths: number[] = [];
+      const elements = animatedElements.elements;
+      
+      elements.forEach((element) => {
+        if (typeof element === 'string') {
+          // For text nodes, measure using temporary element with actual styles
+          widths.push(measureTextWidth(element));
+        } else if (React.isValidElement(element)) {
+          // For React elements, try to extract text content and measure
+          const textContent = extractTextContent(element);
+          if (textContent) {
+            widths.push(measureTextWidth(textContent));
+          } else {
+            // Fallback: create a temporary element to measure the actual React element
+            const tempDiv = document.createElement('div');
+            tempDiv.style.position = 'absolute';
+            tempDiv.style.visibility = 'hidden';
+            tempDiv.style.whiteSpace = 'nowrap';
+            tempDiv.style.top = '-9999px';
+            tempDiv.style.left = '-9999px';
+            tempDiv.style.pointerEvents = 'none';
+            
+            // Apply container styles
+            if (containerRef.current) {
+              const containerStyles = window.getComputedStyle(containerRef.current);
+              tempDiv.style.fontFamily = containerStyles.fontFamily;
+              tempDiv.style.fontSize = containerStyles.fontSize;
+              tempDiv.style.fontWeight = containerStyles.fontWeight;
+              tempDiv.style.fontStyle = containerStyles.fontStyle;
+              tempDiv.style.letterSpacing = containerStyles.letterSpacing;
+              tempDiv.style.textTransform = containerStyles.textTransform;
+            }
+            
+            document.body.appendChild(tempDiv);
+            
+            try {
+              ReactDOM.render(element as React.ReactElement, tempDiv);
+              widths.push(tempDiv.getBoundingClientRect().width);
+            } catch (e) {
+              widths.push(0);
+            } finally {
+              document.body.removeChild(tempDiv);
+            }
+          }
+        } else {
+          widths.push(0);
+        }
+      });
+      
+      setElementWidths(widths);
+    };
+    
+    measureElements();
+  }, [animatedElements.elements.length, children, gap.horizontal, gap.vertical]);
 
   useEffect(() => {
     if (!containerWidth || elementWidths.length === 0) {
@@ -387,23 +458,71 @@ const processNode = (node: React.ReactNode): React.ReactNode[] => {
   }, [elementRows, animatedElements, animation, animationElement, cellConfigs, inView, once, debug, type, gap, tag]);
 
   useEffect(() => {
-    if (!measureRef.current || !containerRef.current) return;
+    if (!containerRef.current) return;
 
     const observer = new ResizeObserver(() => {
-      if (!measureRef.current || !containerRef.current) return;
+      if (!containerRef.current) return;
       setContainerWidth(containerRef.current.getBoundingClientRect().width);
-      setElementWidths(Array.from(measureRef.current.children).map((el) => (el as HTMLElement).getBoundingClientRect().width));
+      
+      // Re-measure elements when container resizes
+      const measureElements = () => {
+        const widths: number[] = [];
+        const elements = animatedElements.elements;
+        
+        elements.forEach((element) => {
+          if (typeof element === 'string') {
+            widths.push(measureTextWidth(element));
+          } else if (React.isValidElement(element)) {
+            const textContent = extractTextContent(element);
+            if (textContent) {
+              widths.push(measureTextWidth(textContent));
+            } else {
+              // Fallback: create a temporary element to measure the actual React element
+              const tempDiv = document.createElement('div');
+              tempDiv.style.position = 'absolute';
+              tempDiv.style.visibility = 'hidden';
+              tempDiv.style.whiteSpace = 'nowrap';
+              tempDiv.style.top = '-9999px';
+              tempDiv.style.left = '-9999px';
+              tempDiv.style.pointerEvents = 'none';
+              
+              // Apply container styles
+              if (containerRef.current) {
+                const containerStyles = window.getComputedStyle(containerRef.current);
+                tempDiv.style.fontFamily = containerStyles.fontFamily;
+                tempDiv.style.fontSize = containerStyles.fontSize;
+                tempDiv.style.fontWeight = containerStyles.fontWeight;
+                tempDiv.style.fontStyle = containerStyles.fontStyle;
+                tempDiv.style.letterSpacing = containerStyles.letterSpacing;
+                tempDiv.style.textTransform = containerStyles.textTransform;
+              }
+              
+              document.body.appendChild(tempDiv);
+              
+              try {
+                ReactDOM.render(element as React.ReactElement, tempDiv);
+                widths.push(tempDiv.getBoundingClientRect().width);
+              } catch (e) {
+                widths.push(0);
+              } finally {
+                document.body.removeChild(tempDiv);
+              }
+            }
+          } else {
+            widths.push(0);
+          }
+        });
+        
+        setElementWidths(widths);
+      };
+      
+      measureElements();
     });
   
     observer.observe(containerRef.current);
   
-    if (containerRef.current) {
-      setContainerWidth(containerRef.current.getBoundingClientRect().width);
-      setElementWidths(Array.from(measureRef.current.children).map((el) => (el as HTMLElement).getBoundingClientRect().width));
-    }
-  
     return () => observer.disconnect();
-  }, [rawElements.length, children, gap.horizontal, gap.vertical]);
+  }, [animatedElements.elements.length, children, gap.horizontal, gap.vertical]);
 
   if (tag === "span") {
     return (
@@ -414,9 +533,6 @@ const processNode = (node: React.ReactNode): React.ReactNode[] => {
           style={{ ...style, counterReset: debug ? "row-counter" : undefined }}
           $isSpan={true}
         >
-          <MeasureContainerSpan className={className} ref={measureRef} $gapH={gap.horizontal || "0.5em"} $gapV={gap.vertical || "0.25em"} $isSpan={true}>
-            {rawElements}
-          </MeasureContainerSpan>
           {animatedRows}
         </MainContainerSpan>
       </span>
@@ -430,9 +546,6 @@ const processNode = (node: React.ReactNode): React.ReactNode[] => {
         className={containerClassName}
         style={{ ...style, counterReset: debug ? "row-counter" : undefined }}
       >
-        <MeasureContainer className={className} ref={measureRef} $gapH={gap.horizontal || "0.5em"} $gapV={gap.vertical || "0.25em"}>
-          {rawElements}
-        </MeasureContainer>
         {animatedRows}
       </MainContainer>
     </div>
