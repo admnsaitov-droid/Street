@@ -188,3 +188,5 @@ const ErrorMessage = styled.div`
     top: ${rm(35)};
   `}
 `
+
+SimpleInput.displayName = "SimpleInput"

@@ -182,3 +182,5 @@ const ErrorMessage = styled.div`
     top: ${rm(55)};
   `}
 `
+
+SimpleTextarea.displayName = "SimpleTextarea"

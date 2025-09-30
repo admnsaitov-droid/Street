@@ -159,3 +159,5 @@ const ErrorMessage = styled.div`
     font-size: ${rm(12)};
   `}
 `
+
+ContactInput.displayName = "ContactInput"

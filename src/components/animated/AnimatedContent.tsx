@@ -4,7 +4,7 @@ import React, { Children, useMemo, useLayoutEffect, useState, useRef, useEffect 
 import { animated, useInView } from "@react-spring/web";
 import styled from "styled-components";
 import { Spring } from "../Springs/Spring";
-import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 
 interface AnimationSettings {
   from?: Record<string, any>;
@@ -310,11 +310,13 @@ const processNode = (node: React.ReactNode): React.ReactNode[] => {
     setContainerWidth(containerRef.current.getBoundingClientRect().width);
     
     // Measure text elements using temporary DOM elements
-    const measureElements = () => {
+    const measureElements = async () => {
       const widths: number[] = [];
       const elements = animatedElements.elements;
       
-      elements.forEach((element) => {
+      for (let i = 0; i < elements.length; i++) {
+        const element = elements[i];
+        
         if (typeof element === 'string') {
           // For text nodes, measure using temporary element with actual styles
           widths.push(measureTextWidth(element));
@@ -347,18 +349,23 @@ const processNode = (node: React.ReactNode): React.ReactNode[] => {
             document.body.appendChild(tempDiv);
             
             try {
-              ReactDOM.render(element as React.ReactElement, tempDiv);
+              const root = createRoot(tempDiv);
+              root.render(element as React.ReactElement);
+              
+              // Wait for render to complete
+              await new Promise(resolve => setTimeout(resolve, 0));
               widths.push(tempDiv.getBoundingClientRect().width);
+              root.unmount();
+              document.body.removeChild(tempDiv);
             } catch (e) {
               widths.push(0);
-            } finally {
               document.body.removeChild(tempDiv);
             }
           }
         } else {
           widths.push(0);
         }
-      });
+      }
       
       setElementWidths(widths);
     };
@@ -465,11 +472,13 @@ const processNode = (node: React.ReactNode): React.ReactNode[] => {
       setContainerWidth(containerRef.current.getBoundingClientRect().width);
       
       // Re-measure elements when container resizes
-      const measureElements = () => {
+      const measureElements = async () => {
         const widths: number[] = [];
         const elements = animatedElements.elements;
         
-        elements.forEach((element) => {
+        for (let i = 0; i < elements.length; i++) {
+          const element = elements[i];
+          
           if (typeof element === 'string') {
             widths.push(measureTextWidth(element));
           } else if (React.isValidElement(element)) {
@@ -500,18 +509,23 @@ const processNode = (node: React.ReactNode): React.ReactNode[] => {
               document.body.appendChild(tempDiv);
               
               try {
-                ReactDOM.render(element as React.ReactElement, tempDiv);
+                const root = createRoot(tempDiv);
+                root.render(element as React.ReactElement);
+                
+                // Wait for render to complete
+                await new Promise(resolve => setTimeout(resolve, 0));
                 widths.push(tempDiv.getBoundingClientRect().width);
+                root.unmount();
+                document.body.removeChild(tempDiv);
               } catch (e) {
                 widths.push(0);
-              } finally {
                 document.body.removeChild(tempDiv);
               }
             }
           } else {
             widths.push(0);
           }
-        });
+        }
         
         setElementWidths(widths);
       };
