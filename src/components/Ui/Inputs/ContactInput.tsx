@@ -1,6 +1,6 @@
 import styled from "styled-components"
 import { rm, colors, media } from "@/styles"
-import { useState, FocusEvent, InputHTMLAttributes } from "react"
+import { useState, FocusEvent, InputHTMLAttributes, forwardRef } from "react"
 import { fontGolosText } from "@/styles/fonts"
 
 interface ContactInputProps extends InputHTMLAttributes<HTMLInputElement> {
@@ -8,7 +8,7 @@ interface ContactInputProps extends InputHTMLAttributes<HTMLInputElement> {
   error?: string
 }
 
-export const ContactInput = ({ label, value = "", error, ...props }: ContactInputProps) => {
+export const ContactInput = forwardRef<HTMLInputElement, ContactInputProps>(({ label, value = "", error, ...props }, ref) => {
   const [focused, setFocused] = useState(false)
   
   // Generate unique ID for accessibility
@@ -30,6 +30,7 @@ export const ContactInput = ({ label, value = "", error, ...props }: ContactInpu
       </Label>
       <Input
         {...props}
+        ref={ref}
         id={inputId}
         value={value}
         onChange={e => {
@@ -45,7 +46,7 @@ export const ContactInput = ({ label, value = "", error, ...props }: ContactInpu
       {error && <ErrorMessage id={`${inputId}-error`}>{error}</ErrorMessage>}
     </StyledContactInput>
   )
-}
+})
 
 const StyledContactInput = styled.div`
   position: relative;
@@ -158,3 +159,5 @@ const ErrorMessage = styled.div`
     font-size: ${rm(12)};
   `}
 `
+
+ContactInput.displayName = "ContactInput"

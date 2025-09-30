@@ -97,8 +97,10 @@ const StyledDescription = styled(AnimatedText)`
     color: ${colors.black100};
     width: ${rm(1007)};
 
-    span:nth-child(2){
-        padding-left: ${rm(113)} !important;
+    span:nth-child(1){
+        >:nth-child(1){
+            padding-left: ${rm(113)} !important;
+        }
     }
 
     ${media.lg`
@@ -111,8 +113,10 @@ const StyledDescription = styled(AnimatedText)`
         width: ${rm(475)};
         letter-spacing: -0.01em;
 
-        span:nth-child(2){
-            padding-left: ${rm(0)} !important;
+        span:nth-child(1){
+            >:nth-child(1){
+                padding-left: ${rm(0)} !important;
+            }
         }
     `}
 

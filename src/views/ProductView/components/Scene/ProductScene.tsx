@@ -7,6 +7,7 @@ import { SceneSkeleton } from "@/components/Skeleton/SceneSkeleton"
 import { Suspense } from "react"
 import { useLazyScene } from "@/hooks/useLazyScene"
 import { SceneReadyDetector } from "@/views/DistributionView/components/SceneReadyDetector"
+import { useWindowWidth } from "@react-hook/window-size"
 
 interface ProductSceneProps {
     data?: any
@@ -21,6 +22,8 @@ export const ProductScene = ({ data, colors }: ProductSceneProps) => {
         threshold: 0.2,
         rootMargin: '100px'
     })
+    
+    const width = useWindowWidth()
 
     return (
         <StyledContainer ref={lazyScene.containerRef}>
@@ -59,7 +62,7 @@ export const ProductScene = ({ data, colors }: ProductSceneProps) => {
                             environmentIntensity={1}
                         />
                         <ProductModel model={data.model} colors={colors} params={{
-                            position: [0, -1, 0],
+                            position: width > 768 ? [0, -1, 0] : [0, -2, 0],
                             rotation: [0, 0, 0],
                             scale: 1.4
                         }} />

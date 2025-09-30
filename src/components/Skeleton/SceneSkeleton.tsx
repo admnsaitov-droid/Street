@@ -134,9 +134,10 @@ interface SceneSkeletonProps {
     position?: 'left' | 'right' | 'center' // Position of the loader
     theme?: 'light' | 'dark'
     previewSrc?: string
+    label?: string
 }
 
-export const SceneSkeleton = ({ isLoading, progress = 0, className, position = 'center', theme = 'light', previewSrc }: SceneSkeletonProps) => {
+export const SceneSkeleton = ({ isLoading, progress = 0, className, position = 'center', theme = 'light', previewSrc, label = 'globe' }: SceneSkeletonProps) => {
     const [ref, inView] = useInView()
     
     return (
@@ -150,7 +151,7 @@ export const SceneSkeleton = ({ isLoading, progress = 0, className, position = '
             <LoaderContainer $position={position} $theme={theme}>
                 <StyledIconsContainer>
                     <IconContainer>
-                        <SkeletonIcon />
+                        <SkeletonIcon label={label} />
                         <ProgressRing $progress={progress} $theme={theme}>
                             <svg viewBox="0 0 127 127">
                                 <circle cx="63.5" cy="63.5" r="61.5" />

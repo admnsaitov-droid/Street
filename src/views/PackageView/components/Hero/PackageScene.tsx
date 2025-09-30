@@ -24,6 +24,7 @@ export const PackageScene = () => {
                 isLoading={lazyScene.isLoading} 
                 progress={lazyScene.progress} 
                 theme="dark"
+                label="machine"
             />
             {lazyScene.shouldLoad && (
                 <StyledPackageScene

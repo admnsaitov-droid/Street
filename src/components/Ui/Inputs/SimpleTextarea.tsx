@@ -1,6 +1,6 @@
 import styled from "styled-components"
 import { rm, colors, media } from "@/styles"
-import { useState, FocusEvent, TextareaHTMLAttributes } from "react"
+import { useState, FocusEvent, TextareaHTMLAttributes, forwardRef } from "react"
 import { fontGolosText } from "@/styles/fonts"
 
 interface SimpleTextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
@@ -8,7 +8,7 @@ interface SimpleTextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement
   error?: string
 }
 
-export const SimpleTextarea = ({ label, value = "", error, ...props }: SimpleTextareaProps) => {
+export const SimpleTextarea = forwardRef<HTMLTextAreaElement, SimpleTextareaProps>(({ label, value = "", error, ...props }, ref) => {
   const [focused, setFocused] = useState(false)
   
   // Generate unique ID for accessibility
@@ -30,6 +30,7 @@ export const SimpleTextarea = ({ label, value = "", error, ...props }: SimpleTex
       </Label>
       <Textarea
         {...props}
+        ref={ref}
         id={textareaId}
         value={value}
         onChange={e => {
@@ -45,7 +46,7 @@ export const SimpleTextarea = ({ label, value = "", error, ...props }: SimpleTex
       {error && <ErrorMessage id={`${textareaId}-error`}>{error}</ErrorMessage>}
     </StyledSimpleTextarea>
   )
-}
+})
 
 const StyledSimpleTextarea = styled.div`
   position: relative;
@@ -181,3 +182,5 @@ const ErrorMessage = styled.div`
     top: ${rm(55)};
   `}
 `
+
+SimpleTextarea.displayName = "SimpleTextarea"

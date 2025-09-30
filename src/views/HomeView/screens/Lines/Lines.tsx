@@ -195,8 +195,10 @@ const StyledTopContainer = styled.div`
             letter-spacing: -0.01em;
             ${fontGolosText(400)};
             
-            span:nth-child(2){
-                padding-left: ${rm(113)} !important;
+            span:nth-child(1){
+                >:nth-child(1){
+                    padding-left: ${rm(113)} !important;
+                }
             }
             
             ${media.lg`
@@ -206,8 +208,10 @@ const StyledTopContainer = styled.div`
             ${media.md`
                 font-size: ${rm(24)};
                 
-                span:nth-child(2){
-                    padding-left: ${rm(0)} !important;
+                span:nth-child(1){
+                    >:nth-child(1){
+                        padding-left: ${rm(0)} !important;
+                    }
                 }
             `}
 
