@@ -372,11 +372,24 @@ const Engine = forwardRef(
 
     // New words for reactive smooth animation on children change
     const newWords = useMemo<string[][]>(
-      () =>
-        children
-          .toString()
-          .split(" ")
-          .map((word: string) => word.split("")),
+      () => {
+        const text = children.toString();
+        const words = text.split(/\s+/).filter(Boolean);
+        
+        
+        // Show how it used to work (OLD WAY - no spaces)
+        const oldWay = words.join('');
+        
+        // Add spaces after each word except the last one
+        const wordsWithSpaces = words.map((word, index) => 
+          index < words.length - 1 ? word + ' ' : word
+        );
+        
+        // Show how it works now (NEW WAY - with spaces)
+        const newWay = wordsWithSpaces.join('');
+        
+        return wordsWithSpaces.map((word: string) => word.split(""));
+      },
       [children]
     );
     const [words, setWords] = useState(newWords);

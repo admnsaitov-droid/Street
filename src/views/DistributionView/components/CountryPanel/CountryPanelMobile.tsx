@@ -2,10 +2,10 @@ import { colors, media, rm } from "@/styles"
 import { fontGolosText } from "@/styles/fonts"
 import styled from "styled-components"
 import { useState, useEffect, useCallback } from "react"
-import { distributionData, getFilterNames, Filter, getLocationsByFilter, Location as DistributionLocation } from "../../data/distributionData"
+import { distributionData, getFilterNames, Filter, Location as DistributionLocation } from "../../data/distributionData"
 import { LocationCard } from "../LocationCard/LocationCard"
-import { SelectedLocationCard } from "../LocationCard/SelectedLocationCard"
 import { SelectedLocationCardMobile } from "../LocationCard/SelectedLocationCardMobile"
+import { useScroll } from "@/layouts/ScrollLayout/useScroll"
 
 const filters = getFilterNames()
 
@@ -21,82 +21,57 @@ interface CountryPanelMobileProps {
 export const CountryPanelMobile = ({ activeFilterId, onFilterChange, onLocationClick, selectedLocation }: CountryPanelMobileProps) => {
     const [activeFilter, setActiveFilter] = useState('All')
     const [activeCard, setActiveCard] = useState<string | null>(null)
-    const [animationPhase, setAnimationPhase] = useState<'idle' | 'hiding' | 'showing'>('idle')
-    const [pendingLocation, setPendingLocation] = useState<DistributionLocation | null>(null)
     const [displayedLocation, setDisplayedLocation] = useState<DistributionLocation | null>(null)
-    const [isFadingOut, setIsFadingOut] = useState(false)
-    const [isCardsAnimatingOut, setIsCardsAnimatingOut] = useState(false)
-    const [isCardsAnimatingIn, setIsCardsAnimatingIn] = useState(false)
-    const [hideAllCards, setHideAllCards] = useState(false)
+    const [isPopupVisible, setIsPopupVisible] = useState(false)
+    const [isPopupClosing, setIsPopupClosing] = useState(false)
+    const [popupLocation, setPopupLocation] = useState<DistributionLocation | null>(null)
 
-    // Helper function to animate cards out sequentially
-    const animateCardsOut = useCallback((locations: DistributionLocation[], selectedLocationId: string, newFilterName?: string) => {
-        setAnimationPhase('hiding')
-        setIsCardsAnimatingOut(true)
-        
-        // After all cards have started animating out, change filter and show the selected card
-        const totalAnimationTime = Math.min(locations.length * 50 + 200, 600) // Max 600ms, faster timing
-        setTimeout(() => {
-            // Change filter after cards have animated out
-            if (newFilterName) {
-                setActiveFilter(newFilterName)
-                
-                // Notify parent about filter change after animation
-                const filter = distributionData.find((f: Filter) => f.name === newFilterName)
-                if (filter && onFilterChange) {
-                    onFilterChange(filter.id)
-                }
-                
-                // Get the location from the NEW filter's locations
-                const newFilterData = distributionData.find((f: Filter) => f.name === newFilterName)
-                const newLocations = newFilterData ? newFilterData.locations : []
-                setDisplayedLocation(newLocations.find(loc => loc.id === selectedLocationId) || null)
-            } else {
-                // If no filter change, use the original locations
-                setDisplayedLocation(locations.find(loc => loc.id === selectedLocationId) || null)
-            }
-            
-            setHideAllCards(true)
-            
-            // Small delay to ensure card starts from bottom position before animating
-            setTimeout(() => {
-                setAnimationPhase('showing')
-                
-                // Mark animation as complete
-                setTimeout(() => {
-                    setAnimationPhase('idle')
-                    setPendingLocation(null)
-                }, 500)
-            }, 50)
-        }, totalAnimationTime)
-    }, [onFilterChange])
+    // Scroll control for popup
+    const stopScroll = useScroll((state) => state.stop)
+    const startScroll = useScroll((state) => state.start)
 
-    // Helper function to animate cards back in when closing
-    const animateCardsIn = useCallback((locations: DistributionLocation[]) => {
-        // First show all cards but keep them hidden
-        setHideAllCards(false)
-        setIsCardsAnimatingIn(true)
-        
-        // Small delay to ensure DOM update, then trigger animation
-        setTimeout(() => {
-            setIsCardsAnimatingIn(false) // This will trigger the CSS animation
-        }, 50)
-    }, [])
+    // Simple popup logic - no complex animations needed
+
+    // Control scrolling when popup is open
+    useEffect(() => {
+        if (isPopupVisible) {
+            // Popup is open - stop scrolling
+            stopScroll()
+        } else {
+            // Popup is closed - start scrolling
+            startScroll()
+        }
+    }, [isPopupVisible, stopScroll, startScroll])
+
+    // Handle popup animation states
+    useEffect(() => {
+        if (activeCard && displayedLocation) {
+            // Show popup with animation
+            setPopupLocation(displayedLocation) // Save location data for popup
+            setIsPopupVisible(true)
+            setIsPopupClosing(false)
+        } else if (isPopupVisible) {
+            // Start closing animation - keep popupLocation data
+            setIsPopupClosing(true)
+            // Hide popup after animation completes
+            const timer = setTimeout(() => {
+                setIsPopupVisible(false)
+                setIsPopupClosing(false)
+                setPopupLocation(null) // Clear location data after animation
+            }, 300) // Match animation duration
+            return () => clearTimeout(timer)
+        }
+    }, [activeCard, displayedLocation, isPopupVisible])
 
     // Sync activeCard state with selectedLocation changes (from tracker clicks)
     useEffect(() => {
         if (selectedLocation) {
-            // Prevent animation conflicts - only start new animation if not currently animating
-            if (animationPhase !== 'idle') {
-                return
-            }
-            
-            // If this is the same location that's already active, don't restart animation
+            // If this is the same location that's already active, don't change anything
             if (activeCard === selectedLocation.id) {
                 return
             }
             
-            // Determine the new filter name but don't set it immediately
+            // Determine the new filter name
             const regionFilterMap: { [key: string]: string } = {
                 'Europe': 'Europe',
                 'Africa': 'Africa',
@@ -105,119 +80,84 @@ export const CountryPanelMobile = ({ activeFilterId, onFilterChange, onLocationC
             }
             const newFilterName = regionFilterMap[selectedLocation.region] || 'All'
             
-            // Get current locations for animation (from current filter, not new one)
-            const activeFilterData = distributionData.find((f: Filter) => f.name === activeFilter)
-            const currentLocations = activeFilterData ? activeFilterData.locations : []
-            
-            // Set activeCard immediately but start card animation sequence
-            setActiveCard(selectedLocation.id)
-            setPendingLocation(selectedLocation)
-            
-            // Start sequential card animation and pass new filter to change after animation
-            animateCardsOut(currentLocations, selectedLocation.id, newFilterName)
-        } else {
-            // Start fade-out animation when deselecting
-            if (activeCard) {
-                setIsFadingOut(true)
-                setAnimationPhase('hiding')
-                
-                // After fade-out animation completes, animate cards back in
-                setTimeout(() => {
-                    setActiveCard(null)
-                    setAnimationPhase('idle')
-                    setPendingLocation(null)
-                    setDisplayedLocation(null)
-                    setIsFadingOut(false)
-                    setIsCardsAnimatingOut(false)
-                    
-                    // Get current locations for entrance animation
-                    const activeFilterData = distributionData.find((f: Filter) => f.name === activeFilter)
-                    const currentLocations = activeFilterData ? activeFilterData.locations : []
-                    animateCardsIn(currentLocations)
-                }, 500) // Match the fade-out duration
-            } else {
-                setActiveCard(null)
-                setAnimationPhase('idle')
-                setPendingLocation(null)
-                setDisplayedLocation(null)
-                setIsFadingOut(false)
-                setIsCardsAnimatingOut(false)
-                setIsCardsAnimatingIn(false)
-                setHideAllCards(false)
-                setIsCardsAnimatingIn(false)
+            // Update filter if needed
+            if (newFilterName !== activeFilter) {
+                setActiveFilter(newFilterName)
+                const filter = distributionData.find((f: Filter) => f.name === newFilterName)
+                if (filter && onFilterChange) {
+                    onFilterChange(filter.id)
+                }
             }
+            
+            // Set active card and displayed location
+            setActiveCard(selectedLocation.id)
+            setDisplayedLocation(selectedLocation)
+        } else {
+            // Clear selection
+            setActiveCard(null)
+            setDisplayedLocation(null)
         }
-    }, [selectedLocation, onFilterChange, animateCardsOut, animateCardsIn, animationPhase, activeCard, activeFilter])
+    }, [selectedLocation, onFilterChange, activeCard, activeFilter])
 
     const handleFilterClick = useCallback((filterName: string) => {
-        setActiveFilter(filterName)
-        
-        // Start fade-out animation if there's an active card
+        // If there's an active card, start the animation sequence
         if (activeCard) {
-            setIsFadingOut(true)
-            setAnimationPhase('hiding')
+            // Step 1: Start closing the popup first
+            setIsPopupClosing(true)
             
-            // After fade-out animation completes, reset all states
+            // Step 2: After popup closes, change filter and show new cards
             setTimeout(() => {
+                // Clear the selected card and notify parent
                 setActiveCard(null)
-                setAnimationPhase('idle')
                 setDisplayedLocation(null)
-                setIsFadingOut(false)
-                setIsCardsAnimatingOut(false)
-                setIsCardsAnimatingIn(false)
-                setHideAllCards(false)
-            }, 500)
+                setIsPopupVisible(false)
+                setIsPopupClosing(false)
+                setPopupLocation(null)
+                
+                // Notify parent to clear selected location
+                if (onLocationClick) {
+                    onLocationClick(null)
+                }
+                
+                // Change the filter
+                setActiveFilter(filterName)
+                
+                // Find the filter ID from the name
+                const filter = distributionData.find((f: Filter) => f.name === filterName)
+                if (filter && onFilterChange) {
+                    onFilterChange(filter.id)
+                }
+            }, 300) // Match the popup closing animation duration
         } else {
-            setActiveCard(null)
-            setAnimationPhase('idle')
-            setDisplayedLocation(null)
-            setIsFadingOut(false)
-            setIsCardsAnimatingOut(false)
-            setHideAllCards(false)
-        }
-        
-        // Find the filter ID from the name
-        const filter = distributionData.find((f: Filter) => f.name === filterName)
-        if (filter && onFilterChange) {
-            onFilterChange(filter.id)
+            // No active card, just change filter
+            setActiveFilter(filterName)
+            
+            // Find the filter ID from the name
+            const filter = distributionData.find((f: Filter) => f.name === filterName)
+            if (filter && onFilterChange) {
+                onFilterChange(filter.id)
+            }
         }
     }, [activeCard, onFilterChange])
 
     const handleCardClick = useCallback((location: DistributionLocation) => {
-        // Prevent clicks during animation
-        if (animationPhase !== 'idle') return
-        
-        // Toggle card expansion
+        // Toggle card selection
         if (activeCard === location.id) {
-            // Start fade-out animation when deselecting
-            setIsFadingOut(true)
-            setAnimationPhase('hiding')
-            
-            // Reset planet rotation to initial state
+            // Deselect card
+            setActiveCard(null)
+            setDisplayedLocation(null)
             if (onLocationClick) {
                 onLocationClick(null)
             }
-            
-            // After fade-out animation completes, animate cards back in
-            setTimeout(() => {
-                setActiveCard(null)
-                setAnimationPhase('idle')
-                setDisplayedLocation(null)
-                setIsFadingOut(false)
-                setIsCardsAnimatingOut(false)
-                
-                // Get current locations for entrance animation
-                const activeFilterData = distributionData.find((f: Filter) => f.name === activeFilter)
-                const currentLocations = activeFilterData ? activeFilterData.locations : []
-                animateCardsIn(currentLocations)
-            }, 500) // Match the fade-out duration
         } else {
-            // IMMEDIATE: Select point and rotate planet immediately
+            // Select card
+            setActiveCard(location.id)
+            setDisplayedLocation(location)
             if (onLocationClick) {
                 onLocationClick(location)
             }
             
-            // Determine the new filter name but don't set it immediately
+            // Update filter if needed
             const regionFilterMap: { [key: string]: string } = {
                 'Europe': 'Europe',
                 'Africa': 'Africa',
@@ -226,27 +166,19 @@ export const CountryPanelMobile = ({ activeFilterId, onFilterChange, onLocationC
             }
             const newFilterName = regionFilterMap[location.region] || 'All'
             
-            // Get current locations for animation (from current filter, not new one)
-            const activeFilterData = distributionData.find((f: Filter) => f.name === activeFilter)
-            const currentLocations = activeFilterData ? activeFilterData.locations : []
-            
-            // Set activeCard immediately but start card animation sequence
-            setActiveCard(location.id)
-            setPendingLocation(location)
-            
-            // Start sequential card animation and pass new filter to change after animation
-            animateCardsOut(currentLocations, location.id, newFilterName)
+            if (newFilterName !== activeFilter) {
+                setActiveFilter(newFilterName)
+                const filter = distributionData.find((f: Filter) => f.name === newFilterName)
+                if (filter && onFilterChange) {
+                    onFilterChange(filter.id)
+                }
+            }
         }
-    }, [animationPhase, activeCard, onLocationClick, onFilterChange, animateCardsOut, animateCardsIn, activeFilter])
+    }, [activeCard, onLocationClick, onFilterChange, activeFilter])
 
     // Get locations for the active filter
     const activeFilterData = distributionData.find((f: Filter) => f.name === activeFilter)
-    const allLocations = activeFilterData ? activeFilterData.locations : []
-    
-    // Show only the selected location when a card is active, otherwise show all locations
-    const locations = activeCard 
-        ? allLocations.filter(location => location.id === activeCard)
-        : allLocations
+    const locations = activeFilterData ? activeFilterData.locations : []
 
     return (
         <StyledCountryPanel>
@@ -269,40 +201,42 @@ export const CountryPanelMobile = ({ activeFilterId, onFilterChange, onLocationC
                 onTouchMove={(e) => {
                     e.stopPropagation()
                 }}
-                $hasActiveCard={!!activeCard}
             >
-                {/* Selected Card Instance - Sticky at Top */}
-                {(activeCard || isFadingOut) && displayedLocation && (
-                    <StyledSelectedCardWrapper>
-                        <SelectedLocationCardMobile
-                            location={displayedLocation}
-                            onClick={() => handleCardClick(displayedLocation)}
-                            isExpanded={true}
-                            animationPhase={animationPhase}
-                        />
-                    </StyledSelectedCardWrapper>
-                )}
-                
-                {/* All Cards with Individual Animations */}
-                {allLocations.map((location, index) => {
+                {/* All Cards - Always Visible */}
+                {locations.map((location, index) => {
                     return (
                         <StyledCardWrapper 
                             key={location.id}
-                            $isAnimatingOut={isCardsAnimatingOut}
-                            $isAnimatingIn={isCardsAnimatingIn}
-                            $animationDelay={index * 50}
-                            $isHidden={hideAllCards}
                             $isSelected={activeCard === location.id}
                         >
-                        <LocationCard 
-                            location={location} 
-                            onClick={() => handleCardClick(location)}
-                            isExpanded={false} // No expansion for base cards
-                        />
-                    </StyledCardWrapper>
+                            <LocationCard 
+                                location={location} 
+                                onClick={() => handleCardClick(location)}
+                                isExpanded={false}
+                            />
+                        </StyledCardWrapper>
                     )
                 })}
             </StyledCardsContainer>
+            
+            {/* Popup Overlay for Selected Card */}
+            {isPopupVisible && popupLocation && (
+                <StyledPopupOverlay 
+                    $isClosing={isPopupClosing}
+                    onClick={() => handleCardClick(popupLocation)}
+                >
+                    <StyledPopupContent 
+                        $isClosing={isPopupClosing}
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <SelectedLocationCardMobile
+                            location={popupLocation}
+                            onClick={() => handleCardClick(popupLocation)}
+                            isExpanded={true}
+                        />
+                    </StyledPopupContent>
+                </StyledPopupOverlay>
+            )}
         </StyledCountryPanel>
     )
 }
@@ -418,7 +352,7 @@ const StyledTopContainer = styled.div`
     }
 `
 
-const StyledCardsContainer = styled.div<{ $hasActiveCard: boolean }>`
+const StyledCardsContainer = styled.div`
     margin-top: ${rm(12)};
     // padding-right: ${rm(8)};
     padding-bottom: ${rm(40)};
@@ -478,68 +412,73 @@ const StyledCardsContainer = styled.div<{ $hasActiveCard: boolean }>`
 
 
 const StyledCardWrapper = styled.div<{ 
-    $isAnimatingOut: boolean; 
-    $isAnimatingIn: boolean;
-    $animationDelay: number;
-    $isHidden: boolean;
     $isSelected: boolean;
 }>`
-    /* Base cards - always visible and untouched */
     margin-bottom: 10px;
     
-    /* CSS-based animation for better performance */
-    opacity: ${({ $isAnimatingOut, $isAnimatingIn, $isHidden, $isSelected }) => {
-        if ($isAnimatingOut) return 0;
-        if ($isAnimatingIn) return 0;
-        if ($isHidden && !$isSelected) return 0; // Hide unselected cards when hiding all
-        return 1;
-    }};
-    
-    transform: ${({ $isAnimatingOut, $isAnimatingIn, $isHidden, $isSelected }) => {
-        if ($isAnimatingOut) return 'translateY(30%)';
-        if ($isAnimatingIn) return 'translateY(30%)';
-        if ($isHidden && !$isSelected) return 'translateY(30%)'; // Move unselected cards down when hiding
-        return 'translateY(0)';
-    }};
-    
-    transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    transition-delay: ${({ $animationDelay, $isAnimatingOut, $isAnimatingIn, $isHidden }) => {
-        if ($isAnimatingOut) return `${$animationDelay}ms`;
-        if ($isAnimatingIn) return `${$animationDelay}ms`;
-        if ($isHidden) return `${$animationDelay}ms`; // Apply delay when hiding cards
-        return '0ms';
-    }};
-    
-    /* Ensure cards remain in layout but are visually hidden */
-    visibility: ${({ $isHidden, $isSelected }) => {
-        if ($isHidden && !$isSelected) return 'hidden';
-        return 'visible';
-    }};
+    /* Highlight selected card */
+    opacity: ${({ $isSelected }) => $isSelected ? 0.7 : 1};
+    transform: ${({ $isSelected }) => $isSelected ? 'scale(0.98)' : 'scale(1)'};
+    transition: opacity 0.3s ease, transform 0.3s ease;
     
     &:last-child {
         margin-bottom: 0;
     }
 `
 
-const StyledSelectedCardWrapper = styled.div`
-    // position: sticky;
-    top: ${rm(100)};
-    z-index: 20;
-    margin-bottom: ${rm(10)};
+const StyledPopupOverlay = styled.div<{ $isClosing: boolean }>`
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: ${rm(20)};
+    opacity: ${({ $isClosing }) => $isClosing ? 0 : 1};
+    transition: opacity 0.3s ease-out;
+    
+    animation: ${({ $isClosing }) => $isClosing ? 'none' : 'fadeIn 0.3s ease-out'};
+    
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+`
+
+const StyledPopupContent = styled.div<{ $isClosing: boolean }>`
+    width: 100%;
+    max-width: ${rm(400)};
+    max-height: 80vh;
+    overflow-y: auto;
     background: linear-gradient(to bottom, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.95) 100%);
-    // -webkit-backdrop-filter: blur(32px);
-    // backdrop-filter: blur(32px);
     border-radius: ${rm(8)};
     border: 1px solid #B7BCCA33;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-
-    ${media.md`
-        width: 100%;
-        margin-top: ${rm(12)};
-    `}
-
-    ${media.xsm`
-        width: 100%;
-        margin-top: ${rm(12)};
-    `}
+    
+    opacity: ${({ $isClosing }) => $isClosing ? 0 : 1};
+    transform: ${({ $isClosing }) => $isClosing ? 'translateY(30px)' : 'translateY(0)'};
+    transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+    
+    animation: ${({ $isClosing }) => $isClosing ? 'none' : 'slideUp 0.3s ease-out'};
+    
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
 `

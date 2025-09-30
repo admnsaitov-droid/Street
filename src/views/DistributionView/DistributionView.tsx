@@ -39,7 +39,6 @@ export const DistributionView = ({ data }: DistributionViewProps) => {
     const [activeFilterId, setActiveFilterId] = useState('all')
     const [selectedLocation, setSelectedLocation] = useState<DistributionLocation | null>(null)
     const isInternalLocationChange = useRef(false)
-    const countryPanelMobileRef = useRef<HTMLDivElement>(null)
     const width = useWindowWidth()
     // Check URL parameter on mount and set selected location
     useEffect(() => {
@@ -83,18 +82,6 @@ export const DistributionView = ({ data }: DistributionViewProps) => {
         setSelectedLocation(location)
         // Update URL parameter silently
         updateLocationParam(router, location?.id || null)
-        
-        // Scroll to CountryPanelMobile on mobile devices when a location is selected
-        if (location && width <= 768 && countryPanelMobileRef.current) {
-            const element = countryPanelMobileRef.current
-            const elementPosition = element.offsetTop
-            const offsetPosition = elementPosition - 50
-            
-            window.scrollTo({
-                top: offsetPosition,
-                behavior: 'smooth'
-            })
-        }
     }
 
     return (
@@ -152,14 +139,12 @@ export const DistributionView = ({ data }: DistributionViewProps) => {
                 onFilterChange={handleFilterChange} 
                 onLocationClick={handleLocationClick} 
                 selectedLocation={selectedLocation} 
-            /> : <div ref={countryPanelMobileRef}>
-                <CountryPanelMobile 
-                    activeFilterId={activeFilterId}
-                    onFilterChange={handleFilterChange}
-                    onLocationClick={handleLocationClick}
-                    selectedLocation={selectedLocation}
-                />
-            </div>}
+            /> : <CountryPanelMobile 
+                activeFilterId={activeFilterId}
+                onFilterChange={handleFilterChange}
+                onLocationClick={handleLocationClick}
+                selectedLocation={selectedLocation}
+            />}
         </StyledDistributionView>
     )
 }
