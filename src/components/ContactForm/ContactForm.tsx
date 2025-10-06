@@ -399,6 +399,17 @@ const StyledTitleContainer = styled.div`
         font-size: ${rm(32)};
         margin-bottom: ${rm(15)};
     `}
+
+    >:first-child{
+        >:first-child{
+            >:first-child{
+                >:nth-child(3){
+                    margin-right: 0.3em;
+                }
+            }
+        }
+    }
+}
 `
 
 const StyledNote = styled.p`

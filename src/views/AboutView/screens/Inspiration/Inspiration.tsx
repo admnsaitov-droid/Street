@@ -173,6 +173,18 @@ export const StyledAboutTitleContainer = styled.div`
         width: 100%;
     `}
 
+    >:first-child{
+        >:first-child{
+            >:first-child{
+                >:first-child{
+                    >:first-child{
+                        margin-right: 0.25em;
+                    }
+                }
+            }
+        }
+    }
+
     h2 {
         margin: 0;
         padding: 0;

@@ -274,6 +274,12 @@ const StyledTitleContainer = styled.div`
         color: inherit;
         text-transform: inherit;
         font-family: inherit;
+        
+        span#title-second::before,
+        span.first::before {
+            content: ' ';
+            white-space: pre;
+        }
     }
 `
 
