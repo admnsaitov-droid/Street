@@ -68,7 +68,7 @@
 
 "use client";
 
-import {
+import React, {
   useEffect,
   memo,
   useRef,
@@ -371,24 +371,18 @@ const Engine = forwardRef(
     const [innerEnabled, setInnerEnabled] = useState(true);
 
     // New words for reactive smooth animation on children change
-    const newWords = useMemo<string[][]>(
-      () => {
+    const { newWords, seoText, wordCount } = useMemo(() => {
         const text = children.toString();
         const words = text.split(/\s+/).filter(Boolean);
         
+        // Create properly spaced text for SEO
+        const seoText = words.join(' ');
         
-        // Show how it used to work (OLD WAY - no spaces)
-        const oldWay = words.join('');
-        
-        // Add spaces after each word except the last one
-        const wordsWithSpaces = words.map((word, index) => 
-          index < words.length - 1 ? word + ' ' : word
-        );
-        
-        // Show how it works now (NEW WAY - with spaces)
-        const newWay = wordsWithSpaces.join('');
-        
-        return wordsWithSpaces.map((word: string) => word.split(""));
+        return {
+          newWords: words.map((word: string) => word.split("")),
+          seoText,
+          wordCount: words.length
+        };
       },
       [children]
     );
@@ -1204,8 +1198,8 @@ const Engine = forwardRef(
           ref={ref}
           style={{
             position: "relative",
-            columnGap:
-              typeof columnGap === "number" ? `${columnGap}em` : columnGap,
+            // Remove columnGap when using space spans to prevent duplication
+            columnGap: wordCount > 1 ? 0 : (typeof columnGap === "number" ? `${columnGap}em` : columnGap),
             display: "flex",
             flexWrap: "wrap",
             ...style,
@@ -1225,24 +1219,30 @@ const Engine = forwardRef(
                 height: "100%",
               }}
             >
-              {children}
+              {seoText}
             </span>
           )}
           {words.map((word: string[], wordIndex: number) => (
-            <WrapLine wordIndex={wordIndex} key={wordIndex}>
-              <Line wordIndex={wordIndex}>
-                <WrapWord wordIndex={wordIndex}>
-                  <Word wordIndex={wordIndex}>
-                    <WordLetters word={word} wordIndex={wordIndex} />
-                  </Word>
-                </WrapWord>
-              </Line>
-            </WrapLine>
+            <React.Fragment key={wordIndex}>
+              <WrapLine wordIndex={wordIndex}>
+                <Line wordIndex={wordIndex}>
+                  <WrapWord wordIndex={wordIndex}>
+                    <Word wordIndex={wordIndex}>
+                      <WordLetters word={word} wordIndex={wordIndex} />
+                    </Word>
+                  </WrapWord>
+                </Line>
+              </WrapLine>
+              {wordIndex < wordCount - 1 && (
+                <span style={{ display: 'inline-block', width: '0.25em' }}>&nbsp;</span>
+              )}
+            </React.Fragment>
           ))}
         </VarTextTag>
       );
     }, [
       words,
+      wordCount,
       className,
       wrapLetterClassName,
       wrapWordClassName,

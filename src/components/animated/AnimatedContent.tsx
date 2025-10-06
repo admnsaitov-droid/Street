@@ -58,7 +58,6 @@ const GridRow = styled.div<{ $debug?: boolean; $gapH: string; $gapV: string; $is
   display: flex;
   flex-wrap: nowrap;
   width: 100%;
-  gap: ${(p) => p.$gapV} ${(p) => p.$gapH};
   align-items: flex-start;
   position: relative;
   ${(p) =>
@@ -74,7 +73,6 @@ const GridRowSpan = styled.span<{ $debug?: boolean; $gapH: string; $gapV: string
   display: flex;
   flex-wrap: nowrap;
   width: 100%;
-  gap: ${(p) => p.$gapV} ${(p) => p.$gapH};
   align-items: flex-start;
   position: relative;
   ${(p) =>
@@ -87,44 +85,40 @@ const GridRowSpan = styled.span<{ $debug?: boolean; $gapH: string; $gapV: string
 `;
 
 const WordContainer = styled.div`
-  display: inline-flex;
+  display: inline;
   position: relative;
-  flex-shrink: 0;
-  white-space: nowrap;
+  white-space: pre;
 `;
 
 const WordContainerSpan = styled.span`
-  display: inline-flex;
+  display: inline;
   position: relative;
-  flex-shrink: 0;
-  white-space: nowrap;
+  white-space: pre;
 `;
 
 const WordInnerContainer = styled.div<{ $overflow?: string }>`
-  display: inline-flex;
+  display: inline;
   overflow: ${(p) => p.$overflow || "hidden"};
   position: relative;
-  flex-shrink: 0;
-  white-space: nowrap;
+  white-space: pre;
 `;
 
 const WordInnerContainerSpan = styled.span<{ $overflow?: string }>`
-  display: inline-flex;
+  display: inline;
   overflow: ${(p) => p.$overflow || "hidden"};
   position: relative;
-  flex-shrink: 0;
-  white-space: nowrap;
+  white-space: pre;
 `;
 
 const AnimatedContent = styled(animated.div)`
-  display: inline-block;
-  white-space: nowrap;
+  display: inline;
+  white-space: pre;
   position: relative;
 `;
 
 const AnimatedContentSpan = styled(animated.span)`
-  display: inline-block;
-  white-space: nowrap;
+  display: inline;
+  white-space: pre;
   position: relative;
 `;
 
@@ -245,26 +239,20 @@ const AnimatedGrid: React.FC<AnimatedGridProps> = ({
       );
     };
 
-    const processText = (text: string, config: CellConfig = {}, elementId?: string) => {
-      const words = text.split(/\s+/).filter(Boolean);
-      
-      // Show how it used to work (OLD WAY - no spaces)
-      const oldWay = words.join('');
-      
-      const processedWords = words.map((word, wordIndex) => {
-        const index = globalIndex++;
-        // Add a space after each word except the last one
-        const wordWithSpace = wordIndex < words.length - 1 ? word + ' ' : word;
-        return { word, wordWithSpace, index };
-      });
-      
-      // Show how it works now (NEW WAY - with spaces)
-      const newWay = processedWords.map(p => p.wordWithSpace).join('');
-      
-      return processedWords.map(({ wordWithSpace, index }) => 
-        createAnimatedElement(wordWithSpace, index, config, elementId)
-      );
-    };
+  const processText = (text: string, config: CellConfig = {}, elementId?: string) => {
+    const words = text.split(/\s+/).filter(Boolean);
+    
+    const processedWords = words.map((word, wordIndex) => {
+      const index = globalIndex++;
+      // Add a space after each word except the last one
+      const wordWithSpace = wordIndex < words.length - 1 ? word + ' ' : word;
+      return { word, wordWithSpace, index };
+    });
+    
+    return processedWords.map(({ wordWithSpace, index }) => 
+      createAnimatedElement(wordWithSpace, index, config, elementId)
+    );
+  };
 
 const processNode = (node: React.ReactNode): React.ReactNode[] => {
     if (typeof node === "string") return processText(node);
@@ -307,6 +295,7 @@ const processNode = (node: React.ReactNode): React.ReactNode[] => {
   
     if (nodeChildren) {
       if (typeof nodeChildren === "string") return processText(nodeChildren, combinedConfig, id);
+      
       return Children.toArray(nodeChildren).flatMap((child) => processNode(child));
     }
   
@@ -398,7 +387,7 @@ const processNode = (node: React.ReactNode): React.ReactNode[] => {
     };
     
     measureElements();
-  }, [animatedElements.elements.length, children, gap.horizontal, gap.vertical]);
+  }, [animatedElements.elements.length, children]);
 
   useEffect(() => {
     if (!containerWidth || elementWidths.length === 0) {
@@ -408,23 +397,20 @@ const processNode = (node: React.ReactNode): React.ReactNode[] => {
     const rows: number[][] = [];
     let currentRow: number[] = [];
     let currentWidth = 0;
-    const gapH = parseFloat(gap.horizontal || "0.5");
-    const gapPx = isNaN(gapH) ? 8 : gapH * 16;
 
     elementWidths.forEach((width, idx) => {
-      const addGap = currentRow.length > 0 ? gapPx : 0;
-      if (currentWidth + width + addGap > containerWidth - SAFETY_MARGIN) {
+      if (currentWidth + width > containerWidth - SAFETY_MARGIN) {
         if (currentRow.length > 0) rows.push(currentRow);
         currentRow = [idx];
         currentWidth = width;
       } else {
         currentRow.push(idx);
-        currentWidth += width + addGap;
+        currentWidth += width;
       }
     });
     if (currentRow.length > 0) rows.push(currentRow);
     setElementRows(rows);
-  }, [containerWidth, elementWidths, gap.horizontal]);
+  }, [containerWidth, elementWidths]);
 
   const animatedRows = useMemo(() => {
     if (elementRows.length === 0) return [];
@@ -570,7 +556,7 @@ const processNode = (node: React.ReactNode): React.ReactNode[] => {
     observer.observe(containerRef.current);
   
     return () => observer.disconnect();
-  }, [animatedElements.elements.length, children, gap.horizontal, gap.vertical]);
+  }, [animatedElements.elements.length, children]);
 
   if (tag === "span") {
     return (

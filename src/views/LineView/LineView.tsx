@@ -185,6 +185,19 @@ const StyledProductsTitleContainer = styled.div`
         margin-top: ${rm(70)};
     `}
 
+
+    >:first-child{
+        >:first-child{
+            >:first-child{
+                >:first-child{
+                    >:first-child{
+                        margin-right: 0.25em;
+                    }
+                }
+            }
+        }
+    }
+
     h2 {
         margin: 0;
         padding: 0;

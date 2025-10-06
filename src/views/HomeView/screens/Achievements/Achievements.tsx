@@ -141,6 +141,13 @@ const StyledTitleContainer = styled.div`
         width: 100%;
         font-size: ${rm(32)};
     `}
+
+    span#title-first::after,
+    span.first::after,
+    [data-element-id="title-first"]::after {
+        content: ' ' !important;
+        white-space: pre !important;
+    }
 `
 
 const StyledAchievementsList = styled.div`

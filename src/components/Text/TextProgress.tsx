@@ -25,7 +25,7 @@
 
 "use client";
 
-import {
+import React, {
   useEffect,
   memo,
   useRef,
@@ -250,12 +250,19 @@ const Engine = forwardRef(
     const scrolledDown = useRef(false);
 
     // New words for reactive smooth animation on children change
-    const words = useMemo<string[][]>(
-      () =>
-        children
-          .toString()
-          .split(" ")
-          .map((word: string) => word.split("")),
+    const { words, seoText, wordCount } = useMemo(() => {
+        const text = children.toString();
+        const wordArray = text.split(/\s+/).filter(Boolean);
+        
+        // Create properly spaced text for SEO
+        const seoText = wordArray.join(' ');
+        
+        return {
+          words: wordArray.map((word: string) => word.split("")),
+          seoText,
+          wordCount: wordArray.length
+        };
+      },
       [children]
     );
     const letters = useMemo(() => words.flat(), [words]);
@@ -452,8 +459,8 @@ const Engine = forwardRef(
               ref={ref as any}
               style={{
                 position: "relative",
-                columnGap:
-                  typeof columnGap === "number" ? `${columnGap}em` : columnGap,
+                // Remove columnGap when using space spans to prevent duplication
+                columnGap: wordCount > 1 ? 0 : (typeof columnGap === "number" ? `${columnGap}em` : columnGap),
                 display: "flex",
                 flexWrap: "wrap",
                 ...style,
@@ -475,8 +482,8 @@ const Engine = forwardRef(
             end={end}
             style={{
               position: "relative",
-              columnGap:
-                typeof columnGap === "number" ? `${columnGap}em` : columnGap,
+              // Remove columnGap when using space spans to prevent duplication
+              columnGap: wordCount > 1 ? 0 : (typeof columnGap === "number" ? `${columnGap}em` : columnGap),
               display: "flex",
               flexWrap: "wrap",
               ...style,
@@ -711,24 +718,30 @@ const Engine = forwardRef(
                 height: "100%",
               }}
             >
-              {children}
+              {seoText}
             </span>
           )}
           {words.map((word: string[], wordIndex: number) => (
-            <WrapLine wordIndex={wordIndex} key={wordIndex}>
-              <Line wordIndex={wordIndex}>
-                <WrapWord wordIndex={wordIndex}>
-                  <Word wordIndex={wordIndex}>
-                    <WordLetters word={word} wordIndex={wordIndex} />
-                  </Word>
-                </WrapWord>
-              </Line>
-            </WrapLine>
+            <React.Fragment key={wordIndex}>
+              <WrapLine wordIndex={wordIndex}>
+                <Line wordIndex={wordIndex}>
+                  <WrapWord wordIndex={wordIndex}>
+                    <Word wordIndex={wordIndex}>
+                      <WordLetters word={word} wordIndex={wordIndex} />
+                    </Word>
+                  </WrapWord>
+                </Line>
+              </WrapLine>
+              {wordIndex < wordCount - 1 && (
+                <span style={{ display: 'inline-block', width: '0.25em' }}>&nbsp;</span>
+              )}
+            </React.Fragment>
           ))}
         </Wrapper>
       );
     }, [
       words,
+      wordCount,
       className,
       wrapLetterClassName,
       wrapWordClassName,

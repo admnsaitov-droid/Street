@@ -227,6 +227,18 @@ export const StyledPurposeTitleContainer = styled.div`
         width: ${rm(320)};
     `}
 
+    .second-row{
+        >:first-child{
+            >:first-child{
+                >:first-child{
+                    >:nth-child(2){
+                        margin-right: 0.25em;
+                    }
+                }
+            }
+        }
+    }
+
     h2 {
         margin: 0;
         padding: 0;
