@@ -35,13 +35,20 @@ export const CountryPanelMobile = ({ activeFilterId, onFilterChange, onLocationC
     // Control scrolling when popup is open
     useEffect(() => {
         if (isPopupVisible) {
-            // Popup is open - stop scrolling
-            stopScroll()
+            // Popup is open - stop background scrolling but allow popup content to scroll
+            // We'll handle this with CSS instead of completely disabling scroll
+            document.body.style.overflow = 'hidden'
         } else {
-            // Popup is closed - start scrolling
+            // Popup is closed - restore scrolling
+            document.body.style.overflow = 'unset'
             startScroll()
         }
-    }, [isPopupVisible, stopScroll, startScroll])
+        
+        // Cleanup function to restore scroll when component unmounts
+        return () => {
+            document.body.style.overflow = 'unset'
+        }
+    }, [isPopupVisible, startScroll])
 
     // Handle popup animation states
     useEffect(() => {
@@ -436,10 +443,8 @@ const StyledPopupOverlay = styled.div<{ $isClosing: boolean }>`
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     z-index: 1000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: ${rm(20)};
+    padding: ${rm(16)};
+    padding-top: ${rm(74)};
     opacity: ${({ $isClosing }) => $isClosing ? 0 : 1};
     transition: opacity 0.3s ease-out;
     
@@ -458,12 +463,48 @@ const StyledPopupOverlay = styled.div<{ $isClosing: boolean }>`
 const StyledPopupContent = styled.div<{ $isClosing: boolean }>`
     width: 100%;
     max-width: ${rm(400)};
-    max-height: 80vh;
+    height: 100%;
+    // margin-top: ${rm(120)};
     overflow-y: auto;
     background: linear-gradient(to bottom, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.95) 100%);
     border-radius: ${rm(8)};
     border: 1px solid #B7BCCA33;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    
+    /* Ensure proper scrolling behavior */
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    
+    /* Custom scrollbar styling for the popup */
+    &::-webkit-scrollbar {
+        width: ${rm(6)};
+        -webkit-appearance: none;
+    }
+    
+    &::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: ${rm(3)};
+        -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    &::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: ${rm(3)};
+        -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
+        transition: background 0.2s ease;
+    }
+    
+    &::-webkit-scrollbar-thumb:hover {
+        background: rgba(255, 255, 255, 0.4);
+    }
+    
+    &::-webkit-scrollbar-thumb:window-inactive {
+        background: rgba(255, 255, 255, 0.1);
+    }
+    
+    /* Firefox scrollbar styling */
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.2) rgba(255, 255, 255, 0.05);
     
     opacity: ${({ $isClosing }) => $isClosing ? 0 : 1};
     transform: ${({ $isClosing }) => $isClosing ? 'translateY(30px)' : 'translateY(0)'};
