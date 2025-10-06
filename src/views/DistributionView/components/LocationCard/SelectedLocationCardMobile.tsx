@@ -125,7 +125,7 @@ const StyledLocationCard = styled.div<{
   }
 
   ${media.xsm`
-    padding: ${rm(20)};
+    padding: ${rm(16)};
     margin-bottom: ${rm(12)};
   `}
 `
