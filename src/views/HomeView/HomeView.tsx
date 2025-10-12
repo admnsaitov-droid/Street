@@ -14,6 +14,8 @@ import { About } from "./screens/About/About";
 import { Globe } from "./screens/Globe/Globe";
 import { LatestNews } from "./screens/LatestNews/LatestNews";
 import { Lines } from "./screens/Lines/Lines";
+import { useWindowWidth } from "@react-hook/window-size";
+import { PackagesMobile } from "./screens/Packages/PackagedMobile";
 
 const StyledHomeView = styled.div`
   display: flex;
@@ -24,7 +26,6 @@ const StyledHomeView = styled.div`
 
 
 export const HomeView = ({ homeData, footerData }: { homeData: any, footerData: any }) => {
-  console.log('homeData', homeData);
   const heroData = homeData?.hero;
   const achievementsData = homeData?.achievements;
   const packagesData = homeData?.packages;
@@ -34,11 +35,13 @@ export const HomeView = ({ homeData, footerData }: { homeData: any, footerData: 
   const latestNewsData = homeData?.latestNews;
   const linesData = homeData?.linesBlock;
 
+  const width = useWindowWidth()
+
   return (
     <StyledHomeView>
       <Hero heroData={heroData} />
       <Achievements achievementsData={achievementsData} />
-      <Packages packagesData={packagesData} />
+      {width > 576 ? <Packages packagesData={packagesData} /> : <PackagesMobile packagesData={packagesData} />}
       <Lines linesData={linesData} exploreText={linesData?.overviewText}/>
       <Benefits benefitsData={benefitsData} />
       <About aboutData={aboutData} />
