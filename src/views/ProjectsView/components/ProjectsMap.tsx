@@ -373,6 +373,7 @@ interface MarkerData {
     image: string
     linkText?: string
     onLinkClick?: () => void
+    placeId?: string // Google Maps Place ID for better location recognition
 }
 
 interface ProjectsMapProps {
@@ -386,17 +387,31 @@ export const ProjectsMap = ({
     zoom,
     markers
 }: ProjectsMapProps) => {
+    // Default Place ID for StreetBarbell Outdoor Gym Utenberg
+    // Extracted from: 0x478ffb000904357d:0xe8d6436e57ee01b1
+    // For other locations, get Place ID from: https://developers.google.com/maps/documentation/javascript/examples/places-placeid-finder
+    const DEFAULT_PLACE_ID = "ChIJfTUJAAtv-EcRsQHuV24204g" // StreetBarbell Outdoor Gym Utenberg
+    const DEFAULT_TITLE = "StreetBarbell Outdoor Gym Utenberg"
+    const DEFAULT_ADDRESS = "Utenbergstrasse, 6078 Lungern, Switzerland"
+    
     // Use provided markers, or create a default marker at camera position if none provided
-    const markersToUse = markers.length > 0 ? markers : [
-        {
-            position: center,
-            title: "SB Outdoor Gym",
-            address: "501 Silverside Rd, Wilmington, DE 19809, USA",
-            image: "/markerImage.png",
-            linkText: "View details",
-            onLinkClick: () => console.log("View details clicked")
-        }
-    ]
+    const markersToUse = markers.length > 0 
+        ? markers.map(marker => ({
+            ...marker,
+            // Don't override placeId - let each marker use its own
+            // The InfoWindow will fall back to title+address if no placeId
+          }))
+        : [
+            {
+                position: center,
+                title: DEFAULT_TITLE,
+                address: DEFAULT_ADDRESS,
+                image: "/markerImage.png",
+                linkText: "View details",
+                onLinkClick: () => console.log("View details clicked"),
+                placeId: DEFAULT_PLACE_ID
+            }
+          ]
     const mapRef = useRef<HTMLDivElement>(null)
     const [map, setMap] = useState<google.maps.Map | null>(null)
     const [isLoaded, setIsLoaded] = useState(false)
@@ -493,6 +508,7 @@ export const ProjectsMap = ({
                             onLinkClick={markerData.onLinkClick}
                             lat={markerData.position.lat}
                             lng={markerData.position.lng}
+                            placeId={markerData.placeId}
                         />
                     )
 

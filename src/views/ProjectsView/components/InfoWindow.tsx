@@ -10,6 +10,7 @@ interface InfoWindowProps {
     onLinkClick?: () => void
     lat?: number
     lng?: number
+    placeId?: string
 }
 
 const StyledInfoWindow = styled.div`
@@ -109,10 +110,30 @@ export const InfoWindow = ({
     linkText = "View details",
     onLinkClick,
     lat,
-    lng
+    lng,
+    placeId
 }: InfoWindowProps) => {
 
     console.log(image);
+
+    // Generate Google Maps URL based on available data
+    const getGoogleMapsUrl = () => {
+        if (placeId) {
+            // Use Place ID for most accurate location (shows as real business)
+            // Note: Use destination_place_id parameter, not destination=place_id:
+            return `https://www.google.com/maps/dir/?api=1&destination_place_id=${placeId}`
+        } else if (title && address) {
+            // Use title + address for best recognition (better than coordinates alone)
+            // This format works well with Google Maps search
+            return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(title + ", " + address)}`
+        } else if (lat && lng) {
+            // Fall back to coordinates only as last resort
+            return `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`
+        }
+        return null
+    }
+
+    const mapsUrl = getGoogleMapsUrl()
 
     return (
         <StyledInfoWindow>
@@ -126,9 +147,9 @@ export const InfoWindow = ({
                     {/* <LinkButton onClick={onLinkClick}>
                         {linkText}
                     </LinkButton> */}
-                    {lat && lng && (
+                    {mapsUrl && (
                         <GoogleMapsButton 
-                            href={`https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`}
+                            href={mapsUrl}
                             target="_blank"
                             rel="noopener noreferrer"
                             aria-label="Построить маршрут в Google Maps"

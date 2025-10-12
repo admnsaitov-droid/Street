@@ -1,7 +1,4 @@
 import type { Metadata } from "next";
-import { Onest } from "next/font/google";
-import { Golos_Text } from "next/font/google";
-import localFont from "next/font/local";
 
 import GlobalStyles, { SmartCSSGrid } from "@/styles";
 
@@ -11,7 +8,6 @@ import { generateMetadata } from "@/utils/generateMetadata";
 // import { AnimatedRouterLayout } from "@/layouts/AnimatedRouterLayout/AnimatedRouterLayout";
 import { StyledComponentsLayout } from "@/layouts/StyledComponentsLayout";
 import { AssetsLoaderLayout } from "@/layouts/AssetsLoaderLayout/AssetsLoaderLayout";
-import { CanvasLayout } from "@/layouts/CanvasLayout/CanvasLayout";
 import { Cookie } from "@/components/Cookie";
 import { ScrollLayout } from "@/layouts/ScrollLayout/ScrollLayout";
 import { AnimatedRouterLayout } from "@/layouts/AnimatedRouterLayout/AnimatedRouterLayout";
@@ -28,24 +24,6 @@ import { FullScreenPlayer } from "@/components/FullScreenPlayer/FullScreenPlayer
 import { FadeContainer } from "@/components/Header/MegaMenus/FadeContainer";
 import { StructuredData } from "@/components/StructuredData";
 import { generateOrganizationSchema, generateWebSiteSchema } from "@/utils/generateStructuredData";
-
-const onest = Onest({
-  subsets: ["latin"],
-  variable: "--font-onest",
-  display: 'swap',
-});
-
-const golosText = Golos_Text({
-  subsets: ["latin"],
-  variable: "--font-golos-text",
-  display: 'swap',
-});
-
-const sageGrotesk = localFont({
-    src: '../../../public/fonts/Sage-Grotesk.woff2',
-    variable: "--font-sage-grotesk",
-    display: 'swap',
-  });
 
 export const metadata: Metadata = generateMetadata({});
 
