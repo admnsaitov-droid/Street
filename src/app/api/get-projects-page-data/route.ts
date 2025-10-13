@@ -2,7 +2,7 @@ import { NextResponse, NextRequest } from 'next/server';
 import axios from 'axios';
 
 export const dynamic = 'force-dynamic';
-export const revalidate = 300; // Cache for 5 minutes
+export const revalidate = 10; // Cache for 5 minutes
 
 export async function GET(request: NextRequest) {
   try {

@@ -392,7 +392,7 @@ export const ProjectsMap = ({
     // For other locations, get Place ID from: https://developers.google.com/maps/documentation/javascript/examples/places-placeid-finder
     const DEFAULT_PLACE_ID = "ChIJfTUJAAtv-EcRsQHuV24204g" // StreetBarbell Outdoor Gym Utenberg
     const DEFAULT_TITLE = "StreetBarbell Outdoor Gym Utenberg"
-    const DEFAULT_ADDRESS = "Utenbergstrasse, 6078 Lungern, Switzerland"
+    const DEFAULT_ADDRESS = "Utenbergstrasse, 6078 Lungern, fffland"
     
     // Use provided markers, or create a default marker at camera position if none provided
     const markersToUse = markers.length > 0 
