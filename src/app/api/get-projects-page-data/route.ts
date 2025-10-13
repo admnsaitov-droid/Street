@@ -2,7 +2,6 @@ import { NextResponse, NextRequest } from 'next/server';
 import axios from 'axios';
 
 export const dynamic = 'force-dynamic';
-export const revalidate = 10; // Cache for 5 minutes
 
 export async function GET(request: NextRequest) {
   try {
@@ -20,12 +19,7 @@ export async function GET(request: NextRequest) {
       }
     );
 
-    const res = NextResponse.json(response.data);
-
-    // Enable caching for 5 minutes
-    res.headers.set('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600');
-    
-    return res;
+    return NextResponse.json(response.data);
   } catch (error) {
     console.error('Error getting home data:', error);
     return NextResponse.json({ error: 'Failed to get home data' }, { status: 500 });
