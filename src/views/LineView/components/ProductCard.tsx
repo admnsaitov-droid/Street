@@ -18,8 +18,8 @@ export const ProductCard = ({ data }: ProductCardProps) => {
                     <Image src={getMediaStrapiPath(data?.previewImage)} alt={data?.name} fill />
                 </StyledImageContainer>
                 <StyledContent>
-                    <h3 className="title">{data?.name}</h3>
-                        <p className="subtitle">{data?.model}</p>
+                    {data?.name && <h3 className="title">{data?.name}</h3>}
+                    {data?.model && <p className="subtitle">{data?.model}</p>}
                     </StyledContent>
                 </StyledWrapper>
         </StyledProductCard>

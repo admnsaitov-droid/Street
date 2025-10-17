@@ -23,8 +23,6 @@ export const LineView = ({ data }: LineViewProps) => {
         { label: breadcrumb.text, slug: breadcrumb.link }
     ))
 
-    console.log(data?.line?.lineContent?.title)
-
     return (
         <StyledLineView>
             <Breadcrumbs
@@ -35,8 +33,8 @@ export const LineView = ({ data }: LineViewProps) => {
             />
             <StyledHero>
                 <StyledTop>
-                    <StyledTitle tag="h1">{data?.line?.lineContent?.title}</StyledTitle>
-                    <StyledSubtitle tag="p">{data?.line?.lineContent?.description}</StyledSubtitle>
+                    {data?.line?.lineContent?.title && <StyledTitle tag="h1">{data?.line?.lineContent?.title}</StyledTitle>}
+                    {data?.line?.lineContent?.description && <StyledSubtitle tag="p">{data?.line?.lineContent?.description}</StyledSubtitle>}
                 </StyledTop>
                 <StyledTopImageContainer>
                     <ScaleImageAppear className="image-container">

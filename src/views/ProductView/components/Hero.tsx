@@ -36,15 +36,15 @@ export const Hero = ({ data, colors }: HeroProps) => {
                     ]}
                 />
                 <div className="top">
-                    <StyledTitle tag="h1">{data?.name}</StyledTitle>
-                    <StyledSubtitle tag="p">{data?.model}</StyledSubtitle>
+                    {data?.name && <StyledTitle tag="h1">{data?.name}</StyledTitle>}
+                    {data?.model && <StyledSubtitle tag="p">{data?.model}</StyledSubtitle>}
                 </div>
             </StyledContent>
             <ProductScene data={data?.model3D} colors={colors} />
             {width > 768 ? <ColorPaletre colors={colors} /> : null}
             {width > 768 ? <StyledQuoteButtonWrapper>
                 <SimpleButton isSvg link={data?.quoteButton?.link}>
-                    {data?.quoteButton?.text}
+                    {data?.quoteButton?.text && data?.quoteButton?.text}
                 </SimpleButton>
             </StyledQuoteButtonWrapper> : null}
         </StyledHero>
