@@ -208,41 +208,8 @@ export const ContactForm = () => {
     return (    
         !pathname.includes('contact') ? <StyledContactForm>
             <StyledTitleContainer>
-                <AnimatedGrid
-                    type="words"
-                    animation={{
-                        from: { opacity: 0, y: '40px' },
-                        to: { opacity: 1, y: '0px' },
-                        delayStep: 60
-                    }}
-                    overflow={true}
-                    gap={{ horizontal: '0.25em', vertical: '0.25em' }}
-                    containerStyle={{ overflow: 'hidden' }}
-                    cellConfigs={{
-                        'title-first': {
-                            style: {
-                                color: colors.black100,
-                                fontFamily: 'var(--font-golos-text)',
-                                fontOpticalSizing: 'auto',
-                                fontWeight: 600,
-                                fontStyle: 'normal',
-                            }
-                        },
-                        'title-second': {
-                            style: {
-                                color: colors.red,
-                                fontFamily: 'var(--font-sage-grotesk)',
-                                fontOpticalSizing: 'auto',
-                                fontWeight: 400,
-                                fontStyle: 'normal',
-                                lineHeight: '105%',
-                            }
-                        }
-                    }}
-                >
-                    <span id="title-first">{data?.data?.title?.textFirst}</span>
-                    <span id="title-second" className="first">{data?.data?.title?.textSecond}</span>
-                </AnimatedGrid>
+                <StyledTitleFirst>{data?.data?.title?.textFirst}</StyledTitleFirst>
+                <StyledTitleSecond>{data?.data?.title?.textSecond}</StyledTitleSecond>
             </StyledTitleContainer>
             <StyledNote>{data?.data?.note}</StyledNote>
             <StyledForm onSubmit={handleSubmit}>
@@ -399,17 +366,27 @@ const StyledTitleContainer = styled.div`
         font-size: ${rm(32)};
         margin-bottom: ${rm(15)};
     `}
+`
 
-    >:first-child{
-        >:first-child{
-            >:first-child{
-                >:nth-child(3){
-                    margin-right: 0.3em;
-                }
-            }
-        }
-    }
-}
+const StyledTitleFirst = styled.div`
+    color: ${colors.black100};
+    font-family: var(--font-golos-text);
+    font-optical-sizing: auto;
+    font-weight: 600;
+    font-style: normal;
+    display: block;
+    margin-bottom: 0;
+`
+
+const StyledTitleSecond = styled.div`
+    color: ${colors.red};
+    font-family: var(--font-sage-grotesk);
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+    line-height: 105%;
+    display: block;
+    margin-top: 0;
 `
 
 const StyledNote = styled.p`
