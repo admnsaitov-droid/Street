@@ -12,11 +12,11 @@ interface LineOverviewProps {
 export const LineOverview = ({ data, overviewText }: LineOverviewProps) => {
     return (
         <StyledTop>
-            <StyledAnnotation tag="h2">{overviewText}</StyledAnnotation>
+            {overviewText && <StyledAnnotation tag="h2">{overviewText}</StyledAnnotation>}
             <div className="right">
-                <StyledTitle tag="h2">{data?.title}</StyledTitle>
+                {data?.title && <StyledTitle tag="h2">{data?.title}</StyledTitle>}
                 <div className="bottom">
-                    <StyledSubtitle tag="p">{data?.description}</StyledSubtitle>
+                    {data?.description && <StyledSubtitle tag="p">{data?.description}</StyledSubtitle>}
                 </div>
             </div>
         </StyledTop>
