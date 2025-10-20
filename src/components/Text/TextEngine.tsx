@@ -372,7 +372,8 @@ const Engine = forwardRef(
 
     // New words for reactive smooth animation on children change
     const { newWords, seoText, wordCount } = useMemo(() => {
-        const text = children.toString();
+        const raw = children ?? "";
+        const text = typeof raw === "string" ? raw : String(raw);
         const words = text.split(/\s+/).filter(Boolean);
         
         // Create properly spaced text for SEO

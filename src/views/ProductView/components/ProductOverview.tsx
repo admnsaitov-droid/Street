@@ -20,15 +20,15 @@ export const ProductOverview = ({ data }: ProductOverviewProps) => {
                 {data?.productInfo?.descriptionMain && <StyledTitle tag="h2">{data?.productInfo?.descriptionMain}</StyledTitle>}
                 <div className="bottom">
                     <div className="accordions">
-                        <Accordion title={data?.productInfo?.descriptionTitle}>
+                        {data?.productInfo?.descriptionTitle && <Accordion title={data?.productInfo?.descriptionTitle}>
                             {data?.model && data?.productInfo?.description && <Description model={data?.model} description={data?.productInfo?.description} />}
-                        </Accordion>
-                        <Accordion title={data?.productInfo?.specificationsTitle}>
+                        </Accordion>}
+                        {data?.productInfo?.specificationsTitle && <Accordion title={data?.productInfo?.specificationsTitle}>
                             {data?.productInfo?.specification && <Specifications specifications={data?.productInfo?.specification} />}
-                        </Accordion>
-                        <Accordion title={data?.productInfo?.musclesTitle}>
+                        </Accordion>}
+                        {data?.productInfo?.musclesTitle && <Accordion title={data?.productInfo?.musclesTitle}>
                             {data?.productInfo?.muscles && <Muscles muscles={data?.productInfo?.muscles} />}
-                        </Accordion>
+                        </Accordion>}
                     </div>
                 </div>
             </div>
