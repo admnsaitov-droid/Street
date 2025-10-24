@@ -68,15 +68,15 @@ export const Product = ({ product, index, onMouseEnter, onMouseLeave }: ProductP
             <StyledHiddenLink href={`/products/${product.slug}`} aria-label={`View ${product.name} product details`} />
             <StyledTopContainer>
                 <div className="left">
-                    <StyledModel as="p">{product?.model}</StyledModel>
-                    <StyledProductName as="h5">{product?.name}</StyledProductName>
+                    {product?.model && <StyledModel as="p">{product?.model}</StyledModel>}
+                    {product?.name && <StyledProductName as="h5">{product?.name}</StyledProductName>}
                 </div>
                 {width > 768 && <StyledExploreButton style={exploreSpring}>
                     <UnderlineLink href={`/products/${product.slug}`} lineColor="#0040DD" text="Explore"></UnderlineLink>
                 </StyledExploreButton>}
             </StyledTopContainer>
             <StyledDescriptionContainer>
-                <AccordionText 
+                {product?.previewDescription && <AccordionText 
                     className="description"
                     enabled={index === activeIndex}
                     duration={600}
@@ -84,7 +84,7 @@ export const Product = ({ product, index, onMouseEnter, onMouseLeave }: ProductP
                     textClassName="description-text"
                 >
                     {product?.previewDescription}
-                </AccordionText>
+                </AccordionText>}
                 {width <= 768 && <StyledExploreButton style={exploreSpring}>
                     <UnderlineLink href={`/products/${product.slug}`} lineColor="#0040DD" text="Explore"></UnderlineLink>
                 </StyledExploreButton>}

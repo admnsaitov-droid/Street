@@ -5,6 +5,7 @@ interface DynamicDistributionSceneProps {
     activeFilterId?: string
     onLocationClick?: (location: DistributionLocation | null) => void
     selectedLocation?: DistributionLocation | null
+    data?: any
 }
 
 const DistributionScene = dynamic(() => import('./Scene').then(mod => ({ default: mod.DistributionScene })), {

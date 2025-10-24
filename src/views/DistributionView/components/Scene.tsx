@@ -16,6 +16,7 @@ interface DistributionSceneProps {
     activeFilterId?: string
     onLocationClick?: (location: DistributionLocation | null) => void
     selectedLocation?: DistributionLocation | null
+    data?: any
 }
 
 const rotationXSpeed = 0.001
@@ -24,7 +25,7 @@ const rotationZSpeed = 0.001
 const scenePosition: [number, number, number] = [-2.1, -1.5, -1]
 const atmospherePosition: [number, number, number] = [-2.35, -1.5, -1]
 
-export const DistributionScene = ({ activeFilterId = 'all', onLocationClick, selectedLocation }: DistributionSceneProps) => {
+export const DistributionScene = ({ activeFilterId = 'all', onLocationClick, selectedLocation, data }: DistributionSceneProps) => {
     const lazyScene = useLazyScene('distribution', {
         threshold: 0.1,
         rootMargin: '100px'
@@ -61,6 +62,7 @@ export const DistributionScene = ({ activeFilterId = 'all', onLocationClick, sel
                             onLocationClick={onLocationClick}
                             selectedLocation={selectedLocation}
                             width={width}
+                            data={data}
                         />
                     </Suspense>
                 </StyledScene>

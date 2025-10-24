@@ -1,5 +1,6 @@
 import { Tracker } from "./Tracker"
-import { Location as DistributionLocation, getAllLocations } from "../data/distributionData"
+import { Location as DistributionLocation } from "../data/distributionData"
+import { getAllDynamicLocations } from "../data/dynamicDataTransformer"
 import { MutableRefObject } from "react"
 
 interface TrackerConfig {
@@ -18,6 +19,7 @@ interface TrackersProps {
     selectedLocation?: DistributionLocation | null
     currentRotationRef?: MutableRefObject<{ x: number; y: number; z: number }>
     cameraRotationRef?: MutableRefObject<{ x: number; y: number; z: number }>
+    data?: any
 }
 
 const trackerConfigs: TrackerConfig[] = [
@@ -64,17 +66,47 @@ const trackerConfigs: TrackerConfig[] = [
     { label: "Japan", name: "Japanese Distribution Center", position: [2.66, 2.25, 1.88], email: "japan@distributor.com", address: "Tokyo, Japan", rotationAdjustment: [0.35, -1.3, -0.2], fromRotation: [-0.2, -2.37, 4.23], toRotation: [1, 0.12, 5.76] },
 ]
 
+// Function to create tracker configs from dynamic data
+const createTrackerConfigsFromDynamicData = (data: any): TrackerConfig[] => {
+    if (!data?.distributionPage?.locations) return []
+    
+    return data.distributionPage.locations.map((location: any) => ({
+        label: location.countryText,
+        name: location.centerName,
+        position: [location.scenePosition.x, location.scenePosition.y, location.scenePosition.z] as [number, number, number],
+        email: location.mailItem,
+        address: location.locationItem,
+        rotationAdjustment: [location.rotationAdjustment.x, location.rotationAdjustment.y, location.rotationAdjustment.z] as [number, number, number],
+        fromRotation: [location.fromRotation.x, location.fromRotation.y, location.fromRotation.z] as [number, number, number],
+        toRotation: [location.toRotation.x, location.toRotation.y, location.toRotation.z] as [number, number, number]
+    }))
+}
+
 // Export function to get rotation adjustment by label
-export const getRotationAdjustmentByLabel = (label: string): [number, number, number] => {
+export const getRotationAdjustmentByLabel = (label: string, data?: any): [number, number, number] => {
+    if (data?.distributionPage?.locations) {
+        const location = data.distributionPage.locations.find((loc: any) => loc.countryText === label)
+        if (location) {
+            return [location.rotationAdjustment.x, location.rotationAdjustment.y, location.rotationAdjustment.z]
+        }
+    }
+    
+    // Fallback to static configs
     const config = trackerConfigs.find(config => config.label === label)
     return config?.rotationAdjustment || [0, 0, 0]
 }
 
-export const Trackers = ({ onLocationClick, selectedLocation, currentRotationRef, cameraRotationRef }: TrackersProps) => {
+export const Trackers = ({ onLocationClick, selectedLocation, currentRotationRef, cameraRotationRef, data }: TrackersProps) => {
+    // Get tracker configs from dynamic data or fallback to static
+    const trackerConfigs = data?.distributionPage ? createTrackerConfigsFromDynamicData(data) : []
+    
     // Function to find corresponding location data for a tracker
     const getLocationForTracker = (trackerLabel: string): DistributionLocation | null => {
-        const allLocations = getAllLocations()
-        return allLocations.find((location: DistributionLocation) => location.name === trackerLabel) || null
+        if (data?.distributionPage) {
+            const allLocations = getAllDynamicLocations(data)
+            return allLocations.find((location: DistributionLocation) => location.name === trackerLabel) || null
+        }
+        return null
     }
 
     const handleTrackerClick = (trackerLabel: string) => {

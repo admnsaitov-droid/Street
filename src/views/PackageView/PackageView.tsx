@@ -12,8 +12,6 @@ export const PackageView = ({ data }: PackageProps) => {
 
     const packageData = data?.package
 
-    console.log(packageData)
-
     const breadcrumbs = packageData?.breadcrumbs?.map((breadcrumb: any) => (
         { label: breadcrumb.text, slug: breadcrumb.link }
     ))
