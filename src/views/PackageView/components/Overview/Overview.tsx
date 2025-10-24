@@ -23,7 +23,6 @@ export const Overview = ({ data }: OverviewProps) => {
 
     const linesData = data?.lines
 
-    console.log('linesData', linesData)
     const setAllUrls = useProductPreview(state => state.setAllUrls)
     const containerRef = useProductPreview(state => state.containerRef)
 
@@ -45,11 +44,11 @@ export const Overview = ({ data }: OverviewProps) => {
     return (
         <StyledOverview ref={containerRef}>
             <StyledTop>
-                <StyledAnnotation tag="h2">{data?.overviewText}</StyledAnnotation>
+                {data?.overviewText && <StyledAnnotation tag="h2">{data?.overviewText}</StyledAnnotation>}
                 <div className="right">
-                    <StyledTitle tag="h2">{data?.mainDescription}</StyledTitle>
+                    {data?.mainDescription && <StyledTitle tag="h2">{data?.mainDescription}</StyledTitle>}
                     <div className="bottom">
-                        <StyledSubtitle tag="p">{data?.descriptionSecondary}</StyledSubtitle>
+                        {data?.descriptionSecondary && <StyledSubtitle tag="p">{data?.descriptionSecondary}</StyledSubtitle>}
                         <SimpleButton className="button" link={data?.button?.link} isSvg>
                             {data?.button?.text}
                         </SimpleButton>
@@ -71,7 +70,7 @@ export const Overview = ({ data }: OverviewProps) => {
 
             {Array.isArray(linesData) && linesData.length > 0 && (
                 <StyledExplore>
-                    <StyledExploreHeaderContainer>
+                    {data?.exploreTitle && <StyledExploreHeaderContainer>
                         <h3>
                             <AnimatedGrid
                                 tag="span"
@@ -110,13 +109,13 @@ export const Overview = ({ data }: OverviewProps) => {
                                 <span id="title-second">the line</span>
                         </AnimatedGrid>
                     </h3>
-                    </StyledExploreHeaderContainer>
-                    <StyledLines>
+                    </StyledExploreHeaderContainer>}
+                     {linesData && linesData.length > 0 && <StyledLines>
                         {linesData.map((line: any, lineIndex: number) => (
                             <StyledLineGroup key={line?.id || lineIndex}>
-                                <StyledLineName as="h4">{line?.name}</StyledLineName>
+                                {line?.name && <StyledLineName as="h4">{line?.name}</StyledLineName>}
                                 <StyledProducts>
-                                    {line?.products.map((product: any, productIndexWithinLine: number) => {
+                                    {line?.products && line?.products.length > 0 && line?.products.map((product: any, productIndexWithinLine: number) => {
                                         const globalIndex = (linesData
                                             .slice(0, lineIndex)
                                             .reduce((acc: number, l: any) => acc + ((l?.products || []).length), 0)) + productIndexWithinLine
@@ -127,7 +126,7 @@ export const Overview = ({ data }: OverviewProps) => {
                                 </StyledProducts>
                             </StyledLineGroup>
                         ))}
-                    </StyledLines>
+                    </StyledLines>}
                 </StyledExplore>
             )}
             <ProductPreview />

@@ -2,29 +2,31 @@ import { colors, media, rm } from "@/styles"
 import { fontGolosText } from "@/styles/fonts"
 import styled from "styled-components"
 import { useState, useEffect, useCallback } from "react"
-import { distributionData, getFilterNames, Filter, Location as DistributionLocation } from "../../data/distributionData"
+import { Filter, Location as DistributionLocation } from "../../data/distributionData"
+import { transformDynamicData, getDynamicFilterNames } from "../../data/dynamicDataTransformer"
 import { LocationCard } from "../LocationCard/LocationCard"
 import { SelectedLocationCardMobile } from "../LocationCard/SelectedLocationCardMobile"
 import { useScroll } from "@/layouts/ScrollLayout/useScroll"
-
-const filters = getFilterNames()
-
-
 
 interface CountryPanelMobileProps {
     activeFilterId?: string
     onFilterChange?: (filterId: string) => void
     onLocationClick?: (location: DistributionLocation | null) => void
     selectedLocation?: DistributionLocation | null
+    data?: any
 }
 
-export const CountryPanelMobile = ({ activeFilterId, onFilterChange, onLocationClick, selectedLocation }: CountryPanelMobileProps) => {
+export const CountryPanelMobile = ({ activeFilterId, onFilterChange, onLocationClick, selectedLocation, data }: CountryPanelMobileProps) => {
     const [activeFilter, setActiveFilter] = useState('All')
     const [activeCard, setActiveCard] = useState<string | null>(null)
     const [displayedLocation, setDisplayedLocation] = useState<DistributionLocation | null>(null)
     const [isPopupVisible, setIsPopupVisible] = useState(false)
     const [isPopupClosing, setIsPopupClosing] = useState(false)
     const [popupLocation, setPopupLocation] = useState<DistributionLocation | null>(null)
+
+    // Get dynamic data
+    const distributionData = data?.distributionPage ? transformDynamicData(data) : []
+    const filters = data?.distributionPage ? getDynamicFilterNames(data) : ['All']
 
     // Scroll control for popup
     const stopScroll = useScroll((state) => state.stop)

@@ -30,8 +30,8 @@ export const Hero = ({ data, breadcrumbs }: HeroProps) => {
                         // { label: data?.hero?.title || data?.title || "", href: undefined },
                     ]}
                 />
-                <StyledTitle style={{ userSelect: 'none', pointerEvents: 'none' }} tag="h1">{data?.hero?.title}</StyledTitle>
-                <StyledDescription style={{ userSelect: 'none', pointerEvents: 'none' }} tag="p">{data?.hero?.description}</StyledDescription>
+                {data?.hero?.title && <StyledTitle style={{ userSelect: 'none', pointerEvents: 'none' }} tag="h1">{data?.hero?.title}</StyledTitle>}
+                {data?.hero?.description && <StyledDescription style={{ userSelect: 'none', pointerEvents: 'none' }} tag="p">{data?.hero?.description}</StyledDescription>}
             </StyledContent>
         </StyledHero>
     )

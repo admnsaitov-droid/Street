@@ -2,22 +2,20 @@ import { colors, media, rm } from "@/styles"
 import { fontGolosText } from "@/styles/fonts"
 import styled from "styled-components"
 import { useState, useEffect, useCallback } from "react"
-import { distributionData, getFilterNames, Filter, getLocationsByFilter, Location as DistributionLocation } from "../../data/distributionData"
+import { Filter, Location as DistributionLocation } from "../../data/distributionData"
+import { transformDynamicData, getDynamicFilterNames, getDynamicLocationsByFilter } from "../../data/dynamicDataTransformer"
 import { LocationCard } from "../LocationCard/LocationCard"
 import { SelectedLocationCard } from "../LocationCard/SelectedLocationCard"
-
-const filters = getFilterNames()
-
-
 
 interface CountryPanelProps {
     activeFilterId?: string
     onFilterChange?: (filterId: string) => void
     onLocationClick?: (location: DistributionLocation | null) => void
     selectedLocation?: DistributionLocation | null
+    data?: any
 }
 
-export const CountryPanel = ({ activeFilterId, onFilterChange, onLocationClick, selectedLocation }: CountryPanelProps) => {
+export const CountryPanel = ({ activeFilterId, onFilterChange, onLocationClick, selectedLocation, data }: CountryPanelProps) => {
     const [activeFilter, setActiveFilter] = useState('All')
     const [activeCard, setActiveCard] = useState<string | null>(null)
     const [animationPhase, setAnimationPhase] = useState<'idle' | 'hiding' | 'showing'>('idle')
@@ -27,6 +25,10 @@ export const CountryPanel = ({ activeFilterId, onFilterChange, onLocationClick, 
     const [isCardsAnimatingOut, setIsCardsAnimatingOut] = useState(false)
     const [isCardsAnimatingIn, setIsCardsAnimatingIn] = useState(false)
     const [hideAllCards, setHideAllCards] = useState(false)
+
+    // Get dynamic data
+    const distributionData = data?.distributionPage ? transformDynamicData(data) : []
+    const filters = data?.distributionPage ? getDynamicFilterNames(data) : ['All']
 
     // Helper function to animate cards out sequentially
     const animateCardsOut = useCallback((locations: DistributionLocation[], selectedLocationId: string, newFilterName?: string) => {

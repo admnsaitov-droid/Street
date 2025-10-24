@@ -7,7 +7,8 @@ import { PlanetModel } from "./PlanetModel"
 import { Trackers } from "./Trackers"
 import { Stars } from "./Stars"
 import { getSpecificSpherePositions } from "@/utils/spherePosition"
-import { getLocationsByFilter, Location as DistributionLocation } from "../data/distributionData"
+import { Location as DistributionLocation } from "../data/distributionData"
+import { getDynamicLocationsByFilter } from "../data/dynamicDataTransformer"
 import { getRotationAdjustmentByLabel } from "./Trackers"
 import SphereClouds from "@/components/Clouds/SphereClouds"
 
@@ -20,11 +21,12 @@ interface CompositionProps {
     onLocationClick?: (location: DistributionLocation | null) => void
     selectedLocation?: DistributionLocation | null
     width: number
+    data?: any
 }
 
 const mouseRotationIntensity = 0.05
 
-export const Composition = ({ scale, position, rotationXSpeed, rotationZSpeed, activeFilterId = 'all', onLocationClick, selectedLocation, width }: CompositionProps) => {
+export const Composition = ({ scale, position, rotationXSpeed, rotationZSpeed, activeFilterId = 'all', onLocationClick, selectedLocation, width, data }: CompositionProps) => {
     const groupRef = useRef<Group>(null)
     const planetGroupRef = useRef<Group>(null)
     const mouseRef = useRef({ x: 0, y: 0 })
@@ -106,7 +108,7 @@ export const Composition = ({ scale, position, rotationXSpeed, rotationZSpeed, a
             setIsZoomedIn(false) // Mark as not zoomed in
         } else {
             // Use only manual rotation adjustments from trackerConfigs (ignore base targetRotation)
-            const [targetX, targetY, targetZ] = getRotationAdjustmentByLabel(location.name)
+            const [targetX, targetY, targetZ] = getRotationAdjustmentByLabel(location.name, data)
             
             console.log('Location:', location.name)
             console.log('Using only manual rotation adjustment:', [targetX, targetY, targetZ])
@@ -291,11 +293,6 @@ export const Composition = ({ scale, position, rotationXSpeed, rotationZSpeed, a
                     y: currentRotationRef.current.y + cameraRotationRef.current.y,
                     z: currentRotationRef.current.z + cameraRotationRef.current.z
                 }
-                console.log('Combined Rotation:', {
-                    planet: currentRotationRef.current,
-                    camera: cameraRotationRef.current,
-                    total: combinedRotation
-                })
                 lastLogTime.current = currentTime
             }
         }
@@ -395,7 +392,7 @@ export const Composition = ({ scale, position, rotationXSpeed, rotationZSpeed, a
                             <PlanetModel scale={scale} />
                             <SphereClouds size={3.75} />
                         </group>
-                        <Trackers onLocationClick={onLocationClick} selectedLocation={selectedLocation} currentRotationRef={currentRotationRef} cameraRotationRef={cameraRotationRef} />
+                        <Trackers onLocationClick={onLocationClick} selectedLocation={selectedLocation} currentRotationRef={currentRotationRef} cameraRotationRef={cameraRotationRef} data={data} />
                     </group>
                 </group>
             </group>

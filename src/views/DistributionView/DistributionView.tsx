@@ -8,10 +8,10 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { DynamicDistributionScene as DistributionScene } from "./components/DynamicScene"
 import AnimatedGrid from "@/components/animated/AnimatedContent"
 import { CountryPanel } from "./components/CountryPanel/CountryPanel"
-import { Location as DistributionLocation, getAllLocations } from "./data/distributionData"
+import { Location as DistributionLocation } from "./data/distributionData"
+import { getAllDynamicLocations, transformDynamicData } from "./data/dynamicDataTransformer"
 import { CountryPanelMobile } from "./components/CountryPanel/CountryPanelMobile"
 import { useWindowWidth } from "@react-hook/window-size"
-
 interface DistributionViewProps {
     data: any
 }
@@ -27,9 +27,9 @@ const updateLocationParam = (router: any, locationId: string | null) => {
     router.replace(url.pathname + url.search, { scroll: false })
 }
 
-const getLocationFromParam = (locationParam: string | null): DistributionLocation | null => {
-    if (!locationParam) return null
-    const allLocations = getAllLocations()
+const getLocationFromParam = (locationParam: string | null, data: any): DistributionLocation | null => {
+    if (!locationParam || !data?.distributionPage) return null
+    const allLocations = getAllDynamicLocations(data)
     return allLocations.find(location => location.id === locationParam) || null
 }
 
@@ -40,6 +40,9 @@ export const DistributionView = ({ data }: DistributionViewProps) => {
     const [selectedLocation, setSelectedLocation] = useState<DistributionLocation | null>(null)
     const isInternalLocationChange = useRef(false)
     const width = useWindowWidth()
+
+    console.log('data', data)
+
     // Check URL parameter on mount and set selected location
     useEffect(() => {
         // Skip if this is an internal location change to prevent rerender conflicts
@@ -49,7 +52,7 @@ export const DistributionView = ({ data }: DistributionViewProps) => {
         }
         
         const locationParam = searchParams.get('location')
-        const locationFromParam = getLocationFromParam(locationParam)
+        const locationFromParam = getLocationFromParam(locationParam, data)
         
         // Only update if the location is actually different
         if (locationFromParam?.id !== selectedLocation?.id) {
@@ -76,7 +79,6 @@ export const DistributionView = ({ data }: DistributionViewProps) => {
     }
 
     const handleLocationClick = (location: DistributionLocation | null) => {
-        console.log('Location clicked:', location)
         // Mark this as an internal change to prevent useEffect rerender conflicts
         isInternalLocationChange.current = true
         setSelectedLocation(location)
@@ -132,18 +134,21 @@ export const DistributionView = ({ data }: DistributionViewProps) => {
                     activeFilterId={activeFilterId} 
                     onLocationClick={handleLocationClick}
                     selectedLocation={selectedLocation}
+                    data={data}
                 />
             </StyledSceneWrapper>
             {width > 768 ? <CountryPanel 
                 activeFilterId={activeFilterId}
                 onFilterChange={handleFilterChange} 
                 onLocationClick={handleLocationClick} 
-                selectedLocation={selectedLocation} 
+                selectedLocation={selectedLocation}
+                data={data}
             /> : <CountryPanelMobile 
                 activeFilterId={activeFilterId}
                 onFilterChange={handleFilterChange}
                 onLocationClick={handleLocationClick}
                 selectedLocation={selectedLocation}
+                data={data}
             />}
         </StyledDistributionView>
     )

@@ -122,6 +122,7 @@ export const ProductsMenu = ({ previewText, allText }: { previewText: string, al
         }
     })
 
+
     return (
         <StyledProductsMenu>
             <StyledVisibleContainer>
@@ -161,7 +162,7 @@ export const ProductsMenu = ({ previewText, allText }: { previewText: string, al
                                         onMouseEnter={() => setCurrentPackage(item)}
                                         $isActive={currentPackage?.id === item?.id}
                                     >
-                                        0{index + 1}.<span>{item?.name} ({item?.count})</span>
+                                        0{index + 1}.<span>{item?.name} ({item?.products?.length})</span>
                                     </StyledPackage>
                                 ))}
                             </StyledPackages>
