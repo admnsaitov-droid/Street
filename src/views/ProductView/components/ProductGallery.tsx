@@ -1,0 +1,225 @@
+"use client"
+
+import Image from "next/image"
+import styled from "styled-components"
+import { colors, media, rm } from "@/styles"
+import { getMediaStrapiPath } from "@/utils/getMediaStrapiPath"
+import { useVideoPlayerStore } from "@/store/store"
+import { useMemo, useRef, WheelEvent, Suspense } from "react"
+import { Canvas } from "@react-three/fiber"
+import { Box, PerspectiveCamera } from "@react-three/drei"
+import { ProductModel } from "./Scene/components/ProductModel"
+
+interface ProductGalleryProps {
+    images?: any[]
+    model3D?: any
+    colors?: { name: string; color: string }[]
+    onOpenImage?: (url: string, gallery: string[]) => void
+    activeImageUrl?: string | null
+    onCloseImage?: () => void
+}
+
+export const ProductGallery = ({ images = [], model3D, colors = [], onOpenImage, activeImageUrl = null, onCloseImage }: ProductGalleryProps) => {
+    const { openImage, isOpen, contentType, content, closePlayer } = useVideoPlayerStore()
+    const railRef = useRef<HTMLDivElement>(null)
+
+    const galleryUrls = useMemo(() => images.map((img) => getMediaStrapiPath(img)), [images])
+
+    const storeImageOpen = isOpen && contentType === 'image'
+    const isSceneActive = onOpenImage
+        ? !activeImageUrl
+        : !storeImageOpen
+
+    const handleOpenScene = () => {
+        if (onOpenImage) {
+            onCloseImage?.()
+            return
+        }
+        if (isOpen) closePlayer()
+    }
+
+    const handleOpenImage = (url: string) => {
+        if (onOpenImage) {
+            onOpenImage(url, galleryUrls)
+        } else {
+            openImage(url, galleryUrls)
+        }
+    }
+
+    const handleWheel = (e: WheelEvent<HTMLDivElement>) => {
+        const el = railRef.current
+        if (!el) return
+        const { scrollTop, scrollHeight, clientHeight } = el
+        const atTop = scrollTop <= 0
+        const atBottom = scrollTop + clientHeight >= scrollHeight - 1
+        const goingUp = e.deltaY < 0
+        const goingDown = e.deltaY > 0
+
+        // If we can scroll inside the rail, capture the wheel
+        if ((goingUp && !atTop) || (goingDown && !atBottom)) {
+            e.preventDefault()
+            e.stopPropagation()
+            el.scrollTop += e.deltaY
+        }
+    }
+
+    return (
+        <StyledRail ref={railRef} onWheel={handleWheel} aria-label="Product media thumbnails">
+            <StyledThumbButton $active={isSceneActive} onClick={handleOpenScene} aria-label="3D scene">
+                <div className="badge">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="20" height="20" rx="2" fill="#0040DD"/>
+                    <g clip-path="url(#clip0_5291_11307)">
+                    <path d="M7.0101 16.3233C4.83345 15.29 3.2701 13.1733 3.03345 10.6667H2.03345C2.37345 14.7733 5.80676 18 10.0001 18C10.1501 18 10.2934 17.9867 10.4401 17.9767L7.9001 15.4333L7.0101 16.3233ZM10.0001 2C9.8501 2 9.70676 2.01334 9.5601 2.02334L12.1001 4.56669L12.9868 3.68003C15.1668 4.71003 16.7301 6.82669 16.9668 9.33337H17.9668C17.6268 5.22666 14.1934 2 10.0001 2Z" fill="white"/>
+                    <path d="M7.42944 12.8936C6.9876 12.8936 6.61593 12.8234 6.31444 12.683C6.01294 12.5375 5.78422 12.3322 5.62828 12.067C5.47753 11.8019 5.40216 11.4875 5.40216 11.1236H6.57174C6.57174 11.3887 6.63932 11.5862 6.77447 11.7162C6.90962 11.8461 7.12795 11.9111 7.42944 11.9111C7.71534 11.9111 7.92846 11.8487 8.06881 11.724C8.21436 11.594 8.28714 11.4121 8.28714 11.1782C8.28714 10.9338 8.21436 10.7493 8.06881 10.6246C7.92846 10.4998 7.71534 10.4374 7.42944 10.4374H6.91482V9.54854H7.42944C7.67895 9.54854 7.87128 9.49656 8.00644 9.39259C8.14159 9.28343 8.20916 9.11709 8.20916 8.89357C8.20916 8.70124 8.14419 8.5427 8.01423 8.41794C7.88428 8.29318 7.68935 8.23081 7.42944 8.23081C7.16433 8.23081 6.9668 8.29058 6.83685 8.41014C6.71209 8.5297 6.64972 8.70644 6.64972 8.94035H5.48013C5.48013 8.58168 5.55031 8.27759 5.69066 8.02808C5.8362 7.77337 6.05453 7.58104 6.34562 7.45108C6.63672 7.31593 6.99799 7.24835 7.42944 7.24835C7.86089 7.24835 8.22216 7.31333 8.51326 7.44328C8.80435 7.57324 9.02008 7.74998 9.16043 7.9735C9.30598 8.19702 9.37875 8.44913 9.37875 8.72983C9.37875 9.03652 9.29298 9.29643 9.12144 9.50955C8.9551 9.71748 8.73158 9.86563 8.45088 9.954C8.77316 10.0424 9.02008 10.1983 9.19162 10.4218C9.36835 10.6402 9.45672 10.9261 9.45672 11.2795C9.45672 11.5914 9.37355 11.8695 9.20721 12.1138C9.04607 12.3529 8.81475 12.5427 8.51326 12.683C8.21176 12.8234 7.85049 12.8936 7.42944 12.8936ZM10.4666 12.8V7.34192H12.3613C12.9123 7.34192 13.3828 7.44069 13.7726 7.63822C14.1625 7.83575 14.4588 8.12944 14.6615 8.5193C14.8694 8.90397 14.9734 9.3822 14.9734 9.954V10.1099C14.9734 10.6921 14.8668 11.1834 14.6537 11.5836C14.4406 11.9839 14.1313 12.288 13.7258 12.4959C13.3256 12.6986 12.8447 12.8 12.2833 12.8H10.4666ZM11.6284 11.8331H12.2054C12.4913 11.8331 12.7512 11.7785 12.9851 11.6694C13.219 11.5602 13.4061 11.3809 13.5465 11.1314C13.692 10.8767 13.7648 10.5362 13.7648 10.1099V9.954C13.7648 9.54854 13.6998 9.22625 13.5699 8.98714C13.4399 8.74282 13.2606 8.56869 13.0319 8.46472C12.8084 8.36076 12.5588 8.30878 12.2833 8.30878H11.6284V11.8331Z" fill="white"/>
+                    </g>
+                    <defs>
+                    <clipPath id="clip0_5291_11307">
+                    <rect width="16" height="16" fill="white" transform="translate(2 2)"/>
+                    </clipPath>
+                    </defs>
+                    </svg>
+                </div>
+                {model3D?.model && (
+                    <StyledMiniScene>
+                        <Canvas
+                            gl={{ powerPreference: 'high-performance', alpha: true, antialias: true }}
+                            frameloop="always"
+                        >
+                            <ambientLight intensity={1} />
+                            <Suspense fallback={null}>
+                                <PerspectiveCamera makeDefault position={[0, 0, 2.4]} fov={22} />
+                                <ProductModel model={model3D.model} colors={colors} params={{
+                                    position: [0, -0.3, 0],
+                                    rotation: [0, 0, 0],
+                                    scale: 0.4,
+                                }} />
+                                {/* <Box scale={0.4}>
+                                    <meshStandardMaterial color="#ff5555" />
+                                </Box> */}
+                            </Suspense>
+                        </Canvas>
+                    </StyledMiniScene>
+                )}
+            </StyledThumbButton>
+            {images.map((img) => {
+                const url = getMediaStrapiPath(img)
+                const active = onOpenImage
+                    ? !!activeImageUrl && activeImageUrl === url
+                    : (!!content && contentType === 'image' && content === url)
+                return (
+                    <StyledThumbButton key={img?.id || url} $active={active} onClick={() => handleOpenImage(url)}>
+                        <Image src={url} alt={img?.alternativeText || img?.name || "Product image"} fill />
+                    </StyledThumbButton>
+                )
+            })}
+        </StyledRail>
+    )
+}
+
+const StyledRail = styled.div`
+    position: absolute;
+    right: ${rm(16)};
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: ${rm(8)};
+    z-index: 30; /* above overlay to allow clicking while image is open */
+    max-height: ${rm(432)};
+    overflow-y: auto;
+    padding-right: ${rm(4)}; /* space for scrollbar */
+    pointer-events: auto; /* ensure wheel events are captured */
+    touch-action: pan-y; /* allow vertical touch scrolling */
+    -webkit-overflow-scrolling: touch; /* smooth iOS scrolling */
+    overscroll-behavior: contain; /* prevent page from hijacking scroll */
+
+    /* Subtle, minimal scrollbar */
+    &::-webkit-scrollbar { width: ${rm(6)}; }
+    &::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.12); border-radius: ${rm(6)}; }
+    &::-webkit-scrollbar-track { background: transparent; }
+
+    ${media.md`
+        right: ${rm(12)};
+        gap: ${rm(8)};
+        max-height: ${rm(432)};
+    `}
+
+    ${media.xsm`
+        /* Mobile: bottom rail */
+        right: auto;
+        left: 50%;
+        top: auto;
+        bottom: ${rm(20)};
+        transform: translateX(-50%);
+        flex-direction: row;
+        gap: ${rm(8)};
+        max-height: none;
+        max-width: calc(100% - ${rm(16)});
+        overflow-y: hidden;
+        overflow-x: auto;
+        touch-action: pan-x;
+    `}
+`
+
+const StyledThumbButton = styled.button<{ $active?: boolean }>`
+    width: ${rm(80)};
+    height: ${rm(80)};
+    min-width: ${rm(80)};
+    min-height: ${rm(80)};
+    flex: 0 0 auto; /* keep fixed size inside scrollable flex column */
+    border-radius: ${rm(12)};
+    overflow: hidden;
+    position: relative;
+    border: 2px solid ${({ $active }) => ($active ? colors.blue : 'rgba(0,0,0,0.06)')};
+    background: #fff;
+    cursor: pointer;
+    padding: 0;
+
+    img{ object-fit: cover; }
+
+    canvas{ pointer-events: none; }
+
+    .badge{
+        position: absolute;
+        top: ${rm(4)};
+        right: ${rm(4)};
+        background: ${colors.blue};
+        overflow: hidden;
+        color: #fff;
+        font-size: ${rm(12)};
+        line-height: 1;
+        border-radius: ${rm(4)};
+        z-index: 1;
+        width: ${rm(20)};
+        height: ${rm(20)};
+
+        svg{
+            width: 100%;
+            height: 100%;
+        }
+    }
+
+    ${media.md`
+        width: ${rm(80)};
+        height: ${rm(80)};
+        min-width: ${rm(80)};
+        min-height: ${rm(80)};
+        border-radius: ${rm(10)};
+    `}
+
+    ${media.xsm`
+        width: ${rm(60)};
+        height: ${rm(60)};
+        min-width: ${rm(60)};
+        min-height: ${rm(60)};
+        border-radius: ${rm(10)};
+    `}
+`
+
+const StyledMiniScene = styled.div`
+    position: absolute;
+    inset: 0;
+`
+
+

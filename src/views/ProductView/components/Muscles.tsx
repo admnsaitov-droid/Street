@@ -13,11 +13,11 @@ export const Muscles = ({ muscles }: MusclesProps) => {
     return (
         <StyledMuscles>
             <StyledSubtitle>{muscles?.text}</StyledSubtitle>
-            <StyledImageContainer>
+            {muscles?.media?.length > 0 ? <StyledImageContainer>
                 <MaskImageAppear className="image-container">
                     <MediaComponent media={muscles?.media} className="image" />
                 </MaskImageAppear>
-            </StyledImageContainer>
+            </StyledImageContainer> : null}
         </StyledMuscles>
     )
 }
