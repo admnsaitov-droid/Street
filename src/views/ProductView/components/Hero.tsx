@@ -8,6 +8,9 @@ import { ColorPaletre } from "./ColorPaletre/ColoPaletre"
 import { AnimatedText } from "@/components/animated/AnimatedText/AnimatedText"
 import { useWindowWidth } from "@react-hook/window-size"
 import { SimpleButton } from "@/components/Ui/buttons/SimpleButton"
+import { ProductGallery } from "./ProductGallery"
+import { useMemo, useState } from "react"
+import Image from "next/image"
 
 
 interface HeroProps {
@@ -26,6 +29,9 @@ export const Hero = ({ data, colors }: HeroProps) => {
 
     const width = useWindowWidth()
 
+    const [activeImageUrl, setActiveImageUrl] = useState<string | null>(null)
+    const galleryUrls = useMemo(() => (data?.productImages || []).map((m: any) => m && m.url ? ({ url: m.url }) : m).map((m: any) => m ? m : null).filter(Boolean), [data?.productImages])
+
     return (
         <StyledHero>
             <StyledContent>
@@ -41,6 +47,24 @@ export const Hero = ({ data, colors }: HeroProps) => {
                 </div>
             </StyledContent>
             <ProductScene data={data?.model3D} colors={colors} />
+            {activeImageUrl && (
+                <StyledImageOverlay role="dialog" aria-modal="true">
+                    <div className="imageWrap">
+                        <Image src={activeImageUrl} alt="Product" fill style={{ objectFit: 'contain' }} />
+                    </div>
+                </StyledImageOverlay>
+            )}
+            {/* Thumbnails rail on the right center */}
+            {Array.isArray(data?.productImages) && data?.productImages.length > 0 && (
+                <ProductGallery
+                    images={data?.productImages}
+                    model3D={data?.model3D}
+                    colors={colors}
+                    onOpenImage={(url) => setActiveImageUrl(url)}
+                    activeImageUrl={activeImageUrl}
+                    onCloseImage={() => setActiveImageUrl(null)}
+                />
+            )}
             {width > 768 ? <ColorPaletre colors={colors} /> : null}
             {width > 768 ? <StyledQuoteButtonWrapper>
                 <SimpleButton isSvg link={data?.quoteButton?.link}>
@@ -60,6 +84,25 @@ const StyledHero = styled.div`
     ${media.xsm`
         overflow: hidden;
     `}
+`
+
+const StyledImageOverlay = styled.div`
+    position: absolute;
+    inset: 0;
+    z-index: 20;
+    background: rgba(0,0,0,0.32);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .imageWrap{
+        position: relative;
+        width: 80%;
+        height: 80%;
+        max-width: 1200px;
+        max-height: 80vh;
+        background: transparent;
+    }
 `
 
 const StyledContent = styled.div`

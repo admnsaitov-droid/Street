@@ -1,6 +1,6 @@
 import { useGLTF } from "@react-three/drei"
 import { useColorStore } from "@/store/store"
-import { useEffect, useRef } from "react"
+import { useEffect, useMemo, useRef } from "react"
 import * as THREE from "three"
 import { getMediaStrapiPath } from "@/utils/getMediaStrapiPath"
 
@@ -23,6 +23,8 @@ export const ProductModel = ({ model, colors, params = {
     scale: 1
 } }: ProductModelProps) => {
     const { scene }: any = useGLTF(getMediaStrapiPath(model))
+    // Clone the scene so multiple Canvas instances don't mutate the same object
+    const clonedScene: any = useMemo(() => scene?.clone(true), [scene])
     const { activeColor, setActiveColor } = useColorStore()
     const sceneRef = useRef<THREE.Group>()
 
@@ -59,12 +61,13 @@ export const ProductModel = ({ model, colors, params = {
     }, [activeColor?.color])
 
     return (
-        <primitive 
+        <primitive
             ref={sceneRef}
-            object={scene} 
-            position={params.position} 
-            rotation={params.rotation} 
-            scale={params.scale} 
+            object={clonedScene}
+            position={params.position}
+            rotation={params.rotation}
+            scale={params.scale}
+            dispose={null}
         />
     )
 }

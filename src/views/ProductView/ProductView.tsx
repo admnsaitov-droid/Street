@@ -71,7 +71,7 @@ export const ProductView = ({ data }: ProductViewProps) => {
             <StyledWrapper>
                 <ProductOverview data={data?.product} />
             </StyledWrapper>
-            <SwiperBlock images={data?.product?.swiperMedias} title={data?.product?.referencesTitle} />
+            {data?.product?.swiperMedias?.length > 0 && data?.product?.referencesTitle ? <SwiperBlock images={data?.product?.swiperMedias} title={data?.product?.referencesTitle} /> : null}
         </StyledProductView>
     )
 }
