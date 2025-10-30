@@ -46,6 +46,7 @@ export const SwiperBlock = ({ images, title }: SwiperBlockProps) => {
                             to: { opacity: 1, y: '0px' },
                             delayStep: 60
                         }}
+                        // style={{display: 'flex', flexDirection: 'column'}}
                         overflow={true}
                         gap={{ horizontal: '0.25em', vertical: '0.25em' }}
                         containerStyle={{ overflow: 'hidden' }}
@@ -166,16 +167,16 @@ const StyledSwiperButton = styled.div<{side: 'left' | 'right', disabled?: boolea
 
 
 const StyledTitleContainer = styled.div`
-    width: ${rm(600)};
+    width: ${rm(570)};
     margin-bottom: ${rm(20)};
     
     ${media.lg`
-        width: ${rm(550)};
+        width: ${rm(470)};
         font-size: ${rm(40)};
     `}
 
     ${media.xsm`
-        font-size: ${rm(32)};
+        font-size: ${rm(28)};
         width: 100%;
     `}
 
