@@ -72,7 +72,7 @@ export const ProductPreview = () => {
         if (window.innerWidth <= 576) { return }
         if (url !== 'poster-only' || !poster) { return } // Only position when preview is active
 
-        const rightOffset = window.innerWidth > 1440 ? 100 : 60
+        const rightOffset = window.innerWidth > 1440 ? 140 : 60
 
         const updatePosition = () => {
             if (!containerRef.current || !innerRef.current) return
@@ -186,7 +186,6 @@ export const ProductPreview = () => {
                                 </defs>
                             </svg>
                         </span>
-                        <span className="progress"><animated.span style={progressValues} /></span>
                     </animated.span>
                 </AnimLink>
             </StyledContainer>

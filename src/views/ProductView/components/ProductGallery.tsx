@@ -295,7 +295,7 @@ const StyledThumbButton = styled.button<{ $active?: boolean }>`
     min-width: ${rm(80)};
     min-height: ${rm(80)};
     flex: 0 0 auto; /* keep fixed size inside scrollable flex column */
-    border-radius: ${rm(12)};
+    border-radius: ${rm(4)};
     overflow: hidden;
     position: relative;
     border: 2px solid ${({ $active }) => ($active ? colors.blue : 'rgba(0,0,0,0.06)')};
