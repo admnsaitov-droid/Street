@@ -76,15 +76,11 @@ export const Product = ({ product, index, onMouseEnter, onMouseLeave }: ProductP
                 </StyledExploreButton>}
             </StyledTopContainer>
             <StyledDescriptionContainer>
-                {product?.previewDescription && <AccordionText 
-                    className="description"
-                    enabled={true}
-                    duration={600}
-                    stagger={120}
-                    textClassName="description-text"
-                >
-                    {product?.previewDescription}
-                </AccordionText>}
+                {product?.previewDescription && 
+                    <p className="description-text">
+                        {product?.previewDescription}
+                    </p>
+                }
                 {width <= 768 && <StyledExploreButton style={exploreSpring}>
                     <UnderlineLink href={`/products/${product.slug}`} lineColor="#0040DD" text="Explore"></UnderlineLink>
                 </StyledExploreButton>}

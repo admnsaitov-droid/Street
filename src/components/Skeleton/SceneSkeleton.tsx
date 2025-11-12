@@ -54,7 +54,7 @@ const LoaderContainer = styled.div<{ $position: 'left' | 'right' | 'center', $th
         switch (props.$position) {
             case 'left':
                 return `
-                    left: 30%;
+                    left: 33%;
                     transform: translate(-50%, -50%);
                 `;
             case 'right':

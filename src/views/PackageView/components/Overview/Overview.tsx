@@ -28,7 +28,7 @@ export const Overview = ({ data }: OverviewProps) => {
 
     const allProducts = useMemo(() => (
         Array.isArray(linesData)
-            ? linesData.flatMap((line: any) => line?.products || [])
+            ? linesData.flatMap((line: any) => line?.produkties || [])
             : []
     ), [linesData])
 
