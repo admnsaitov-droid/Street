@@ -90,7 +90,8 @@ const StyledImageOverlay = styled.div`
     position: absolute;
     inset: 0;
     z-index: 20;
-    background: rgba(0,0,0,0.32);
+    // background: rgba(0,0,0,0.32);
+    background: #F8F9FC;
     display: flex;
     align-items: center;
     justify-content: center;

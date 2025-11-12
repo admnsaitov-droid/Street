@@ -113,9 +113,16 @@ export const Overview = ({ data }: OverviewProps) => {
                      {linesData && linesData.length > 0 && <StyledLines>
                         {linesData.map((line: any, lineIndex: number) => (
                             <StyledLineGroup key={line?.id || lineIndex}>
-                                {line?.name && <StyledLineName as="h4">{line?.name}</StyledLineName>}
+                                <StyledLineInfo>
+                                    {line?.linii?.name && <StyledLineName as="h4">{line?.linii?.name}</StyledLineName>}
+                                    <div className="translateImageWrapper">
+                                        <div className="imageWrapper">
+                                            <Image src={getMediaStrapiPath(line?.linePreviewImage)} alt={line?.linii?.name} width={440} height={282} />
+                                        </div>
+                                    </div>
+                                </StyledLineInfo>
                                 <StyledProducts>
-                                    {line?.products && line?.products.length > 0 && line?.products.map((product: any, productIndexWithinLine: number) => {
+                                    {line?.produkties && line?.produkties.length > 0 && line?.produkties.map((product: any, productIndexWithinLine: number) => {
                                         const globalIndex = (linesData
                                             .slice(0, lineIndex)
                                             .reduce((acc: number, l: any) => acc + ((l?.products || []).length), 0)) + productIndexWithinLine
@@ -158,6 +165,35 @@ const StyledOverview = styled.div`
             //     width: 100%;
             // }
         `}
+    }
+`
+
+const StyledLineInfo = styled.div`
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    gap: ${rm(20)};
+    align-self: stretch;
+    
+    .translateImageWrapper {
+        position: relative;
+        flex: 1;
+        min-height: 0;
+
+        .imageWrapper {
+            height: ${rm(282)};
+            width: ${rm(440)};
+            position: sticky;
+            top: 30%;
+            left: 0;
+            z-index: 1;
+
+            img{
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+        }
     }
 `
 
@@ -349,6 +385,7 @@ const StyledLines = styled.div`
 const StyledLineGroup = styled.div`
     display: flex;
     justify-content: space-between;
+    align-items: stretch;
     width: 100%;
     padding: ${rm(0)} 0 ${rm(50)} 0;
     position: relative;

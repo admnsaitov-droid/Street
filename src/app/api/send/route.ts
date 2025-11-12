@@ -1,5 +1,6 @@
 import { Resend } from 'resend';
 import { NextResponse } from 'next/server';
+import { sendTelegramMessage } from '@/utils/telegram';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 const recipientEmail = process.env.RECIPIENT_EMAIL;
@@ -12,6 +13,7 @@ export async function POST(request: Request) {
   try {
     const { fullName, email, phoneNumber, subject, body } = await request.json();
 
+    // Send email
     const data = await resend.emails.send({
       from: 'Contact Form <noreply@streetbarbell.com>',
       to: [recipientEmail as string],
@@ -24,6 +26,17 @@ export async function POST(request: Request) {
         <p><strong>Theme:</strong> ${subject}</p>
         <p><strong>Question:</strong> ${body}</p>
       `,
+    });
+
+    // Send to Telegram bot (non-blocking - don't fail if Telegram fails)
+    sendTelegramMessage({
+      fullName,
+      email,
+      phoneNumber,
+      subject,
+      body,
+    }).catch((error) => {
+      console.error('Failed to send Telegram message:', error);
     });
 
     return NextResponse.json({ success: true, data });

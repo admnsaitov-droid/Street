@@ -5,7 +5,7 @@ import { fontGolosText } from "@/styles/fonts"
 import { fontSageGrotesk } from "@/styles/fonts"
 import styled from "styled-components"
 import Image from "next/image"
-import { useRef, useState } from "react"
+import { useRef, useState, useEffect } from "react"
 import { getMediaStrapiPath } from "@/utils/getMediaStrapiPath"
 import { Swiper, SwiperSlide } from 'swiper/react'
 import type { Swiper as SwiperType } from 'swiper'
@@ -20,10 +20,54 @@ interface SwiperBlockProps {
 
 export const SwiperBlock = ({ images, title }: SwiperBlockProps) => {
     const [currentIndex, setCurrentIndex] = useState(0)
+    const [isScrollable, setIsScrollable] = useState(false)
     const swiperRef = useRef<SwiperType | null>(null)
 
     const hasImages = Array.isArray(images) && images.length > 0
-    const canSwipe = hasImages && images.length > 1
+
+    const checkScrollability = (swiper: SwiperType | null) => {
+        if (!swiper) {
+            setIsScrollable(false)
+            return
+        }
+
+        // If swiper is locked, it's not scrollable
+        if (swiper.isLocked) {
+            setIsScrollable(false)
+            return
+        }
+
+        // If both isBeginning and isEnd are true, all slides fit in viewport - not scrollable
+        // Otherwise, the swiper is scrollable
+        const isScrollable = !(swiper.isBeginning && swiper.isEnd)
+        
+        setIsScrollable(isScrollable)
+    }
+
+    useEffect(() => {
+        // Check scrollability when swiper is initialized or images change
+        if (swiperRef.current) {
+            // Use setTimeout to ensure swiper has finished rendering
+            setTimeout(() => {
+                checkScrollability(swiperRef.current)
+            }, 100)
+        }
+    }, [images])
+
+    useEffect(() => {
+        // Check scrollability on window resize
+        const handleResize = () => {
+            if (swiperRef.current) {
+                swiperRef.current.update()
+                setTimeout(() => {
+                    checkScrollability(swiperRef.current)
+                }, 100)
+            }
+        }
+
+        window.addEventListener('resize', handleResize)
+        return () => window.removeEventListener('resize', handleResize)
+    }, [])
 
     const handlePrev = () => {
         if (!hasImages) return
@@ -76,7 +120,7 @@ export const SwiperBlock = ({ images, title }: SwiperBlockProps) => {
                         <span id="title-second">{title?.textSecond}</span>
                     </AnimatedGrid>
                 </StyledTitleContainer>
-                {canSwipe && (
+                {isScrollable && (
                     <div className="buttonsBlock">
                         <StyledSwiperButton side="left" onClick={handlePrev} aria-label="Previous slide">
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -96,7 +140,14 @@ export const SwiperBlock = ({ images, title }: SwiperBlockProps) => {
                     <Swiper
                         slidesPerView="auto"
                         spaceBetween={12}
-                        onSwiper={(swiper) => { swiperRef.current = swiper }}
+                        className="swiper"
+                        onSwiper={(swiper) => { 
+                            swiperRef.current = swiper
+                            // Check scrollability after swiper is initialized
+                            setTimeout(() => {
+                                checkScrollability(swiper)
+                            }, 100)
+                        }}
                         onSlideChange={(swiper) => setCurrentIndex(swiper.activeIndex)}
                    >
                         {images!.map((image, index) => (
@@ -188,6 +239,19 @@ const StyledTitleContainer = styled.div`
 
 const StyledViewport = styled.div`
     width: 100%;
+
+    .swiper{
+        width: 100%;
+        padding: 0 ${rm(50)};
+
+        ${media.md`
+            padding: 0 ${rm(25)};
+        `}
+
+        ${media.xsm`
+            padding: 0 ${rm(16)};
+        `}
+    }
 `
 
 const StyledSwiperSlideContainer = styled.div`

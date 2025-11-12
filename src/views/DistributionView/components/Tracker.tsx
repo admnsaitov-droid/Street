@@ -2,7 +2,6 @@ import { Html } from "@react-three/drei"
 import styled from "styled-components"
 import { useState, MutableRefObject } from "react"
 import { DistMarker } from "./DistMarker"
-import { useWindowWidth } from "@react-hook/window-size"
 import { useFrame } from "@react-three/fiber"
 import { fontGolosText } from "@/styles/fonts"
 import { rm } from "@/styles"
@@ -20,10 +19,7 @@ interface TrackerProps {
 }
 
 export const Tracker = ({ position, label, name, isActive = false, onClick, fromRotation, toRotation, currentRotationRef, cameraRotationRef }: TrackerProps) => {
-    const [isHovered, setIsHovered] = useState(false)
     const [isVisible, setIsVisible] = useState(true)
-
-    const width = useWindowWidth()
 
     // Add rotation-based visibility logic for 3D rotation
     useFrame(() => {
@@ -94,23 +90,11 @@ export const Tracker = ({ position, label, name, isActive = false, onClick, from
                     transition: 'opacity 0.2s ease-in-out'
                 }}
             >
-                <TrackerContainer
-                    onMouseEnter={() => {
-                        if (width <= 768) return;
-                        setIsHovered(true)
-                    }}
-                    onMouseLeave={() => {
-                        if (width <= 768) return;
-                        setIsHovered(false)
-                    }}
-                    onClick={handleClick}
-                >
+                <TrackerContainer onClick={handleClick}>
                     <DistMarker isActive={isActive} />
-                    {isHovered && (
-                        <TrackerLabel>
-                            <TrackerText>{label}</TrackerText>
-                        </TrackerLabel>
-                    )}
+                    <TrackerLabel>
+                        <TrackerText>{label}</TrackerText>
+                    </TrackerLabel>
                 </TrackerContainer>
             </Html>
         </group>
@@ -130,63 +114,16 @@ const TrackerContainer = styled.div`
 `
 
 const TrackerLabel = styled.div`
-    position: absolute;
-    left: calc(100% + 16px);
-    top: 50%;
-    transform: translateY(-50%);
     display: flex;
     align-items: center;
-    gap: 8px;
-    background: rgba(0, 0, 0, 0.8);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 8px;
-    padding: ${rm(4)} ${rm(8)};
+    gap: ${rm(10)};
+    margin-left: ${rm(8)};
     color: white;
-    font-size: ${rm(14)};
+    font-size: ${rm(16)};
+    ${fontGolosText(400)};
     white-space: nowrap;
     pointer-events: none;
     user-select: none;
-    z-index: 1000;
-    opacity: 0;
-    animation: fadeIn 0.2s ease-out forwards;
-
-    @keyframes fadeIn {
-        from {
-            opacity: 0;
-            transform: translateY(-50%) translateX(-8px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(-50%) translateX(0);
-        }
-    }
-
-    &::before {
-        content: '';
-        position: absolute;
-        right: 100%;
-        top: 50%;
-        transform: translateY(-50%);
-        width: 0;
-        height: 0;
-        border-style: solid;
-        border-width: 6px 6px 6px 0;
-        border-color: transparent rgba(255, 255, 255, 0.2) transparent transparent;
-    }
-
-    &::after {
-        content: '';
-        position: absolute;
-        right: calc(100% + 0.1px);
-        top: 50%;
-        transform: translateY(-50%);
-        width: 0;
-        height: 0;
-        border-style: solid;
-        border-width: 5px 5px 5px 0;
-        border-color: transparent rgba(0, 0, 0, 0.8) transparent transparent;
-    }
 `
 
 const TrackerText = styled.span`
