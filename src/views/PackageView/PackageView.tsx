@@ -16,6 +16,8 @@ export const PackageView = ({ data }: PackageProps) => {
         { label: breadcrumb.text, slug: breadcrumb.link }
     ))
 
+    console.log('packageData', packageData)
+
     return (
         <StyledPackage>
             <Hero data={packageData} breadcrumbs={breadcrumbs} />

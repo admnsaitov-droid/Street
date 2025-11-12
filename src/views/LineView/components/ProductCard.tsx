@@ -27,7 +27,7 @@ export const ProductCard = ({ data }: ProductCardProps) => {
 }
 
 const StyledProductCard = styled.div`
-    width: ${rm(447.5)};
+    width: 24.54%;
     cursor: pointer;
     position: relative;
 

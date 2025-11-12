@@ -78,7 +78,7 @@ export const Product = ({ product, index, onMouseEnter, onMouseLeave }: ProductP
             <StyledDescriptionContainer>
                 {product?.previewDescription && <AccordionText 
                     className="description"
-                    enabled={index === activeIndex}
+                    enabled={true}
                     duration={600}
                     stagger={120}
                     textClassName="description-text"
@@ -155,6 +155,10 @@ const StyledProduct = styled.div`
     &:hover{
         .left{
             p{
+                color: ${colors.blue};
+            }
+
+            h5{
                 color: ${colors.blue};
             }
         }
