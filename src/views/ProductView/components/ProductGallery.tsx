@@ -5,7 +5,7 @@ import styled from "styled-components"
 import { colors, media, rm } from "@/styles"
 import { getMediaStrapiPath } from "@/utils/getMediaStrapiPath"
 import { useVideoPlayerStore } from "@/store/store"
-import { useMemo, useRef, WheelEvent, Suspense } from "react"
+import { useMemo, useRef, WheelEvent, Suspense, useEffect } from "react"
 import { Canvas } from "@react-three/fiber"
 import { Box, PerspectiveCamera } from "@react-three/drei"
 import { ProductModel } from "./Scene/components/ProductModel"
@@ -20,8 +20,9 @@ interface ProductGalleryProps {
 }
 
 export const ProductGallery = ({ images = [], model3D, colors = [], onOpenImage, activeImageUrl = null, onCloseImage }: ProductGalleryProps) => {
-    const { openImage, isOpen, contentType, content, closePlayer } = useVideoPlayerStore()
+    const { openImage, isOpen, contentType, content, closePlayer, nextImage, previousImage } = useVideoPlayerStore()
     const railRef = useRef<HTMLDivElement>(null)
+    const thumbRefs = useRef<Map<string, HTMLButtonElement>>(new Map())
 
     const galleryUrls = useMemo(() => images.map((img) => getMediaStrapiPath(img)), [images])
 
@@ -29,6 +30,78 @@ export const ProductGallery = ({ images = [], model3D, colors = [], onOpenImage,
     const isSceneActive = onOpenImage
         ? !activeImageUrl
         : !storeImageOpen
+
+    // Determine if an image is currently active (not 3D scene)
+    const isImageActive = onOpenImage
+        ? !!activeImageUrl
+        : storeImageOpen
+
+    // Get current image index
+    const currentImageIndex = useMemo(() => {
+        if (!isImageActive) return -1
+        const currentUrl = onOpenImage ? activeImageUrl : content
+        if (!currentUrl) return -1
+        return galleryUrls.findIndex(url => url === currentUrl)
+    }, [isImageActive, activeImageUrl, content, onOpenImage, galleryUrls])
+
+    const canNavigate = isImageActive && galleryUrls.length > 1
+
+    const sceneButtonRef = useRef<HTMLButtonElement>(null)
+
+    // Scroll to center the active thumbnail or scene button
+    useEffect(() => {
+        if (!railRef.current) return
+
+        const rail = railRef.current
+        let targetButton: HTMLButtonElement | null = null
+
+        // If scene is active, scroll to scene button
+        if (isSceneActive && sceneButtonRef.current) {
+            targetButton = sceneButtonRef.current
+        } 
+        // If an image is active, scroll to that thumbnail
+        else if (currentImageIndex >= 0) {
+            const currentUrl = onOpenImage ? activeImageUrl : content
+            if (currentUrl) {
+                targetButton = thumbRefs.current.get(currentUrl) || null
+            }
+        }
+
+        if (!targetButton) return
+        
+        // Check if rail is horizontal (mobile) or vertical (desktop)
+        const isHorizontal = rail.scrollWidth > rail.clientWidth && rail.scrollHeight <= rail.clientHeight
+        
+        if (isHorizontal) {
+            // Horizontal scrolling (mobile)
+            const buttonOffsetLeft = targetButton.offsetLeft
+            const buttonWidth = targetButton.offsetWidth
+            const railWidth = rail.clientWidth
+            
+            // Center the button in the rail viewport
+            const targetScrollLeft = buttonOffsetLeft - (railWidth / 2) + (buttonWidth / 2)
+            
+            // Smooth scroll to center
+            rail.scrollTo({
+                left: Math.max(0, targetScrollLeft),
+                behavior: 'smooth'
+            })
+        } else {
+            // Vertical scrolling (desktop)
+            const buttonOffsetTop = targetButton.offsetTop
+            const buttonHeight = targetButton.offsetHeight
+            const railHeight = rail.clientHeight
+            
+            // Center the button in the rail viewport
+            const targetScrollTop = buttonOffsetTop - (railHeight / 2) + (buttonHeight / 2)
+            
+            // Smooth scroll to center
+            rail.scrollTo({
+                top: Math.max(0, targetScrollTop),
+                behavior: 'smooth'
+            })
+        }
+    }, [currentImageIndex, activeImageUrl, content, onOpenImage, isSceneActive])
 
     const handleOpenScene = () => {
         if (onOpenImage) {
@@ -43,6 +116,32 @@ export const ProductGallery = ({ images = [], model3D, colors = [], onOpenImage,
             onOpenImage(url, galleryUrls)
         } else {
             openImage(url, galleryUrls)
+        }
+    }
+
+    const handlePreviousImage = () => {
+        if (!canNavigate) return
+        
+        if (onOpenImage) {
+            // Custom callback mode: find previous image
+            const prevIndex = currentImageIndex === 0 ? galleryUrls.length - 1 : currentImageIndex - 1
+            onOpenImage(galleryUrls[prevIndex], galleryUrls)
+        } else {
+            // Store mode: use store's previousImage
+            previousImage()
+        }
+    }
+
+    const handleNextImage = () => {
+        if (!canNavigate) return
+        
+        if (onOpenImage) {
+            // Custom callback mode: find next image
+            const nextIndex = (currentImageIndex + 1) % galleryUrls.length
+            onOpenImage(galleryUrls[nextIndex], galleryUrls)
+        } else {
+            // Store mode: use store's nextImage
+            nextImage()
         }
     }
 
@@ -64,8 +163,14 @@ export const ProductGallery = ({ images = [], model3D, colors = [], onOpenImage,
     }
 
     return (
+        <>
         <StyledRail ref={railRef} onWheel={handleWheel} aria-label="Product media thumbnails">
-            <StyledThumbButton $active={isSceneActive} onClick={handleOpenScene} aria-label="3D scene">
+            <StyledThumbButton 
+                ref={sceneButtonRef}
+                $active={isSceneActive} 
+                onClick={handleOpenScene} 
+                aria-label="3D scene"
+            >
                 <div className="badge">
                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <rect width="20" height="20" rx="2" fill="#0040DD"/>
@@ -108,12 +213,34 @@ export const ProductGallery = ({ images = [], model3D, colors = [], onOpenImage,
                     ? !!activeImageUrl && activeImageUrl === url
                     : (!!content && contentType === 'image' && content === url)
                 return (
-                    <StyledThumbButton key={img?.id || url} $active={active} onClick={() => handleOpenImage(url)}>
+                    <StyledThumbButton 
+                        key={img?.id || url} 
+                        $active={active} 
+                        onClick={() => handleOpenImage(url)}
+                        ref={(el) => {
+                            if (el) {
+                                thumbRefs.current.set(url, el)
+                            } else {
+                                thumbRefs.current.delete(url)
+                            }
+                        }}
+                    >
                         <Image src={url} alt={img?.alternativeText || img?.name || "Product image"} fill />
                     </StyledThumbButton>
                 )
             })}
         </StyledRail>
+        {canNavigate && (
+            <StyledNavigationContainer>
+                <StyledNavButton onClick={handlePreviousImage} aria-label="Previous image">
+                    <ChevronLeftIcon />
+                </StyledNavButton>
+                <StyledNavButton onClick={handleNextImage} aria-label="Next image">
+                    <ChevronRightIcon />
+                </StyledNavButton>
+            </StyledNavigationContainer>
+        )}
+    </>
     )
 }
 
@@ -220,6 +347,86 @@ const StyledThumbButton = styled.button<{ $active?: boolean }>`
 const StyledMiniScene = styled.div`
     position: absolute;
     inset: 0;
+`
+
+const ChevronLeftIcon = () => (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M15 18L9 12L15 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+)
+
+const ChevronRightIcon = () => (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+)
+
+const StyledNavigationContainer = styled.div`
+    position: fixed;
+    top: calc(100vh - ${rm(80)});
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: ${rm(8)};
+    align-items: center;
+    padding: ${rm(8)} ${rm(12)};
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: ${rm(16)};
+    z-index: 1000;
+    pointer-events: auto;
+
+    ${media.xsm`
+        bottom: ${rm(20)};
+        padding: ${rm(6)} ${rm(10)};
+        gap: ${rm(6)};
+        border-radius: ${rm(12)};
+    `}
+`
+
+const StyledNavButton = styled.button`
+    width: ${rm(48)};
+    height: ${rm(48)};
+    min-width: ${rm(48)};
+    min-height: ${rm(48)};
+    border-radius: ${rm(12)};
+    background: #fff;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    color: #000;
+    padding: 0;
+
+    &:hover {
+        transform: scale(1.05);
+        background: rgba(255, 255, 255, 0.95);
+    }
+
+    &:active {
+        transform: scale(0.95);
+    }
+
+    svg {
+        width: ${rm(20)};
+        height: ${rm(20)};
+    }
+
+    ${media.xsm`
+        width: ${rm(40)};
+        height: ${rm(40)};
+        min-width: ${rm(40)};
+        min-height: ${rm(40)};
+        border-radius: ${rm(10)};
+
+        svg {
+            width: ${rm(18)};
+            height: ${rm(18)};
+        }
+    `}
 `
 
 

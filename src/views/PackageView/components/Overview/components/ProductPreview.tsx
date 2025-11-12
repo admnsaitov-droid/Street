@@ -72,6 +72,8 @@ export const ProductPreview = () => {
         if (window.innerWidth <= 576) { return }
         if (url !== 'poster-only' || !poster) { return } // Only position when preview is active
 
+        const rightOffset = window.innerWidth > 1440 ? 100 : 60
+
         const updatePosition = () => {
             if (!containerRef.current || !innerRef.current) return
 
@@ -81,13 +83,22 @@ export const ProductPreview = () => {
             
             // Calculate position relative to container - center the preview on the line
             const y = refRect.top - containerRect.top + refRect.height / 2 - innerRect.height / 2
-            const x = window.innerWidth > 1440 ? window.innerWidth - 325 :  window.innerWidth - 295
+            
+            // Calculate x position: container width - right padding - preview width
+            // Get actual computed padding from the container
+            const containerStyles = window.getComputedStyle(containerRef.current)
+            const rightPadding = parseFloat(containerStyles.paddingRight) || 0
+            const x = containerRect.width - rightPadding - innerRect.width - rightOffset
             
             console.log('Positioning preview:', { 
                 y, 
                 x, 
                 refHeight: refRect.height,
-                actualIndex: index
+                actualIndex: index,
+                containerWidth: containerRect.width,
+                windowWidth: window.innerWidth,
+                rightPadding,
+                previewWidth: innerRect.width
             })
 
             // Smooth animation that follows height changes
