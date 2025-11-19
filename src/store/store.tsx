@@ -36,11 +36,30 @@ interface VideoPlayerStore {
 }
 
 interface ColorStore {
+  activeMainColor: {
+    name: string
+    color: string
+  } | null
+  activeAccentColor: {
+    name: string
+    color: string
+  } | null
+  colorMode: 'main' | 'accent'
+
+  setActiveMainColor: (color: {
+    name: string
+    color: string
+  } | null) => void
+  setActiveAccentColor: (color: {
+    name: string
+    color: string
+  } | null) => void
+  setColorMode: (mode: 'main' | 'accent') => void
+  // Legacy support - maps to main color
   activeColor: {
     name: string
     color: string
   } | null
-
   setActiveColor: (color: {
     name: string
     color: string
@@ -48,11 +67,28 @@ interface ColorStore {
 }
 
 export const useColorStore = create<ColorStore>((set, get) => ({
-  activeColor: null,
+  activeMainColor: null,
+  activeAccentColor: null,
+  colorMode: 'main',
+  activeColor: null, // Legacy support
+  
+  setActiveMainColor: (color: {
+    name: string
+    color: string
+  } | null) => set({ activeMainColor: color, activeColor: color }),
+  
+  setActiveAccentColor: (color: {
+    name: string
+    color: string
+  } | null) => set({ activeAccentColor: color }),
+  
+  setColorMode: (mode: 'main' | 'accent') => set({ colorMode: mode }),
+  
+  // Legacy support
   setActiveColor: (color: {
     name: string
     color: string
-  } | null) => set({ activeColor: color }),
+  } | null) => set({ activeMainColor: color, activeColor: color }),
 }));
 
 const useLoadingStore = create<LoadingStore>((set, get) => ({

@@ -14,12 +14,13 @@ interface ProductGalleryProps {
     images?: any[]
     model3D?: any
     colors?: { name: string; color: string }[]
+    accentColors?: { name: string; color: string }[]
     onOpenImage?: (url: string, gallery: string[]) => void
     activeImageUrl?: string | null
     onCloseImage?: () => void
 }
 
-export const ProductGallery = ({ images = [], model3D, colors = [], onOpenImage, activeImageUrl = null, onCloseImage }: ProductGalleryProps) => {
+export const ProductGallery = ({ images = [], model3D, colors = [], accentColors = [], onOpenImage, activeImageUrl = null, onCloseImage }: ProductGalleryProps) => {
     const { openImage, isOpen, contentType, content, closePlayer, nextImage, previousImage } = useVideoPlayerStore()
     const railRef = useRef<HTMLDivElement>(null)
     const thumbRefs = useRef<Map<string, HTMLButtonElement>>(new Map())
@@ -194,7 +195,7 @@ export const ProductGallery = ({ images = [], model3D, colors = [], onOpenImage,
                             <ambientLight intensity={1} />
                             <Suspense fallback={null}>
                                 <PerspectiveCamera makeDefault position={[0, 0, 2.4]} fov={22} />
-                                <ProductModel model={model3D.model} colors={colors} params={{
+                                <ProductModel model={model3D.model} colors={colors} accentColors={accentColors} params={{
                                     position: [0, -0.3, 0],
                                     rotation: [0, 0, 0],
                                     scale: 0.4,

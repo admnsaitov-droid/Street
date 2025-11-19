@@ -15,9 +15,13 @@ interface ProductSceneProps {
         name: string
         color: string
     }[]
+    accentColors?: {
+        name: string
+        color: string
+    }[]
 }
 
-export const ProductScene = ({ data, colors }: ProductSceneProps) => {
+export const ProductScene = ({ data, colors, accentColors }: ProductSceneProps) => {
     const lazyScene = useLazyScene('product', {
         threshold: 0.2,
         rootMargin: '100px'
@@ -61,7 +65,7 @@ export const ProductScene = ({ data, colors }: ProductSceneProps) => {
                             files="/models/testHdr4.hdr"
                             environmentIntensity={1}
                         />
-                        <ProductModel model={data.model} colors={colors} params={{
+                        <ProductModel model={data.model} colors={colors} accentColors={accentColors} params={{
                             position: width > 768 ? [0, -1, 0] : [0, -2, 0],
                             rotation: [0, 0, 0],
                             scale: 1.4
