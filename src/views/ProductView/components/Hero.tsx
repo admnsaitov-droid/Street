@@ -19,9 +19,13 @@ interface HeroProps {
         name: string
         color: string
     }[]
+    accentColors?: {
+        name: string
+        color: string
+    }[]
 }
 
-export const Hero = ({ data, colors }: HeroProps) => {
+export const Hero = ({ data, colors, accentColors = [] }: HeroProps) => {
 
     const breadcrumbs = data?.breadcrumbs?.map((breadcrumb: any) => (
         { label: breadcrumb.text, slug: breadcrumb.link }
@@ -46,7 +50,7 @@ export const Hero = ({ data, colors }: HeroProps) => {
                     {data?.model && <StyledSubtitle tag="p">{data?.model}</StyledSubtitle>}
                 </div>
             </StyledContent>
-            <ProductScene data={data?.model3D} colors={colors} />
+            <ProductScene data={data?.model3D} colors={colors} accentColors={accentColors} />
             {activeImageUrl && (
                 <StyledImageOverlay role="dialog" aria-modal="true">
                     <div className="imageWrap">
@@ -60,12 +64,13 @@ export const Hero = ({ data, colors }: HeroProps) => {
                     images={data?.productImages}
                     model3D={data?.model3D}
                     colors={colors}
+                    accentColors={accentColors}
                     onOpenImage={(url) => setActiveImageUrl(url)}
                     activeImageUrl={activeImageUrl}
                     onCloseImage={() => setActiveImageUrl(null)}
                 />
             )}
-            {width > 768 ? <ColorPaletre colors={colors} /> : null}
+            {width > 768 ? <ColorPaletre mainColors={colors} accentColors={accentColors} /> : null}
             {width > 768 ? <StyledQuoteButtonWrapper>
                 <SimpleButton isSvg link={data?.quoteButton?.link}>
                     {data?.quoteButton?.text && data?.quoteButton?.text}

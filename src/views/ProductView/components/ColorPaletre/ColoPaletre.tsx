@@ -5,26 +5,56 @@ import { useColorStore } from "@/store/store"
 import { fontGolosText } from "@/styles/fonts"
 
 interface ColorPaletreProps {
-    colors: {
+    mainColors: {
+        name: string
+        color: string
+    }[]
+    accentColors: {
         name: string
         color: string
     }[]
 }
 
-export const ColorPaletre = ({ colors }: ColorPaletreProps) => {    
+export const ColorPaletre = ({ mainColors, accentColors }: ColorPaletreProps) => {    
+    const { 
+        activeMainColor, 
+        activeAccentColor, 
+        colorMode,
+        setActiveMainColor, 
+        setActiveAccentColor,
+        setColorMode 
+    } = useColorStore()
 
-    const { activeColor, setActiveColor } = useColorStore()
+    const currentColors = colorMode === 'main' ? mainColors : accentColors
+    const activeColor = colorMode === 'main' ? activeMainColor : activeAccentColor
+    const setActiveColor = colorMode === 'main' ? setActiveMainColor : setActiveAccentColor
 
     return (
         <StyledColorPaletre>
             <StyledTop>
-                <StyledText isActive={activeColor?.name === "Black"}>Main Color</StyledText>
+                <StyledText 
+                    isActive={colorMode === 'main'} 
+                    onClick={() => setColorMode('main')}
+                >
+                    Main Color
+                </StyledText>
                 <div className="divider"></div>
-                <StyledText isActive={activeColor?.name === "White"}>Accent color</StyledText>
+                <StyledText 
+                    isActive={colorMode === 'accent'} 
+                    onClick={() => setColorMode('accent')}
+                >
+                    Accent color
+                </StyledText>
             </StyledTop>
             <StyledColorsWrapper>
-                {colors.map((color) => (
-                    <ColorVariant key={color.name} color={color.color} colorName={color.name} setActiveColor={setActiveColor} activeColor={activeColor || { name: "", color: "" }} />
+                {currentColors.map((color) => (
+                    <ColorVariant 
+                        key={color.name} 
+                        color={color.color} 
+                        colorName={color.name} 
+                        setActiveColor={setActiveColor} 
+                        activeColor={activeColor || { name: "", color: "" }} 
+                    />
                 ))}
             </StyledColorsWrapper>
         </StyledColorPaletre>

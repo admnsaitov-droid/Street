@@ -9,42 +9,45 @@ import { StructuredData } from "@/components/StructuredData/StructuredData"
 import { generateProductSchema } from "@/utils/generateStructuredData"
 import { ColorPaletre } from "./components/ColorPaletre/ColoPaletre"
 import { useWindowWidth } from "@react-hook/window-size"
+import { useMemo } from "react"
 
 interface ProductViewProps {
     data: any
 }
 
-const testColors = [
-    {
-        name: "Blue",
-        color: "rgb(60, 97, 206)"
-    },
-    {
-        name: "Orange",
-        color: "rgb(236, 100, 10)"
-    },
-    {
-        name: "Green",
-        color: "rgb(74, 203, 98)"
-    },
+// Helper function to convert hex to rgb
+const hexToRgb = (hex: string): string => {
+    // Remove # if present
+    const cleanHex = hex.startsWith('#') ? hex.slice(1) : hex
+    const result = /^([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(cleanHex)
+    if (!result) return hex // Return original if not a valid hex
     
-    {
-        name: "Red",
-        color: "rgb(205, 33, 33)"
-    },
-    
-    {
-        name: "Lime",
-        color: "rgb(191, 255, 0)"
-    },
-    {
-        name: "Yellow",
-        color: "rgb(255, 255, 0)"
-    },
-]
+    const r = parseInt(result[1], 16)
+    const g = parseInt(result[2], 16)
+    const b = parseInt(result[3], 16)
+    return `rgb(${r}, ${g}, ${b})`
+}
 
 export const ProductView = ({ data }: ProductViewProps) => {
     console.log('data', data)
+
+    // Transform main colors from product data
+    const mainColors = useMemo(() => {
+        if (!data?.product?.colors || !Array.isArray(data.product.colors)) return []
+        return data.product.colors.map((color: any) => ({
+            name: color.displayColor || '',
+            color: color.modelColor || ''
+        }))
+    }, [data?.product?.colors])
+
+    // Transform accent colors from product data and convert hex to rgb
+    const accentColors = useMemo(() => {
+        if (!data?.product?.accentColors || !Array.isArray(data.product.accentColors)) return []
+        return data.product.accentColors.map((color: any) => ({
+            name: color.displayColor || '',
+            color: color.modelColor ? hexToRgb(color.modelColor) : ''
+        }))
+    }, [data?.product?.accentColors])
 
     // Generate Product schema for SEO
     const productSchema = generateProductSchema({
@@ -63,11 +66,13 @@ export const ProductView = ({ data }: ProductViewProps) => {
 
     const width = useWindowWidth()
 
+    console.log('product data' ,data)
+
     return (
         <StyledProductView>
             <StructuredData schemas={[productSchema]} />
-            <Hero data={data?.product} colors={testColors} />
-            {width <= 768 ? <ColorPaletre colors={testColors} /> : null}
+            <Hero data={data?.product} colors={mainColors} accentColors={accentColors} />
+            {width <= 768 ? <ColorPaletre mainColors={mainColors} accentColors={accentColors} /> : null}
             <StyledWrapper>
                 <ProductOverview data={data?.product} />
             </StyledWrapper>
