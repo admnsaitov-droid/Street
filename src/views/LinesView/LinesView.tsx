@@ -16,6 +16,8 @@ export const LinesView = ({ data }: LinesViewProps) => {
         { label: breadcrumb.text, slug: breadcrumb.link }
     ))
 
+    console.log('lines data', data)
+
     return (
         <StyledLinesView>
             <Breadcrumbs

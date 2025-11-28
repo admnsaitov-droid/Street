@@ -187,6 +187,8 @@ const StyledLineInfo = styled.div`
             top: 30%;
             left: 0;
             z-index: 1;
+            border-radius: ${rm(8)};
+            overflow: hidden;
 
             img{
                 width: 100%;
