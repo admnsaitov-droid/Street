@@ -62,12 +62,12 @@ export const ProductsMenuMobile = ({ isOpen, setIsOpen, setMenuOpen }: ProductsM
                     </StyledBackButton>
                     <StyledPackages>
                         {productsData?.map((item: any, index: number) => (
-                            <StyledPackage key={index} href={`/lines/${item?.slug}`} onMouseEnter={() => setCurrentPackage(item)} onClick={() => {
+                            <StyledPackage key={index} href={`/lines/${item?.linii?.slug}`} onMouseEnter={() => setCurrentPackage(item)} onClick={() => {
                                 setIsOpen(false);
                                 setMenuOpen(false);
                                 setIsMegaMenuOpen(false);
                             }}>
-                                0{index + 1}. <span>{item?.name}</span>
+                                0{index + 1}. <span>{item?.linii?.name}</span>
                             </StyledPackage>
                         ))}
                     </StyledPackages>

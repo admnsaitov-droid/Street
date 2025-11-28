@@ -121,7 +121,6 @@ const StyledLine = styled.div`
     display: flex;
     cursor: pointer;
     position: relative;
-    border-top: 1px dashed #B7BCCA;
     padding: ${rm(20)} 0;
     width: 100%;
 
@@ -149,8 +148,6 @@ const StyledLine = styled.div`
     }
 
     &:hover{
-        border-color: #0040DD;
-
         .title, .text{
             color: #0040DD;
         }

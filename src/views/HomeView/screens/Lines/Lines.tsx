@@ -1,13 +1,12 @@
-import { Preview, usePreview } from "./components/Preview";
-import { Line } from "./components/Line";
+import { ProductPreview, useProductPreview } from "@/views/PackageView/components/Overview/components/ProductPreview";
+import { Product } from "@/views/PackageView/components/Overview/components/Product";
 import { colors, media, rm } from "@/styles";
 import { fontGolosText } from "@/styles/fonts";
 import styled from "styled-components";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo } from "react";
 import { AnimatedText } from "@/components/animated/AnimatedText/AnimatedText";
-import { useWindowWidth } from "@react-hook/window-size";
-import { useLoop } from "@/hooks/useLoop";
 import { getMediaStrapiPath } from "@/utils/getMediaStrapiPath";
+import Image from "next/image";
 
 interface LinesProps {
   linesData: any;
@@ -16,84 +15,24 @@ interface LinesProps {
 }
 
 export const Lines = ({ linesData, isTop = true, exploreText }: LinesProps) => {
-    const setAllUrls = usePreview(state => state.setAllUrls)
-    const containerRef = usePreview(state => state.containerRef)
-    const setUrl = usePreview(state => state.setUrl)
-    const setPoster = usePreview(state => state.setPoster)
-    const setRoute = usePreview(state => state.setRoute)
-    const setIndex = usePreview(state => state.setIndex)
-    const url = usePreview(state => state.url)
-    const poster = usePreview(state => state.poster)
-    
-    const width = useWindowWidth()
-    const [activeMobileIndex, setActiveMobileIndex] = useState(-1)
-    const lineRefs = useRef<(HTMLDivElement | null)[]>([])
-    
-    useEffect(() => { setAllUrls(linesData.lines) }, [linesData])
+    const setAllUrls = useProductPreview(state => state.setAllUrls)
+    const containerRef = useProductPreview(state => state.containerRef)
 
-    // Mobile scroll detection to find which line is in center of screen
-    useLoop(() => {
-        if (width > 768) return
-        
-        if (!containerRef.current || !lineRefs.current.length) return
-        
-        const screenCenter = window.innerHeight / 2
-        let closestIndex = -1
-        let closestDistance = Infinity
-        const maxDistance = window.innerHeight * 0.15 // Only activate if line is within 15% of screen height
-        
-        lineRefs.current.forEach((lineRef, index) => {
-            if (!lineRef) return
-            
-            const rect = lineRef.getBoundingClientRect()
-            const lineCenter = rect.top + rect.height / 2
-            const distance = Math.abs(lineCenter - screenCenter)
-            
-            if (distance < closestDistance) {
-                closestDistance = distance
-                closestIndex = index
-            }
-        })
-        
-        // If the closest line is too far away, don't activate any preview
-        if (closestDistance > maxDistance) {
-            closestIndex = -1
-        }
-        
+    const lines = linesData?.lines || []
 
-        
-        if (closestIndex !== activeMobileIndex) {
-            setActiveMobileIndex(closestIndex)
-            
-            if (closestIndex === -1) {
-                // Clear preview state when no line is active
-                setUrl('')
-                setPoster('')
-                setRoute('')
-                setIndex(-1)
-            } else {
-                const line = linesData.lines[closestIndex]
-                
-                // Update preview state
-                setUrl('poster-only')
-                setPoster(getMediaStrapiPath(line?.poster))
-                setRoute(line?.slug || '')
-                setIndex(closestIndex)
-            }
-        }
-        
-        // Always clear preview state if closestIndex is -1 and preview is still active
-        if (closestIndex === -1 && (url !== '' || poster !== '')) {
-            setUrl('')
-            setPoster('')
-            setRoute('')
-            setIndex(-1)
-        }
-    })
+    const allProducts = useMemo(() => (
+        Array.isArray(lines)
+            ? lines.flatMap((line: any) => line?.produkties || [])
+            : []
+    ), [lines])
+
+    useEffect(() => {
+        setAllUrls(allProducts)
+    }, [allProducts, setAllUrls])
 
   return (
     <StyledLines ref={containerRef} isTop={isTop}>
-        <Preview />
+        <ProductPreview />
         {isTop && <StyledTopContainer>
             <AnimatedText className="title" tag="h2">
                 {linesData?.title}
@@ -106,18 +45,32 @@ export const Lines = ({ linesData, isTop = true, exploreText }: LinesProps) => {
                 </div>
             </div>
         </StyledTopContainer>}
-        <div className="lines">
-            {linesData?.lines.map((line: any, index: number) => (
-                <Line 
-                    key={line.id} 
-                    line={line} 
-                    index={index}
-                    ref={(el: HTMLDivElement | null) => { lineRefs.current[index] = el }}
-                    activeMobileIndex={activeMobileIndex}
-                    exploreText={exploreText}
-                />
-            ))}
-        </div>
+        {Array.isArray(lines) && lines.length > 0 && (
+            <StyledLinesContainer>
+                {lines.map((line: any, lineIndex: number) => (
+                    <StyledLineGroup key={line?.id || lineIndex}>
+                        <StyledLineInfo>
+                            {line?.linii?.name && <StyledLineName as="h4">{line?.linii?.name}</StyledLineName>}
+                            <div className="translateImageWrapper">
+                                <div className="imageWrapper">
+                                    <Image src={getMediaStrapiPath(line?.linePreviewImage)} alt={line?.linii?.name} width={440} height={282} />
+                                </div>
+                            </div>
+                        </StyledLineInfo>
+                        <StyledProducts>
+                            {line?.produkties && line?.produkties.length > 0 && line?.produkties.map((product: any, productIndexWithinLine: number) => {
+                                const globalIndex = (lines
+                                    .slice(0, lineIndex)
+                                    .reduce((acc: number, l: any) => acc + ((l?.produkties || []).length), 0)) + productIndexWithinLine
+                                return (
+                                    <Product key={product?.id || globalIndex} product={product} index={globalIndex} />
+                                )
+                            })}
+                        </StyledProducts>
+                    </StyledLineGroup>
+                ))}
+            </StyledLinesContainer>
+        )}
     </StyledLines>
   )
 };
@@ -220,4 +173,110 @@ const StyledTopContainer = styled.div`
             `}
         }
     }
+`
+
+const StyledLinesContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    margin-top: ${rm(50)};
+`
+
+const StyledLineGroup = styled.div`
+    display: flex;
+    justify-content: space-between;
+    align-items: stretch;
+    width: 100%;
+    padding: ${rm(0)} 0 ${rm(50)} 0;
+    position: relative;
+
+    ${media.md`
+        padding-bottom: ${rm(70)};
+    `}
+
+    ${media.xsm`
+        flex-direction: column;
+        gap: ${rm(30)};
+        padding-bottom: ${rm(0)};
+    `}
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background-image: 
+            radial-gradient(circle 1px at 4px 0.5px, #B7BCCA 100%, transparent 100%),
+            radial-gradient(circle 1px at 12px 0.5px, #B7BCCA 100%, transparent 100%),
+            radial-gradient(circle 1px at 20px 0.5px, #B7BCCA 100%, transparent 100%),
+            radial-gradient(circle 1px at 28px 0.5px, #B7BCCA 100%, transparent 100%),
+            radial-gradient(circle 1px at 36px 0.5px, #B7BCCA 100%, transparent 100%),
+            radial-gradient(circle 1px at 44px 0.5px, #B7BCCA 100%, transparent 100%),
+            radial-gradient(circle 1px at 52px 0.5px, #B7BCCA 100%, transparent 100%),
+            radial-gradient(circle 1px at 60px 0.5px, #B7BCCA 100%, transparent 100%);
+        background-size: 16px 1px;
+        background-repeat: repeat-x;
+
+        ${media.xsm`
+            display: none;
+        `}
+    }
+`
+
+const StyledLineInfo = styled.div`
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    gap: ${rm(20)};
+    align-self: stretch;
+    
+    .translateImageWrapper {
+        position: relative;
+        flex: 1;
+        min-height: 0;
+
+        .imageWrapper {
+            height: ${rm(282)};
+            width: ${rm(440)};
+            position: sticky;
+            top: 30%;
+            left: 0;
+            z-index: 1;
+            border-radius: ${rm(8)};
+            overflow: hidden;
+
+            img{
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+        }
+    }
+`
+
+const StyledLineName = styled.p`
+    font-size: ${rm(30)};
+    line-height: 110%;
+    ${fontGolosText(400)};
+    text-transform: none;
+    color: ${colors.black100};
+    margin-top: ${rm(20)};
+
+    ${media.lg`
+        font-size: ${rm(24)};
+    `}
+
+    ${media.md`
+        font-size: ${rm(18)};
+    `}
+
+    ${media.xsm`
+        font-size: ${rm(20)};
+    `}
+`
+
+const StyledProducts = styled.div`
+    display: flex;
+    flex-direction: column;
 `   
