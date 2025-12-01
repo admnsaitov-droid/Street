@@ -7,14 +7,16 @@ import { useEffect, useMemo } from "react";
 import { AnimatedText } from "@/components/animated/AnimatedText/AnimatedText";
 import { getMediaStrapiPath } from "@/utils/getMediaStrapiPath";
 import Image from "next/image";
+import { animated } from "@react-spring/web";
+import UnderlineLink from "@/components/animated/UnderlineLink/UnderlineLink";
 
 interface LinesProps {
   linesData: any;
   isTop?: boolean;
-  exploreText?: string;
+  exploreLineText?: string;
 }
 
-export const Lines = ({ linesData, isTop = true, exploreText }: LinesProps) => {
+export const Lines = ({ linesData, isTop = true, exploreLineText }: LinesProps) => {
     const setAllUrls = useProductPreview(state => state.setAllUrls)
     const containerRef = useProductPreview(state => state.containerRef)
 
@@ -52,8 +54,13 @@ export const Lines = ({ linesData, isTop = true, exploreText }: LinesProps) => {
                         <StyledLineInfo>
                             {line?.linii?.name && <StyledLineName as="h4">{line?.linii?.name}</StyledLineName>}
                             <div className="translateImageWrapper">
-                                <div className="imageWrapper">
-                                    <Image src={getMediaStrapiPath(line?.linePreviewImage)} alt={line?.linii?.name} width={440} height={282} />
+                                <div className="stickyWrapper">
+                                    <div className="imageWrapper">
+                                        <Image src={getMediaStrapiPath(line?.linePreviewImage)} alt={line?.linii?.name} width={440} height={282} />
+                                    </div>
+                                    <StyledExploreButton>
+                                        <UnderlineLink href={`/lines/${line?.linii?.slug}`} lineColor="#0040DD" text={exploreLineText || 'Explore line'}></UnderlineLink>
+                                    </StyledExploreButton>
                                 </div>
                             </div>
                         </StyledLineInfo>
@@ -236,15 +243,23 @@ const StyledLineInfo = styled.div`
         flex: 1;
         min-height: 0;
 
-        .imageWrapper {
-            height: ${rm(282)};
-            width: ${rm(440)};
+        .stickyWrapper{
             position: sticky;
             top: 30%;
             left: 0;
             z-index: 1;
             border-radius: ${rm(8)};
             overflow: hidden;
+            width: ${rm(440)};
+            display: flex;
+            flex-direction: column;
+            gap: ${rm(20)};
+        }
+
+        .imageWrapper {
+            height: ${rm(282)};
+            width: 100%;
+            position: relative;
 
             img{
                 width: 100%;
@@ -280,3 +295,15 @@ const StyledProducts = styled.div`
     display: flex;
     flex-direction: column;
 `   
+
+const StyledExploreButton = styled(animated.div)<{ lineColor?: string }>`
+    font-size: ${rm(16)};
+    line-height: 130%;
+    ${fontGolosText(400)};
+    color: ${({ lineColor }) => lineColor || '#0040DD'};
+    height: fit-content;
+
+    ${media.lg`
+        font-size: ${rm(14)};
+    `}
+`
