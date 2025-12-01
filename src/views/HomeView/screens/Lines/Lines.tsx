@@ -198,10 +198,10 @@ const StyledLineGroup = styled.div`
 
     ${media.md`
         padding-bottom: ${rm(70)};
+        flex-direction: column;
     `}
 
     ${media.xsm`
-        flex-direction: column;
         gap: ${rm(30)};
         padding-bottom: ${rm(0)};
     `}
@@ -254,6 +254,10 @@ const StyledLineInfo = styled.div`
             display: flex;
             flex-direction: column;
             gap: ${rm(20)};
+
+            ${media.md`
+                width: 100%;
+            `}
         }
 
         .imageWrapper {
