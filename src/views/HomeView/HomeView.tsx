@@ -42,7 +42,7 @@ export const HomeView = ({ homeData, footerData }: { homeData: any, footerData: 
       <Hero heroData={heroData} />
       <Achievements achievementsData={achievementsData} />
       {width > 576 ? <Packages packagesData={packagesData} /> : <PackagesMobile packagesData={packagesData} />}
-      <Lines linesData={linesData} exploreText={linesData?.overviewText}/>
+      <Lines linesData={linesData} exploreLineText={linesData?.overviewText}/>
       <Benefits benefitsData={benefitsData} />
       <About aboutData={aboutData} />
       <Globe globeData={globeData} />
