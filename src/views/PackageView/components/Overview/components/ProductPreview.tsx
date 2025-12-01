@@ -89,17 +89,6 @@ export const ProductPreview = () => {
             const containerStyles = window.getComputedStyle(containerRef.current)
             const rightPadding = parseFloat(containerStyles.paddingRight) || 0
             const x = containerRect.width - rightPadding - innerRect.width - rightOffset
-            
-            console.log('Positioning preview:', { 
-                y, 
-                x, 
-                refHeight: refRect.height,
-                actualIndex: index,
-                containerWidth: containerRect.width,
-                windowWidth: window.innerWidth,
-                rightPadding,
-                previewWidth: innerRect.width
-            })
 
             // Smooth animation that follows height changes
             moveApi.start({ 
