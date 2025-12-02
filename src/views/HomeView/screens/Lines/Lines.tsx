@@ -9,14 +9,16 @@ import { getMediaStrapiPath } from "@/utils/getMediaStrapiPath";
 import Image from "next/image";
 import { animated } from "@react-spring/web";
 import UnderlineLink from "@/components/animated/UnderlineLink/UnderlineLink";
+import { LinesGrid } from "@/components/LinesGrid/LinesGrid";
 
 interface LinesProps {
   linesData: any;
   isTop?: boolean;
   exploreLineText?: string;
+  isHome?: boolean;
 }
 
-export const Lines = ({ linesData, isTop = true, exploreLineText }: LinesProps) => {
+export const Lines = ({ linesData, isTop = true, isHome = false, exploreLineText }: LinesProps) => {
     const setAllUrls = useProductPreview(state => state.setAllUrls)
     const containerRef = useProductPreview(state => state.containerRef)
 
@@ -24,9 +26,11 @@ export const Lines = ({ linesData, isTop = true, exploreLineText }: LinesProps) 
 
     const allProducts = useMemo(() => (
         Array.isArray(lines)
-            ? lines.flatMap((line: any) => line?.produkties || [])
+            ? isHome
+                ? lines.flatMap((line: any) => line?.produkties?.slice(0, 3) || [])
+                : lines.flatMap((line: any) => line?.produkties || [])
             : []
-    ), [lines])
+    ), [lines, isHome])
 
     useEffect(() => {
         setAllUrls(allProducts)
@@ -47,14 +51,15 @@ export const Lines = ({ linesData, isTop = true, exploreLineText }: LinesProps) 
                 </div>
             </div>
         </StyledTopContainer>}
-        {Array.isArray(lines) && lines.length > 0 && (
+        <LinesGrid linesData={lines} machinesText={linesData?.machinesText} exploreText={linesData?.exploreText} />
+        {/* {Array.isArray(lines) && lines.length > 0 && (
             <StyledLinesContainer>
                 {lines.map((line: any, lineIndex: number) => (
                     <StyledLineGroup key={line?.id || lineIndex}>
                         <StyledLineInfo>
                             {line?.linii?.name && <StyledLineName as="h4">{line?.linii?.name}</StyledLineName>}
                             <div className="translateImageWrapper">
-                                <div className="stickyWrapper">
+                                <div className="stickyWrapper" style={{ position: isHome ? 'relative' : 'sticky', top: isHome ? '0%' : '30%'}}>
                                     <div className="imageWrapper">
                                         <Image src={getMediaStrapiPath(line?.linePreviewImage)} alt={line?.linii?.name} width={440} height={282} />
                                     </div>
@@ -65,7 +70,11 @@ export const Lines = ({ linesData, isTop = true, exploreLineText }: LinesProps) 
                             </div>
                         </StyledLineInfo>
                         <StyledProducts>
-                            {line?.produkties && line?.produkties.length > 0 && line?.produkties.map((product: any, productIndexWithinLine: number) => {
+                            {isHome ? line?.produkties?.slice(0, 3).map((product: any, productIndexWithinLine: number) => {
+                                return (
+                                    <Product key={product?.id || productIndexWithinLine} product={product} index={productIndexWithinLine} />
+                                )
+                            }) : line?.produkties && line?.produkties.length > 0 && line?.produkties.map((product: any, productIndexWithinLine: number) => {
                                 const globalIndex = (lines
                                     .slice(0, lineIndex)
                                     .reduce((acc: number, l: any) => acc + ((l?.produkties || []).length), 0)) + productIndexWithinLine
@@ -77,7 +86,7 @@ export const Lines = ({ linesData, isTop = true, exploreLineText }: LinesProps) 
                     </StyledLineGroup>
                 ))}
             </StyledLinesContainer>
-        )}
+        )} */}
     </StyledLines>
   )
 };

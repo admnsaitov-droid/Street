@@ -162,23 +162,23 @@ export const ProductsMenu = ({ previewText, allText }: { previewText: string, al
                                         onMouseEnter={() => setCurrentPackage(item)}
                                         $isActive={currentPackage?.id === item?.id}
                                     >
-                                        0{index + 1}.<span>{item?.linii?.name} ({item?.produkties?.length || 0})</span>
+                                        0{index + 1}.<span>{item?.linii?.name} ({item?.linii?.products?.length || 0})</span>
                                     </StyledPackage>
                                 ))}
                             </StyledPackages>
                             <AllButton text={allText} href="/lines" lineColor={colors.red} />
                         </StyledLeft>
                         <StyledRight>
-                            <StyledProduct href={`/products/${currentPackage?.produkties?.[0]?.slug}`}>
+                            <StyledProduct href={`/products/${currentPackage?.linii?.products?.[0]?.slug}`}>
                                 <div className="imageContainer">
-                                    <Image src={getMediaStrapiPath(currentPackage?.produkties?.[0]?.previewImage)} alt="Package" width={760} height={420} />
+                                    <Image src={getMediaStrapiPath(currentPackage?.linii?.products[0]?.previewImage)} alt="Package" width={760} height={420} />
                                 </div>
                                 {/* <div className="name">{currentPackage?.produkties?.[0]?.name}</div>
                                 <div className="model">{currentPackage?.produkties?.[0]?.model}</div> */}
                             </StyledProduct>
-                            <StyledProduct href={`/products/${currentPackage?.produkties?.[1]?.slug}`}>
+                            <StyledProduct href={`/products/${currentPackage?.linii?.products?.[1]?.slug}`}>
                                 <div className="imageContainer">
-                                    <Image src={getMediaStrapiPath(currentPackage?.produkties?.[1]?.previewImage)} alt="Package" width={760} height={420} />
+                                    <Image src={getMediaStrapiPath(currentPackage?.linii?.products[1]?.previewImage)} alt="Package" width={760} height={420} />
                                 </div>
                                 {/* <div className="name">{currentPackage?.produkties?.[1]?.name}</div>
                                 <div className="model">{currentPackage?.produkties?.[1]?.model}</div> */}
