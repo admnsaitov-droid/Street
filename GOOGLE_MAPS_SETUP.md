@@ -29,7 +29,7 @@ This document explains how to set up and use the Google Maps integration in your
 3. Copy the generated API key
 4. (Recommended) Click "Restrict Key" to add restrictions:
    - **Application restrictions**: HTTP referrers (web sites)
-   - Add your domain(s): `localhost:3000/*`, `yourdomain.com/*`
+   - Add your domain(s): `http://localhost:3000/*`, `http://127.0.0.1:3000/*`, `https://yourdomain.com/*`
    - **API restrictions**: Restrict to "Maps JavaScript API"
 
 ### 4. Configure Environment Variables
@@ -139,8 +139,15 @@ To modify controls, edit the map options in the `ProjectsMap.tsx` component.
    - Restart your development server after adding environment variables
 
 2. **"RefererNotAllowedMapError"**
-   - Add your domain to the API key restrictions in Google Cloud Console
-   - For development, add `localhost:3000/*`
+   - This error occurs when your domain is not authorized in the API key restrictions
+   - Go to Google Cloud Console > APIs & Services > Credentials
+   - Click on your API key to edit it
+   - Under "Application restrictions", select "HTTP referrers (web sites)"
+   - Add your domain(s) with the protocol:
+     - For development: `http://localhost:3000/*` and `http://127.0.0.1:3000/*`
+     - For production: `https://yourdomain.com/*`
+   - The `/*` wildcard covers all paths on that domain
+   - Click "Save" and wait a few minutes for changes to propagate
 
 3. **"This page can't load Google Maps correctly"**
    - Check if billing is enabled on your Google Cloud project
