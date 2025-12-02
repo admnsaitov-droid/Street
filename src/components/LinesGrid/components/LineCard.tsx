@@ -1,4 +1,4 @@
-import { rm } from "@/styles";
+import { media, rm } from "@/styles";
 import styled from "styled-components";
 import Image from "next/image";
 import { getMediaStrapiPath } from "@/utils/getMediaStrapiPath";
@@ -34,6 +34,10 @@ const StyledLineCard = styled.div`
     overflow: hidden;
     border-radius: ${rm(10)};
     cursor: pointer;
+
+    ${media.xsm`
+        height: ${rm(282)};
+    `}
 
     &:hover{
         .image-wrapper{
