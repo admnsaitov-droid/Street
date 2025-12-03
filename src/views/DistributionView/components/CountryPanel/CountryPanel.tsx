@@ -320,6 +320,8 @@ export const CountryPanel = ({ activeFilterId, onFilterChange, onLocationClick, 
                             location={location} 
                             onClick={() => handleCardClick(location)}
                             isExpanded={false} // No expansion for base cards
+                            locationText={data?.distributionPage?.locationText}
+                            websiteText={data?.distributionPage?.websiteText}
                         />
                     </StyledCardWrapper>
                     )
@@ -333,6 +335,8 @@ export const CountryPanel = ({ activeFilterId, onFilterChange, onLocationClick, 
                             onClick={() => handleCardClick(displayedLocation)}
                             isExpanded={true}
                             animationPhase={animationPhase}
+                            locationText={data?.distributionPage?.locationText}
+                            websiteText={data?.distributionPage?.websiteText}
                         />
                     </StyledSelectedCardWrapper>
                 )}

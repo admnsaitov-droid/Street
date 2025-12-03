@@ -8,9 +8,11 @@ interface LocationCardProps {
   location: DistributionLocation
   onClick?: () => void
   isExpanded?: boolean
+  locationText?: string
+  websiteText?: string
 }
 
-export const LocationCard = ({ location, onClick, isExpanded = false }: LocationCardProps) => {
+export const LocationCard = ({ location, onClick, isExpanded = false, locationText, websiteText }: LocationCardProps) => {
   const handleClick = () => {
     if (onClick) {
       onClick()
@@ -36,16 +38,16 @@ export const LocationCard = ({ location, onClick, isExpanded = false }: Location
       <StyledDivider />
       <StyledDetails>
         <StyledDetailItem>
-          <StyledDetailLabel>Location</StyledDetailLabel>
+          <StyledDetailLabel>{locationText}</StyledDetailLabel>
           <StyledDetailValue>{location.address}</StyledDetailValue>
         </StyledDetailItem>
         <StyledDetailItem>
-          <StyledDetailLabel>Email</StyledDetailLabel>
-          <StyledDetailValue>{location.email}</StyledDetailValue>
+          <StyledDetailLabel>{websiteText}</StyledDetailLabel>
+          <StyledDetailValue>{location.websiteItem}</StyledDetailValue>
         </StyledDetailItem>
       </StyledDetails>
       <StyledButtonContainer $isExpanded={isExpanded}>
-        <BlueButton link='https://www.google.com' isSvg className="button">VISIT WEBSITE</BlueButton>
+        <BlueButton link={location?.websiteItem} isSvg className="button">VISIT WEBSITE</BlueButton>
       </StyledButtonContainer>
       {isExpanded && (
         <StyledCloseButton onClick={() => onClick?.()}>

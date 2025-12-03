@@ -9,9 +9,11 @@ interface SelectedLocationCardMobileProps {
   onClick?: () => void
   isExpanded?: boolean
   animationPhase?: 'idle' | 'hiding' | 'showing'
+  locationText?: string
+  websiteText?: string
 }
 
-export const SelectedLocationCardMobile = ({ location, onClick, isExpanded = false, animationPhase = 'idle' }: SelectedLocationCardMobileProps) => {
+export const SelectedLocationCardMobile = ({ location, onClick, isExpanded = false, animationPhase = 'idle', locationText, websiteText }: SelectedLocationCardMobileProps) => {
   const handleClick = () => {
     if (onClick) {
       onClick()
@@ -41,16 +43,16 @@ export const SelectedLocationCardMobile = ({ location, onClick, isExpanded = fal
       <StyledDivider />
       <StyledDetails>
         <StyledDetailItem>
-          <StyledDetailLabel>Location</StyledDetailLabel>
+          <StyledDetailLabel>{locationText}</StyledDetailLabel>
           <StyledDetailValue>{location.address}</StyledDetailValue>
         </StyledDetailItem>
         <StyledDetailItem>
-          <StyledDetailLabel>Email</StyledDetailLabel>
-          <StyledDetailValue>{location.email}</StyledDetailValue>
+          <StyledDetailLabel>{websiteText}</StyledDetailLabel>
+          <StyledDetailValue>{location.websiteItem}</StyledDetailValue>
         </StyledDetailItem>
       </StyledDetails>
       <StyledButtonContainer $isExpanded={isExpanded}>
-        <BlueButton link='https://www.google.com' isSvg className="button">VISIT WEBSITE</BlueButton>
+        <BlueButton link={location?.websiteItem} isSvg className="button">VISIT WEBSITE</BlueButton>
       </StyledButtonContainer>
       {isExpanded && (
         <StyledCloseButton onClick={() => onClick?.()}>
