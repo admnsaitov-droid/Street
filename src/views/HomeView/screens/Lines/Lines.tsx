@@ -51,7 +51,7 @@ export const Lines = ({ linesData, isTop = true, isHome = false, exploreLineText
                 </div>
             </div>
         </StyledTopContainer>}
-        <LinesGrid linesData={lines} machinesText={linesData?.machinesText} exploreText={linesData?.exploreText} />
+        <LinesGrid linesData={lines} machinesText={linesData?.machinesText} exploreText={linesData?.overviewText} isHome={isHome} />
         {/* {Array.isArray(lines) && lines.length > 0 && (
             <StyledLinesContainer>
                 {lines.map((line: any, lineIndex: number) => (
