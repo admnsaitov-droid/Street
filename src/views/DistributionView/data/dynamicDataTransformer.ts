@@ -7,7 +7,7 @@ export interface DynamicLocation {
   continent: string
   countryText: string
   locationItem: string
-  mailItem: string
+  websiteItem: string
   centerName: string
   description: string
   scenePosition: {
@@ -65,7 +65,7 @@ export interface DynamicDistributionData {
     }
     locations: DynamicLocation[]
     locationText: string
-    mailText: string
+    websiteText: string
   }
 }
 
@@ -159,7 +159,7 @@ export const transformDynamicLocation = (dynamicLocation: DynamicLocation): Loca
     name: dynamicLocation.countryText,
     displayName: dynamicLocation.centerName,
     address: dynamicLocation.locationItem,
-    email: dynamicLocation.mailItem,
+    websiteItem: dynamicLocation.websiteItem,
     coordinates,
     position: [
       dynamicLocation.scenePosition.x,

@@ -222,6 +222,8 @@ export const CountryPanelMobile = ({ activeFilterId, onFilterChange, onLocationC
                                 location={location} 
                                 onClick={() => handleCardClick(location)}
                                 isExpanded={false}
+                                locationText={data?.distributionPage?.locationText}
+                                websiteText={data?.distributionPage?.websiteText}
                             />
                         </StyledCardWrapper>
                     )
@@ -242,6 +244,8 @@ export const CountryPanelMobile = ({ activeFilterId, onFilterChange, onLocationC
                             location={popupLocation}
                             onClick={() => handleCardClick(popupLocation)}
                             isExpanded={true}
+                            locationText={data?.distributionPage?.locationText}
+                            websiteText={data?.distributionPage?.websiteText}
                         />
                     </StyledPopupContent>
                 </StyledPopupOverlay>
