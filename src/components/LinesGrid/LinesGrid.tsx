@@ -1,27 +1,43 @@
 import styled from "styled-components";
 import { LineCard } from "./components/LineCard";
-import { media } from "@/styles";
+import { media, rm } from "@/styles";
+import { BlueButton } from "../Ui/buttons/BlueButton";
 
 interface LinesGridProps {
     linesData: any;
     machinesText: string;
     exploreText: string;
+    isHome?: boolean;
 }
 
-export const LinesGrid = ({ linesData, machinesText, exploreText }: LinesGridProps) => {
+export const LinesGrid = ({ linesData, machinesText, exploreText, isHome }: LinesGridProps) => {
     return (
         <StyledLinesGrid>
-            {linesData?.map((line: any) => (
-                <LineCard key={line?.id} lineData={line} machinesText={machinesText} exploreText={exploreText} />
-            ))}
+            <StyledContent>
+                {linesData?.map((line: any) => (
+                    <LineCard key={line?.id} lineData={line} machinesText={machinesText} exploreText={exploreText} />
+                ))}
+            </StyledContent>
+            {isHome && (
+                <BlueButton link={'/lines'} isSvg={true}>{exploreText}</BlueButton>
+            )}
         </StyledLinesGrid>
     )
 }
 
 const StyledLinesGrid = styled.div`
+    display: flex;
+    flex-direction: column;
+    gap: ${rm(40)};
+    align-items: center;
+    width: 100%;
+`
+
+const StyledContent = styled.div`
     display: grid;
     grid-template-columns: repeat(6, 1fr);
-    gap: 20px;
+    gap: ${rm(20)};
+    width: 100%;
 
     /* First row: 2 items, each spanning 3 columns */
     & > :nth-child(1) {
