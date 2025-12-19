@@ -44,6 +44,14 @@ interface ColorStore {
     name: string
     color: string
   } | null
+  materialMainColor: {
+    name: string
+    color: string
+  } | null
+  materialAccentColor: {
+    name: string
+    color: string
+  } | null
   colorMode: 'main' | 'accent'
 
   setActiveMainColor: (color: {
@@ -51,6 +59,14 @@ interface ColorStore {
     color: string
   } | null) => void
   setActiveAccentColor: (color: {
+    name: string
+    color: string
+  } | null) => void
+  setMaterialMainColor: (color: {
+    name: string
+    color: string
+  } | null) => void
+  setMaterialAccentColor: (color: {
     name: string
     color: string
   } | null) => void
@@ -69,6 +85,8 @@ interface ColorStore {
 export const useColorStore = create<ColorStore>((set, get) => ({
   activeMainColor: null,
   activeAccentColor: null,
+  materialMainColor: null,
+  materialAccentColor: null,
   colorMode: 'main',
   activeColor: null, // Legacy support
   
@@ -81,6 +99,16 @@ export const useColorStore = create<ColorStore>((set, get) => ({
     name: string
     color: string
   } | null) => set({ activeAccentColor: color }),
+  
+  setMaterialMainColor: (color: {
+    name: string
+    color: string
+  } | null) => set({ materialMainColor: color }),
+  
+  setMaterialAccentColor: (color: {
+    name: string
+    color: string
+  } | null) => set({ materialAccentColor: color }),
   
   setColorMode: (mode: 'main' | 'accent') => set({ colorMode: mode }),
   

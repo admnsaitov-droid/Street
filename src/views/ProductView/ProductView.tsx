@@ -9,7 +9,8 @@ import { StructuredData } from "@/components/StructuredData/StructuredData"
 import { generateProductSchema } from "@/utils/generateStructuredData"
 import { ColorPaletre } from "./components/ColorPaletre/ColoPaletre"
 import { useWindowWidth } from "@react-hook/window-size"
-import { useMemo } from "react"
+import { useMemo, useEffect } from "react"
+import { useColorStore } from "@/store/store"
 
 interface ProductViewProps {
     data: any
@@ -30,24 +31,70 @@ const hexToRgb = (hex: string): string => {
 
 export const ProductView = ({ data }: ProductViewProps) => {
     console.log('data', data)
+    const { materialMainColor, materialAccentColor, setMaterialMainColor, setMaterialAccentColor } = useColorStore()
 
-    // Transform main colors from product data
+    // Reset material colors when product changes
+    useEffect(() => {
+        // Reset material colors when product changes (before new ones are extracted)
+        setMaterialMainColor(null)
+        setMaterialAccentColor(null)
+    }, [data?.product?.id, setMaterialMainColor, setMaterialAccentColor])
+
+    // Transform main colors from product data and merge with material colors
     const mainColors = useMemo(() => {
-        if (!data?.product?.colors || !Array.isArray(data.product.colors)) return []
-        return data.product.colors.map((color: any) => ({
-            name: color.displayColor || '',
-            color: color.modelColor || ''
-        }))
-    }, [data?.product?.colors])
+        const apiColors = data?.product?.colors && Array.isArray(data.product.colors)
+            ? data.product.colors
+                .filter((color: any) => color?.modelColor && color.modelColor.trim() !== '') // Filter out null/empty colors BEFORE mapping
+                .map((color: any) => ({
+                    name: color.displayColor || '',
+                    color: color.modelColor
+                }))
+            : []
+        
+        // Add material color first if it exists and isn't already in the list
+        const materialColor = materialMainColor
+        if (materialColor) {
+            const materialExists = apiColors.some((c: any) => c.color === materialColor.color)
+            if (!materialExists) {
+                return [materialColor, ...apiColors]
+            }
+        }
+        
+        return apiColors
+    }, [data?.product?.colors, materialMainColor])
 
-    // Transform accent colors from product data and convert hex to rgb
+    // Transform accent colors from product data and merge with material colors
     const accentColors = useMemo(() => {
-        if (!data?.product?.accentColors || !Array.isArray(data.product.accentColors)) return []
-        return data.product.accentColors.map((color: any) => ({
-            name: color.displayColor || '',
-            color: color.modelColor ? hexToRgb(color.modelColor) : ''
-        }))
-    }, [data?.product?.accentColors])
+        const apiColors = data?.product?.accentColors && Array.isArray(data.product.accentColors)
+            ? data.product.accentColors
+                .filter((color: any) => color?.modelColor && typeof color.modelColor === 'string' && color.modelColor.trim() !== '') // Filter out null/empty colors BEFORE mapping
+                .map((color: any) => ({
+                    name: color.displayColor || '',
+                    color: hexToRgb(color.modelColor)
+                }))
+            : []
+        
+        // Add material color first if it exists and isn't already in the list
+        const materialColor = materialAccentColor
+        const result: Array<{ name: string; color: string }> = []
+        
+        if (materialColor && materialColor.color) {
+            result.push(materialColor)
+        }
+        
+        // Add API colors that don't duplicate the material color
+        apiColors.forEach((apiColor: any) => {
+            if (apiColor.color && !result.some((c) => c.color === apiColor.color)) {
+                result.push(apiColor)
+            }
+        })
+        
+        console.log('accentColors result:', result)
+        console.log('materialAccentColor:', materialAccentColor)
+        console.log('apiColors:', apiColors)
+        
+        return result
+    }, [data?.product?.accentColors, materialAccentColor])
 
     // Generate Product schema for SEO
     const productSchema = generateProductSchema({

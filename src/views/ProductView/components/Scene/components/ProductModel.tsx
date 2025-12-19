@@ -34,6 +34,14 @@ const hexToRgb = (hex: string): string => {
     return `rgb(${r}, ${g}, ${b})`
 }
 
+// Helper function to convert THREE.Color to rgb string
+const colorToRgb = (color: THREE.Color): string => {
+    const r = Math.round(color.r * 255)
+    const g = Math.round(color.g * 255)
+    const b = Math.round(color.b * 255)
+    return `rgb(${r}, ${g}, ${b})`
+}
+
 export const ProductModel = ({ model, colors, accentColors, params = {
     position: [0, 0, 0],
     rotation: [0, 0, 0],
@@ -42,28 +50,91 @@ export const ProductModel = ({ model, colors, accentColors, params = {
     const { scene }: any = useGLTF(getMediaStrapiPath(model))
     // Clone the scene so multiple Canvas instances don't mutate the same object
     const clonedScene: any = useMemo(() => scene?.clone(true), [scene])
-    const { activeMainColor, activeAccentColor, setActiveMainColor, setActiveAccentColor } = useColorStore()
+    const { activeMainColor, activeAccentColor, setActiveMainColor, setActiveAccentColor, setMaterialMainColor, setMaterialAccentColor } = useColorStore()
     const sceneRef = useRef<THREE.Group>()
+    const colorsExtractedRef = useRef(false)
+    const originalMainColorRef = useRef<string | null>(null)
+    const originalAccentColorRef = useRef<string | null>(null)
+    const originalMainColorObjectRef = useRef<THREE.Color | null>(null)
+    const originalAccentColorObjectRef = useRef<THREE.Color | null>(null)
 
-    // Set the first main color when component mounts
+    // Extract colors from materials first, before API colors
     useEffect(() => {
-        if (colors && colors.length > 0 && !activeMainColor) {
-            setActiveMainColor(colors[0])
-        }
-    }, [colors, activeMainColor, setActiveMainColor])
-
-    // Set the first accent color when component mounts
+        // Reset extraction flag when model changes
+        colorsExtractedRef.current = false
+    }, [model])
+    
     useEffect(() => {
-        if (accentColors && accentColors.length > 0 && !activeAccentColor) {
-            setActiveAccentColor(accentColors[0])
-        }
-    }, [accentColors, activeAccentColor, setActiveAccentColor])
+        if (!clonedScene || colorsExtractedRef.current) return
 
-    // Apply main color to materials with name "blue_metal"
+        let extractedMainColor: { name: string; color: string } | null = null
+        let extractedAccentColor: { name: string; color: string } | null = null
+
+        clonedScene.traverse((child: THREE.Object3D) => {
+            if (child instanceof THREE.Mesh && child.material) {
+                const materials = Array.isArray(child.material) ? child.material : [child.material]
+                
+                materials.forEach((material) => {
+                    if ((material instanceof THREE.MeshStandardMaterial || 
+                        material instanceof THREE.MeshBasicMaterial ||
+                        material instanceof THREE.MeshPhongMaterial ||
+                        material instanceof THREE.MeshLambertMaterial)) {
+                        
+                        // Set roughness for Rubber pattern.001 material
+                        if (material.name === 'Rubber pattern.001' && material instanceof THREE.MeshStandardMaterial) {
+                            material.roughness = 1
+                            material.needsUpdate = true
+                        }
+                        
+                        // Extract main color from blue_metal material
+                        if (material.name === 'blue_metal' && !extractedMainColor) {
+                            const colorStr = colorToRgb(material.color)
+                            originalMainColorRef.current = colorStr
+                            // Store the original THREE.Color object to preserve exact precision
+                            originalMainColorObjectRef.current = material.color.clone()
+                            extractedMainColor = {
+                                name: 'Material Color',
+                                color: colorStr
+                            }
+                        }
+                        
+                        // Extract accent color from accent material
+                        if (material.name === 'accent' && !extractedAccentColor) {
+                            const colorStr = colorToRgb(material.color)
+                            originalAccentColorRef.current = colorStr
+                            // Store the original THREE.Color object to preserve exact precision
+                            originalAccentColorObjectRef.current = material.color.clone()
+                            extractedAccentColor = {
+                                name: 'Material Color',
+                                color: colorStr
+                            }
+                        }
+                    }
+                })
+            }
+        })
+
+        // Store material colors in the store
+        if (extractedMainColor) {
+            setMaterialMainColor(extractedMainColor)
+            setActiveMainColor(extractedMainColor)
+        }
+        if (extractedAccentColor) {
+            setMaterialAccentColor(extractedAccentColor)
+            setActiveAccentColor(extractedAccentColor)
+        }
+
+        colorsExtractedRef.current = true
+    }, [clonedScene, setActiveMainColor, setActiveAccentColor, setMaterialMainColor, setMaterialAccentColor])
+
+    // Don't automatically set API colors - they should only be available in the panel
+    // Material colors are set as initial active colors, and API colors can be selected by user
+
+    // Apply main color to materials with name "blue_metal" (only if different from current)
     useEffect(() => {
         if (!sceneRef.current || !activeMainColor?.color) return
 
-        sceneRef.current.traverse((child) => {
+        sceneRef.current.traverse((child: THREE.Object3D) => {
             if (child instanceof THREE.Mesh && child.material) {
                 // Handle both single material and array of materials
                 const materials = Array.isArray(child.material) ? child.material : [child.material]
@@ -75,20 +146,36 @@ export const ProductModel = ({ model, colors, accentColors, params = {
                         material instanceof THREE.MeshLambertMaterial) &&
                         material.name === 'blue_metal') {
                         
-                        // Set the new color for blue_metal materials
-                        material.color.set(activeMainColor.color)
-                        material.needsUpdate = true
+                        // Check if the current material color is different from the active color
+                        const currentMaterialColor = colorToRgb(material.color)
+                        if (currentMaterialColor !== activeMainColor.color) {
+                            // If this is the material color, use the original THREE.Color object for exact precision
+                            if (activeMainColor.color === originalMainColorRef.current && originalMainColorObjectRef.current) {
+                                material.color.copy(originalMainColorObjectRef.current)
+                            } else {
+                                // Set the new color for blue_metal materials
+                                material.color.set(activeMainColor.color)
+                            }
+                            material.needsUpdate = true
+                        }
                     }
                 })
             }
         })
     }, [activeMainColor?.color])
 
-    // Apply accent color to materials with name "accent"
+    // Apply accent color to materials with name "accent" (only if different from current)
     useEffect(() => {
         if (!sceneRef.current || !activeAccentColor?.color) return
 
-        sceneRef.current.traverse((child) => {
+        // Convert hex to rgb if needed, otherwise use as is
+        const colorValue = activeAccentColor.color.startsWith('rgb') 
+            ? activeAccentColor.color 
+            : (activeAccentColor.color.startsWith('#') || /^[0-9A-Fa-f]{6}$/.test(activeAccentColor.color))
+            ? hexToRgb(activeAccentColor.color) 
+            : activeAccentColor.color
+
+        sceneRef.current.traverse((child: THREE.Object3D) => {
             if (child instanceof THREE.Mesh && child.material) {
                 // Handle both single material and array of materials
                 const materials = Array.isArray(child.material) ? child.material : [child.material]
@@ -100,16 +187,18 @@ export const ProductModel = ({ model, colors, accentColors, params = {
                         material instanceof THREE.MeshLambertMaterial) &&
                         material.name === 'accent') {
                         
-                        // Convert hex to rgb if needed, otherwise use as is
-                        const colorValue = activeAccentColor.color.startsWith('rgb') 
-                            ? activeAccentColor.color 
-                            : (activeAccentColor.color.startsWith('#') || /^[0-9A-Fa-f]{6}$/.test(activeAccentColor.color))
-                            ? hexToRgb(activeAccentColor.color) 
-                            : activeAccentColor.color
-                        
-                        // Set the new color for accent materials
-                        material.color.set(colorValue)
-                        material.needsUpdate = true
+                        // Check if the current material color is different from the active color
+                        const currentMaterialColor = colorToRgb(material.color)
+                        if (currentMaterialColor !== colorValue) {
+                            // If this is the material color, use the original THREE.Color object for exact precision
+                            if (colorValue === originalAccentColorRef.current && originalAccentColorObjectRef.current) {
+                                material.color.copy(originalAccentColorObjectRef.current)
+                            } else {
+                                // Set the new color for accent materials
+                                material.color.set(colorValue)
+                            }
+                            material.needsUpdate = true
+                        }
                     }
                 })
             }

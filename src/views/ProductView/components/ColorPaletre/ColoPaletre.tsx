@@ -29,6 +29,12 @@ export const ColorPaletre = ({ mainColors, accentColors }: ColorPaletreProps) =>
     const activeColor = colorMode === 'main' ? activeMainColor : activeAccentColor
     const setActiveColor = colorMode === 'main' ? setActiveMainColor : setActiveAccentColor
 
+    // Debug logging
+    if (colorMode === 'accent') {
+        console.log('ColorPaletre accentColors:', accentColors)
+        console.log('ColorPaletre currentColors:', currentColors)
+    }
+
     return (
         <StyledColorPaletre>
             <StyledTop>
@@ -47,9 +53,9 @@ export const ColorPaletre = ({ mainColors, accentColors }: ColorPaletreProps) =>
                 </StyledText>
             </StyledTop>
             <StyledColorsWrapper>
-                {currentColors.map((color) => (
+                {currentColors.map((color, index) => (
                     <ColorVariant 
-                        key={color.name} 
+                        key={`${colorMode}-${color.color}-${index}`} 
                         color={color.color} 
                         colorName={color.name} 
                         setActiveColor={setActiveColor} 
@@ -69,6 +75,8 @@ const StyledColorPaletre = styled.div`
     z-index: 2;
     display: flex;
     flex-direction: column;
+    width: fit-content;
+    min-width: unset;
 
     // ${media.xsm`
     //     left: 50%;
@@ -122,5 +130,6 @@ const StyledColorsWrapper = styled.div`
     border: 1px solid #B7BCCA33;
     border-radius: ${rm(4)};
     z-index: 2;
-    display: flex;
+    width: fit-content;
+    min-width: unset;
 `
