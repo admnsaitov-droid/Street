@@ -59,6 +59,7 @@ export const ProductScene = ({ data, colors, accentColors }: ProductSceneProps) 
                             maxPolarAngle={Math.PI / 2 - 0.2}
                         />
                         <ambientLight intensity={1} />
+                        <pointLight position={[-3, 1, 2]} intensity={10} color='#fffff0'/>
                         <PerspectiveCamera makeDefault position={[0, 15, -20]} fov={15} rotation={[0, 0, 0]} />
                         <fog attach="fog" color='#F8F9FC' near={40} far={70} />
                         <Environment
