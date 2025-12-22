@@ -3,6 +3,7 @@ import styled from "styled-components"
 import { ColorVariant } from "./components/ColorVariant"
 import { useColorStore } from "@/store/store"
 import { fontGolosText } from "@/styles/fonts"
+import { useEffect } from "react"
 
 interface ColorPaletreProps {
     mainColors: {
@@ -20,10 +21,21 @@ export const ColorPaletre = ({ mainColors, accentColors }: ColorPaletreProps) =>
         activeMainColor, 
         activeAccentColor, 
         colorMode,
+        materialAccentColor,
         setActiveMainColor, 
         setActiveAccentColor,
         setColorMode 
     } = useColorStore()
+
+    // Check if there's an initial material accent color
+    const hasAccentColor = materialAccentColor && materialAccentColor.color
+
+    // If no accent color and mode is accent, switch to main
+    useEffect(() => {
+        if (!hasAccentColor && colorMode === 'accent') {
+            setColorMode('main')
+        }
+    }, [hasAccentColor, colorMode, setColorMode])
 
     const currentColors = colorMode === 'main' ? mainColors : accentColors
     const activeColor = colorMode === 'main' ? activeMainColor : activeAccentColor
@@ -44,13 +56,17 @@ export const ColorPaletre = ({ mainColors, accentColors }: ColorPaletreProps) =>
                 >
                     Main Color
                 </StyledText>
-                <div className="divider"></div>
-                <StyledText 
-                    isActive={colorMode === 'accent'} 
-                    onClick={() => setColorMode('accent')}
-                >
-                    Accent color
-                </StyledText>
+                {hasAccentColor && (
+                    <>
+                        <div className="divider"></div>
+                        <StyledText 
+                            isActive={colorMode === 'accent'} 
+                            onClick={() => setColorMode('accent')}
+                        >
+                            Accent color
+                        </StyledText>
+                    </>
+                )}
             </StyledTop>
             <StyledColorsWrapper>
                 {currentColors.map((color, index) => (

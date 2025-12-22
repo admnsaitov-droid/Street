@@ -87,7 +87,16 @@ export const ProductModel = ({ model, colors, accentColors, params = {
                         }
                         
                         // Set normal map scale for blue_metal, accent, and leather materials
-                        if ((material.name === 'blue_metal' || material.name === 'accent' || material.name === 'leather') && 
+                        if ((material.name === 'blue_metal' || material.name === 'accent') && 
+                            (material instanceof THREE.MeshStandardMaterial || material instanceof THREE.MeshPhongMaterial)) {
+                            if (!material.normalScale) {
+                                material.normalScale = new THREE.Vector2(1, 1)
+                            }
+                            material.normalScale.set(-3, 3)
+                            material.needsUpdate = true
+                        }
+
+                        if ((material.name === 'leather') && 
                             (material instanceof THREE.MeshStandardMaterial || material instanceof THREE.MeshPhongMaterial)) {
                             if (!material.normalScale) {
                                 material.normalScale = new THREE.Vector2(1, 1)
@@ -111,6 +120,7 @@ export const ProductModel = ({ model, colors, accentColors, params = {
                         // Extract accent color from accent material
                         if (material.name === 'accent' && !extractedAccentColor) {
                             const colorStr = colorToRgb(material.color)
+
                             originalAccentColorRef.current = colorStr
                             // Store the original THREE.Color object to preserve exact precision
                             originalAccentColorObjectRef.current = material.color.clone()
