@@ -60,10 +60,18 @@ export const ProductView = ({ data }: ProductViewProps) => {
                     const modelColorLower = color.modelColor.toLowerCase().trim()
                     return !colorsToExclude.includes(modelColorLower)
                 })
-                .map((color: any) => ({
-                    name: color.displayColor || '',
-                    color: color.modelColor
-                }))
+                .map((color: any) => {
+                    // Use displayColor for both name and color value
+                    const displayColorValue = color.displayColor || ''
+                    // Convert hex to rgb if displayColor is hex format
+                    const colorValue = displayColorValue.startsWith('#') || /^[0-9A-Fa-f]{6}$/i.test(displayColorValue)
+                        ? hexToRgb(displayColorValue)
+                        : displayColorValue
+                    return {
+                        name: displayColorValue,
+                        color: colorValue
+                    }
+                })
             : []
         
         // Add material color first if it exists and isn't already in the list
@@ -89,10 +97,18 @@ export const ProductView = ({ data }: ProductViewProps) => {
                     const modelColorLower = color.modelColor.toLowerCase().trim()
                     return !colorsToExclude.includes(modelColorLower)
                 })
-                .map((color: any) => ({
-                    name: color.displayColor || '',
-                    color: hexToRgb(color.modelColor)
-                }))
+                .map((color: any) => {
+                    // Use displayColor for both name and color value
+                    const displayColorValue = color.displayColor || ''
+                    // Convert hex to rgb if displayColor is hex format
+                    const colorValue = displayColorValue.startsWith('#') || /^[0-9A-Fa-f]{6}$/i.test(displayColorValue)
+                        ? hexToRgb(displayColorValue)
+                        : displayColorValue
+                    return {
+                        name: displayColorValue,
+                        color: colorValue
+                    }
+                })
             : []
         
         // Add material color first if it exists and isn't already in the list
