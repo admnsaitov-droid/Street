@@ -40,11 +40,26 @@ export const ProductView = ({ data }: ProductViewProps) => {
         setMaterialAccentColor(null)
     }, [data?.product?.id, setMaterialMainColor, setMaterialAccentColor])
 
+    // Get colors to exclude
+    const colorsToExclude = useMemo(() => {
+        return data?.product?.colorsToExclude && Array.isArray(data.product.colorsToExclude)
+            ? data.product.colorsToExclude
+                .map((color: any) => color?.modelColor?.toLowerCase().trim())
+                .filter((color: string) => color && color !== '')
+            : []
+    }, [data?.product?.colorsToExclude])
+
     // Transform main colors from product data and merge with material colors
     const mainColors = useMemo(() => {
-        const apiColors = data?.product?.colors && Array.isArray(data.product.colors)
-            ? data.product.colors
-                .filter((color: any) => color?.modelColor && color.modelColor.trim() !== '') // Filter out null/empty colors BEFORE mapping
+        const apiColors = data?.product?.mainColors && Array.isArray(data.product.mainColors)
+            ? data.product.mainColors
+                .filter((color: any) => {
+                    // Filter out null/empty colors
+                    if (!color?.modelColor || color.modelColor.trim() === '') return false
+                    // Filter out colors that match colorsToExclude
+                    const modelColorLower = color.modelColor.toLowerCase().trim()
+                    return !colorsToExclude.includes(modelColorLower)
+                })
                 .map((color: any) => ({
                     name: color.displayColor || '',
                     color: color.modelColor
@@ -61,13 +76,19 @@ export const ProductView = ({ data }: ProductViewProps) => {
         }
         
         return apiColors
-    }, [data?.product?.colors, materialMainColor])
+    }, [data?.product?.mainColors, materialMainColor, colorsToExclude])
 
     // Transform accent colors from product data and merge with material colors
     const accentColors = useMemo(() => {
         const apiColors = data?.product?.accentColors && Array.isArray(data.product.accentColors)
             ? data.product.accentColors
-                .filter((color: any) => color?.modelColor && typeof color.modelColor === 'string' && color.modelColor.trim() !== '') // Filter out null/empty colors BEFORE mapping
+                .filter((color: any) => {
+                    // Filter out null/empty colors
+                    if (!color?.modelColor || typeof color.modelColor !== 'string' || color.modelColor.trim() === '') return false
+                    // Filter out colors that match colorsToExclude
+                    const modelColorLower = color.modelColor.toLowerCase().trim()
+                    return !colorsToExclude.includes(modelColorLower)
+                })
                 .map((color: any) => ({
                     name: color.displayColor || '',
                     color: hexToRgb(color.modelColor)
@@ -94,7 +115,7 @@ export const ProductView = ({ data }: ProductViewProps) => {
         console.log('apiColors:', apiColors)
         
         return result
-    }, [data?.product?.accentColors, materialAccentColor])
+    }, [data?.product?.accentColors, materialAccentColor, colorsToExclude])
 
     // Generate Product schema for SEO
     const productSchema = generateProductSchema({

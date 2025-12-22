@@ -60,7 +60,7 @@ export const ProductScene = ({ data, colors, accentColors }: ProductSceneProps) 
                         />
                         <ambientLight intensity={1} />
                         <pointLight position={[-3, 1, 2]} intensity={10} color='#fffff0'/>
-                        <PerspectiveCamera makeDefault position={[0, 15, -20]} fov={15} rotation={[0, 0, 0]} />
+                        <PerspectiveCamera makeDefault position={[25, 15, 13]} fov={12} rotation={[0, 0, 0]} />
                         <fog attach="fog" color='#F8F9FC' near={40} far={70} />
                         <Environment
                             files="/models/testHdr4.hdr"
