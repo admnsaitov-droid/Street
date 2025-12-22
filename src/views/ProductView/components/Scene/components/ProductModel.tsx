@@ -81,8 +81,18 @@ export const ProductModel = ({ model, colors, accentColors, params = {
                         material instanceof THREE.MeshLambertMaterial)) {
                         
                         // Set roughness for Rubber pattern.001 material
-                        if (material.name === 'Rubber pattern.001' && material instanceof THREE.MeshStandardMaterial) {
+                        if ((material.name === 'Rubber pattern.001' || material.name === 'Rubber_pattern') && material instanceof THREE.MeshStandardMaterial) {
                             material.roughness = 1
+                            material.needsUpdate = true
+                        }
+                        
+                        // Set normal map scale for blue_metal, accent, and leather materials
+                        if ((material.name === 'blue_metal' || material.name === 'accent' || material.name === 'leather') && 
+                            (material instanceof THREE.MeshStandardMaterial || material instanceof THREE.MeshPhongMaterial)) {
+                            if (!material.normalScale) {
+                                material.normalScale = new THREE.Vector2(1, 1)
+                            }
+                            material.normalScale.set(-5, 5)
                             material.needsUpdate = true
                         }
                         
