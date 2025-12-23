@@ -387,11 +387,11 @@ const StyledNavigationContainer = styled.div`
 `
 
 const StyledNavButton = styled.button`
-    width: ${rm(48)};
-    height: ${rm(48)};
-    min-width: ${rm(48)};
-    min-height: ${rm(48)};
-    border-radius: ${rm(12)};
+    width: ${rm(44)};
+    height: ${rm(44)};
+    min-width: ${rm(44)};
+    min-height: ${rm(44)};
+    border-radius: ${rm(4)};
     background: #fff;
     border: none;
     cursor: pointer;
@@ -412,8 +412,8 @@ const StyledNavButton = styled.button`
     }
 
     svg {
-        width: ${rm(20)};
-        height: ${rm(20)};
+        width: ${rm(24)};
+        height: ${rm(24)};
     }
 
     ${media.xsm`

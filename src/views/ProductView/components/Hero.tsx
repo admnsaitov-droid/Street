@@ -98,8 +98,8 @@ const StyledBackgroundGradient = styled.div`
     position: absolute;
     bottom: 0;
     width: 100%;
-    height: 40%;
-    background: linear-gradient(180deg, #F8F9FC 0%, #DCDEE5 100%);
+    height: 80%;
+    background: linear-gradient(180deg, #F8F9FC 0%, #D0D5E3 100%);
     z-index: 1;
 `
 
