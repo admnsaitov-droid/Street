@@ -52,11 +52,14 @@ export const Hero = ({ data, colors, accentColors = [] }: HeroProps) => {
             </StyledContent>
             <ProductScene data={data?.model3D} colors={colors} accentColors={accentColors} />
             {activeImageUrl && (
-                <StyledImageOverlay role="dialog" aria-modal="true">
-                    <div className="imageWrap">
-                        <Image src={activeImageUrl} alt="Product" fill style={{ objectFit: 'contain' }} />
-                    </div>
-                </StyledImageOverlay>
+                <>
+                    <StyledImageOverlay role="dialog" aria-modal="true">
+                        <div className="imageWrap">
+                            <Image src={activeImageUrl} alt="Product" fill style={{ objectFit: 'contain' }} />
+                        </div>
+                        <StyledBackgroundGradient />
+                    </StyledImageOverlay>
+                </>
             )}
             {/* Thumbnails rail on the right center */}
             {Array.isArray(data?.productImages) && data?.productImages.length > 0 && (
@@ -91,6 +94,15 @@ const StyledHero = styled.div`
     `}
 `
 
+const StyledBackgroundGradient = styled.div`
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 40%;
+    background: linear-gradient(180deg, #F8F9FC 0%, #DCDEE5 100%);
+    z-index: 1;
+`
+
 const StyledImageOverlay = styled.div`
     position: absolute;
     inset: 0;
@@ -108,6 +120,7 @@ const StyledImageOverlay = styled.div`
         max-width: 1200px;
         max-height: 80vh;
         background: transparent;
+        z-index: 2;
     }
 `
 
