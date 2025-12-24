@@ -151,6 +151,7 @@ export const ProductScene = ({ data, colors, accentColors }: ProductSceneProps) 
                 progress={lazyScene.progress} 
                 theme="dark"
                 label="machine"
+                translateBottom={true}
             />
             <StyledActions>
                 <div className="buttonWrapper zoomOut" onClick={handleZoomOut}>

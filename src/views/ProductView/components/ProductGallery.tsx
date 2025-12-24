@@ -187,27 +187,6 @@ export const ProductGallery = ({ images = [], model3D, colors = [], accentColors
                     </defs>
                     </svg>
                 </div>
-                {model3D?.model && (
-                    <StyledMiniScene>
-                        <Canvas
-                            gl={{ powerPreference: 'high-performance', alpha: true, antialias: true }}
-                            frameloop="always"
-                        >
-                            <ambientLight intensity={1} />
-                            <Suspense fallback={null}>
-                                <PerspectiveCamera makeDefault position={[0, 0, 2.4]} fov={22} />
-                                <ProductModel model={model3D.model} colors={colors} accentColors={accentColors} params={{
-                                    position: [0, -0.3, 0],
-                                    rotation: [0, 0, 0],
-                                    scale: 0.4,
-                                }} />
-                                {/* <Box scale={0.4}>
-                                    <meshStandardMaterial color="#ff5555" />
-                                </Box> */}
-                            </Suspense>
-                        </Canvas>
-                    </StyledMiniScene>
-                )}
             </StyledThumbButton>
             {images.map((img) => {
                 const url = getMediaStrapiPath(img)
@@ -324,17 +303,23 @@ const StyledThumbButton = styled.button<{ $active?: boolean }>`
 
     .badge{
         position: absolute;
-        top: ${rm(4)};
-        right: ${rm(4)};
-        background: ${colors.blue};
+        top: 50%;
+        right: 50%;
+        transform: translate(50%, -50%);
+        background: ${colors.white100};
         overflow: hidden;
-        color: #fff;
+        color: ${colors.blue};
         font-size: ${rm(12)};
         line-height: 1;
         border-radius: ${rm(4)};
         z-index: 1;
-        width: ${rm(20)};
-        height: ${rm(20)};
+        width: ${rm(40)};
+        height: ${rm(40)};
+
+        ${media.xsm`
+            width: ${rm(24)};
+            height: ${rm(24)};
+        `}
 
         svg{
             width: 100%;
@@ -357,11 +342,6 @@ const StyledThumbButton = styled.button<{ $active?: boolean }>`
         min-height: ${rm(50)};
         border-radius: ${rm(4)};
     `}
-`
-
-const StyledMiniScene = styled.div`
-    position: absolute;
-    inset: 0;
 `
 
 const ChevronLeftIcon = () => (

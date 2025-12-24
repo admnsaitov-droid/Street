@@ -13,7 +13,7 @@
 import { useInView } from "@react-spring/web"
 import styled from "styled-components"
 import { SkeletonIcon } from "./SkeletonIcon"
-import { rm } from "@/styles"
+import { media, rm } from "@/styles"
 import Image from "next/image"
 
 const StyledSceneSkeleton = styled.div`
@@ -33,14 +33,13 @@ const StyledSceneSkeleton = styled.div`
     }
 `
 
-const LoaderContainer = styled.div<{ $position: 'left' | 'right' | 'center', $theme: 'light' | 'dark' }>`
+const LoaderContainer = styled.div<{ $position: 'left' | 'right' | 'center', $theme: 'light' | 'dark', $translateBottom: boolean }>`
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: ${rm(20)};
     position: absolute;
     top: 50%;
-
 
     .preview {
         position: absolute;
@@ -70,6 +69,10 @@ const LoaderContainer = styled.div<{ $position: 'left' | 'right' | 'center', $th
                 `;
         }
     }}
+
+    ${media.xsm`
+        ${({ $translateBottom }: { $translateBottom: boolean }) => $translateBottom ? `transform: translate(-50%, 0%);` : ''}
+    `}
 `
 
 const IconContainer = styled.div`
@@ -135,9 +138,10 @@ interface SceneSkeletonProps {
     theme?: 'light' | 'dark'
     previewSrc?: string
     label?: string
+    translateBottom?: boolean
 }
 
-export const SceneSkeleton = ({ isLoading, progress = 0, className, position = 'center', theme = 'light', previewSrc, label = 'globe' }: SceneSkeletonProps) => {
+export const SceneSkeleton = ({ isLoading, progress = 0, className, position = 'center', theme = 'light', previewSrc, label = 'globe', translateBottom = false }: SceneSkeletonProps) => {
     const [ref, inView] = useInView()
     
     return (
@@ -148,7 +152,7 @@ export const SceneSkeleton = ({ isLoading, progress = 0, className, position = '
                 ${!isLoading ? '-hidden' : ''}
             `}
         >
-            <LoaderContainer $position={position} $theme={theme}>
+            <LoaderContainer $position={position} $theme={theme} $translateBottom={translateBottom}>
                 <StyledIconsContainer>
                     <IconContainer>
                         <SkeletonIcon label={label} />
