@@ -164,7 +164,7 @@ export const ProductGallery = ({ images = [], model3D, colors = [], accentColors
     }
 
     return (
-        <StyledWrapper>
+        <StyledWrapper style={{pointerEvents: isOpen ? 'auto' : 'none', userSelect: isOpen ? 'auto' : 'none'}}>
         <StyledRail ref={railRef} onWheel={handleWheel} aria-label="Product media thumbnails">
             <StyledThumbButton 
                 ref={sceneButtonRef}
