@@ -164,7 +164,7 @@ export const ProductGallery = ({ images = [], model3D, colors = [], accentColors
     }
 
     return (
-        <>
+        <StyledWrapper>
         <StyledRail ref={railRef} onWheel={handleWheel} aria-label="Product media thumbnails">
             <StyledThumbButton 
                 ref={sceneButtonRef}
@@ -241,9 +241,19 @@ export const ProductGallery = ({ images = [], model3D, colors = [], accentColors
                 </StyledNavButton>
             </StyledNavigationContainer>
         )}
-    </>
+    </StyledWrapper>
     )
 }
+
+const StyledWrapper = styled.div`
+    position: absolute;
+    height: 100dvh;
+    width: 100%;
+    overflow: hidden;
+    top: 0;
+    left: 0;
+    z-index: 100;
+`
 
 const StyledRail = styled.div`
     position: absolute;
@@ -264,7 +274,7 @@ const StyledRail = styled.div`
 
     /* Subtle, minimal scrollbar */
     &::-webkit-scrollbar { width: ${rm(6)}; }
-    &::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.12); border-radius: ${rm(6)}; }
+    &::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.12); border-radius: ${rm(4)}; }
     &::-webkit-scrollbar-track { background: transparent; }
 
     ${media.md`
@@ -275,18 +285,21 @@ const StyledRail = styled.div`
 
     ${media.xsm`
         /* Mobile: bottom rail */
-        right: auto;
-        left: 50%;
-        top: auto;
-        bottom: ${rm(20)};
-        transform: translateX(-50%);
-        flex-direction: row;
-        gap: ${rm(8)};
-        max-height: none;
-        max-width: calc(100% - ${rm(16)});
-        overflow-y: hidden;
-        overflow-x: auto;
-        touch-action: pan-x;
+        // right: auto;
+        // left: 50%;
+        // top: auto;
+        // bottom: ${rm(20)};
+        // transform: translateX(-50%);
+        // flex-direction: row;
+        // gap: ${rm(8)};
+        // max-height: none;
+        // max-width: calc(100% - ${rm(16)});
+        // overflow-y: hidden;
+        // overflow-x: auto;
+        touch-action: pan-y;
+        right: 0;
+        max-height: ${rm(270)};
+        gap: ${rm(5)};
     `}
 `
 
@@ -333,15 +346,15 @@ const StyledThumbButton = styled.button<{ $active?: boolean }>`
         height: ${rm(80)};
         min-width: ${rm(80)};
         min-height: ${rm(80)};
-        border-radius: ${rm(10)};
+        border-radius: ${rm(4)};
     `}
 
     ${media.xsm`
-        width: ${rm(60)};
-        height: ${rm(60)};
-        min-width: ${rm(60)};
-        min-height: ${rm(60)};
-        border-radius: ${rm(10)};
+        width: ${rm(50)};
+        height: ${rm(50)};
+        min-width: ${rm(50)};
+        min-height: ${rm(50)};
+        border-radius: ${rm(4)};
     `}
 `
 
@@ -363,26 +376,26 @@ const ChevronRightIcon = () => (
 )
 
 const StyledNavigationContainer = styled.div`
-    position: fixed;
-    top: calc(100vh - ${rm(80)});
+    position: absolute;
+    bottom: ${rm(50)};
     left: 50%;
     transform: translateX(-50%);
     display: flex;
-    gap: ${rm(8)};
+    gap: ${rm(6)};
     align-items: center;
-    padding: ${rm(8)} ${rm(12)};
-    background: rgba(255, 255, 255, 0.15);
+    padding: ${rm(6)};
+    background: #FFFFFF66;
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    border-radius: ${rm(16)};
+    border-radius: ${rm(4)};
     z-index: 1000;
     pointer-events: auto;
 
     ${media.xsm`
-        bottom: ${rm(20)};
-        padding: ${rm(6)} ${rm(10)};
+        bottom: ${rm(30)};
+        padding: ${rm(6)};
         gap: ${rm(6)};
-        border-radius: ${rm(12)};
+        border-radius: ${rm(2)};
     `}
 `
 
@@ -417,16 +430,16 @@ const StyledNavButton = styled.button`
     }
 
     ${media.xsm`
-        width: ${rm(40)};
-        height: ${rm(40)};
-        min-width: ${rm(40)};
-        min-height: ${rm(40)};
-        border-radius: ${rm(10)};
+        // width: ${rm(40)};
+        // height: ${rm(40)};
+        // min-width: ${rm(40)};
+        // min-height: ${rm(40)};
+        border-radius: ${rm(4)};
 
-        svg {
-            width: ${rm(18)};
-            height: ${rm(18)};
-        }
+        // svg {
+        //     width: ${rm(18)};
+        //     height: ${rm(18)};
+        // }
     `}
 `
 
