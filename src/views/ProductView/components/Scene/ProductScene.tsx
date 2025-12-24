@@ -8,7 +8,7 @@ import { Suspense, useCallback, useMemo, useRef, useState, type MutableRefObject
 import { useLazyScene } from "@/hooks/useLazyScene"
 import { SceneReadyDetector } from "@/views/DistributionView/components/SceneReadyDetector"
 import { useWindowWidth } from "@react-hook/window-size"
-import { rm } from "@/styles"
+import { media, rm } from "@/styles"
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib"
 import { fontGolosText } from "@/styles/fonts"
 
@@ -119,7 +119,7 @@ export const ProductScene = ({ data, colors, accentColors }: ProductSceneProps) 
         const direction = camera.position.clone().sub(target)
         const newDirection = direction.multiplyScalar(factor)
 
-        const minDistance = 20
+        const minDistance = 10
         const maxDistance = 31.9
         const newDistance = Math.min(Math.max(newDirection.length(), minDistance), maxDistance)
 
@@ -194,7 +194,7 @@ export const ProductScene = ({ data, colors, accentColors }: ProductSceneProps) 
                                 ONE: THREE.TOUCH.ROTATE,
                                 TWO: THREE.TOUCH.DOLLY_PAN
                             }}
-                            minDistance={20}
+                            minDistance={10}
                             maxDistance={31.9}
                             target={[0, 0, 0]}
                             minPolarAngle={Math.PI / 2 - 2}
@@ -280,10 +280,16 @@ const StyledActions = styled.div`
     gap: ${rm(6)};
     padding: ${rm(6)};
     background: #FFFFFF66;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
 
-    @media (max-width: 768px) {
-        display: none;
-    }
+    // @media (max-width: 768px) {
+    //     display: none;
+    // }
+
+    ${media.xsm`
+        bottom: ${rm(30)};
+    `}
 
     .buttonWrapper {
         width: ${rm(44)};
