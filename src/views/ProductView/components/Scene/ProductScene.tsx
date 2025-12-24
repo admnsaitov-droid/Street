@@ -150,6 +150,7 @@ export const ProductScene = ({ data, colors, accentColors }: ProductSceneProps) 
                 isLoading={lazyScene.isLoading} 
                 progress={lazyScene.progress} 
                 theme="dark"
+                label="machine"
             />
             <StyledActions>
                 <div className="buttonWrapper zoomOut" onClick={handleZoomOut}>
@@ -187,8 +188,15 @@ export const ProductScene = ({ data, colors, accentColors }: ProductSceneProps) 
                         <SceneReadyDetector sceneType="product" />
                         <OrbitControls 
                             ref={controlsRef}
-                            enableZoom={false} 
+                            enableZoom={width <= 768} 
                             enableRotate={true}
+                            enablePan={false}
+                            touches={{
+                                ONE: THREE.TOUCH.ROTATE,
+                                TWO: THREE.TOUCH.DOLLY_PAN
+                            }}
+                            minDistance={20}
+                            maxDistance={31.9}
                             target={[0, 0, 0]}
                             minPolarAngle={Math.PI / 2 - 2}
                             maxPolarAngle={Math.PI / 2 - 0}
@@ -273,6 +281,10 @@ const StyledActions = styled.div`
     gap: ${rm(6)};
     padding: ${rm(6)};
     background: #FFFFFF66;
+
+    @media (max-width: 768px) {
+        display: none;
+    }
 
     .buttonWrapper {
         width: ${rm(44)};
