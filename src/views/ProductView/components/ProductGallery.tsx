@@ -9,6 +9,7 @@ import { useMemo, useRef, WheelEvent, Suspense, useEffect } from "react"
 import { Canvas } from "@react-three/fiber"
 import { Box, PerspectiveCamera } from "@react-three/drei"
 import { ProductModel } from "./Scene/components/ProductModel"
+import { heightLvh } from "@/styles/utils"
 
 interface ProductGalleryProps {
     images?: any[]
@@ -247,19 +248,19 @@ export const ProductGallery = ({ images = [], model3D, colors = [], accentColors
 
 const StyledWrapper = styled.div`
     position: absolute;
-    height: 100dvh;
+    ${heightLvh(100)};
     width: 100%;
     overflow: hidden;
     top: 0;
     left: 0;
-    z-index: 100;
+    z-index: 50;
 `
 
 const StyledRail = styled.div`
     position: absolute;
     right: ${rm(16)};
     top: 50%;
-    transform: translateY(-50%);
+    transform: translateY(-30%);
     display: flex;
     flex-direction: column;
     gap: ${rm(8)};
@@ -392,7 +393,7 @@ const StyledNavigationContainer = styled.div`
     pointer-events: auto;
 
     ${media.xsm`
-        bottom: ${rm(30)};
+        bottom: ${rm(12)};
         padding: ${rm(6)};
         gap: ${rm(6)};
         border-radius: ${rm(2)};
