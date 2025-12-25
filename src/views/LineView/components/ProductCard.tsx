@@ -61,7 +61,7 @@ const StyledProductCard = styled.div`
 const StyledWrapper = styled.div`
     display: flex;
     flex-direction: column;
-    gap: ${rm(10)};
+    gap: ${rm(12)};
 `
 
 const StyledImageContainer = styled.div`
@@ -70,6 +70,7 @@ const StyledImageContainer = styled.div`
     height: ${rm(367.5)};
     overflow: hidden;
     border-radius: ${rm(4)};
+    background: #EAECF2;
 
     ${media.lg`
         height: ${rm(246)};    
