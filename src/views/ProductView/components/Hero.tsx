@@ -57,7 +57,6 @@ export const Hero = ({ data, colors, accentColors = [] }: HeroProps) => {
                         <div className="imageWrap">
                             <Image src={activeImageUrl} alt="Product" fill style={{ objectFit: 'contain' }} />
                         </div>
-                        <StyledBackgroundGradient />
                     </StyledImageOverlay>
                 </>
             )}
@@ -94,31 +93,22 @@ const StyledHero = styled.div`
     `}
 `
 
-const StyledBackgroundGradient = styled.div`
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    height: 80%;
-    background: linear-gradient(180deg, #F8F9FC 0%, #D0D5E3 100%);
-    z-index: 1;
-`
-
 const StyledImageOverlay = styled.div`
     position: absolute;
     inset: 0;
     z-index: 20;
     // background: rgba(0,0,0,0.32);
-    background: #F8F9FC;
+    background: #EAECF2;
     display: flex;
     align-items: center;
     justify-content: center;
 
     .imageWrap{
         position: relative;
-        width: 80%;
-        height: 80%;
-        max-width: 1200px;
-        max-height: 80vh;
+        width: 100%;
+        height: 100%;
+        // max-width: 1200px;
+        // max-height: 80vh;
         background: transparent;
         z-index: 2;
     }

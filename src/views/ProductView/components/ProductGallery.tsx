@@ -172,6 +172,7 @@ export const ProductGallery = ({ images = [], model3D, colors = [], accentColors
                 $active={isSceneActive} 
                 onClick={handleOpenScene} 
                 aria-label="3D scene"
+                is3d={true}
             >
                 <div className="badge">
                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -283,7 +284,7 @@ const StyledRail = styled.div`
     `}
 `
 
-const StyledThumbButton = styled.button<{ $active?: boolean }>`
+const StyledThumbButton = styled.button<{ $active?: boolean, is3d?: boolean }>`
     width: ${rm(80)};
     height: ${rm(80)};
     min-width: ${rm(80)};
@@ -292,8 +293,8 @@ const StyledThumbButton = styled.button<{ $active?: boolean }>`
     border-radius: ${rm(4)};
     overflow: hidden;
     position: relative;
-    border: 2px solid ${({ $active }) => ($active ? colors.blue : 'rgba(0,0,0,0.06)')};
-    background: #fff;
+    border: 2px solid ${({ $active }) => ($active ? colors.blue : 'white')};
+    background: ${({ is3d }) => is3d ? colors.white100 : '#EAECF2'};
     cursor: pointer;
     padding: 0;
 
@@ -376,7 +377,7 @@ const StyledNavigationContainer = styled.div`
         bottom: ${rm(12)};
         padding: ${rm(6)};
         gap: ${rm(6)};
-        border-radius: ${rm(2)};
+        border-radius: ${rm(4)};
     `}
 `
 
