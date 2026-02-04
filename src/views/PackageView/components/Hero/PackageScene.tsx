@@ -10,13 +10,19 @@ import { useLazyScene } from "@/hooks/useLazyScene"
 import { SceneReadyDetector } from "@/views/DistributionView/components/SceneReadyDetector"
 import { useWindowWidth } from "@react-hook/window-size"
 
-export const PackageScene = () => {
+interface PackageSceneProps {
+    packageType: 'large' | 'medium' | 'small'
+}
+export const PackageScene = ({ packageType }: PackageSceneProps) => {
     const lazyScene = useLazyScene('package', {
         threshold: 0.2,
         rootMargin: '100px'
     })
 
     const width = useWindowWidth()
+
+    const typeBasedCameraPosition: [number, number, number] = packageType === 'large' ? [0, 15, -30] : packageType === 'medium' ? [0, 10, -20] : [0, 8, -15]
+    const typeBasedCameraFov: number = packageType === 'large' ? 30 : packageType === 'medium' ? 40 : 40
 
     return (
         <StyledContainer ref={lazyScene.containerRef}>
@@ -41,7 +47,7 @@ export const PackageScene = () => {
                 >
                     <Suspense fallback={null}>
                         <SceneReadyDetector sceneType="package" />
-                        <PackageModel />
+                        <PackageModel packageType={packageType} />
                         <OrbitControls 
                             enableZoom={false} 
                             enableRotate={true}
@@ -50,7 +56,7 @@ export const PackageScene = () => {
                             maxPolarAngle={width <= 768 ? Math.PI / 2 - 0.3 : Math.PI / 2 - 0.5}
                         />
                         {/* <ambientLight intensity={5} /> */}
-                        <PerspectiveCamera makeDefault position={[0, 15, -30]} fov={36} rotation={[0, 0, 0]} />
+                        <PerspectiveCamera makeDefault position={typeBasedCameraPosition} fov={typeBasedCameraFov} rotation={[0, 0, 0]} />
                         <fog attach="fog" color='#F8F9FC' near={30} far={70} />
                         <Environment
                             files="/models/hadrMap.hdr"

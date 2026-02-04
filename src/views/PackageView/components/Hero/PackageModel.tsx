@@ -4,9 +4,13 @@ import { useWindowWidth } from "@react-hook/window-size"
 import { useRef } from "react"
 import { Group } from "three"
 
-export const PackageModel = () => {
+interface PackageModelProps {
+    packageType: 'large' | 'medium' | 'small'
+}
 
-    const { scene } = useGLTF('/models/package.glb')
+export const PackageModel = ({ packageType }: PackageModelProps) => {
+
+    const { scene } = useGLTF(`/models/packages/${packageType}.glb`)
     const groupRef = useRef<Group>(null)
 
     const width = useWindowWidth()

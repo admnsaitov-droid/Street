@@ -283,6 +283,7 @@ const StyledActions = styled.div`
     background: #FFFFFF66;
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
+    border-radius: ${rm(4)};
 
     ${media.xsm`
         bottom: ${rm(12)};
@@ -295,7 +296,7 @@ const StyledActions = styled.div`
         align-items: center;
         justify-content: center;
         background: #FFFFFF;
-        border-radius: ${rm(2)};
+        border-radius: ${rm(4)};
         cursor: pointer;
         transition: color 0.3s ease;
         position: relative;
