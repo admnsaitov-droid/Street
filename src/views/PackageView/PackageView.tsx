@@ -16,11 +16,11 @@ export const PackageView = ({ data }: PackageProps) => {
         { label: breadcrumb.text, slug: breadcrumb.link }
     ))
 
-    console.log('packageData', packageData)
+    const packageType: 'large' | 'medium' | 'small' = packageData?.slug as 'large' | 'medium' | 'small'
 
     return (
         <StyledPackage>
-            <Hero data={packageData} breadcrumbs={breadcrumbs} />
+            <Hero data={packageData} breadcrumbs={breadcrumbs} packageType={packageType} />
             <Overview data={packageData} />
         </StyledPackage>
     )

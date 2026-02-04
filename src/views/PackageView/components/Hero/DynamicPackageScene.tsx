@@ -1,7 +1,10 @@
 import dynamic from 'next/dynamic'
+import { PackageScene } from './PackageScene'
 
-const PackageScene = dynamic(() => import('./PackageScene').then(mod => ({ default: mod.PackageScene })), {
-    ssr: false
-})
+interface DynamicPackageSceneProps {
+    packageType: 'large' | 'medium' | 'small'
+}
 
-export { PackageScene as DynamicPackageScene }
+export const DynamicPackageScene = ({ packageType }: DynamicPackageSceneProps) => {
+    return <PackageScene packageType={packageType} />
+}

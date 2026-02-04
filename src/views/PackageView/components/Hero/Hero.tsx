@@ -15,13 +15,14 @@ const PackageScene = dynamic(() => import("./DynamicPackageScene").then((mod) =>
 interface HeroProps {
     data: any
     breadcrumbs: any
+    packageType: 'large' | 'medium' | 'small'
 }
 
-export const Hero = ({ data, breadcrumbs }: HeroProps) => {
+export const Hero = ({ data, breadcrumbs, packageType }: HeroProps) => {
 
     return (
         <StyledHero>
-            <PackageScene />
+            <PackageScene packageType={packageType} />
             {/* <StyledBackgroundImage src={`/packages/${data?.slug.toLowerCase()}.jpg`} alt='preview-image' fill/> */}
             <StyledContent>
                 <Breadcrumbs
