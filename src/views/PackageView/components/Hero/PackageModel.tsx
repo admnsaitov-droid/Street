@@ -10,7 +10,13 @@ interface PackageModelProps {
 
 export const PackageModel = ({ packageType }: PackageModelProps) => {
 
-    const { scene } = useGLTF(`/models/packages/${packageType}.glb`)
+    // const isLarge = packageType === 'large'
+    // const isMedium = packageType === 'medium'
+    // const isSmall = packageType === 'small'
+
+    // const modelToUse = isLarge ? 'orange' : isMedium ? 'green' : 'small'
+
+    const { scene } = useGLTF(`/models/packages/${packageType}.glb`) //packageType
     const groupRef = useRef<Group>(null)
 
     const width = useWindowWidth()
