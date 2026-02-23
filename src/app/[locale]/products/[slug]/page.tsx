@@ -35,10 +35,14 @@ export default async function ProductDetailPage({
   }) {
     const { locale, slug } = await params;
 
-    // Fetch specific package data using both slug and subParam
-    const data = await getStrapiData('get-product-data?slug=' + slug, locale)
-  
+    const [data, specResponse] = await Promise.all([
+      getStrapiData('get-product-data?slug=' + slug, locale),
+      getStrapiData('get-product-specifications', locale),
+    ]);
+
+    const specificationTexts = specResponse?.data ?? null;
+
     return (
-      <ProductView data={data} />
+      <ProductView data={data} specificationTexts={specificationTexts} />
     );
   } 

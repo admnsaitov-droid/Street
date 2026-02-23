@@ -24,11 +24,12 @@ interface VideoPlayerStore {
   isOpen: boolean;
   imageGallery: string[] | null;
   currentImageIndex: number;
+  imageFit: 'contain' | 'cover';
   setContent: (content: string | null) => void;
   setPoster: (poster: string | null) => void;
   setContentType: (type: 'image' | 'video' | null) => void;
   setIsOpen: (isOpen: boolean) => void;
-  openImage: (imageUrl: string, gallery?: string[]) => void;
+  openImage: (imageUrl: string, gallery?: string[], options?: { imageFit?: 'contain' | 'cover' }) => void;
   openVideo: (videoUrl: string, poster?: string) => void;
   closePlayer: () => void;
   nextImage: () => void;
@@ -146,11 +147,12 @@ export const useVideoPlayerStore = create<VideoPlayerStore>((set, get) => ({
     isOpen: false,
     imageGallery: null,
     currentImageIndex: 0,
+    imageFit: 'cover',
     setContent: (content: string | null) => set({ content }),
     setPoster: (poster: string | null) => set({ poster }),
     setContentType: (type: 'image' | 'video' | null) => set({ contentType: type }),
     setIsOpen: (isOpen: boolean) => set({ isOpen }),
-    openImage: (imageUrl: string, gallery?: string[]) => {
+    openImage: (imageUrl: string, gallery?: string[], options?: { imageFit?: 'contain' | 'cover' }) => {
         const imageList = gallery || [imageUrl];
         const currentIndex = imageList.findIndex(url => url === imageUrl);
         set({ 
@@ -159,7 +161,8 @@ export const useVideoPlayerStore = create<VideoPlayerStore>((set, get) => ({
             contentType: 'image',
             isOpen: true,
             imageGallery: imageList,
-            currentImageIndex: currentIndex >= 0 ? currentIndex : 0
+            currentImageIndex: currentIndex >= 0 ? currentIndex : 0,
+            imageFit: options?.imageFit ?? 'cover'
         });
     },
     openVideo: (videoUrl: string, poster?: string) => set({ 
@@ -176,7 +179,8 @@ export const useVideoPlayerStore = create<VideoPlayerStore>((set, get) => ({
         contentType: null,
         isOpen: false,
         imageGallery: null,
-        currentImageIndex: 0
+        currentImageIndex: 0,
+        imageFit: 'cover'
     }),
     nextImage: () => {
         const { imageGallery, currentImageIndex } = get();

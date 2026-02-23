@@ -1,18 +1,41 @@
+import { useMemo } from "react"
 import { StyledAnnotation, StyledSubtitle } from "@/views/PackagesView/screens/Package/Package"
 import { fontGolosText } from "@/styles/fonts"
 import { colors, media, rm } from "@/styles"
 import styled from "styled-components"
 import { Accordion } from "./Accordion"
 import { Description } from "./Description"
+import { ProductDescriptionSection } from "./ProductDescriptionSection"
 import { Specifications } from "./Specifications"
 import { Muscles } from "./Muscles"
 import { AnimatedText } from "@/components/animated/AnimatedText/AnimatedText"
 
-interface ProductOverviewProps {
+const SPEC_FIELDS: { textKey: string; valueKey: string }[] = [
+    { textKey: "widthText", valueKey: "widthValue" },
+    { textKey: "lengthText", valueKey: "lengthValue" },
+    { textKey: "heightText", valueKey: "heightValue" },
+    { textKey: "equipmentWeightText", valueKey: "equipmentWeightValue" },
+    { textKey: "minimumLoadText", valueKey: "minimumLoadValue" },
+    { textKey: "maximumLoadText", valueKey: "maximumLoadValue" },
+]
+
+export interface ProductOverviewProps {
     data: any
+    specificationTexts?: Record<string, string | null> | null
 }
 
-export const ProductOverview = ({ data }: ProductOverviewProps) => {
+export const ProductOverview = ({ data, specificationTexts }: ProductOverviewProps) => {
+    const specifications = useMemo(() => {
+        if (!data || !specificationTexts) return []
+        return SPEC_FIELDS.filter(({ valueKey }) => data[valueKey] != null).map(({ textKey, valueKey }) => ({
+            id: valueKey,
+            param: specificationTexts[textKey] ?? "",
+            value: data[valueKey],
+        }))
+    }, [data, specificationTexts])
+
+    const hasSpecifications = specifications.length > 0 && data?.productInfo?.specificationsTitle
+
     return (
         <StyledTop>
             {data?.aboutText && <StyledAnnotation tag="h2">{data?.aboutText}</StyledAnnotation>}
@@ -20,15 +43,34 @@ export const ProductOverview = ({ data }: ProductOverviewProps) => {
                 {data?.productInfo?.descriptionMain && <StyledTitle tag="h2">{data?.productInfo?.descriptionMain}</StyledTitle>}
                 <div className="bottom">
                     <div className="accordions">
-                        {data?.productInfo?.descriptionTitle && <Accordion title={data?.productInfo?.descriptionTitle}>
-                            {data?.model && data?.productInfo?.description && <Description model={data?.model} description={data?.productInfo?.description} />}
-                        </Accordion>}
-                        {data?.productInfo?.specificationsTitle && <Accordion title={data?.productInfo?.specificationsTitle}>
-                            {data?.productInfo?.specification && <Specifications specifications={data?.productInfo?.specification} />}
-                        </Accordion>}
-                        {data?.productInfo?.musclesTitle && <Accordion title={data?.productInfo?.musclesTitle}>
-                            {data?.productInfo?.muscles && <Muscles muscles={data?.productInfo?.muscles} />}
-                        </Accordion>}
+                        {data?.productInfo?.descriptionTitle && (
+                            <Accordion title={data.productInfo.descriptionTitle} iconKey="description">
+                                <StyledDescriptionContent>
+                                    {data?.model && data?.productInfo?.description && (
+                                        <Description model={data.model} description={data.productInfo.description} />
+                                    )}
+                                    {data?.productInfo?.productDescriptionSection?.length > 0 && (
+                                        <ProductDescriptionSection items={data.productInfo.productDescriptionSection} />
+                                    )}
+                                </StyledDescriptionContent>
+                            </Accordion>
+                        )}
+                        {hasSpecifications && (
+                            <Accordion title={data.productInfo.specificationsTitle} iconKey="specifications">
+                                <Specifications specifications={specifications} />
+                            </Accordion>
+                        )}
+                        {data?.productInfo?.musclesTitle && (
+                            <Accordion title={data?.productInfo?.musclesTitle} iconKey="muscles">
+                            {data?.productInfo?.muscles && (
+                                <Muscles
+                                    muscles={data.productInfo.muscles}
+                                    data={data}
+                                    specificationTexts={specificationTexts}
+                                />
+                            )}
+                            </Accordion>
+                        )}
                     </div>
                 </div>
             </div>
@@ -87,6 +129,12 @@ const StyledTop = styled.div`
             }
         }
     }
+`
+
+const StyledDescriptionContent = styled.div`
+    display: flex;
+    flex-direction: column;
+    gap: ${rm(24)};
 `
 
 const StyledTitle = styled(AnimatedText)`
