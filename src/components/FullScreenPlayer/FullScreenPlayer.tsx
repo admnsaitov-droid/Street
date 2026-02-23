@@ -10,7 +10,7 @@ import { rm, media } from '@/styles';
 import { fontSageGrotesk } from '@/styles/fonts';
 
 export const FullScreenPlayer: React.FC = () => {
-    const { content, poster, contentType, isOpen, closePlayer, imageGallery, currentImageIndex, nextImage, previousImage } = useVideoPlayerStore();
+    const { content, poster, contentType, isOpen, closePlayer, imageGallery, currentImageIndex, nextImage, previousImage, imageFit } = useVideoPlayerStore();
     const videoRef = useRef<HTMLVideoElement>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [isPlaying, setIsPlaying] = useState(false);
@@ -245,6 +245,7 @@ export const FullScreenPlayer: React.FC = () => {
 
                     {contentType === 'image' && content && (
                         <StyledImage
+                            $imageFit={imageFit}
                             src={content}
                             onLoad={handleImageLoad}
                             alt="Full screen image"
@@ -432,10 +433,17 @@ const StyledVideo = styled.video`
     cursor: pointer;
 `;
 
-const StyledImage = styled.img`
+const StyledImage = styled.img<{ $imageFit: 'contain' | 'cover' }>`
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: ${({ $imageFit }) => $imageFit};
+
+    ${({ $imageFit }) => $imageFit === 'contain' && `
+        max-width: 100%;
+        max-height: 100%;
+        width: auto;
+        height: auto;
+    `}
 `;
 
 const StyledLoader = styled.div`

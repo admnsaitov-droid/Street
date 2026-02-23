@@ -14,6 +14,7 @@ import { useColorStore } from "@/store/store"
 
 interface ProductViewProps {
     data: any
+    specificationTexts?: Record<string, string | null> | null
 }
 
 // Helper function to convert hex to rgb
@@ -29,7 +30,7 @@ const hexToRgb = (hex: string): string => {
     return `rgb(${r}, ${g}, ${b})`
 }
 
-export const ProductView = ({ data }: ProductViewProps) => {
+export const ProductView = ({ data, specificationTexts }: ProductViewProps) => {
     console.log('data', data)
     const { materialMainColor, materialAccentColor, setMaterialMainColor, setMaterialAccentColor } = useColorStore()
 
@@ -158,7 +159,7 @@ export const ProductView = ({ data }: ProductViewProps) => {
             <Hero data={data?.product} colors={mainColors} accentColors={accentColors} />
             {width <= 768 ? <ColorPaletre mainColors={mainColors} accentColors={accentColors} /> : null}
             <StyledWrapper>
-                <ProductOverview data={data?.product} />
+                <ProductOverview data={data?.product} specificationTexts={specificationTexts} />
             </StyledWrapper>
             {data?.product?.swiperMedias?.length > 0 && data?.product?.referencesTitle ? <SwiperBlock images={data?.product?.swiperMedias} title={data?.product?.referencesTitle} /> : null}
         </StyledProductView>

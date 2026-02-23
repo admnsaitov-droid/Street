@@ -4,13 +4,15 @@ import { fontGolosText } from "@/styles/fonts"
 import { animated, useSpring } from "@react-spring/web"
 import { useEffect, useId, useRef, useState } from "react"
 import styled from "styled-components"
+import { Icon, type SectionIconLabel } from "./Icon"
 
 interface AccordionProps {
-    title: string,
+    title: string
     children: React.ReactNode
+    iconKey?: SectionIconLabel
 }
 
-export const Accordion = ({ title, children }: AccordionProps) => {
+export const Accordion = ({ title, children, iconKey }: AccordionProps) => {
 
     const [isOpen, setIsOpen] = useState(true)
     const contentId = useId()
@@ -63,7 +65,10 @@ export const Accordion = ({ title, children }: AccordionProps) => {
                 aria-controls={contentId}
                 className="motion-button"
             >
-                <StyledTitle as="h3">{title}</StyledTitle>
+                <StyledTitleRow>
+                    {iconKey && <StyledIconWrapper>{Icon({ label: iconKey })}</StyledIconWrapper>}
+                    <StyledTitle as="h3">{title}</StyledTitle>
+                </StyledTitleRow>
                 <animated.svg style={rotateSpring} width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M18.12 16.88L12 10.7733L5.88 16.88L4 15L12 7L20 15L18.12 16.88Z" fill="#0040DD"/>
                 </animated.svg>
@@ -80,6 +85,24 @@ export const Accordion = ({ title, children }: AccordionProps) => {
         </StyledAccordion>
     )
 }
+
+const StyledTitleRow = styled.div`
+    display: flex;
+    align-items: center;
+    gap: ${rm(12)};
+`
+
+const StyledIconWrapper = styled.span`
+    display: flex;
+    flex-shrink: 0;
+    width: ${rm(24)};
+    height: ${rm(24)};
+
+    svg {
+        width: 100%;
+        height: 100%;
+    }
+`
 
 const StyledTitle = styled.p`
     font-size: ${rm(22)};

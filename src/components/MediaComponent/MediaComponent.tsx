@@ -14,9 +14,10 @@ interface MediaComponentProps {
     isExtendable?: boolean;
     parallax?: boolean;
     imageGallery?: string[];
+    imageFit?: 'contain' | 'cover';
 }
 
-export const MediaComponent = ({ media, className, isExtendable = true, parallax = true, imageGallery }: MediaComponentProps) => {
+export const MediaComponent = ({ media, className, isExtendable = true, parallax = true, imageGallery, imageFit = 'cover' }: MediaComponentProps) => {
     const { openVideo, openImage } = useVideoPlayerStore();
     const elementRef = useRef<HTMLDivElement>(null);
 
@@ -40,9 +41,10 @@ export const MediaComponent = ({ media, className, isExtendable = true, parallax
     };
     const handleOpenImage = () => {
         if (isExtendable) {
-            openImage(getMediaStrapiPath(poster), imageGallery);
+            openImage(getMediaStrapiPath(poster), imageGallery, { imageFit });
         }
     };
+
 
     return (
         <StyledMediaComponent ref={elementRef} className={className} $isExtendable={isExtendable} $parallax={parallax}>
