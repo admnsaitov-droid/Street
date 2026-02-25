@@ -71,6 +71,7 @@ const StyledImageContainer = styled.div`
 
     ${media.xsm`
         height: ${rm(280)};
+        width: 100%;
     `}
 
     .image{
