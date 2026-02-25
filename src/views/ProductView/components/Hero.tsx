@@ -90,6 +90,7 @@ const StyledHero = styled.div`
 
     ${media.xsm`
         overflow: hidden;
+        height: 100dvh !important;
     `}
 `
 
