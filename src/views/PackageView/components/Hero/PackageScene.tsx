@@ -15,6 +15,7 @@ import { fontGolosText } from "@/styles/fonts"
 
 interface PackageSceneProps {
     packageType: 'large' | 'medium' | 'small'
+    packageModelPath: string
 }
 
 interface CameraLerpProps {
@@ -84,7 +85,7 @@ const CameraLerp = ({ controlsRef, cameraRef, desiredDistanceRef, desiredTargetR
     return null
 }
 
-export const PackageScene = ({ packageType }: PackageSceneProps) => {
+export const PackageScene = ({ packageType, packageModelPath }: PackageSceneProps) => {
     const lazyScene = useLazyScene('package', {
         threshold: 0.2,
         rootMargin: '100px'
@@ -182,7 +183,7 @@ export const PackageScene = ({ packageType }: PackageSceneProps) => {
                 >
                     <Suspense fallback={null}>
                         <SceneReadyDetector sceneType="package" />
-                        <PackageModel packageType={packageType} />
+                        <PackageModel packageType={packageType} modelPath={packageModelPath} />
                         <OrbitControls 
                             ref={controlsRef}
                             enableZoom={width <= 768}
@@ -196,7 +197,7 @@ export const PackageScene = ({ packageType }: PackageSceneProps) => {
                             maxDistance={PACKAGE_MAX_DISTANCE}
                             target={[0, 0, 0]}
                             minPolarAngle={Math.PI / 2 - 2}
-                            maxPolarAngle={Math.PI / 2 - 0}
+                            maxPolarAngle={Math.PI / 2 - 0.1}
                         />
                         <PerspectiveCamera 
                             ref={cameraRef}

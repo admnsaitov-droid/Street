@@ -22,7 +22,7 @@ export const Hero = ({ data, breadcrumbs, packageType }: HeroProps) => {
 
     return (
         <StyledHero>
-            <PackageScene packageType={packageType} />
+            <PackageScene packageType={packageType} packageModelPath={data?.packageModel} />
             {/* <StyledBackgroundImage src={`/packages/${data?.slug.toLowerCase()}.jpg`} alt='preview-image' fill/> */}
             <StyledContent>
                 <Breadcrumbs
