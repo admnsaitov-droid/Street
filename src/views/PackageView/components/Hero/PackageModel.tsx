@@ -10,7 +10,7 @@ interface PackageModelProps {
     modelPath: string
 }
 
-const LOGO_MATERIAL_NAME = "logo.001"
+const LOGO_MATERIAL_NAMES = ["logo", "logo.001", "logo.002"]
 
 export const PackageModel = ({ packageType, modelPath }: PackageModelProps) => {
     const { scene } = useGLTF(getMediaStrapiPath(modelPath)) as any
@@ -28,7 +28,7 @@ export const PackageModel = ({ packageType, modelPath }: PackageModelProps) => {
             const materials = Array.isArray(mat) ? mat : [mat]
             let changed = false
             const newMaterials = materials.map((m: any) => {
-                if (m.name !== LOGO_MATERIAL_NAME) return m
+                if (!LOGO_MATERIAL_NAMES.includes(m.name)) return m
                 if (!(m instanceof THREE.MeshStandardMaterial)) return m
 
                 const basic = new THREE.MeshBasicMaterial({
