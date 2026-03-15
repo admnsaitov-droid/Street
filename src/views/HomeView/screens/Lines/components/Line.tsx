@@ -206,6 +206,7 @@ const StyledTitle = styled.p`
     ${fontGolosText(400)};
     color: #B7BCCA;
     letter-spacing: -0.06em;
+    text-transform: uppercase;
     width: ${rm(410)};
     margin-left: ${rm(528)};
     margin-right: ${rm(30)};

@@ -83,12 +83,37 @@ const StyledPackageMenuMobile = styled.div`
     left: 0;
     width: 100%;
     height: 100%;
+    max-height: calc(100vh - ${rm(60)});
+    display: flex;
+    flex-direction: column;
 `;
 
 const StyledPackages = styled.div`
     display: flex;
     flex-direction: column;
     gap: ${rm(20)};
+    /* Fixed max-height so list scrolls regardless of parent layout */
+    max-height: min(${rm(250)}, calc(100vh - ${rm(220)}));
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    /* Allow touch scroll when document has overflow:hidden (menu open) */
+    touch-action: pan-y;
+    overscroll-behavior-y: contain;
+    position: relative;
+    padding-right: ${rm(8)};
+
+    &::-webkit-scrollbar {
+        width: ${rm(6)};
+    }
+    &::-webkit-scrollbar-track {
+        background: ${colors.bgGray};
+        border-radius: ${rm(3)};
+    }
+    &::-webkit-scrollbar-thumb {
+        background: ${colors.gray700};
+        border-radius: ${rm(3)};
+    }
 `;
 
 const StyledPackage = styled(AnimLink)`
@@ -114,6 +139,9 @@ const StyledPackageMenuMobileWrapper = styled(animated.div)`
     position: relative;
     width: 100%;
     height: 100%;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
     border-radius: ${rm(10)};
     background-color: ${colors.white100};
     overflow: hidden;
@@ -122,7 +150,10 @@ const StyledPackageMenuMobileWrapper = styled(animated.div)`
 const StyledPackageMenuMobileContent = styled.div`
     padding: ${rm(50)};
     width: 100%;
-    height: 100%;
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
 
     ${media.xsm`
         padding: ${rm(32)} ${rm(16)};

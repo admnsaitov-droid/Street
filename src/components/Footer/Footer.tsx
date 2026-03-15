@@ -361,11 +361,11 @@ const StyledBottomContainer = styled.div`
         left: 0;
         height: ${rm(2)};
         background: radial-gradient(
-            circle at ${rm(1)} ${rm(1)},
+            circle at ${rm(0.5)} ${rm(0.5)},
             ${colors.gray} ${rm(1)},
             transparent ${rm(1)}
         );
-        background-size: ${rm(16)} ${rm(8)};
+        background-size: ${rm(6)} ${rm(4)};
         border: none;
     }
 
@@ -437,6 +437,7 @@ const StyledBottomContainer = styled.div`
     .third{
         width: 40%;
         color: #6F7685;
+        text-align: right;
         font-size: ${rm(16)};
         ${fontGolosText(400)};
         line-height: 130%;

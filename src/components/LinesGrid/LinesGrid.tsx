@@ -14,8 +14,8 @@ export const LinesGrid = ({ linesData, machinesText, exploreText, isHome }: Line
     return (
         <StyledLinesGrid>
             <StyledContent>
-                {linesData?.map((line: any) => (
-                    <LineCard key={line?.id} lineData={line} machinesText={machinesText} exploreText={exploreText} />
+                {linesData?.map((line: any, index: number) => (
+                    <LineCard key={line?.id} lineData={line} machinesText={machinesText} exploreText={exploreText} isSquare={index >= 2} />
                 ))}
             </StyledContent>
             {isHome && (
@@ -38,18 +38,16 @@ const StyledContent = styled.div`
     grid-template-columns: repeat(6, 1fr);
     gap: ${rm(20)};
     width: 100%;
+    container-type: inline-size;
+    /* Row height = one cell width in 3-col layout (use cqw so it's width-based, not height %) */
+    --row-height: calc((100cqw - 2 * ${rm(20)}) / 3);
+    grid-auto-rows: var(--row-height);
 
-    /* First row: 2 items, each spanning 3 columns */
-    & > :nth-child(1) {
-        grid-column: span 3;
-
-        ${media.md`
-            grid-column: auto;
-        `}
-    }
-
+    /* First row: 2 items, each spanning 3 columns, same row height as others */
+    & > :nth-child(1),
     & > :nth-child(2) {
         grid-column: span 3;
+        height: 100%;
 
         ${media.md`
             grid-column: auto;
@@ -67,9 +65,11 @@ const StyledContent = styled.div`
 
     ${media.md`
         grid-template-columns: 1fr 1fr;
+        --row-height: calc((100cqw - ${rm(20)}) / 2);
     `}
 
     ${media.xsm`
         grid-template-columns: 1fr;
+        grid-auto-rows: auto;
     `}
 `
