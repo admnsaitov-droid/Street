@@ -334,6 +334,7 @@ const StyledProduct = styled(AnimLink)`
         height: ${rm(407)};
         overflow: hidden;
         border-radius: ${rm(10)};
+        background-color: #EAECF2;
     }
 
     img{

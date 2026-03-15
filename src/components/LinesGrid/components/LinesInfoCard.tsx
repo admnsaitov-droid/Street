@@ -70,6 +70,7 @@ const StyledContent = styled.div<{ $isHovered: boolean }>`
         ${fontGolosText(500)};
         line-height: 100%;
         color: black;
+        text-transform: uppercase;
 
         transition: color 0.3s ease-in-out;
 

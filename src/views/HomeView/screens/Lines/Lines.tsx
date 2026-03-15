@@ -287,7 +287,7 @@ const StyledLineName = styled.p`
     font-size: ${rm(30)};
     line-height: 110%;
     ${fontGolosText(400)};
-    text-transform: none;
+    text-transform: uppercase;
     color: ${colors.black100};
     margin-top: ${rm(20)};
 

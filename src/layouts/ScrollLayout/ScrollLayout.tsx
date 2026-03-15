@@ -91,18 +91,24 @@ function ScrollController() {
   return null; // This component doesn't render anything visible
 }
 
+let savedScrollY = 0;
+
 const enableNativeScroll = (value: boolean) => {
   if (typeof document === "undefined") return;
-  if (!document) return;
-  const html = document.querySelector("html");
-  if (!html) return;
+  const body = document?.body;
+  if (!body) return;
   if (!value) {
-    html.style.position = "relative";
-    html.style.overflow = "hidden";
-    html.style.height = "100%";
+    savedScrollY = window.scrollY;
+    body.style.position = "fixed";
+    body.style.top = `-${savedScrollY}px`;
+    body.style.left = "0";
+    body.style.right = "0";
+    /* Don't set overflow:hidden - it blocks touch scroll in nested overflow:auto (e.g. menu product list) */
   } else {
-    html.style.removeProperty("position");
-    html.style.removeProperty("overflow");
-    html.style.removeProperty("height");
+    body.style.removeProperty("position");
+    body.style.removeProperty("top");
+    body.style.removeProperty("left");
+    body.style.removeProperty("right");
+    window.scrollTo(0, savedScrollY);
   }
 };

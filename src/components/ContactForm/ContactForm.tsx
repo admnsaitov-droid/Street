@@ -357,6 +357,9 @@ const StyledTitleContainer = styled.div`
     letter-spacing: -0.01em;
     font-size: ${rm(48)};
     text-transform: uppercase;
+    display: flex;
+    gap: ${rm(12)};
+    flex-wrap: wrap;
 
     ${media.lg`
         font-size: ${rm(40)};
@@ -494,7 +497,7 @@ export const StyledBottom = styled.div`
             line-height: 130%;
             display: flex;
             flex-wrap: wrap;
-            width: ${rm(400)};
+            width: ${rm(600)};
 
             ${media.lg`
                 width: ${rm(360)};    
