@@ -43,11 +43,12 @@ const StyledContent = styled.div<{ $isHovered: boolean }>`
     justify-content: space-between;
     align-items: center;
     padding: ${rm(16)};
-    background-color: #FFFFFFE5;
+    background-color: rgba(255, 255, 255, 0.7);
     border: 1px solid #B7BCCA33;
     border-radius: ${rm(6)};
     box-shadow: 0px 4px 30px 0px #0000000D;
-    backdrop-filter: blur(32px);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
 
     svg{
         width: ${rm(48)};

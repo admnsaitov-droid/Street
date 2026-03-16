@@ -81,7 +81,7 @@ export const Product = ({ product, index, onMouseEnter, onMouseLeave }: ProductP
                         {product?.previewDescription}
                     </p>
                 }
-                {width <= 768 && <StyledExploreButton style={exploreSpring}>
+                {width <= 768 && <StyledExploreButton>
                     <UnderlineLink href={`/products/${product.slug}`} lineColor="#0040DD" text="Explore"></UnderlineLink>
                 </StyledExploreButton>}
             </StyledDescriptionContainer>
@@ -222,7 +222,7 @@ const StyledProductName = styled.p`
     font-size: ${rm(24)};
     line-height: 100%;
     ${fontGolosText(400)};
-    color: ${colors.black100};
+    color: ${colors.blue};
     text-transform: uppercase;
     width: ${rm(407)};
     transition: color 0.3s ease-in-out;
