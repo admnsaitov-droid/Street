@@ -55,6 +55,11 @@ const StyledBenefits = styled.div`
         flex-direction: column;
     `}
 
+    ${media.xsm`
+        border-radius: ${rm(10)};
+        overflow: hidden;
+    `}
+
     .left{
         width: 50%;
         height: auto;
@@ -70,6 +75,7 @@ const StyledBenefits = styled.div`
 
         ${media.xsm`
             height: ${rm(370)};
+            border-bottom-left-radius: ${rm(10)};
         `}
 
         .image-container{
