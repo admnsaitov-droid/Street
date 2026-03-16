@@ -190,6 +190,11 @@ const StyledLineInfo = styled.div`
             border-radius: ${rm(8)};
             overflow: hidden;
 
+            ${media.xsm`
+                height: ${rm(185)};
+                width: 100%;
+            `}
+
             img{
                 width: 100%;
                 height: 100%;

@@ -151,7 +151,7 @@ export const ProductsMenu = ({ previewText, allText }: { previewText: string, al
                     setIsMegaMenuOpen(false);
                 }}
             >
-                <StyledMenuContainer style={menuAnimation}>
+                <StyledMenuContainer style={menuAnimation} data-lenis-prevent>
                     <StyledLayout ref={contentRef}>
                         <StyledLeft>
                             <StyledPackages>
@@ -223,7 +223,12 @@ const StyledMenuContainer = styled(animated.div)`
     height: 100%;
     position: relative;
     border-radius: ${rm(10)};
-    overflow: hidden;
+    /* Allow vertical scrolling inside the menu (especially on mobile) */
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
+    overscroll-behavior-y: contain;
 `
 
 const StyledLayout = styled.div`
