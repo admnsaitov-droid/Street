@@ -209,19 +209,19 @@ const StyledProductsTitleContainer = styled.div`
 `
 
 const StyledProductsGrid = styled.div`
-    display: flex;
-    row-gap: ${rm(20)};
-    column-gap: ${rm(10)};
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    align-items: start;
+    gap: ${rm(20)};
     margin-top: ${rm(50)};
 
     ${media.md`
-        column-gap: ${rm(9.4)};
-        row-gap: ${rm(20)};
+        grid-template-columns: repeat(3, 1fr);
+        gap: ${rm(16)};
     `}
 
     ${media.xsm`
-        column-gap: ${rm(0)};
-        row-gap: ${rm(30)};
+        grid-template-columns: repeat(2, 1fr);
+        gap: ${rm(16)};
     `}
 `

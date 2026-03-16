@@ -232,6 +232,8 @@ export const StyledSubtitle = styled(AnimatedText)`
     ${fontGolosText(400)};
     line-height: 130%;
     width: 100%;
+    min-height: ${rm(50)};
+    height: fit-content;
 
     ${media.lg`
         font-size: ${rm(16)};

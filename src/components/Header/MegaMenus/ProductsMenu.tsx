@@ -329,6 +329,7 @@ const StyledProduct = styled(AnimLink)`
     display: flex;
     flex-direction: column;
     width: 50%;
+    height: 100%;
 
     &:hover{
         img{
@@ -356,7 +357,8 @@ const StyledProduct = styled(AnimLink)`
 
     .imageContainer{
         width: 100%;
-        height: ${rm(407)};
+        // height: ${rm(407)};
+        height: 100%;
         overflow: hidden;
         border-radius: ${rm(10)};
         background-color: #EAECF2;

@@ -10,15 +10,14 @@ interface LineCardProps {
     lineData: any;
     machinesText: string;
     exploreText: string;
-    isSquare?: boolean;
 }
 
-export const LineCard = ({ lineData, machinesText, exploreText, isSquare = false }: LineCardProps) => {
+export const LineCard = ({ lineData, machinesText, exploreText }: LineCardProps) => {
 
     const [isHovered, setIsHovered] = useState(false);
     
     return (
-        <StyledLineCard $isSquare={isSquare} onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
+        <StyledLineCard onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
             <StyledHiddenLink href={`/lines/${lineData?.linii?.slug}`} aria-label={`View ${lineData?.linii?.name} line details`}></StyledHiddenLink>
             <StyledImageWrapper className="image-wrapper">
                 <Image src={getMediaStrapiPath(lineData?.linePreviewImage)} alt={lineData?.name} fill/>
@@ -28,28 +27,17 @@ export const LineCard = ({ lineData, machinesText, exploreText, isSquare = false
     )
 }
 
-const StyledLineCard = styled.div<{ $isSquare?: boolean }>`
+const StyledLineCard = styled.div`
     display: flex;
     position: relative;
     overflow: hidden;
     border-radius: ${rm(10)};
     cursor: pointer;
+    aspect-ratio: 1;
+    width: 100%;
 
-    ${({ $isSquare }) =>
-        $isSquare
-            ? `
-        aspect-ratio: 1;
-        width: 100%;
-        height: auto;
-    `
-            : `
-        height: ${rm(452)};
-    `}
-
-    /* Mobile: all cards same rectangular size */
     ${media.xsm`
         aspect-ratio: auto;
-        width: 100%;
         height: ${rm(282)};
     `}
 

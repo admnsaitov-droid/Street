@@ -27,21 +27,9 @@ export const ProductCard = ({ data }: ProductCardProps) => {
 }
 
 const StyledProductCard = styled.div`
-    width: 24.54%;
+    width: 100%;
     cursor: pointer;
     position: relative;
-
-    ${media.lg`
-        width: ${rm(327.5)};
-    `}
-
-    ${media.md`
-        width: ${rm(233)};
-    `}
-
-    ${media.xsm`
-        width: 100%;
-    `}
 
     &:hover{
         .title{
@@ -67,22 +55,10 @@ const StyledWrapper = styled.div`
 const StyledImageContainer = styled.div`
     position: relative;
     width: 100%;
-    height: ${rm(367.5)};
+    aspect-ratio: 1;
     overflow: hidden;
     border-radius: ${rm(4)};
     background: #EAECF2;
-
-    ${media.lg`
-        height: ${rm(246)};    
-    `}
-
-    ${media.md`
-        height: ${rm(175)};    
-    `}
-
-    ${media.xsm`
-        height: ${rm(246)};    
-    `}
 
     img {
         object-fit: cover;
