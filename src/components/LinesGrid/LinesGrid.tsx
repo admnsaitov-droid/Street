@@ -38,16 +38,11 @@ const StyledContent = styled.div`
     grid-template-columns: repeat(6, 1fr);
     gap: ${rm(20)};
     width: 100%;
-    container-type: inline-size;
-    /* Row height = one cell width in 3-col layout (use cqw so it's width-based, not height %) */
-    --row-height: calc((100cqw - 2 * ${rm(20)}) / 3);
-    grid-auto-rows: var(--row-height);
 
-    /* First row: 2 items, each spanning 3 columns, same row height as others */
+    /* First row: 2 items, each spanning 3 columns */
     & > :nth-child(1),
     & > :nth-child(2) {
         grid-column: span 3;
-        height: 100%;
 
         ${media.md`
             grid-column: auto;
@@ -65,11 +60,12 @@ const StyledContent = styled.div`
 
     ${media.md`
         grid-template-columns: 1fr 1fr;
-        --row-height: calc((100cqw - ${rm(20)}) / 2);
     `}
 
+    /* Mobile: simple vertical list */
     ${media.xsm`
-        grid-template-columns: 1fr;
-        grid-auto-rows: auto;
+        display: flex;
+        flex-direction: column;
+        gap: ${rm(20)};
     `}
 `
