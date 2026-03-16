@@ -43,11 +43,14 @@ const StyledLineCard = styled.div<{ $isSquare?: boolean }>`
         height: auto;
     `
             : `
-        height: 100%;
-        min-height: ${rm(452)};
-        ${media.xsm`
-            min-height: ${rm(282)};
-        `}
+        height: ${rm(452)};
+    `}
+
+    /* Mobile: all cards same rectangular size */
+    ${media.xsm`
+        aspect-ratio: auto;
+        width: 100%;
+        height: ${rm(282)};
     `}
 
     &:hover{
