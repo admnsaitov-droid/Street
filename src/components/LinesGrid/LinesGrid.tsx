@@ -15,7 +15,7 @@ export const LinesGrid = ({ linesData, machinesText, exploreText, isHome }: Line
         <StyledLinesGrid>
             <StyledContent>
                 {linesData?.map((line: any, index: number) => (
-                    <LineCard key={line?.id} lineData={line} machinesText={machinesText} exploreText={exploreText} isSquare={index >= 2} />
+                    <LineCard key={line?.id} lineData={line} machinesText={machinesText} exploreText={exploreText} />
                 ))}
             </StyledContent>
             {isHome && (
@@ -43,9 +43,11 @@ const StyledContent = styled.div`
     & > :nth-child(1),
     & > :nth-child(2) {
         grid-column: span 3;
+        aspect-ratio: 3 / 2;
 
         ${media.md`
             grid-column: auto;
+            aspect-ratio: 1;
         `}
     }
 
