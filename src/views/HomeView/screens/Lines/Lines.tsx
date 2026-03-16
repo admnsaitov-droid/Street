@@ -99,8 +99,12 @@ const StyledLines = styled.div<{ isTop: boolean }>`
   position: relative;
 
   ${({ isTop }) => !isTop && `
-    padding: 0;
-    margin-top: ${rm(80)};
+    padding: 0 !important;
+    margin-top: ${rm(80)} !important;
+
+    ${media.xsm`
+        margin-top: ${rm(0)} !important;
+    `}
   `}
 
   ${media.md`

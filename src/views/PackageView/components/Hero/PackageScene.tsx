@@ -218,9 +218,9 @@ export const PackageScene = ({ packageType, packageModelPath }: PackageSceneProp
                             files="/models/hadrMap.hdr"
                             environmentIntensity={1}
                         />
-                        <group position={width <= 768 ? [0, -3, 0] : [0, 0, 0]}>
+                        {/* <group position={width <= 768 ? [0, -3, 0] : [0, 0, 0]}>
                             <Tracker position={[0.5, 1.5, -0.8]} label="Package" />
-                        </group>
+                        </group> */}
                     </Suspense>
                 </StyledPackageScene>
             )}

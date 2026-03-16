@@ -70,7 +70,7 @@ export const Overview = ({ data }: OverviewProps) => {
 
             {Array.isArray(linesData) && linesData.length > 0 && (
                 <StyledExplore>
-                    {data?.exploreTitle && <StyledExploreHeaderContainer>
+                    {<StyledExploreHeaderContainer>
                         <h3>
                             <AnimatedGrid
                                 tag="span"
@@ -105,7 +105,7 @@ export const Overview = ({ data }: OverviewProps) => {
                                     }
                                 }}
                             >
-                                <span id="title-first" className="first">Explore</span>
+                                <span id="title-first" className="first" style={{marginRight: '0.25em'}}>Explore</span>
                                 <span id="title-second">the line</span>
                         </AnimatedGrid>
                     </h3>
