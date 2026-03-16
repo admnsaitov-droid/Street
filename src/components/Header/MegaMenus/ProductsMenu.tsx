@@ -151,7 +151,12 @@ export const ProductsMenu = ({ previewText, allText }: { previewText: string, al
                     setIsMegaMenuOpen(false);
                 }}
             >
-                <StyledMenuContainer style={menuAnimation} data-lenis-prevent>
+                <StyledMenuContainer
+                    style={menuAnimation}
+                    data-lenis-prevent
+                    data-lenis-prevent-wheel
+                    data-lenis-prevent-touch
+                >
                     <StyledLayout ref={contentRef}>
                         <StyledLeft>
                             <StyledPackages>
@@ -215,6 +220,15 @@ const StyledMenu = styled.div`
     height: 100%;
     top: calc(100% - ${rm(20)});
     padding-top: ${rm(30)};
+
+    ${media.md`
+        /* On tablets/phones let the menu be part of the page flow so the whole page can scroll */
+        position: static;
+        top: auto;
+        left: auto;
+        height: auto;
+        padding-top: ${rm(10)};
+    `}
 `
 
 const StyledMenuContainer = styled(animated.div)`
@@ -229,6 +243,12 @@ const StyledMenuContainer = styled(animated.div)`
     -webkit-overflow-scrolling: touch;
     touch-action: pan-y;
     overscroll-behavior-y: contain;
+
+    ${media.md`
+        /* When menu is in normal flow, size by content but cap to viewport */
+        height: auto;
+        max-height: 100vh;
+    `}
 `
 
 const StyledLayout = styled.div`

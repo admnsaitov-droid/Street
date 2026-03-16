@@ -21,7 +21,7 @@ export const LineCard = ({ lineData, machinesText, exploreText, isSquare = false
         <StyledLineCard $isSquare={isSquare} onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
             <StyledHiddenLink href={`/lines/${lineData?.linii?.slug}`} aria-label={`View ${lineData?.linii?.name} line details`}></StyledHiddenLink>
             <StyledImageWrapper className="image-wrapper">
-                <Image src={getMediaStrapiPath(lineData?.linePreviewImage)} alt={lineData?.name} width={440} height={282} />
+                <Image src={getMediaStrapiPath(lineData?.linePreviewImage)} alt={lineData?.name} fill/>
             </StyledImageWrapper>
             <LinesInfoCard count={lineData?.productsQuantity} name={lineData?.linii?.name} machinesText={machinesText} exploreText={exploreText} isHovered={isHovered} />
         </StyledLineCard>
