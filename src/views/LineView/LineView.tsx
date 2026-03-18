@@ -26,10 +26,10 @@ export const LineView = ({ data }: LineViewProps) => {
     return (
         <StyledLineView>
             <Breadcrumbs
-                items={[
+                items={breadcrumbs ? [
                     ...breadcrumbs,
                     { label: data?.line?.lineContent?.title || "", href: undefined },
-                ]}
+                ] : []}
             />
             <StyledHero>
                 <StyledTop>
