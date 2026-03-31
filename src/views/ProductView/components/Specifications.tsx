@@ -22,24 +22,20 @@ export const Specifications = ({ specifications }: SpecificationsProps) => {
 
 const StyledSpecifications = styled.div`
     width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: ${rm(15)};
+    display: grid;
+    grid-template-columns: max-content minmax(0, 1fr);
+    column-gap: ${rm(36)};
+    row-gap: ${rm(15)};
     padding-bottom: ${rm(10)};
 
     ${media.xsm`
-        gap: ${rm(20)};
+        column-gap: ${rm(20)};
+        row-gap: ${rm(15)};
     `}
 `
 
 const StyledSpecification = styled.div`
-    display: flex;
-    gap: ${rm(10)};
-    align-items: center;
-
-    ${media.md`
-        align-items: flex-start;
-    `}
+    display: contents;
 `
 
 const StyledValue = styled(AnimatedText)`
@@ -47,18 +43,20 @@ const StyledValue = styled(AnimatedText)`
     ${fontGolosText(400)};
     line-height: 130%;
     color: ${colors.black100};
+    min-width: 0;
+    overflow-wrap: normal;
+    align-self: center;
 
     ${media.lg`
         font-size: ${rm(16)};
     `}
 
     ${media.md`
-        width: ${rm(305)};
+        align-self: flex-start;
     `}
 
     ${media.xsm`
         font-size: ${rm(14)};
-        width: ${rm(189)};
     `}
 `
 
@@ -68,18 +66,18 @@ const StyledParam = styled(AnimatedText)`
     line-height: 110%;
     color: ${colors.gray};
     text-transform: uppercase;
-    width: 25%;
+    white-space: nowrap;
+    align-self: center;
 
     ${media.lg`
         font-size: ${rm(16)};
     `}
 
     ${media.md`
-        width: ${rm(160)};
+        align-self: flex-start;
     `}
 
     ${media.xsm`
         font-size: ${rm(14)};
-        width: ${rm(124)};
     `}
 `

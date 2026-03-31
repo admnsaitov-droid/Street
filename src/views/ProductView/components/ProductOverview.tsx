@@ -25,6 +25,8 @@ export interface ProductOverviewProps {
 }
 
 export const ProductOverview = ({ data, specificationTexts }: ProductOverviewProps) => {
+    const aboutText = data?.aboutText || "About"
+
     const specifications = useMemo(() => {
         if (!data || !specificationTexts) return []
         return SPEC_FIELDS.filter(({ valueKey }) => data[valueKey] != null).map(({ textKey, valueKey }) => ({
@@ -38,7 +40,7 @@ export const ProductOverview = ({ data, specificationTexts }: ProductOverviewPro
 
     return (
         <StyledTop>
-            {data?.aboutText && <StyledAnnotation tag="h2">{data?.aboutText}</StyledAnnotation>}
+            <StyledAnnotation tag="h2">{aboutText}</StyledAnnotation>
             <div className="right">
                 {data?.productInfo?.descriptionMain && <StyledTitle tag="h2">{data?.productInfo?.descriptionMain}</StyledTitle>}
                 <div className="bottom">

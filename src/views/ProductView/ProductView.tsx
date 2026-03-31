@@ -150,6 +150,8 @@ export const ProductView = ({ data, specificationTexts }: ProductViewProps) => {
     })
 
     const width = useWindowWidth()
+    const hasSwiperMedias = Array.isArray(data?.product?.swiperMedias) && data.product.swiperMedias.length > 0
+    const swiperTitle = data?.product?.referencesTitle || { textFirst: "References"}
 
     console.log('product data' ,data)
 
@@ -161,7 +163,7 @@ export const ProductView = ({ data, specificationTexts }: ProductViewProps) => {
             <StyledWrapper>
                 <ProductOverview data={data?.product} specificationTexts={specificationTexts} />
             </StyledWrapper>
-            {data?.product?.swiperMedias?.length > 0 && data?.product?.referencesTitle ? <SwiperBlock images={data?.product?.swiperMedias} title={data?.product?.referencesTitle} /> : null}
+            {hasSwiperMedias ? <SwiperBlock images={data?.product?.swiperMedias} title={swiperTitle} /> : null}
         </StyledProductView>
     )
 }

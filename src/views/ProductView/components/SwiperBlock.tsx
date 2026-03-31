@@ -257,18 +257,16 @@ const StyledViewport = styled.div`
 const StyledSwiperSlideContainer = styled.div`
     flex: 0 0 auto;
     width: clamp(${rm(220)}, 32vw, ${rm(552)});
-    height: ${rm(414)};
+    aspect-ratio: 4 / 3;
     position: relative;
     scroll-snap-align: start;
     margin-bottom: ${rm(150)};
 
     ${media.md`
         width: ${rm(354)};
-        height: ${rm(266)};
     `}
 
     ${media.xsm`
-        height: ${rm(328)};
         width: ${rm(246)};
     `}
 

@@ -132,7 +132,7 @@ export const ProductPreview = () => {
         <>
             <StyledContainer as={animated.div} ref={innerRef} style={{...moveValues, pointerEvents: url === 'poster-only' && poster && width <= 576 ? 'all' : 'none'}}>
                 <AnimLink href={`/products/${route}`} aria-label={`View product details`}>
-                    <animated.span style={{...values, backgroundColor: '#F8F9FC !important'}}>
+                    <animated.span style={{...values, backgroundColor: '#EAECF2 !important'}}>
                         { allUrls.map((item, idx) => 
                             <VideoPlayer 
                                 key={idx} 
@@ -188,7 +188,7 @@ const StyledContainer = styled(animated.div)`
     z-index: 1;
     top: 0; left: 0;
     width: ${rm(240)};
-    height: ${rm(180)};
+    height: ${rm(240)};
     pointer-events: none;
     border-radius: ${rm(8)};
     overflow: hidden;
@@ -223,7 +223,7 @@ const StyledContainer = styled(animated.div)`
 
     ${media.xsm`
         width: ${rm(390 - 32)};
-        height: ${rm(285 * 0.75)};
+        height: ${rm(390 - 32)};
         top: ${rm(48)}; left: ${rm(16)};
         position: fixed;
         /* transform: none !important; */
@@ -245,7 +245,7 @@ const StyledContainer = styled(animated.div)`
         height: 100% !important;
         top: 0; left: 0;
         z-index: 1;
-        background-color: #F8F9FC !important;
+        background-color: #EAECF2 !important;
     }
 
     .logo {

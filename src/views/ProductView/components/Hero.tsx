@@ -26,12 +26,9 @@ interface HeroProps {
 }
 
 export const Hero = ({ data, colors, accentColors = [] }: HeroProps) => {
-
-    const breadcrumbs = data?.breadcrumbs?.map((breadcrumb: any) => (
-        { label: breadcrumb.text, slug: breadcrumb.link }
-    ))
-
     const width = useWindowWidth()
+    const quoteLink = data?.quoteButton?.link || "/contact"
+    const quoteText = data?.quoteButton?.text || "Contact us"
 
     const [activeImageUrl, setActiveImageUrl] = useState<string | null>(null)
     const galleryUrls = useMemo(() => (data?.productImages || []).map((m: any) => m && m.url ? ({ url: m.url }) : m).map((m: any) => m ? m : null).filter(Boolean), [data?.productImages])
@@ -41,7 +38,8 @@ export const Hero = ({ data, colors, accentColors = [] }: HeroProps) => {
             <StyledContent>
                 <Breadcrumbs
                     items={[
-                        ...breadcrumbs || [],
+                        { label: "Home", slug: "" },
+                        { label: "Products", slug: "lines" },
                         { label: data?.name || "", href: undefined },
                     ]}
                 />
@@ -73,11 +71,11 @@ export const Hero = ({ data, colors, accentColors = [] }: HeroProps) => {
                 />
             )}
             {width > 768 ? <ColorPaletre mainColors={colors} accentColors={accentColors} /> : null}
-            {width > 768 ? <StyledQuoteButtonWrapper>
-                <SimpleButton isSvg link={data?.quoteButton?.link}>
-                    {data?.quoteButton?.text && data?.quoteButton?.text}
+            <StyledQuoteButtonWrapper>
+                <SimpleButton isSvg link={quoteLink}>
+                    {quoteText}
                 </SimpleButton>
-            </StyledQuoteButtonWrapper> : null}
+            </StyledQuoteButtonWrapper>
         </StyledHero>
     )
 }
@@ -176,4 +174,14 @@ const StyledQuoteButtonWrapper = styled.div`
     right: ${rm(50)};
     bottom: ${rm(50)};
     z-index: 2;
+
+    ${media.md`
+        right: ${rm(25)};
+        bottom: ${rm(25)};
+    `}
+
+    ${media.xsm`
+        right: ${rm(16)};
+        bottom: ${rm(16)};
+    `}
 `
