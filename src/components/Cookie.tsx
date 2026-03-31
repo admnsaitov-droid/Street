@@ -60,7 +60,7 @@ export const Cookie = () => {
         >
             <StyledTitle>We respect your privacy</StyledTitle>
             <StyledDescription>This website uses cookies to improve your browsing experience, analyze traffic, and remember your preferences. To learn more, please read our 
-                <a href='#' aria-label='Go to Privacy Policy' rel='noreferrer' target='_blank'>
+                <a href='/privacy-policy' aria-label='Go to Privacy Policy'>
                     Privacy Policy
                 </a>
             </StyledDescription>
@@ -78,22 +78,26 @@ export const Cookie = () => {
 
 const StyledTitle = styled.h5`
     ${fontGolosText(400)} !important;
-    font-size: ${rm(24)} !important;
-    margin-bottom: ${rm(16)} !important;
+    font-size: ${rm(32)} !important;
+    margin-bottom: ${rm(24)} !important;
     letter-spacing: -0.01em;
     line-height: 110% !important;
     color: #F8F9FC;
-    max-width: ${rm(450)};
+    max-width: ${rm(640)};
 `
 
 const StyledDescription = styled.p`
     ${fontGolosText(400)} !important;
     font-size: ${rm(16)} !important;
     letter-spacing: -0.01em;
-    line-height: 130% !important;
+    line-height: 125% !important;
     color: #F8F9FC;
-    margin-bottom: ${rm(24)};
-    max-width: ${rm(450)};
+    margin-bottom: ${rm(36)};
+    max-width: ${rm(640)};
+
+    @media (max-width: 768px) {
+        font-size: ${rm(14)} !important;
+    }
 
     a {
         text-decoration: underline !important;
@@ -107,23 +111,17 @@ const StyledButtonContainer = styled.div`
     align-items: center;
     justify-content: flex-start;
     margin-top: ${rm(8)};
-    
-    @media (max-width: 768px) {
-        flex-direction: column;
-        align-items: stretch;
-        gap: ${rm(12)};
-    }
 `
 
 const StyledDeclineButton = styled.button`
-    border: 1px solid #E5E7EB;
+    border: 1px solid #3A3D45;
     border-radius: ${rm(4)};
     padding: ${rm(20)} ${rm(0)};
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    background: rgba(0, 0, 0, .95);
+    background: #000;
     font-size: ${rm(16)};
     ${fontGolosText(600)};
     color: #F3F4F6;
@@ -139,7 +137,7 @@ const StyledDeclineButton = styled.button`
 `
 
 const StyledAcceptButton = styled.button`
-    background-color: #F9FAFB;
+    background-color: #ECECEC;
     border-radius: ${rm(4)};
     padding: ${rm(20)} ${rm(0)};
     display: flex;

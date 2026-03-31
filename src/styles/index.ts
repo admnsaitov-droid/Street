@@ -106,29 +106,24 @@ const GlobalStyles = createGlobalStyle`
     /* Cookie */
     .cookieContainer {
         position: fixed;
-        right: ${rm(24)} !important;
-        bottom: ${rm(24)} !important;
-        max-width: ${rm(530)};
+        right: ${rm(32)} !important;
+        bottom: ${rm(32)} !important;
+        max-width: ${rm(550)};
         width: 100%;
         z-index: 900;
-        background: rgba(0, 0, 0, .95);
+        background: #000;
         border-radius: ${rm(10)};
-        padding: ${rm(40)};
+        padding: ${rm(56)};
         display: flex;
         flex-direction: column;
         justify-content: flex-start;
         align-items: flex-start;
-        border: 1px solid rgb(37, 37, 37);
+        border: 1px solid #2A2A2A;
         opacity: 0;
         transition: opacity 2s ease;
         &.visible {
             opacity: 1;
         }
-        ${media.xsm`
-            gap: ${rm(16)};
-            padding: ${rm(8)} ${rm(32)};
-        `}
-
         > div {
             width: 100%;
         }
@@ -137,15 +132,16 @@ const GlobalStyles = createGlobalStyle`
             right: ${rm(0)} !important;
             bottom: ${rm(0)} !important;
             max-width: 100%;
-            padding: ${rm(12)} ${rm(16)};
+            border-radius: 0;
+            padding: ${rm(24)} ${rm(16)};
         `}
 
         h5 {
             font-size: ${rm(32)};
-            margin-bottom: ${rm(14)};
+            margin-bottom: ${rm(24)};
             color: white;
             ${media.xsm`
-                margin-bottom: ${rm(10)};
+                margin-bottom: ${rm(16)};
                 font-size: ${rm(24)};
             `}
         }

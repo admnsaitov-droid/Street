@@ -71,11 +71,13 @@ export const Hero = ({ data, colors, accentColors = [] }: HeroProps) => {
                 />
             )}
             {width > 768 ? <ColorPaletre mainColors={colors} accentColors={accentColors} /> : null}
-            <StyledQuoteButtonWrapper>
-                <SimpleButton isSvg link={quoteLink}>
-                    {quoteText}
-                </SimpleButton>
-            </StyledQuoteButtonWrapper>
+            {width > 768 ? (
+                <StyledQuoteButtonWrapper>
+                    <SimpleButton isSvg link={quoteLink}>
+                        {quoteText}
+                    </SimpleButton>
+                </StyledQuoteButtonWrapper>
+            ) : null}
         </StyledHero>
     )
 }

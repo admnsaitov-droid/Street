@@ -169,7 +169,7 @@ export const PackageMenu = ({ previewText, allText }: { previewText: string, all
                             <AllButton text={allText} href="/packages" lineColor={colors.red} />
                         </StyledLeft>
                         <StyledRight>
-                            <Image src={getMediaStrapiPath(currentPackage?.mainMediaLeft?.poster)} alt="Package" width={760} height={420} />
+                            <Image src={getMediaStrapiPath(currentPackage?.mainMediaLeft?.poster)} alt="Package" fill />
                         </StyledRight>
                     </StyledLayout>
                 </StyledMenuContainer>

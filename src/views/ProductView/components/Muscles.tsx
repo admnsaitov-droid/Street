@@ -54,6 +54,8 @@ const StyledImageContainer = styled.div`
     height: ${rm(450)};
     position: relative;
     background: #F8F9FC;
+    overflow: hidden;
+    border-radius: ${rm(4)};
 
     width: ${rm(550)};
 

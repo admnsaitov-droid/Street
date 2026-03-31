@@ -23,13 +23,18 @@ export const Specifications = ({ specifications }: SpecificationsProps) => {
 const StyledSpecifications = styled.div`
     width: 100%;
     display: grid;
-    grid-template-columns: max-content minmax(0, 1fr);
-    column-gap: ${rm(36)};
+    grid-template-columns: ${rm(240)} minmax(0, 1fr);
+    column-gap: ${rm(72)};
     row-gap: ${rm(15)};
     padding-bottom: ${rm(10)};
 
+    ${media.md`
+        grid-template-columns: ${rm(190)} minmax(0, 1fr);
+    `}
+
     ${media.xsm`
-        column-gap: ${rm(20)};
+        grid-template-columns: ${rm(170)} minmax(0, 1fr);
+        column-gap: ${rm(72)};
         row-gap: ${rm(15)};
     `}
 `

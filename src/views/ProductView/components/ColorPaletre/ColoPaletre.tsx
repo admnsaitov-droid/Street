@@ -94,22 +94,12 @@ const StyledColorPaletre = styled.div`
     width: fit-content;
     min-width: unset;
 
-    // ${media.xsm`
-    //     left: 50%;
-    //     transform: translateX(-50%);
-    //     max-width: 90%;
-    //     width: 90%
-    //     flex-wrap: wrap;
-    //     align-items: center;
-    // `}
-
     ${media.xsm`
         position: relative;
         left: 0;
         bottom: 0;
         backdrop-filter: blur(32px);
-        box-shadow: 0px 4px 30px 0px #0000000D;
-        padding: ${rm(30)} ${rm(16)};
+        padding: ${rm(16)} ${rm(0)};
         width: 100%;
         max-width: 100%;
         overflow-x: hidden;
@@ -159,6 +149,8 @@ const StyledColorsWrapper = styled.div`
         max-width: 100%;
         -webkit-overflow-scrolling: touch;
         scrollbar-width: thin;
+        background-color: transparent;
+        box-shadow: 0px 4px 30px 0px #0000000D;
         
         &::-webkit-scrollbar {
             height: 4px;

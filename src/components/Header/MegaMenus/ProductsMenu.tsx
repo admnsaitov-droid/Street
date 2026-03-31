@@ -176,14 +176,14 @@ export const ProductsMenu = ({ previewText, allText }: { previewText: string, al
                         <StyledRight>
                             <StyledProduct href={`/products/${currentPackage?.linii?.products?.[0]?.slug}`}>
                                 <div className="imageContainer">
-                                    <Image src={getMediaStrapiPath(currentPackage?.linii?.products[0]?.previewImage)} alt="Package" width={760} height={420} />
+                                    <Image src={getMediaStrapiPath(currentPackage?.linii?.products[0]?.previewImage)} alt="Package" fill />
                                 </div>
                                 {/* <div className="name">{currentPackage?.produkties?.[0]?.name}</div>
                                 <div className="model">{currentPackage?.produkties?.[0]?.model}</div> */}
                             </StyledProduct>
                             <StyledProduct href={`/products/${currentPackage?.linii?.products?.[1]?.slug}`}>
                                 <div className="imageContainer">
-                                    <Image src={getMediaStrapiPath(currentPackage?.linii?.products[1]?.previewImage)} alt="Package" width={760} height={420} />
+                                    <Image src={getMediaStrapiPath(currentPackage?.linii?.products[1]?.previewImage)} alt="Package" fill />
                                 </div>
                                 {/* <div className="name">{currentPackage?.produkties?.[1]?.name}</div>
                                 <div className="model">{currentPackage?.produkties?.[1]?.model}</div> */}
@@ -359,6 +359,7 @@ const StyledProduct = styled(AnimLink)`
         width: 100%;
         // height: ${rm(407)};
         height: 100%;
+        position: relative;
         overflow: hidden;
         border-radius: ${rm(10)};
         background-color: #EAECF2;
