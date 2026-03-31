@@ -158,16 +158,14 @@ const StyledAccordion = styled.div`
         left: 0;
         right: 0;
         height: 1px;
-        background-image: 
-            radial-gradient(circle 1px at 4px 0.5px, #B7BCCA 100%, transparent 100%),
-            radial-gradient(circle 1px at 12px 0.5px, #B7BCCA 100%, transparent 100%),
-            radial-gradient(circle 1px at 20px 0.5px, #B7BCCA 100%, transparent 100%),
-            radial-gradient(circle 1px at 28px 0.5px, #B7BCCA 100%, transparent 100%),
-            radial-gradient(circle 1px at 36px 0.5px, #B7BCCA 100%, transparent 100%),
-            radial-gradient(circle 1px at 44px 0.5px, #B7BCCA 100%, transparent 100%),
-            radial-gradient(circle 1px at 52px 0.5px, #B7BCCA 100%, transparent 100%),
-            radial-gradient(circle 1px at 60px 0.5px, #B7BCCA 100%, transparent 100%);
-        background-size: 16px 1px;
+        background-image: repeating-linear-gradient(
+            to right,
+            #6F7685 0,
+            #6F7685 1px,
+            transparent 1px,
+            transparent 5px
+        );
+        background-size: auto;
         background-repeat: repeat-x;
         transition: opacity 0.3s ease-in-out;
     }

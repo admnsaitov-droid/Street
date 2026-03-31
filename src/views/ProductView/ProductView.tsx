@@ -11,6 +11,7 @@ import { ColorPaletre } from "./components/ColorPaletre/ColoPaletre"
 import { useWindowWidth } from "@react-hook/window-size"
 import { useMemo, useEffect } from "react"
 import { useColorStore } from "@/store/store"
+import { SimpleButton } from "@/components/Ui/buttons/SimpleButton"
 
 interface ProductViewProps {
     data: any
@@ -152,6 +153,8 @@ export const ProductView = ({ data, specificationTexts }: ProductViewProps) => {
     const width = useWindowWidth()
     const hasSwiperMedias = Array.isArray(data?.product?.swiperMedias) && data.product.swiperMedias.length > 0
     const swiperTitle = data?.product?.referencesTitle || { textFirst: "References"}
+    const quoteLink = data?.product?.quoteButton?.link || "/contact"
+    const quoteText = data?.product?.quoteButton?.text || "Contact us"
 
     console.log('product data' ,data)
 
@@ -159,7 +162,14 @@ export const ProductView = ({ data, specificationTexts }: ProductViewProps) => {
         <StyledProductView>
             <StructuredData schemas={[productSchema]} />
             <Hero data={data?.product} colors={mainColors} accentColors={accentColors} />
-            {width <= 768 ? <ColorPaletre mainColors={mainColors} accentColors={accentColors} /> : null}
+            {width <= 768 ? (
+                <StyledMobileControls>
+                    <ColorPaletre mainColors={mainColors} accentColors={accentColors} />
+                    <SimpleButton isSvg link={quoteLink}>
+                        {quoteText}
+                    </SimpleButton>
+                </StyledMobileControls>
+            ) : null}
             <StyledWrapper>
                 <ProductOverview data={data?.product} specificationTexts={specificationTexts} />
             </StyledWrapper>
@@ -185,4 +195,17 @@ const StyledWrapper = styled.div`
     ${media.xsm`
         padding: ${rm(90)} ${rm(16)};
     `}
+`
+
+const StyledMobileControls = styled.div`
+    width: 100%;
+    padding: 0 ${rm(16)};
+    margin-top: ${rm(16)};
+    display: flex;
+    flex-direction: column;
+    gap: ${rm(16)};
+
+    >*{
+        width: 100%;
+    }
 `

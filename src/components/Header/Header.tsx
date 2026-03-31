@@ -66,8 +66,7 @@ export const Header = () => {
                                     : getMediaStrapiPath(headerData?.data?.logoMobile || headerData?.data?.logo) || '/logo.png'
                             }
                             alt="Street Barbell Logo" 
-                            width={100} 
-                            height={100} 
+                            fill
                         />
                     )}
                 </AnimLink>

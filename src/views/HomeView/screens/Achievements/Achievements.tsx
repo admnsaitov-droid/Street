@@ -178,13 +178,15 @@ const StyledAchievement = styled.div`
     .dividerMain{
         margin-bottom: ${rm(15)};
         width: 100%;
-        height: ${rm(2)};
-        background: radial-gradient(
-            circle at ${rm(1)} ${rm(1)},
-            ${colors.gray} ${rm(1)},
-            transparent ${rm(1)}
+        height: 1px;
+        background: repeating-linear-gradient(
+            to right,
+            ${colors.gray} 0,
+            ${colors.gray} 1px,
+            transparent 1px,
+            transparent 5px
         );
-        background-size: ${rm(16)} ${rm(8)};
+        background-size: auto;
         border: none;
         position: relative;
     }

@@ -139,7 +139,7 @@ export const SwiperBlock = ({ images, title }: SwiperBlockProps) => {
                 <StyledViewport aria-label="Product images">
                     <Swiper
                         slidesPerView="auto"
-                        spaceBetween={12}
+                        spaceBetween={10}
                         className="swiper"
                         onSwiper={(swiper) => { 
                             swiperRef.current = swiper
@@ -219,7 +219,7 @@ const StyledSwiperButton = styled.div<{side: 'left' | 'right', disabled?: boolea
 
 const StyledTitleContainer = styled.div`
     width: ${rm(570)};
-    margin-bottom: ${rm(20)};
+    margin-bottom: ${rm(-10)};
     
     ${media.lg`
         width: ${rm(470)};
@@ -261,13 +261,15 @@ const StyledSwiperSlideContainer = styled.div`
     position: relative;
     scroll-snap-align: start;
     margin-bottom: ${rm(150)};
+    border-radius: ${rm(4)};
+    overflow: hidden;
 
     ${media.md`
         width: ${rm(354)};
     `}
 
     ${media.xsm`
-        width: ${rm(246)};
+        width: ${rm(328)};
     `}
 
     .image{
