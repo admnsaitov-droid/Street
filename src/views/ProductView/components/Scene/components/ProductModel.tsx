@@ -48,7 +48,7 @@ export const ProductModel = ({ model, colors, accentColors, params = {
     scale: 1
 } }: ProductModelProps) => {
     const { scene }: any = useGLTF(getMediaStrapiPath(model))
-    // const { scene }: any = useGLTF('/models/test.glb')
+    // const { scene }: any = useGLTF('/models/testProductModel.glb')
     // Clone the scene so multiple Canvas instances don't mutate the same object
     const clonedScene: any = useMemo(() => scene?.clone(true), [scene])
     const { activeMainColor, activeAccentColor, setActiveMainColor, setActiveAccentColor, setMaterialMainColor, setMaterialAccentColor } = useColorStore()
@@ -88,7 +88,7 @@ export const ProductModel = ({ model, colors, accentColors, params = {
                         }
                         
                         // Set normal map scale for blue_metal, white_metal, accent, and leather materials
-                        if ((material.name === 'blue_metal' || material.name === 'white_metal' || material.name === 'accent') && 
+                        if ((material.name === 'blue_metal' || material.name === 'accent') && 
                             (material instanceof THREE.MeshStandardMaterial || material instanceof THREE.MeshPhongMaterial)) {
                             if (!material.normalScale) {
                                 material.normalScale = new THREE.Vector2(1, 1)
@@ -107,7 +107,7 @@ export const ProductModel = ({ model, colors, accentColors, params = {
                         }
                         
                         // Extract main color from blue_metal or white_metal material
-                        if ((material.name === 'blue_metal' || material.name === 'white_metal') && !extractedMainColor) {
+                        if ((material.name === 'blue_metal' ) && !extractedMainColor) {
                             const colorStr = colorToRgb(material.color)
                             originalMainColorRef.current = colorStr
                             // Store the original THREE.Color object to preserve exact precision
@@ -165,7 +165,7 @@ export const ProductModel = ({ model, colors, accentColors, params = {
                         material instanceof THREE.MeshBasicMaterial ||
                         material instanceof THREE.MeshPhongMaterial ||
                         material instanceof THREE.MeshLambertMaterial) &&
-                        (material.name === 'blue_metal' || material.name === 'white_metal')) {
+                        (material.name === 'blue_metal')) {
                         
                         // Check if the current material color is different from the active color
                         const currentMaterialColor = colorToRgb(material.color)
