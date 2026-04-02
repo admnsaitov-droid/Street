@@ -34,7 +34,7 @@ export const LineView = ({ data }: LineViewProps) => {
             <StyledHero>
                 <StyledTop>
                     {data?.line?.lineContent?.title && <StyledTitle tag="h1">{data?.line?.lineContent?.title}</StyledTitle>}
-                    {data?.line?.lineContent?.description && <StyledSubtitle tag="p">{data?.line?.lineContent?.description}</StyledSubtitle>}
+                    {/* {data?.line?.lineContent?.description && <StyledSubtitle tag="p">{data?.line?.lineContent?.description}</StyledSubtitle>} */}
                 </StyledTop>
                 <StyledTopImageContainer>
                     <ScaleImageAppear className="image-container">
@@ -119,27 +119,28 @@ const StyledTop = styled.div`
     display: flex;
     justify-content: space-between;
     margin-top: ${rm(20)};
+    width: 100%;
 
     ${media.md`
         flex-direction: column;
         gap: ${rm(20)};
     `}
 
-    >:last-child {
-        width: ${rm(550)};
+    // >:last-child {
+    //     width: ${rm(550)};
 
-        ${media.lg`
-            width: ${rm(440)};
-        `}
+    //     ${media.lg`
+    //         width: ${rm(440)};
+    //     `}
 
-        ${media.md`
-            width: ${rm(417)};
-        `}
+    //     ${media.md`
+    //         width: ${rm(417)};
+    //     `}
 
-        ${media.xsm`
-            width: 100%;
-        `}
-    }
+    //     ${media.xsm`
+    //         width: 100%;
+    //     `}
+    // }
 `
 
 const StyledTopImageContainer = styled.div`
