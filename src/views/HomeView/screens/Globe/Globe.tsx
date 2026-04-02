@@ -86,9 +86,14 @@ export const Globe = ({ globeData }: GlobeProps) => {
                             </StyledContinent>
                         ))}
                     </StyledContinents>
-                    <AnimatedTranslate className="button-container">
+                    {width > 768 ? <AnimatedTranslate className="button-container">
                         <BlueButton link={globeData?.button?.link} isSvg className="button">{globeData?.button?.text}</BlueButton>
                     </AnimatedTranslate>
+                    :
+                    <div className="button-container">
+                        <BlueButton link={globeData?.button?.link} isSvg className="button">{globeData?.button?.text}</BlueButton>
+                    </div>
+                }
                 </div>
             </div>
             {width <= 768 ? null : <Scene />}
