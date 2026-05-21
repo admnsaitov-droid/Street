@@ -166,6 +166,11 @@ const StyledRightTop = styled.div`
     display: flex;
     flex-direction: column;
     gap: ${rm(20)};
+    width: ${rm(988)};
+
+    ${media.lg`
+        width: ${rm(778)};
+    `}
 
     ${media.md`
         width: ${rm(475)};    
@@ -268,8 +273,8 @@ export const StyledPurposeTitleContainer = styled.div`
 const StyledBottom = styled.div`
     width: 100%;
     display: flex;
-    justify-content: space-between;
     margin-top: ${rm(40)};
+    gap: ${rm(10)};
 
     ${media.xsm`
         flex-direction: column;
@@ -278,16 +283,20 @@ const StyledBottom = styled.div`
 
     .left{
         display: flex;
-        flex-direction: column;
         justify-content: space-between;
+        flex-direction: column;
+        gap: ${rm(10)};
+        flex: 1;
+        width: ${rm(573)};
 
-        ${media.md`
-            gap: ${rm(10)};
+        ${media.xsm`
+            width: 100%;
         `}
 
         .imageContainer{
-            width: ${rm(215)};
-            height: ${rm(215)};
+            width: 100%;
+            height: 100%;
+            position: relative;
 
             ${media.md`
                 width: ${rm(233)};
@@ -302,8 +311,12 @@ const StyledBottom = styled.div`
     }
 
     .right{
-        width: ${rm(777)};
-        height: ${rm(581)};
+        width: ${rm(987)};
+        height: ${rm(781)};
+        
+        ${media.lg`
+            width: ${rm(777)};
+        `}
 
         ${media.md`
             width: ${rm(475)};
