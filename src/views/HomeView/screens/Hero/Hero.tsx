@@ -43,7 +43,7 @@ export const Hero = ({ heroData }: HeroProps) => {
                                     delayStep: 60
                                 }}
                                 overflow={true}
-                                gap={{ horizontal: '0.25em', vertical: '0.25em' }}
+                                gap={{ horizontal: '0.5em', vertical: '0em' }}
                                 containerStyle={{ overflow: 'hidden' }}
                                 cellConfigs={{
                                     'title-first': {
@@ -53,6 +53,7 @@ export const Hero = ({ heroData }: HeroProps) => {
                                             fontOpticalSizing: 'auto',
                                             fontWeight: 600,
                                             fontStyle: 'normal',
+                                            lineHeight: '85%',
                                         }
                                     },
                                     'title-second': {
@@ -62,6 +63,7 @@ export const Hero = ({ heroData }: HeroProps) => {
                                             fontOpticalSizing: 'auto',
                                             fontWeight: 400,
                                             fontStyle: 'normal',
+                                            lineHeight: '85%',
                                         }
                                     }
                                 }}
@@ -124,7 +126,7 @@ const StyledTitleContainer = styled.div`
     line-height: 85%;
     text-transform: uppercase;
     letter-spacing: -0.02em;
-    width: ${rm(1300)};
+    width: ${rm(1100)};
 
     ${media.lg`
         font-size: ${rm(80)};
@@ -150,6 +152,17 @@ const StyledTitleContainer = styled.div`
         color: inherit;
         text-transform: inherit;
         font-family: inherit;
+
+        > span > span {
+            >:first-child{
+                gap: 0.32em;
+            } 
+        }
+
+        > span > span > span {
+            align-items: baseline;
+
+        }
     }
 `
 
