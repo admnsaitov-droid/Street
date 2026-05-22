@@ -25,9 +25,7 @@ export const Hero = ({ heroData }: HeroProps) => {
             {width <= 768 && (
                 <StyledMobileBackgroundViewoContainer />
             )}
-            {width > 768 && (
-                <BackgroundProgressiveBlur/>
-            )}
+            <BackgroundProgressiveBlur/>
             <StyledContent>
                 <div className="left">
                     <AnimatedText className="description" tag="p">{heroData?.description}</AnimatedText>
@@ -238,10 +236,6 @@ export const BackgroundProgressiveBlur = styled.div`
     border-bottom-left-radius: ${rm(10)};
     border-bottom-right-radius: ${rm(10)};
     overflow: hidden;
-
-    ${media.xsm`
-        display: none;
-    `}
 `
 
 export const StyledMobileBackgroundViewoContainer = styled.div`
