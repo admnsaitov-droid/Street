@@ -2,18 +2,52 @@ import { colors, media, rm } from "@/styles";
 import { fontGolosText, fontSageGrotesk } from "@/styles/fonts";
 import { heightLvh } from "@/styles/utils";
 import styled from "styled-components"
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { SpringTrigger } from "@/components/Springs/SpringTrigger";
 import { transformRange, lerp } from "@/utils/math";
 import { WhiteButton } from "@/components/Ui/buttons/WhiteButton";
 import Image from "next/image";
 import { getMediaStrapiPath } from "@/utils/getMediaStrapiPath";
-import { useTransition, animated, easings } from "@react-spring/web";
+import { useTransition, useSpring, animated } from "@react-spring/web";
 import { MediaComponent } from "@/components/MediaComponent/MediaComponent";
 import { useWindowWidth } from "@react-hook/window-size";
 
 interface PackagesProps {
     packagesData: any
+}
+
+const transitionConfig = { tension: 300, friction: 30 }
+
+const AnimatedAutoHeight = ({ children, deps = [] }: { children: ReactNode; deps?: unknown[] }) => {
+    const contentRef = useRef<HTMLDivElement>(null)
+    const isFirstRender = useRef(true)
+    const [{ height }, api] = useSpring(() => ({ height: 0 }))
+
+    useEffect(() => {
+        const el = contentRef.current
+        if (!el) return
+
+        const updateHeight = () => {
+            const nextHeight = el.offsetHeight
+            api.start({
+                height: nextHeight,
+                immediate: isFirstRender.current,
+            })
+            isFirstRender.current = false
+        }
+
+        updateHeight()
+        const resizeObserver = new ResizeObserver(updateHeight)
+        resizeObserver.observe(el)
+
+        return () => resizeObserver.disconnect()
+    }, [api, ...deps])
+
+    return (
+        <animated.div style={{ height, overflow: 'hidden' }}>
+            <div ref={contentRef}>{children}</div>
+        </animated.div>
+    )
 }
 
 export const Packages = ({ packagesData }: PackagesProps) => {
@@ -38,14 +72,14 @@ export const Packages = ({ packagesData }: PackagesProps) => {
         from: { opacity: 0, transform: 'translateY(30px)' },
         enter: { opacity: 1, transform: 'translateY(0px)' },
         leave: { opacity: 0, transform: 'translateY(-30px)' },
-        config: { tension: 300, friction: 30 }
+        config: transitionConfig
     });
 
     const descriptionTransitions = useTransition(activePackage?.description, {
         from: { opacity: 0, transform: 'translateY(30px)' },
         enter: { opacity: 1, transform: 'translateY(0px)' },
         leave: { opacity: 0, transform: 'translateY(-30px)' },
-        config: { tension: 300, friction: 30 }
+        config: transitionConfig
     });
 
 
@@ -164,24 +198,28 @@ export const Packages = ({ packagesData }: PackagesProps) => {
                                 </div>
                             </StyledTopBar>
                             <StyledMidContent>
-                                <div className="title-container">
-                                    {titleTransitions((style, item) => 
-                                        item && (
-                                            <animated.h3 className="title" style={style}>
-                                                {item}
-                                            </animated.h3>
-                                        )
-                                    )}
-                                </div>
-                                <div className="description-container">
-                                    {descriptionTransitions((style, item) => 
-                                        item && (
-                                            <animated.p className="description" style={style}>
-                                                {item}
-                                            </animated.p>
-                                        )
-                                    )}
-                                </div>
+                                <AnimatedAutoHeight deps={[activePackage?.title, width]}>
+                                    <div className="title-container">
+                                        {titleTransitions((style, item) => 
+                                            item && (
+                                                <animated.h3 className="title" style={style}>
+                                                    {item}
+                                                </animated.h3>
+                                            )
+                                        )}
+                                    </div>
+                                </AnimatedAutoHeight>
+                                <AnimatedAutoHeight deps={[activePackage?.description, width]}>
+                                    <div className="description-container">
+                                        {descriptionTransitions((style, item) => 
+                                            item && (
+                                                <animated.p className="description" style={style}>
+                                                    {item}
+                                                </animated.p>
+                                            )
+                                        )}
+                                    </div>
+                                </AnimatedAutoHeight>
                             </StyledMidContent>
                             <WhiteButton className="button" link={activePackage?.button?.link} isSvg={true}>
                                 {activePackage?.button?.text}
@@ -344,22 +382,15 @@ const StyledMidContent = styled.div`
     .title-container, .description-container {
         position: relative;
         overflow: hidden;
+        display: grid;
+        height: auto;
     }
 
-    .title-container {
-        height: ${rm(52)}; // Approximate height for title text
-        ${media.lg`
-            height: ${rm(44)};
-        `}
-
-        ${media.xsm`
-            height: ${rm(21)};
-        `}
-    }
-
-    .description-container {
-        min-height: ${rm(100)}; // Minimum height for description, can grow
-        height: fit-content;
+    .title-container > *,
+    .description-container > * {
+        grid-area: 1 / 1;
+        align-self: start;
+        width: 100%;
     }
 
     .title{
@@ -371,10 +402,6 @@ const StyledMidContent = styled.div`
         text-transform: uppercase;
         text-align: center;
         margin: 0;
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
 
         ${media.lg`
             font-size: ${rm(40)};    
@@ -392,10 +419,6 @@ const StyledMidContent = styled.div`
         font-size: ${rm(20)};
         text-align: center;
         margin: 0;
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
 
         ${media.lg`
             font-size: ${rm(16)};    

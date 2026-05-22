@@ -1,23 +1,15 @@
 import { colors, media, rm } from "@/styles";
 import { fontGolosText, fontSageGrotesk } from "@/styles/fonts";
-import { heightLvh } from "@/styles/utils";
 import styled from "styled-components"
-import { useEffect, useRef, useState } from "react";
-import { SpringTrigger } from "@/components/Springs/SpringTrigger";
-import { transformRange, lerp } from "@/utils/math";
 import { WhiteButton } from "@/components/Ui/buttons/WhiteButton";
-import { useTransition, animated } from "@react-spring/web";
 import { MediaComponent } from "@/components/MediaComponent/MediaComponent";
 import { useWindowWidth } from "@react-hook/window-size";
-import { getMediaStrapiPath } from "@/utils/getMediaStrapiPath";
 
 interface PackagesProps {
     packagesData: any
 }
 
 export const PackagesMobile = ({ packagesData }: PackagesProps) => {
-    const [activePackage, setActivePackage] = useState<any>(null);
-
     const width = useWindowWidth()
 
     
@@ -32,14 +24,10 @@ export const PackagesMobile = ({ packagesData }: PackagesProps) => {
                     <div className="left">
                         <StyledMidContent>
                             <div className="title-container">
-                                <animated.h3 className="title">
-                                    {item?.title}
-                                </animated.h3>
+                                <h3 className="title">{item?.title}</h3>
                             </div>
                             <div className="description-container">
-                                <animated.p className="description">
-                                    {item?.description}
-                                </animated.p>
+                                <p className="description">{item?.description}</p>
                             </div>
                         </StyledMidContent>
                         <WhiteButton className="button" link={item?.button?.link} isSvg={true}>
@@ -64,8 +52,7 @@ const StyledPackages = styled.div`
 `
 
 const StyledContentLayout = styled.div`
-    // height: auto;
-    height: 100%;
+    height: auto;
     width: 100%;
     position: relative;
     display: flex;
@@ -75,15 +62,12 @@ const StyledContentLayout = styled.div`
 
     .wrapper{
         width: 100%;
-        height: 100%;
+        height: auto;
         position: relative;
         display: flex;
+        flex-direction: column;
         border-radius: ${rm(10)};
         overflow: hidden;
-
-        ${media.md`
-            flex-direction: column;
-        `}
 
         .image-container{
             width: 100%;
@@ -107,24 +91,22 @@ const StyledContentLayout = styled.div`
     `}
 
     .left{
-        width: 42%;
+        width: 100%;
         background-color: ${colors.blue};
         padding: ${rm(40)};
         display: flex;
         flex-direction: column;
         justify-content: space-between;
+        gap: ${rm(24)};
+        height: auto;
 
         ${media.md`
-            width: 100%;
-            height: 50%;
             border-bottom-left-radius: ${rm(10)};
             border-bottom-right-radius: ${rm(10)};
-            overflow: hidden;
         `}
 
         ${media.xsm`
             padding: ${rm(24)} ${rm(20)};
-            height: 65%;
         `}
 
         .button{
@@ -170,24 +152,8 @@ const StyledMidContent = styled.div`
     `}
 
     .title-container, .description-container {
-        position: relative;
-        overflow: hidden;
-    }
-
-    .title-container {
-        height: ${rm(52)}; // Approximate height for title text
-        ${media.lg`
-            height: ${rm(44)};
-        `}
-
-        ${media.xsm`
-            height: ${rm(21)};
-        `}
-    }
-
-    .description-container {
-        min-height: ${rm(100)}; // Minimum height for description, can grow
-        height: fit-content;
+        width: 100%;
+        height: auto;
     }
 
     .title{
@@ -199,10 +165,6 @@ const StyledMidContent = styled.div`
         text-transform: uppercase;
         text-align: center;
         margin: 0;
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
 
         ${media.lg`
             font-size: ${rm(40)};    
@@ -220,10 +182,6 @@ const StyledMidContent = styled.div`
         font-size: ${rm(20)};
         text-align: center;
         margin: 0;
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
 
         ${media.lg`
             font-size: ${rm(16)};    

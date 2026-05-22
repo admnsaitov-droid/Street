@@ -7,7 +7,6 @@ import { colors, media, rm } from "@/styles"
 import { fontGolosText, fontSageGrotesk } from "@/styles/fonts"
 import { heightLvh } from "@/styles/utils"
 import { getMediaStrapiPath } from "@/utils/getMediaStrapiPath"
-import { StyledTitle } from "@/views/PackagesView/PackagesView"
 import Image from "next/image"
 import styled from "styled-components"
 import { useWindowWidth } from "@react-hook/window-size"
@@ -65,6 +64,29 @@ const StyledHero = styled.div`
         top: 0;
         left: 0;
     }
+`
+
+
+export const StyledTitle = styled(AnimatedText)`
+    font-size: ${rm(100)};
+    line-height: 85%;
+    text-transform: uppercase;
+    letter-spacing: -0.02em;
+    ${fontGolosText(600)};
+    color: ${colors.black100};
+    height: fit-content;
+    
+    ${media.lg`
+        font-size: ${rm(80)};
+    `}
+
+    ${media.md`
+        font-size: ${rm(56)};
+    `}
+
+    ${media.xsm`
+        font-size: ${rm(40)};
+    `}
 `
 
 

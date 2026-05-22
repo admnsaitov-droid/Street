@@ -71,25 +71,25 @@ const StyledTop = styled.div`
 `
 
 export const StyledTitle = styled(AnimatedText)`
-    font-size: ${rm(100)};
     line-height: 85%;
     text-transform: uppercase;
     letter-spacing: -0.02em;
     ${fontGolosText(600)};
     color: ${colors.black100};
     height: fit-content;
-    
-    ${media.lg`
-        font-size: ${rm(80)};
-    `}
+    font-size: ${rm(48)};
+    width: ${rm(1003)};
 
-    ${media.md`
-        font-size: ${rm(56)};
+    ${media.lg`
+        font-size: ${rm(40)};
+        width: ${rm(777)};
     `}
 
     ${media.xsm`
-        font-size: ${rm(40)};
+        font-size: ${rm(32)};
+        width: 100%;
     `}
+
 `
 
 const StyledDescription = styled(AnimatedText)`
