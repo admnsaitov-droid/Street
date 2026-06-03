@@ -13,8 +13,8 @@ export const MapMarker = () => {
 const StyledMapMarker = styled.div`
     width: ${rm(24)};
     height: ${rm(24)};
-    background-color: rgba(255, 255, 255, 0.16);
-    border: 1px solid rgba( 255, 255, 255, 0.16 );
+    background-color: rgba(237, 30, 42, 0.16);
+    border: 1px solid rgba(237, 30, 42, 0.16);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -23,5 +23,5 @@ const StyledMapMarker = styled.div`
 const StyledInnerSquare = styled.div`
     width: ${rm(10)};
     height: ${rm(10)};
-    background-color: white;
+    background-color: #ED1E2A;
 `

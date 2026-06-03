@@ -149,7 +149,10 @@ export const Footer = () => {
                         </AnimatedLink>
                     ))}
                 </div>
-                <div className="third">© STREET BARBELL {new Date().getFullYear()} . All rights reserved</div>
+                <div className="third">
+                    <span>© STREET BARBELL {new Date().getFullYear()} . All rights reserved</span>
+                    <span className="developed">Developed by <a href="https://textura.agency" target="_blank" rel="noopener noreferrer">textura.agency</a></span>
+                </div>
             </StyledBottomContainer>
         </StyledFooter>
     )
@@ -442,6 +445,10 @@ const StyledBottomContainer = styled.div`
         ${fontGolosText(400)};
         line-height: 130%;
         text-transform: uppercase;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: ${rm(8)};
 
         ${media.lg`
             font-size: ${rm(14)};
@@ -451,6 +458,31 @@ const StyledBottomContainer = styled.div`
         ${media.xsm`
             font-size: ${rm(12)};
             width: 100%;
+            align-items: flex-start;
         `}
+
+        .developed{
+            font-size: ${rm(13)};
+            text-transform: none;
+
+            ${media.lg`
+                font-size: ${rm(12)};
+            `}
+
+            ${media.xsm`
+                font-size: ${rm(11)};
+            `}
+
+            a{
+                color: #6F7685;
+                text-decoration: underline;
+                text-underline-offset: ${rm(2)};
+                transition: color 0.3s ease-in-out;
+
+                &:hover{
+                    color: ${colors.white100};
+                }
+            }
+        }
     }
 `
