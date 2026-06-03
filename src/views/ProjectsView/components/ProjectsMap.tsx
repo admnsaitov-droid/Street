@@ -485,8 +485,8 @@ export const ProjectsMap = ({
                             url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
                                 <svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
                                     <g transform="rotate(45 24 24)">
-                                        <rect x="12" y="12" width="24" height="24" fill="rgba(255,255,255,0.16)" stroke="rgba(255,255,255,0.16)" stroke-width="1"/>
-                                        <rect x="21" y="21" width="6" height="6" fill="white"/>
+                                        <rect x="12" y="12" width="24" height="24" fill="rgba(237,30,42,0.16)" stroke="rgba(237,30,42,0.16)" stroke-width="1"/>
+                                        <rect x="21" y="21" width="6" height="6" fill="#ED1E2A"/>
                                     </g>
                                 </svg>
                             `),
