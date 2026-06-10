@@ -17,6 +17,8 @@ const SPEC_FIELDS: { textKey: string; valueKey: string }[] = [
     { textKey: "equipmentWeightText", valueKey: "equipmentWeightValue" },
     { textKey: "minimumLoadText", valueKey: "minimumLoadValue" },
     { textKey: "maximumLoadText", valueKey: "maximumLoadValue" },
+    { textKey: "userHeightText", valueKey: "userHeightValue" },
+    { textKey: "userAgeText", valueKey: "userAgeValue" },
 ]
 
 export interface ProductOverviewProps {
@@ -65,11 +67,7 @@ export const ProductOverview = ({ data, specificationTexts }: ProductOverviewPro
                         {data?.productInfo?.musclesTitle && (
                             <Accordion title={data?.productInfo?.musclesTitle} iconKey="muscles">
                             {data?.productInfo?.muscles && (
-                                <Muscles
-                                    muscles={data.productInfo.muscles}
-                                    data={data}
-                                    specificationTexts={specificationTexts}
-                                />
+                                <Muscles muscles={data.productInfo.muscles} musclesDescription={data.productInfo.musclesDescription} />
                             )}
                             </Accordion>
                         )}

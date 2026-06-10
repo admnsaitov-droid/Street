@@ -1,36 +1,21 @@
-import { useMemo } from "react"
-import { media, rm } from "@/styles"
+import { colors, media, rm } from "@/styles"
+import { fontGolosText } from "@/styles/fonts"
 import styled from "styled-components"
 import { MediaComponent } from "@/components/MediaComponent/MediaComponent"
 import { MaskImageAppear } from "@/components/animated/MaskImageAppear/MaskImageAppear"
-import { Specifications } from "./Specifications"
-
-const MUSCLES_SPEC_FIELDS: { textKey: string; valueKey: string }[] = [
-    { textKey: "userHeightText", valueKey: "userHeightValue" },
-    { textKey: "userAgeText", valueKey: "userAgeValue" },
-]
+import { AnimatedText } from "@/components/animated/AnimatedText/AnimatedText"
 
 const hasMedia = (media: any) => media && (media.poster || media.video)
 
 interface MusclesProps {
     muscles: any
-    data: any
-    specificationTexts?: Record<string, string | null> | null
+    musclesDescription?: string | null
 }
 
-export const Muscles = ({ muscles, data, specificationTexts }: MusclesProps) => {
-    const musclesSpecs = useMemo(() => {
-        if (!data || !specificationTexts) return []
-        return MUSCLES_SPEC_FIELDS.filter(({ valueKey }) => data[valueKey] != null).map(({ textKey, valueKey }) => ({
-            id: valueKey,
-            param: specificationTexts[textKey] ?? "",
-            value: data[valueKey],
-        }))
-    }, [data, specificationTexts])
-
+export const Muscles = ({ muscles, musclesDescription }: MusclesProps) => {
     return (
         <StyledMuscles>
-            {musclesSpecs.length > 0 && <Specifications specifications={musclesSpecs} />}
+            {musclesDescription && <StyledDescription tag="p">{musclesDescription}</StyledDescription>}
             {hasMedia(muscles?.media) ? (
                 <StyledImageContainer>
                     <MaskImageAppear className="image-container">
@@ -47,6 +32,23 @@ const StyledMuscles = styled.div`
     flex-direction: column;
     gap: ${rm(15)};
     width: 100%;
+`
+
+const StyledDescription = styled(AnimatedText)`
+    font-size: ${rm(20)};
+    color: ${colors.gray};
+    ${fontGolosText(400)};
+    line-height: 130%;
+    width: 100%;
+    word-break: break-word;
+
+    ${media.lg`
+        font-size: ${rm(16)};
+    `}
+
+    ${media.xsm`
+        font-size: ${rm(14)};
+    `}
 `
 
 const StyledImageContainer = styled.div`
