@@ -85,6 +85,10 @@ const Label = styled.label<{ $active: boolean }>`
   pointer-events: none;
   transition: all 0.2s cubic-bezier(.4,0,.2,1);
   transform: ${({ $active }) => $active ? `translateY(-${rm(18)})` : "none"};
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 
   ${media.lg`
     font-size: ${({ $active }: any) => $active ? rm(18) : rm(24)};

@@ -3,12 +3,12 @@ import styled from "styled-components"
 import { colors } from "@/styles/colors"
 import { useEffect, useState, useRef } from "react"
 import { useLocale } from "next-intl"
-import { getStrapiData } from "@/utils/strapi"
 import { media, rm } from "@/styles"
 import { fontGolosText, fontSageGrotesk } from "@/styles/fonts"
 import useLoadingStore from "@/store/store"
 import { SimpleInput } from "../Ui/Inputs/SimpleInput"
 import { SimpleTextarea } from "../Ui/Inputs/SimpleTextarea"
+import contactFormTranslations from "./contactFormTranslations"
 import { AnimLink } from "@/layouts/AnimatedRouterLayout/AnimatedRouterLayout"
 import { SimpleCheckbox } from "../Ui/checkbox/SimpleCheckbox"
 import { BlueButton } from "../Ui/buttons/BlueButton"
@@ -20,8 +20,9 @@ import { LineAppear } from "./components/LineAppear"
 import { scrollTo } from "@/utils/scrollTo"
 
 export const ContactForm = () => {
-    const [data, setData] = useState<any>(null)
     const locale = useLocale()
+    const hardcoded = contactFormTranslations[locale] ?? contactFormTranslations.en
+    const [data, setData] = useState<any>(hardcoded)
     const pathname = usePathname()
     const width = useWindowWidth()
 
@@ -54,13 +55,8 @@ export const ContactForm = () => {
     const policyRef = useRef<HTMLDivElement>(null)
 
     useEffect(() => {
-        const fetchData = async () => {
-            const data = await getStrapiData('get-contact-data', locale)
-            console.log( ' contact data', data)
-            setData(data)
-        }
-        fetchData()
-    }, [])
+        setData(contactFormTranslations[locale] ?? contactFormTranslations.en)
+    }, [locale])
 
     const validateForm = () => {
         const newErrors = {

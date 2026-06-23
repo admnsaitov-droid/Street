@@ -153,9 +153,9 @@ const AnimatedGrid: React.FC<AnimatedGridProps> = ({
   const [elementWidths, setElementWidths] = useState<number[]>([]);
 
   // Function to measure text using temporary DOM elements with actual styles
-  const measureTextWidth = (text: string, element: React.ReactElement | null = null): number => {
+  const measureTextWidth = (text: string, extraStyle?: React.CSSProperties): number => {
     if (!containerRef.current) return 0;
-    
+
     const tempDiv = document.createElement('div');
     tempDiv.style.position = 'absolute';
     tempDiv.style.visibility = 'hidden';
@@ -164,7 +164,7 @@ const AnimatedGrid: React.FC<AnimatedGridProps> = ({
     tempDiv.style.left = '-9999px';
     tempDiv.style.pointerEvents = 'none';
     tempDiv.textContent = text;
-    
+
     // Apply styles from the container to get accurate measurements
     const containerStyles = window.getComputedStyle(containerRef.current);
     tempDiv.style.fontFamily = containerStyles.fontFamily;
@@ -173,11 +173,21 @@ const AnimatedGrid: React.FC<AnimatedGridProps> = ({
     tempDiv.style.fontStyle = containerStyles.fontStyle;
     tempDiv.style.letterSpacing = containerStyles.letterSpacing;
     tempDiv.style.textTransform = containerStyles.textTransform;
-    
+
+    // Override with element-specific styles so different fonts/weights are measured correctly
+    if (extraStyle) {
+      if (extraStyle.fontFamily) tempDiv.style.fontFamily = String(extraStyle.fontFamily);
+      if (extraStyle.fontSize) tempDiv.style.fontSize = typeof extraStyle.fontSize === 'number' ? `${extraStyle.fontSize}px` : String(extraStyle.fontSize);
+      if (extraStyle.fontWeight) tempDiv.style.fontWeight = String(extraStyle.fontWeight);
+      if (extraStyle.fontStyle) tempDiv.style.fontStyle = String(extraStyle.fontStyle);
+      if (extraStyle.letterSpacing) tempDiv.style.letterSpacing = String(extraStyle.letterSpacing);
+      if (extraStyle.textTransform) tempDiv.style.textTransform = String(extraStyle.textTransform);
+    }
+
     document.body.appendChild(tempDiv);
     const width = tempDiv.getBoundingClientRect().width;
     document.body.removeChild(tempDiv);
-    
+
     return width;
   };
 
@@ -203,10 +213,7 @@ const AnimatedGrid: React.FC<AnimatedGridProps> = ({
   // Function to process text for measurement (same logic as processText but for measurement)
   const processTextForMeasurement = (text: string): string[] => {
     const words = text.split(/\s+/).filter(Boolean);
-    return words.map((word, wordIndex) => {
-      // Add a space after each word except the last one
-      return wordIndex < words.length - 1 ? word + ' ' : word;
-    });
+    return words.map((word) => word + ' ');
   };
 
   const parseChildren = (isAnimated = false) => {
@@ -242,10 +249,10 @@ const AnimatedGrid: React.FC<AnimatedGridProps> = ({
   const processText = (text: string, config: CellConfig = {}, elementId?: string) => {
     const words = text.split(/\s+/).filter(Boolean);
     
-    const processedWords = words.map((word, wordIndex) => {
+    const processedWords = words.map((word) => {
       const index = globalIndex++;
-      // Add a space after each word except the last one
-      const wordWithSpace = wordIndex < words.length - 1 ? word + ' ' : word;
+      // Always add trailing space so adjacent spans don't collide (e.g. red + black text)
+      const wordWithSpace = word + ' ';
       return { word, wordWithSpace, index };
     });
     
@@ -326,23 +333,20 @@ const processNode = (node: React.ReactNode): React.ReactNode[] => {
       
       for (let i = 0; i < elements.length; i++) {
         const element = elements[i];
-        
+
         if (typeof element === 'string') {
-          // For text nodes, process and measure each word with spaces
           const processedWords = processTextForMeasurement(element);
           processedWords.forEach(word => {
             widths.push(measureTextWidth(word));
           });
         } else if (React.isValidElement(element)) {
-          // For React elements, try to extract text content and measure
           const textContent = extractTextContent(element);
+          const elementStyle = (element as React.ReactElement<{ style?: React.CSSProperties }>).props.style;
           if (textContent) {
-            const processedWords = processTextForMeasurement(textContent);
-            processedWords.forEach(word => {
-              widths.push(measureTextWidth(word));
-            });
+            // Measure the full text (including trailing space) with the element's own font styles
+            widths.push(measureTextWidth(textContent, elementStyle));
           } else {
-            // Fallback: create a temporary element to measure the actual React element
+            // Fallback: render into a temp DOM node to measure non-text elements
             const tempDiv = document.createElement('div');
             tempDiv.style.position = 'absolute';
             tempDiv.style.visibility = 'hidden';
@@ -350,8 +354,7 @@ const processNode = (node: React.ReactNode): React.ReactNode[] => {
             tempDiv.style.top = '-9999px';
             tempDiv.style.left = '-9999px';
             tempDiv.style.pointerEvents = 'none';
-            
-            // Apply container styles
+
             if (containerRef.current) {
               const containerStyles = window.getComputedStyle(containerRef.current);
               tempDiv.style.fontFamily = containerStyles.fontFamily;
@@ -361,14 +364,12 @@ const processNode = (node: React.ReactNode): React.ReactNode[] => {
               tempDiv.style.letterSpacing = containerStyles.letterSpacing;
               tempDiv.style.textTransform = containerStyles.textTransform;
             }
-            
+
             document.body.appendChild(tempDiv);
-            
+
             try {
               const root = createRoot(tempDiv);
               root.render(element as React.ReactElement);
-              
-              // Wait for render to complete
               await new Promise(resolve => setTimeout(resolve, 0));
               widths.push(tempDiv.getBoundingClientRect().width);
               root.unmount();
@@ -382,7 +383,6 @@ const processNode = (node: React.ReactNode): React.ReactNode[] => {
           widths.push(0);
         }
       }
-      // 
       setElementWidths(widths);
     };
     
@@ -491,22 +491,18 @@ const processNode = (node: React.ReactNode): React.ReactNode[] => {
         
         for (let i = 0; i < elements.length; i++) {
           const element = elements[i];
-          
+
           if (typeof element === 'string') {
-            // For text nodes, process and measure each word with spaces
             const processedWords = processTextForMeasurement(element);
             processedWords.forEach(word => {
               widths.push(measureTextWidth(word));
             });
           } else if (React.isValidElement(element)) {
             const textContent = extractTextContent(element);
+            const elementStyle = (element as React.ReactElement<{ style?: React.CSSProperties }>).props.style;
             if (textContent) {
-              const processedWords = processTextForMeasurement(textContent);
-              processedWords.forEach(word => {
-                widths.push(measureTextWidth(word));
-              });
+              widths.push(measureTextWidth(textContent, elementStyle));
             } else {
-              // Fallback: create a temporary element to measure the actual React element
               const tempDiv = document.createElement('div');
               tempDiv.style.position = 'absolute';
               tempDiv.style.visibility = 'hidden';
@@ -514,8 +510,7 @@ const processNode = (node: React.ReactNode): React.ReactNode[] => {
               tempDiv.style.top = '-9999px';
               tempDiv.style.left = '-9999px';
               tempDiv.style.pointerEvents = 'none';
-              
-              // Apply container styles
+
               if (containerRef.current) {
                 const containerStyles = window.getComputedStyle(containerRef.current);
                 tempDiv.style.fontFamily = containerStyles.fontFamily;
@@ -525,14 +520,12 @@ const processNode = (node: React.ReactNode): React.ReactNode[] => {
                 tempDiv.style.letterSpacing = containerStyles.letterSpacing;
                 tempDiv.style.textTransform = containerStyles.textTransform;
               }
-              
+
               document.body.appendChild(tempDiv);
-              
+
               try {
                 const root = createRoot(tempDiv);
                 root.render(element as React.ReactElement);
-                
-                // Wait for render to complete
                 await new Promise(resolve => setTimeout(resolve, 0));
                 widths.push(tempDiv.getBoundingClientRect().width);
                 root.unmount();
@@ -546,7 +539,7 @@ const processNode = (node: React.ReactNode): React.ReactNode[] => {
             widths.push(0);
           }
         }
-        
+
         setElementWidths(widths);
       };
       

@@ -55,6 +55,14 @@ export interface DynamicLocation {
       }
     }
   }>
+  logo?: {
+    id: number
+    url: string
+    name: string
+    alternativeText?: string
+    width: number
+    height: number
+  }
 }
 
 export interface DynamicDistributionData {
@@ -174,7 +182,8 @@ export const transformDynamicLocation = (dynamicLocation: DynamicLocation): Loca
     country: dynamicLocation.countryText,
     region: continentToRegion(dynamicLocation.continent),
     description: dynamicLocation.description,
-    image: getImageUrl(dynamicLocation)
+    image: getImageUrl(dynamicLocation),
+    logo: dynamicLocation.logo ? getMediaStrapiPath(dynamicLocation.logo) : undefined
   }
 }
 
