@@ -36,6 +36,8 @@ export const Lines = ({ linesData, isTop = true, isHome = false, exploreLineText
         setAllUrls(allProducts)
     }, [allProducts, setAllUrls])
 
+    console.log(linesData)
+
   return (
     <StyledLines ref={containerRef} isTop={isTop}>
         <ProductPreview />

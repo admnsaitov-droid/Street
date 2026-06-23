@@ -11,6 +11,7 @@ export interface Location {
   region: string
   description: string
   image: string
+  logo?: string
 }
 
 export interface Filter {

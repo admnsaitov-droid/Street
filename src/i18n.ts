@@ -3,32 +3,30 @@ import { notFound } from 'next/navigation';
 import { getLocaleCodes } from './utils/locales';
 
 export default getRequestConfig(async ({ requestLocale }) => {
-  console.log('i18n config - requestLocale received:', await requestLocale);
-  
-  // Get dynamic locales from Strapi
-  const locales = await getLocaleCodes();
-  
-  // Get the requested locale or fallback to first available
-  const locale = (await requestLocale) || locales[0] || 'en';
-  
-  console.log('i18n config - available locales:', locales);
-  console.log('i18n config - final locale:', locale);
-  
-  // Ensure we have basic locales as fallback
-  const safeLocales = locales && locales.length > 0 ? locales : ['en', 'es'];
-  
-  // Validate that the incoming `locale` parameter is valid
-  if (!safeLocales.includes(locale)) {
-    console.error('i18n config - locale not found:', locale, 'available:', safeLocales);
+  const locale = await requestLocale;
+
+  // Mirror the middleware: prefer NEXT_PUBLIC_LOCALES env var, only call Strapi as fallback.
+  // This ensures both middleware and i18n config agree on which locales are valid,
+  // which prevents 404s on localhost when Strapi is slow or returns incomplete data.
+  const envLocales = process.env.NEXT_PUBLIC_LOCALES?.split(',').map(l => l.trim()).filter(Boolean) || [];
+
+  let safeLocales: string[];
+  if (envLocales.length > 0) {
+    safeLocales = envLocales;
+  } else {
+    const locales = await getLocaleCodes();
+    safeLocales = locales && locales.length > 0 ? locales : ['en', 'es'];
+  }
+
+  const finalLocale = locale || safeLocales[0] || 'en';
+
+  if (!safeLocales.includes(finalLocale)) {
     notFound();
   }
 
-  // No messages needed - all content comes from Strapi
-  const messages = {};
-  
   return {
-    locale,
-    messages
+    locale: finalLocale,
+    messages: {}
   };
 });
 

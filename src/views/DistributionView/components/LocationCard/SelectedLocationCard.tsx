@@ -26,12 +26,15 @@ export const SelectedLocationCard = ({ location, onClick, isExpanded = false, an
       $isExpanded={isExpanded}
       $animationPhase={animationPhase}
     >
-      <StyledHeader>
-        {location.name}
-      </StyledHeader>
-      <StyledTitle>
-        {location.displayName || location.name}
-      </StyledTitle>
+      <StyledTopRow>
+        <div>
+          <StyledHeader>{location.name}</StyledHeader>
+          <StyledTitle>{location.displayName || location.name}</StyledTitle>
+        </div>
+        {location.logo && (
+          <StyledLogo src={location.logo} alt={`${location.name} logo`} />
+        )}
+      </StyledTopRow>
       <StyledAccordionContent $isExpanded={isExpanded}>
         <StyledDescription>
           {location.description}
@@ -137,6 +140,23 @@ const StyledLocationCard = styled.div<{
   `}
 `
 
+const StyledTopRow = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: ${rm(16)};
+`
+
+const StyledLogo = styled.img`
+  height: ${rm(36)};
+  width: auto;
+  max-width: ${rm(80)};
+  object-fit: contain;
+  flex-shrink: 0;
+  filter: brightness(0) invert(1);
+  opacity: 0.85;
+`
+
 const StyledHeader = styled.div`
   color: #868D9C;
   ${fontGolosText(400)};
@@ -155,9 +175,7 @@ const StyledTitle = styled.div`
   font-size: ${rm(22)};
   line-height: 100%;
   text-transform: uppercase;
-  // margin-bottom: ${rm(16)};
   letter-spacing: -0.01em;
-  width: 70%;
   
   /* Safari font rendering fixes */
   -webkit-font-smoothing: antialiased;

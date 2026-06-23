@@ -151,15 +151,8 @@ const StyledTitleContainer = styled.div`
         text-transform: inherit;
         font-family: inherit;
 
-        > span > span {
-            >:first-child{
-                gap: 0.32em;
-            } 
-        }
-
         > span > span > span {
             align-items: baseline;
-
         }
     }
 `
