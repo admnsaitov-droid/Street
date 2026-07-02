@@ -38,7 +38,7 @@ export const LineView = ({ data }: LineViewProps) => {
                 </StyledTop>
                 <StyledTopImageContainer>
                     <ScaleImageAppear className="image-container">
-                        <MediaComponent media={data?.line?.mainMedia} className="image" parallax={true} />
+                        <MediaComponent media={data?.line?.mainMedia} className="image" parallax={true} priority={true} />
                     </ScaleImageAppear>
                 </StyledTopImageContainer>
             </StyledHero>

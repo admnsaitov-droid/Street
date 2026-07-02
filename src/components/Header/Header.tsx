@@ -18,10 +18,8 @@ import { PackageMenu } from "./MegaMenus/PackageMenu";
 import { ProductsMenu } from "./MegaMenus/ProductsMenu";
 import useLoadingStore from "@/store/store";
 
-export const Header = () => {
-    const [headerData, setHeaderData] = useState<any>(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+export const Header = ({ initialData }: { initialData?: any }) => {
+    const [headerData, setHeaderData] = useState<any>(initialData ?? null);
     const width = useWindowWidth();
     const locale = useLocale();
 
@@ -34,21 +32,11 @@ export const Header = () => {
                 setHeaderData(data);
             } catch (err) {
                 console.error('Error fetching header data:', err);
-                setError('Failed to load header');
-            } finally {
-                setLoading(false);
             }
         };
 
         fetchHeaderData();
     }, [locale]);
-
-
-    if (loading) {
-        return (
-            <></>
-        );
-    }
 
     return (
         <StyledHeader>
@@ -95,7 +83,7 @@ export const Header = () => {
     )
 }
 
-const StyledHeader = styled.div`
+const StyledHeader = styled.header`
     position: fixed;
     width: 100%;
     padding: ${rm(10)} ${rm(50)};

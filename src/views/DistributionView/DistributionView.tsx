@@ -8,6 +8,7 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { DynamicDistributionScene as DistributionScene } from "./components/DynamicScene"
 import AnimatedGrid from "@/components/animated/AnimatedContent"
 import { CountryPanel } from "./components/CountryPanel/CountryPanel"
+import Breadcrumbs from "@/components/Breadcrumbs/Breadcrumbs"
 import { Location as DistributionLocation } from "./data/distributionData"
 import { getAllDynamicLocations, transformDynamicData } from "./data/dynamicDataTransformer"
 import { CountryPanelMobile } from "./components/CountryPanel/CountryPanelMobile"
@@ -90,6 +91,10 @@ export const DistributionView = ({ data }: DistributionViewProps) => {
         <StyledDistributionView>
             <StyledSceneWrapper>
                 <StyledContent>
+                    <Breadcrumbs items={[
+                        { label: 'Home', slug: '' },
+                        { label: data?.distributionPage?.title?.textFirst || 'Distribution', href: undefined },
+                    ]} />
                     <StyledTitleContainer>
                         <h1>
                             <AnimatedGrid
@@ -125,6 +130,7 @@ export const DistributionView = ({ data }: DistributionViewProps) => {
                                 }}
                             >
                                 <span id="title-first">{data?.distributionPage?.title?.textFirst}</span>
+                                <br />
                                 <span id="title-second" className="first">{data?.distributionPage?.title?.textSecond}</span>
                             </AnimatedGrid>
                         </h1>
@@ -205,7 +211,7 @@ const StyledSceneWrapper = styled.div`
 `
 
 const StyledTitleContainer = styled.div`
-    width: ${rm(1000)};
+    width: 100%;
     margin-bottom: ${rm(20)};
     line-height: 90%;
     font-size: ${rm(100)};
@@ -213,16 +219,13 @@ const StyledTitleContainer = styled.div`
 
     ${media.lg`
         font-size: ${rm(80)};
-        width: ${rm(780)};
     `}
 
     ${media.md`
         font-size: ${rm(56)};
-        width: ${rm(600)};
     `}
 
     ${media.xsm`
-        width: 100%;
         font-size: ${rm(32)};
     `}
 

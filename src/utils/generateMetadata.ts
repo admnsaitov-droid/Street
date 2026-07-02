@@ -36,6 +36,7 @@ interface MetadataProps {
     themeColor?: string;
     siteName?: string;
     locale?: string;
+    ogType?: 'website' | 'article';
 }
 
 export function generateMetadata({
@@ -49,6 +50,7 @@ export function generateMetadata({
     themeColor = '#000',
     siteName = 'Street Barbell',
     locale = 'en_US',
+    ogType = 'website',
 }: MetadataProps): Metadata {
     return {
         title,
@@ -76,7 +78,7 @@ export function generateMetadata({
                 }
             ],
             locale: locale,
-            type: 'website',
+            type: ogType,
         },
         twitter: {
             card: 'summary_large_image',

@@ -15,9 +15,10 @@ interface MediaComponentProps {
     parallax?: boolean;
     imageGallery?: string[];
     imageFit?: 'contain' | 'cover';
+    priority?: boolean;
 }
 
-export const MediaComponent = ({ media, className, isExtendable = true, parallax = true, imageGallery, imageFit = 'cover' }: MediaComponentProps) => {
+export const MediaComponent = ({ media, className, isExtendable = true, parallax = true, imageGallery, imageFit = 'cover', priority = false }: MediaComponentProps) => {
     const { openVideo, openImage } = useVideoPlayerStore();
     const elementRef = useRef<HTMLDivElement>(null);
 
@@ -54,7 +55,7 @@ export const MediaComponent = ({ media, className, isExtendable = true, parallax
                         className="parallax-wrapper"
                         style={parallax ? springs : {}}
                     >
-                        <Image className="media" src={getMediaStrapiPath(poster)} alt="Poster" fill onClick={handleOpenImage} />
+                        <Image className="media" src={getMediaStrapiPath(poster)} alt="Poster" fill priority={priority} onClick={handleOpenImage} />
                     </animated.div>
                 )}
                 {video && (

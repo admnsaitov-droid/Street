@@ -10,10 +10,8 @@ import { getStrapiData } from "@/utils/strapi"
 import { AnimLink } from "@/layouts/AnimatedRouterLayout/AnimatedRouterLayout"
 import AnimatedLink from "../animated/AnimatedLink/AnimatedLink"
 
-export const Footer = () => {
-    const [footerData, setFooterData] = useState<any>(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+export const Footer = ({ initialData }: { initialData?: any }) => {
+    const [footerData, setFooterData] = useState<any>(initialData ?? null);
     const locale = useLocale();
 
     useEffect(() => {
@@ -23,21 +21,11 @@ export const Footer = () => {
                 setFooterData(data?.data);
             } catch (err) {
                 console.error('Error fetching footer data:', err);
-                setError('Failed to load footer');
-            } finally {
-                setLoading(false);
             }
         };
 
         fetchFooterData();
     }, [locale]);
-
-
-    if (loading) {
-        return (
-            <></>
-        );
-    }
 
     const phoneHref = footerData?.companyData?.phone
         ? `tel:${String(footerData.companyData.phone).replace(/\s+/g, '')}`
@@ -158,7 +146,7 @@ export const Footer = () => {
     )
 }
 
-const StyledFooter = styled.div`
+const StyledFooter = styled.footer`
     background-color: ${colors.black100};
     position: relative;
     z-index: 100;

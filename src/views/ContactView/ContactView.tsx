@@ -5,6 +5,7 @@ import { StyledTitle } from "../PackagesView/PackagesView"
 import { fontGolosText } from "@/styles/fonts"
 import { ContactForm } from "./screens/ContactForm"
 import { GetInTouch } from "./screens/GetInTouch"
+import Breadcrumbs from "@/components/Breadcrumbs/Breadcrumbs"
 import { AnimatedText } from "@/components/animated/AnimatedText/AnimatedText"
 import { ContactMap } from "./screens/ContactMap"
 import { StructuredData } from "@/components/StructuredData/StructuredData"
@@ -54,6 +55,10 @@ export const ContactView = ({ data }: ContactViewProps) => {
     return (
         <StyledContactView>
             <StructuredData schemas={[organizationSchema]} />
+            <Breadcrumbs items={[
+                { label: 'Home', slug: '' },
+                { label: data?.title || 'Contact', href: undefined },
+            ]} />
             <StyledTop>
                 <StyledTitle tag="h1">
                     {data?.title}

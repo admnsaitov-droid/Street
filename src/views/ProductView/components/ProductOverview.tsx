@@ -47,7 +47,8 @@ export const ProductOverview = ({ data, specificationTexts }: ProductOverviewPro
                 {data?.productInfo?.descriptionMain && <StyledTitle tag="h2">{data?.productInfo?.descriptionMain}</StyledTitle>}
                 <div className="bottom">
                     <div className="accordions">
-                        {data?.productInfo?.descriptionTitle && (
+                        {data?.productInfo?.descriptionTitle &&
+                         (data?.model && data?.productInfo?.description || data?.productInfo?.productDescriptionSection?.length > 0) && (
                             <Accordion title={data.productInfo.descriptionTitle} iconKey="description">
                                 <StyledDescriptionContent>
                                     {data?.model && data?.productInfo?.description && (
@@ -64,11 +65,10 @@ export const ProductOverview = ({ data, specificationTexts }: ProductOverviewPro
                                 <Specifications specifications={specifications} />
                             </Accordion>
                         )}
-                        {data?.productInfo?.musclesTitle && (
+                        {data?.productInfo?.musclesTitle &&
+                         (data?.productInfo?.muscles || data?.productInfo?.musclesDescription) && (
                             <Accordion title={data?.productInfo?.musclesTitle} iconKey="muscles">
-                            {data?.productInfo?.muscles && (
                                 <Muscles muscles={data.productInfo.muscles} musclesDescription={data.productInfo.musclesDescription} />
-                            )}
                             </Accordion>
                         )}
                     </div>

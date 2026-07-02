@@ -33,13 +33,11 @@ export const Loader = ({ setFullyLoaded, progress, isFullyLoaded }: LoaderProps)
         document.body.style.cursor = 'progress'
     }, [isLoaded])
 
+    // Animate logo in shortly after mount so it's visible for the full loader duration
     useEffect(() => {
-        if (isFullyLoaded) {
-            setTimeout(() => {
-                setShouldLogoAnimate(true)
-            }, 1000)
-        }
-    }, [isFullyLoaded])
+        const timer = setTimeout(() => setShouldLogoAnimate(true), 200)
+        return () => clearTimeout(timer)
+    }, [])
 
     // Fake Progress
     // Replace it with real progress/logic
@@ -50,14 +48,14 @@ export const Loader = ({ setFullyLoaded, progress, isFullyLoaded }: LoaderProps)
                 setFullyLoaded(true)
                 setContentLoaded(true)
             }, 100)
-        }, 0)
+        }, 1000)
     }, [progressRef.current])
 
 
     const secondSvgValues = useSpring({
         y: shouldLogoAnimate ? '0%' : '100%',
         config: {
-            duration: 600,
+            duration: 400,
             easing: easings.easeInOutQuad
         },
     })
@@ -65,19 +63,19 @@ export const Loader = ({ setFullyLoaded, progress, isFullyLoaded }: LoaderProps)
     const firstSvgValues = useSpring({
         x: shouldLogoAnimate ? '0%' : '-100%',
         config: {
-            duration: 600,
+            duration: 400,
             easing: easings.easeInOutQuad
         },
-        delay: 600
+        delay: 200
     })
 
     const thirdSvgValues = useSpring({
         x: shouldLogoAnimate ? '0%' : '100%',
         config: {
-            duration: 600,
+            duration: 400,
             easing: easings.easeInOutQuad
         },
-        delay: 600
+        delay: 200
     })
 
     return (

@@ -13,6 +13,7 @@ import { ScrollLayout } from "@/layouts/ScrollLayout/ScrollLayout";
 import { AnimatedRouterLayout } from "@/layouts/AnimatedRouterLayout/AnimatedRouterLayout";
 import { Header } from "@/components/Header/Header";
 import { getLocaleCodes } from "@/utils/locales";
+import { getStrapiData } from "@/utils/strapi";
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import { ContactForm } from "@/components/ContactForm/ContactForm";
@@ -42,6 +43,11 @@ export default async function RootLayout({
 }>) {
   const { locale } = await params;
   const messages = await getMessages();
+
+  const [headerData, footerData] = await Promise.all([
+    getStrapiData('get-header-data', locale),
+    getStrapiData('get-footer-data', locale),
+  ]);
   
   // Generate structured data for the site with error handling
   let organizationSchema = null;
@@ -49,27 +55,32 @@ export default async function RootLayout({
   
   try {
     const baseUrl = process.env.NEXT_PUBLIC_BASEURL || 'https://www.streetbarbell.com';
+    const contactPhone = footerData?.data?.companyData?.phone;
+    const contactEmail = footerData?.data?.companyData?.mail;
     organizationSchema = generateOrganizationSchema({
       name: 'Street Barbell',
       url: baseUrl,
-      logo: `${baseUrl}/logo.png`,
+      logo: `${baseUrl}/open-graph.png`,
       description: 'Street Barbell is a barbell brand that makes high-quality barbell products.',
       sameAs: [
         // Add your social media URLs here
         // 'https://www.facebook.com/streetbarbell',
         // 'https://www.instagram.com/streetbarbell',
         // 'https://twitter.com/streetbarbell'
-      ]
+      ],
+      ...(contactPhone || contactEmail ? {
+        contactPoint: {
+          telephone: contactPhone,
+          email: contactEmail,
+          contactType: 'customer service',
+        }
+      } : {}),
     });
     
     websiteSchema = generateWebSiteSchema({
       name: 'Street Barbell',
       url: baseUrl,
       description: 'Street Barbell is a barbell brand that makes high-quality barbell products.',
-      potentialAction: {
-        target: `${baseUrl}/search?q={search_term_string}`,
-        queryInput: 'required name=search_term_string'
-      }
     });
   } catch (error) {
     console.error('Error generating structured data:', error);
@@ -90,17 +101,18 @@ export default async function RootLayout({
                 <AssetsLoaderLayout>
                   <Cookie />
                   <AnimatedRouterLayout>
-                    <Header />
+                    <Header initialData={headerData} />
                     <FadeContainer />
                     <SuccessModal />
                     <ErrorModal />
                     <FullScreenPlayer />
-                    {/* canvas layout */}
+                    <main>
                     <DynamicScrollRevealWrapper>
                         {children}
                         <ContactForm />
                     </DynamicScrollRevealWrapper>
-                    <Footer />
+                    </main>
+                    <Footer initialData={footerData?.data} />
                   </AnimatedRouterLayout>
                 </AssetsLoaderLayout>
               </ScrollLayout>

@@ -340,43 +340,48 @@ const processNode = (node: React.ReactNode): React.ReactNode[] => {
             widths.push(measureTextWidth(word));
           });
         } else if (React.isValidElement(element)) {
-          const textContent = extractTextContent(element);
-          const elementStyle = (element as React.ReactElement<{ style?: React.CSSProperties }>).props.style;
-          if (textContent) {
-            // Measure the full text (including trailing space) with the element's own font styles
-            widths.push(measureTextWidth(textContent, elementStyle));
+          // Forced line break: give it container-sized width so it always starts a new row
+          if ('data-br' in (element.props as any)) {
+            widths.push(containerRef.current?.getBoundingClientRect().width ?? 999999);
           } else {
-            // Fallback: render into a temp DOM node to measure non-text elements
-            const tempDiv = document.createElement('div');
-            tempDiv.style.position = 'absolute';
-            tempDiv.style.visibility = 'hidden';
-            tempDiv.style.whiteSpace = 'nowrap';
-            tempDiv.style.top = '-9999px';
-            tempDiv.style.left = '-9999px';
-            tempDiv.style.pointerEvents = 'none';
+            const textContent = extractTextContent(element);
+            const elementStyle = (element as React.ReactElement<{ style?: React.CSSProperties }>).props.style;
+            if (textContent) {
+              // Measure the full text (including trailing space) with the element's own font styles
+              widths.push(measureTextWidth(textContent, elementStyle));
+            } else {
+              // Fallback: render into a temp DOM node to measure non-text elements
+              const tempDiv = document.createElement('div');
+              tempDiv.style.position = 'absolute';
+              tempDiv.style.visibility = 'hidden';
+              tempDiv.style.whiteSpace = 'nowrap';
+              tempDiv.style.top = '-9999px';
+              tempDiv.style.left = '-9999px';
+              tempDiv.style.pointerEvents = 'none';
 
-            if (containerRef.current) {
-              const containerStyles = window.getComputedStyle(containerRef.current);
-              tempDiv.style.fontFamily = containerStyles.fontFamily;
-              tempDiv.style.fontSize = containerStyles.fontSize;
-              tempDiv.style.fontWeight = containerStyles.fontWeight;
-              tempDiv.style.fontStyle = containerStyles.fontStyle;
-              tempDiv.style.letterSpacing = containerStyles.letterSpacing;
-              tempDiv.style.textTransform = containerStyles.textTransform;
-            }
+              if (containerRef.current) {
+                const containerStyles = window.getComputedStyle(containerRef.current);
+                tempDiv.style.fontFamily = containerStyles.fontFamily;
+                tempDiv.style.fontSize = containerStyles.fontSize;
+                tempDiv.style.fontWeight = containerStyles.fontWeight;
+                tempDiv.style.fontStyle = containerStyles.fontStyle;
+                tempDiv.style.letterSpacing = containerStyles.letterSpacing;
+                tempDiv.style.textTransform = containerStyles.textTransform;
+              }
 
-            document.body.appendChild(tempDiv);
+              document.body.appendChild(tempDiv);
 
-            try {
-              const root = createRoot(tempDiv);
-              root.render(element as React.ReactElement);
-              await new Promise(resolve => setTimeout(resolve, 0));
-              widths.push(tempDiv.getBoundingClientRect().width);
-              root.unmount();
-              document.body.removeChild(tempDiv);
-            } catch (e) {
-              widths.push(0);
-              document.body.removeChild(tempDiv);
+              try {
+                const root = createRoot(tempDiv);
+                root.render(element as React.ReactElement);
+                await new Promise(resolve => setTimeout(resolve, 0));
+                widths.push(tempDiv.getBoundingClientRect().width);
+                root.unmount();
+                document.body.removeChild(tempDiv);
+              } catch (e) {
+                widths.push(0);
+                document.body.removeChild(tempDiv);
+              }
             }
           }
         } else {
@@ -385,7 +390,7 @@ const processNode = (node: React.ReactNode): React.ReactNode[] => {
       }
       setElementWidths(widths);
     };
-    
+
     measureElements();
   }, [animatedElements.elements.length, children]);
 
@@ -416,6 +421,18 @@ const processNode = (node: React.ReactNode): React.ReactNode[] => {
     if (elementRows.length === 0) return [];
     return elementRows.map((rowElementIndices, rowIndex) => {
       const GridRowComponent = tag === "span" ? GridRowSpan : GridRow;
+
+      // If this row contains only a forced line-break (data-br), render it as a zero-height spacer
+      const isBrRow =
+        rowElementIndices.length === 1 &&
+        React.isValidElement(animatedElements.elements[rowElementIndices[0]]) &&
+        'data-br' in ((animatedElements.elements[rowElementIndices[0]] as React.ReactElement).props as any);
+
+      if (isBrRow) {
+        const BrTag = tag === "span" ? "span" : "div";
+        return <BrTag key={`row-${rowIndex}-br`} style={{ display: 'block', height: 0, width: '100%', overflow: 'hidden' }} />;
+      }
+
       return (
         <GridRowComponent
           key={`row-${rowIndex}`}
@@ -498,41 +515,45 @@ const processNode = (node: React.ReactNode): React.ReactNode[] => {
               widths.push(measureTextWidth(word));
             });
           } else if (React.isValidElement(element)) {
-            const textContent = extractTextContent(element);
-            const elementStyle = (element as React.ReactElement<{ style?: React.CSSProperties }>).props.style;
-            if (textContent) {
-              widths.push(measureTextWidth(textContent, elementStyle));
+            if ('data-br' in (element.props as any)) {
+              widths.push(containerRef.current?.getBoundingClientRect().width ?? 999999);
             } else {
-              const tempDiv = document.createElement('div');
-              tempDiv.style.position = 'absolute';
-              tempDiv.style.visibility = 'hidden';
-              tempDiv.style.whiteSpace = 'nowrap';
-              tempDiv.style.top = '-9999px';
-              tempDiv.style.left = '-9999px';
-              tempDiv.style.pointerEvents = 'none';
+              const textContent = extractTextContent(element);
+              const elementStyle = (element as React.ReactElement<{ style?: React.CSSProperties }>).props.style;
+              if (textContent) {
+                widths.push(measureTextWidth(textContent, elementStyle));
+              } else {
+                const tempDiv = document.createElement('div');
+                tempDiv.style.position = 'absolute';
+                tempDiv.style.visibility = 'hidden';
+                tempDiv.style.whiteSpace = 'nowrap';
+                tempDiv.style.top = '-9999px';
+                tempDiv.style.left = '-9999px';
+                tempDiv.style.pointerEvents = 'none';
 
-              if (containerRef.current) {
-                const containerStyles = window.getComputedStyle(containerRef.current);
-                tempDiv.style.fontFamily = containerStyles.fontFamily;
-                tempDiv.style.fontSize = containerStyles.fontSize;
-                tempDiv.style.fontWeight = containerStyles.fontWeight;
-                tempDiv.style.fontStyle = containerStyles.fontStyle;
-                tempDiv.style.letterSpacing = containerStyles.letterSpacing;
-                tempDiv.style.textTransform = containerStyles.textTransform;
-              }
+                if (containerRef.current) {
+                  const containerStyles = window.getComputedStyle(containerRef.current);
+                  tempDiv.style.fontFamily = containerStyles.fontFamily;
+                  tempDiv.style.fontSize = containerStyles.fontSize;
+                  tempDiv.style.fontWeight = containerStyles.fontWeight;
+                  tempDiv.style.fontStyle = containerStyles.fontStyle;
+                  tempDiv.style.letterSpacing = containerStyles.letterSpacing;
+                  tempDiv.style.textTransform = containerStyles.textTransform;
+                }
 
-              document.body.appendChild(tempDiv);
+                document.body.appendChild(tempDiv);
 
-              try {
-                const root = createRoot(tempDiv);
-                root.render(element as React.ReactElement);
-                await new Promise(resolve => setTimeout(resolve, 0));
-                widths.push(tempDiv.getBoundingClientRect().width);
-                root.unmount();
-                document.body.removeChild(tempDiv);
-              } catch (e) {
-                widths.push(0);
-                document.body.removeChild(tempDiv);
+                try {
+                  const root = createRoot(tempDiv);
+                  root.render(element as React.ReactElement);
+                  await new Promise(resolve => setTimeout(resolve, 0));
+                  widths.push(tempDiv.getBoundingClientRect().width);
+                  root.unmount();
+                  document.body.removeChild(tempDiv);
+                } catch (e) {
+                  widths.push(0);
+                  document.body.removeChild(tempDiv);
+                }
               }
             }
           } else {

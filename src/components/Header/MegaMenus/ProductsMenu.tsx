@@ -12,7 +12,7 @@ import { getMediaStrapiPath } from "@/utils/getMediaStrapiPath"
 import useLoadingStore from "@/store/store"
 import { AnimLink } from "@/layouts/AnimatedRouterLayout/AnimatedRouterLayout"
 
-export const ProductsMenu = ({ previewText, allText }: { previewText: string, allText: string }) => {  
+export const ProductsMenu = ({ previewText, allText }: { previewText: string, allText: string }) => {
     const [isHovered, setIsHovered] = useState(false)
     const [linesData, setLinesData] = useState<any>(null);
     const [loading, setLoading] = useState(true);
@@ -22,6 +22,25 @@ export const ProductsMenu = ({ previewText, allText }: { previewText: string, al
     const locale = useLocale();
     const [currentPackage, setCurrentPackage] = useState<any>(null);
     const setIsMegaMenuOpen = useLoadingStore((state: any) => state.setIsMegaMenuOpen);
+    const wasClickedRef = useRef(false);
+
+    const openMenu = () => {
+        if (wasClickedRef.current) return;
+        setIsHovered(true);
+        setIsMegaMenuOpen(true);
+    };
+
+    const closeMenu = () => {
+        wasClickedRef.current = false;
+        setIsHovered(false);
+        setIsMegaMenuOpen(false);
+    };
+
+    const handleLinkClick = () => {
+        wasClickedRef.current = true;
+        setIsHovered(false);
+        setIsMegaMenuOpen(false);
+    };
 
     useEffect(() => {
         const fetchPackagesData = async () => {
@@ -128,28 +147,17 @@ export const ProductsMenu = ({ previewText, allText }: { previewText: string, al
             <StyledVisibleContainer>
                 <AnimLink
                     href="/lines"
-                    onMouseEnter={() => {
-                        setIsHovered(true);
-                        setIsMegaMenuOpen(true);
-                    }}
-                    onMouseLeave={() => {
-                        setIsHovered(false);
-                        setIsMegaMenuOpen(false);
-                    }}
+                    onMouseEnter={openMenu}
+                    onMouseLeave={closeMenu}
+                    onClick={handleLinkClick}
                 >
                     {previewText}
                 </AnimLink>
             </StyledVisibleContainer>
-            
+
             <StyledMenu style={{pointerEvents: isHovered ? 'auto' : 'none', userSelect: isHovered ? 'auto' : 'none'}}
-                onMouseEnter={() => {
-                    setIsHovered(true);
-                    setIsMegaMenuOpen(true);
-                }}
-                onMouseLeave={() => {
-                    setIsHovered(false);
-                    setIsMegaMenuOpen(false);
-                }}
+                onMouseEnter={openMenu}
+                onMouseLeave={closeMenu}
             >
                 <StyledMenuContainer
                     style={menuAnimation}
@@ -161,32 +169,29 @@ export const ProductsMenu = ({ previewText, allText }: { previewText: string, al
                         <StyledLeft>
                             <StyledPackages>
                                 {linesData?.map((item: any, index: number) => (
-                                    <StyledPackage 
-                                        key={index} 
-                                        href={`/lines/${item?.linii?.slug}`} 
+                                    <StyledPackage
+                                        key={index}
+                                        href={`/lines/${item?.linii?.slug}`}
                                         onMouseEnter={() => setCurrentPackage(item)}
                                         $isActive={currentPackage?.id === item?.id}
+                                        onClick={handleLinkClick}
                                     >
                                         0{index + 1}.<span>{item?.linii?.name} ({item?.linii?.products?.length || 0})</span>
                                     </StyledPackage>
                                 ))}
                             </StyledPackages>
-                            <AllButton text={allText} href="/lines" lineColor={colors.red} />
+                            <AllButton text={allText} href="/lines" lineColor={colors.red} onClick={handleLinkClick} />
                         </StyledLeft>
                         <StyledRight>
-                            <StyledProduct href={`/products/${currentPackage?.linii?.products?.[0]?.slug}`}>
+                            <StyledProduct href={`/products/${currentPackage?.linii?.products?.[0]?.slug}`} onClick={handleLinkClick}>
                                 <div className="imageContainer">
                                     <Image src={getMediaStrapiPath(currentPackage?.linii?.products[0]?.previewImage)} alt="Package" fill />
                                 </div>
-                                {/* <div className="name">{currentPackage?.produkties?.[0]?.name}</div>
-                                <div className="model">{currentPackage?.produkties?.[0]?.model}</div> */}
                             </StyledProduct>
-                            <StyledProduct href={`/products/${currentPackage?.linii?.products?.[1]?.slug}`}>
+                            <StyledProduct href={`/products/${currentPackage?.linii?.products?.[1]?.slug}`} onClick={handleLinkClick}>
                                 <div className="imageContainer">
                                     <Image src={getMediaStrapiPath(currentPackage?.linii?.products[1]?.previewImage)} alt="Package" fill />
                                 </div>
-                                {/* <div className="name">{currentPackage?.produkties?.[1]?.name}</div>
-                                <div className="model">{currentPackage?.produkties?.[1]?.model}</div> */}
                             </StyledProduct>
                         </StyledRight>
                     </StyledLayout>

@@ -12,7 +12,7 @@ import { getMediaStrapiPath } from "@/utils/getMediaStrapiPath"
 import useLoadingStore from "@/store/store"
 import { AnimLink } from "@/layouts/AnimatedRouterLayout/AnimatedRouterLayout"
 
-export const PackageMenu = ({ previewText, allText }: { previewText: string, allText: string }) => {  
+export const PackageMenu = ({ previewText, allText }: { previewText: string, allText: string }) => {
     const [isHovered, setIsHovered] = useState(false)
     const [packagesData, setPackagesData] = useState<any>(null);
     const [loading, setLoading] = useState(true);
@@ -22,6 +22,25 @@ export const PackageMenu = ({ previewText, allText }: { previewText: string, all
     const locale = useLocale();
     const [currentPackage, setCurrentPackage] = useState<any>(null);
     const setIsMegaMenuOpen = useLoadingStore((state: any) => state.setIsMegaMenuOpen);
+    const wasClickedRef = useRef(false);
+
+    const openMenu = () => {
+        if (wasClickedRef.current) return;
+        setIsHovered(true);
+        setIsMegaMenuOpen(true);
+    };
+
+    const closeMenu = () => {
+        wasClickedRef.current = false;
+        setIsHovered(false);
+        setIsMegaMenuOpen(false);
+    };
+
+    const handleLinkClick = () => {
+        wasClickedRef.current = true;
+        setIsHovered(false);
+        setIsMegaMenuOpen(false);
+    };
 
     useEffect(() => {
         const fetchPackagesData = async () => {
@@ -128,48 +147,38 @@ export const PackageMenu = ({ previewText, allText }: { previewText: string, all
             <StyledVisibleContainer>
                 <AnimLink
                     href="/packages"
-                    onMouseEnter={() => {
-                        setIsHovered(true);
-                        setIsMegaMenuOpen(true);
-                    }}
-                    onMouseLeave={() => {
-                        setIsHovered(false);
-                        setIsMegaMenuOpen(false);
-                    }}
+                    onMouseEnter={openMenu}
+                    onMouseLeave={closeMenu}
+                    onClick={handleLinkClick}
                 >
                     {previewText}
                 </AnimLink>
             </StyledVisibleContainer>
-            
+
             <StyledMenu style={{pointerEvents: isHovered ? 'auto' : 'none', userSelect: isHovered ? 'auto' : 'none'}}
-                onMouseEnter={() => {
-                    setIsHovered(true);
-                    setIsMegaMenuOpen(true);
-                }}
-                onMouseLeave={() => {
-                    setIsHovered(false);
-                    setIsMegaMenuOpen(false);
-                }}
+                onMouseEnter={openMenu}
+                onMouseLeave={closeMenu}
             >
                 <StyledMenuContainer style={menuAnimation}>
                     <StyledLayout ref={contentRef}>
                         <StyledLeft>
                             <StyledPackages>
                                 {packagesData?.map((item: any, index: number) => (
-                                    <StyledPackage 
-                                        key={index} 
-                                        href={`/packages/${item?.slug}`} 
+                                    <StyledPackage
+                                        key={index}
+                                        href={`/packages/${item?.slug}`}
                                         onMouseEnter={() => setCurrentPackage(item)}
                                         $isActive={currentPackage?.id === item?.id}
+                                        onClick={handleLinkClick}
                                     >
                                         0{index + 1}.<span>{item?.title} layout</span>
                                     </StyledPackage>
                                 ))}
                             </StyledPackages>
-                            <AllButton text={allText} href="/packages" lineColor={colors.red} />
+                            <AllButton text={allText} href="/packages" lineColor={colors.red} onClick={handleLinkClick} />
                         </StyledLeft>
                         <StyledRight>
-                            <Image src={getMediaStrapiPath(currentPackage?.mainMediaLeft?.poster)} alt="Package" fill />
+                            <Image src={getMediaStrapiPath(currentPackage?.mainMediaLeft?.poster)} alt={currentPackage?.name || "Package preview"} fill />
                         </StyledRight>
                     </StyledLayout>
                 </StyledMenuContainer>
