@@ -1,6 +1,5 @@
 /** @type {import('next').NextConfig['redirects']} */
 const redirects = [
-  { source: '/', destination: '/en', permanent: true },
   { source: '/about', destination: '/en/about', permanent: true },
   { source: '/contacts', destination: '/en/contact', permanent: true },
   { source: '/privacy-policy', destination: '/en/privacy-policy', permanent: true },
@@ -148,7 +147,6 @@ const redirects = [
   { source: '/mb-7-92-heavy-punching-bag-stand', destination: '/en/products/mb-7-92-heavy-punching-bag-stand', permanent: true },
   { source: '/mb-7-93-multi-station-punching-bag-stand', destination: '/en/products/mb-7-93-multi-station-punching-bag-stand', permanent: true },
   { source: '/mb-7-96-outdoor-pullover-machine', destination: '/en/products/mb-7-96-outdoor-pullover-machine', permanent: true },
-  { source: '/de', destination: '/de', permanent: true },
   { source: '/de/kontakt', destination: '/de/contact', permanent: true },
   { source: '/de/category/nachricht', destination: '/de/articles', permanent: true },
   { source: '/de/category/produkte', destination: '/de/lines', permanent: true },
@@ -301,7 +299,6 @@ const redirects = [
   { source: '/de/uk-3', destination: '/de/distribution', permanent: true },
   { source: '/de/ungarn', destination: '/de/distribution', permanent: true },
   { source: '/de/usa-4', destination: '/de/distribution', permanent: true },
-  { source: '/es', destination: '/es', permanent: true },
   { source: '/es/contactos', destination: '/es/contact', permanent: true },
   { source: '/es/category/noticias', destination: '/es/articles', permanent: true },
   { source: '/es/category/productos', destination: '/es/lines', permanent: true },
@@ -456,7 +453,6 @@ const redirects = [
   { source: '/es/taiwan-3', destination: '/es/distribution', permanent: true },
   { source: '/es/uae-3', destination: '/es/distribution', permanent: true },
   { source: '/es/usa-3', destination: '/es/distribution', permanent: true },
-  { source: '/fr', destination: '/fr', permanent: true },
   { source: '/fr/contacts-2', destination: '/fr/contact', permanent: true },
   { source: '/fr/a-propos-de-nous', destination: '/fr/about', permanent: true },
   { source: '/fr/category/nouvelles', destination: '/fr/articles', permanent: true },
