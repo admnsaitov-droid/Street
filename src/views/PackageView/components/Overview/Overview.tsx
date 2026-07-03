@@ -14,12 +14,23 @@ import { MediaComponent } from "@/components/MediaComponent/MediaComponent"
 import { AnimatedText } from "@/components/animated/AnimatedText/AnimatedText"
 import AnimatedGrid from "@/components/animated/AnimatedContent"
 import { MaskImageAppear } from "@/components/animated/MaskImageAppear/MaskImageAppear"
+import { useLocale } from "next-intl"
 
 interface OverviewProps {
     data: any
 }
 
+const EXPLORE_TRANSLATIONS: Record<string, { explore: string; theLine: string }> = {
+    en: { explore: 'Explore', theLine: 'the line' },
+    de: { explore: 'Entdecken', theLine: 'die Linie' },
+    es: { explore: 'Explorar', theLine: 'la línea' },
+    fr: { explore: 'Explorer', theLine: 'la gamme' },
+    fi: { explore: 'Tutustu', theLine: 'linjaan' },
+}
+
 export const Overview = ({ data }: OverviewProps) => {
+    const locale = useLocale()
+    const t = EXPLORE_TRANSLATIONS[locale] ?? EXPLORE_TRANSLATIONS.en
 
     const linesData = data?.lines
 
@@ -105,8 +116,8 @@ export const Overview = ({ data }: OverviewProps) => {
                                     }
                                 }}
                             >
-                                <span id="title-first" className="first" style={{marginRight: '0.25em'}}>Explore</span>
-                                <span id="title-second">the line</span>
+                                <span id="title-first" className="first" style={{marginRight: '0.25em'}}>{t.explore}</span>
+                                <span id="title-second">{t.theLine}</span>
                         </AnimatedGrid>
                     </h3>
                     </StyledExploreHeaderContainer>}

@@ -87,7 +87,7 @@ const StyledHeader = styled.header`
     position: fixed;
     width: 100%;
     padding: ${rm(10)} ${rm(50)};
-    z-index: 100;
+    z-index: 200;
     top: 0;
     left: 0;
 

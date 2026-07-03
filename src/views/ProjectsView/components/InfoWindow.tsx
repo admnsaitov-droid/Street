@@ -37,8 +37,14 @@ const Image = styled.img`
     object-fit: cover;
 `
 
-const ContentContainer = styled.div`
-    padding: ${rm(16)} ${rm(8)};
+const AccentBar = styled.div`
+    width: 100%;
+    height: ${rm(4)};
+    background: #ED1E2A;
+`
+
+const ContentContainer = styled.div<{ $noImage?: boolean }>`
+    padding: ${({ $noImage }) => $noImage ? `${rm(20)} ${rm(16)} ${rm(16)}` : `${rm(16)} ${rm(8)}`};
 `
 
 const Title = styled.h3`
@@ -135,24 +141,27 @@ export const InfoWindow = ({
 
     const mapsUrl = getGoogleMapsUrl()
 
+    const hasImage = !!image
+
     return (
         <StyledInfoWindow>
-            <ImageContainer>
-                <Image src={getMediaStrapiPath(image)} alt={title} />
-            </ImageContainer>
-            <ContentContainer>
+            {hasImage ? (
+                <ImageContainer>
+                    <Image src={getMediaStrapiPath(image)} alt={title} />
+                </ImageContainer>
+            ) : (
+                <AccentBar />
+            )}
+            <ContentContainer $noImage={!hasImage}>
                 <Title>{title}</Title>
                 <Address>{address}</Address>
                 <ButtonContainer>
-                    {/* <LinkButton onClick={onLinkClick}>
-                        {linkText}
-                    </LinkButton> */}
                     {mapsUrl && (
-                        <GoogleMapsButton 
+                        <GoogleMapsButton
                             href={mapsUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            aria-label="Построить маршрут в Google Maps"
+                            aria-label="Open in Google Maps"
                         >
                             Adjust the route
                         </GoogleMapsButton>

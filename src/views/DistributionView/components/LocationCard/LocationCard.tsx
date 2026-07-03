@@ -44,14 +44,18 @@ export const LocationCard = ({ location, onClick, isExpanded = false, locationTe
           <StyledDetailLabel>{locationText}</StyledDetailLabel>
           <StyledDetailValue>{location.address}</StyledDetailValue>
         </StyledDetailItem>
-        <StyledDetailItem>
-          <StyledDetailLabel>{websiteText}</StyledDetailLabel>
-          <StyledDetailValue>{location.websiteItem}</StyledDetailValue>
-        </StyledDetailItem>
+        {location.websiteItem && (
+          <StyledDetailItem>
+            <StyledDetailLabel>{websiteText}</StyledDetailLabel>
+            <StyledDetailValue>{location.websiteItem}</StyledDetailValue>
+          </StyledDetailItem>
+        )}
       </StyledDetails>
-      <StyledButtonContainer $isExpanded={isExpanded}>
-        <BlueButton link={location?.websiteItem} isSvg className="button">VISIT WEBSITE</BlueButton>
-      </StyledButtonContainer>
+      {location.websiteItem && (
+        <StyledButtonContainer $isExpanded={isExpanded}>
+          <BlueButton link={location?.websiteItem} isSvg className="button">VISIT WEBSITE</BlueButton>
+        </StyledButtonContainer>
+      )}
       {isExpanded && (
         <StyledCloseButton onClick={() => onClick?.()}>
             <svg width="20" height="19" viewBox="0 0 20 19" fill="none" xmlns="http://www.w3.org/2000/svg">
