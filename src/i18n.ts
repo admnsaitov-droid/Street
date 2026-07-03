@@ -1,6 +1,7 @@
 import { getRequestConfig } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { getLocaleCodes } from './utils/locales';
+import { supportedLocales } from './config/locales';
 
 export default getRequestConfig(async ({ requestLocale }) => {
   const locale = await requestLocale;
@@ -14,8 +15,9 @@ export default getRequestConfig(async ({ requestLocale }) => {
   if (envLocales.length > 0) {
     safeLocales = envLocales;
   } else {
+    // Fall back to static config (always reliable, no env var or Strapi needed)
     const locales = await getLocaleCodes();
-    safeLocales = locales && locales.length > 0 ? locales : ['en', 'es'];
+    safeLocales = locales && locales.length > 0 ? locales : [...supportedLocales];
   }
 
   const finalLocale = locale || safeLocales[0] || 'en';
