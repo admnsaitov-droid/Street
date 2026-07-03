@@ -4,6 +4,7 @@ import { fontGolosText, fontSageGrotesk } from "@/styles/fonts"
 import { heightLvh } from "@/styles/utils"
 import styled from "styled-components"
 import AnimatedGrid from "@/components/animated/AnimatedContent"
+import Breadcrumbs from "@/components/Breadcrumbs/Breadcrumbs"
 import { ProjectsMap } from "./components/ProjectsMap"
 import { MapMarker } from "./components/MapMarker"
 
@@ -16,11 +17,11 @@ export const ProjectsView = ({ data }: ProjectsViewProps) => {
     console.log(data);
 
     const mapCenter = {
-        lat: parseFloat(data?.projectsPage?.mapSettings?.mapLat) || 0,
-        lng: parseFloat(data?.projectsPage?.mapSettings?.mapLng) || 0
+        lat: 30,
+        lng: 10.3522222,
     }
 
-    const zoom = parseInt(data?.projectsPage?.mapSettings?.zoom) || 10
+    const zoom = 2.6
     
     const markers = data?.projectsPage?.markers?.map((marker: any) => ({
         position: {
@@ -37,6 +38,10 @@ export const ProjectsView = ({ data }: ProjectsViewProps) => {
     return (
         <StyledProjectsView>
             <StyledContent>
+                <Breadcrumbs items={[
+                    { label: 'Home', slug: '' },
+                    { label: [data?.projectsPage?.title?.textFirst, data?.projectsPage?.title?.textSecond].filter(Boolean).join(' ') || 'Projects', href: undefined },
+                ]} />
                 <StyledTitleContainer>
                     <h1>
                         <AnimatedGrid
@@ -82,7 +87,7 @@ export const ProjectsView = ({ data }: ProjectsViewProps) => {
                 <ProjectsMap
                     center={mapCenter}
                     zoom={zoom}
-                    markers={markers}
+                    markers={markers || []}
                 />
             </MapContainer>
         </StyledProjectsView>

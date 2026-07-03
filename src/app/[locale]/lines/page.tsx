@@ -12,10 +12,10 @@ export const generateMetadata = createMetadataGenerator({
       // Extract metadata from the specific path in your data structure
 
       const metadata = {
-        metatitle: data?.line?.name,
-        metadescription: data?.line?.description,
+        metatitle: data?.linesPageData?.metatitle || data?.linesPageData?.title,
+        metadescription: data?.linesPageData?.metadescription || data?.linesPageData?.description,
         openGraph: {
-          url: getMediaStrapiPath(data?.line?.mainMedia?.poster)
+          url: getMediaStrapiPath(data?.linesPageData?.mainMedia?.poster)
         }
       }
 

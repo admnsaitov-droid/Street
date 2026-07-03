@@ -9,8 +9,13 @@ import { SimpleButton } from "@/components/Ui/buttons/SimpleButton"
 import { BlueButton } from "@/components/Ui/buttons/BlueButton"
 import { useScroll } from "@/layouts/ScrollLayout/useScroll"
 import { useEffect } from "react"
+import { useLocale } from "next-intl"
+import successModalTranslations from "./successModalTranslations"
 
 export const SuccessModal = () => {
+    const locale = useLocale()
+    const t = successModalTranslations[locale] ?? successModalTranslations.en
+
     const isSubmitSuccessful = useLoadingStore((state) => state.isSubmitSuccessful)
     const setIsSubmitSuccessful = useLoadingStore((state) => state.setIsSubmitSuccessful)
 
@@ -61,15 +66,15 @@ export const SuccessModal = () => {
 
                 <StyledMainText>
                     <p className="title">
-                        Thanks for your interest!
+                        {t.title}
                     </p>
                     <p className="description">
-                        One of our team members will carefully review your request and get back to you as soon as possible with all the necessary information.
+                        {t.description}
                     </p>
                 </StyledMainText>
 
                 <BlueButton isSvg onClick={handleCloseModal} className="button">
-                    Continue to discover
+                    {t.button}
                 </BlueButton>
             </StyledModalContent>
         </StyledSuccessModal>

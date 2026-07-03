@@ -32,12 +32,14 @@ export function Breadcrumbs({ items, className, separator = "·" }: BreadcrumbsP
   const locale = getFirstPathSegment(pathname) || "en";
 
   // Generate BreadcrumbList schema for SEO
+  const baseUrl = process.env.NEXT_PUBLIC_BASEURL || 'https://www.streetbarbell.com';
   const breadcrumbSchema = generateBreadcrumbSchema(
     items.map((item, idx) => {
       const href = item.href ?? withLocale(locale, item.slug);
+      const absoluteUrl = href ? `${baseUrl}${href}` : `${baseUrl}/${locale}`;
       return {
         name: item.label,
-        url: href || `/${locale}`
+        url: absoluteUrl,
       };
     })
   );

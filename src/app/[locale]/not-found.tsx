@@ -34,21 +34,21 @@ export default function NotFound() {
         backgroundColor: '#000',
         color: '#fff'
       }}>
-      <h1 style={{
+      <p style={{
         fontSize: '4rem',
         fontWeight: 'bold',
         marginBottom: '1rem',
         color: '#fff'
       }}>
         404
-      </h1>
-      <h2 style={{
+      </p>
+      <h1 style={{
         fontSize: '1.5rem',
         marginBottom: '1rem',
         color: '#ccc'
       }}>
         Page Not Found
-      </h2>
+      </h1>
       <p style={{
         fontSize: '1rem',
         marginBottom: '2rem',

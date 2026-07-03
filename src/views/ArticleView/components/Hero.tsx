@@ -12,7 +12,7 @@ export const Hero = ({ data }: { data: any }) => {
             <StyledTitle>{data.title}</StyledTitle>
             <StyledAuthor>
                 <div className="imageContainer">
-                    <Image src={getMediaStrapiPath(data?.author?.avatar)} alt={data?.author?.name} fill/>
+                    <Image src={getMediaStrapiPath(data?.author?.avatar)} alt={data?.author?.name} fill priority />
                 </div>
                 <span className="name">{data?.author?.name}</span>
                 <div className="divider" />
@@ -20,7 +20,7 @@ export const Hero = ({ data }: { data: any }) => {
                     {formatDate(data?.date)}
                 </StyledDate>
             </StyledAuthor>
-            <MediaComponent media={data?.mainMedia} className="image" parallax={true} isExtendable={false} />
+            <MediaComponent media={data?.mainMedia} className="image" parallax={true} isExtendable={false} priority={true} />
         </StyledHero>
     )
 }

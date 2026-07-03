@@ -12,7 +12,7 @@ import contactFormTranslations from "./contactFormTranslations"
 import { AnimLink } from "@/layouts/AnimatedRouterLayout/AnimatedRouterLayout"
 import { SimpleCheckbox } from "../Ui/checkbox/SimpleCheckbox"
 import { BlueButton } from "../Ui/buttons/BlueButton"
-import { usePathname } from "next/navigation"
+import { usePathname, useSearchParams } from "next/navigation"
 import UnderlineLink from "../animated/UnderlineLink/UnderlineLink"
 import { useWindowWidth } from "@react-hook/window-size"
 import AnimatedGrid from "@/components/animated/AnimatedContent"
@@ -24,6 +24,7 @@ export const ContactForm = () => {
     const hardcoded = contactFormTranslations[locale] ?? contactFormTranslations.en
     const [data, setData] = useState<any>(hardcoded)
     const pathname = usePathname()
+    const searchParams = useSearchParams()
     const width = useWindowWidth()
 
     const setIsSubmitSuccessful = useLoadingStore((state: any) => (state.setIsSubmitSuccessful))
@@ -142,12 +143,21 @@ export const ContactForm = () => {
 
         try {
             setIsSending(true);
+            const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+            const languages = navigator.languages?.join(', ') || navigator.language || '';
+            const utmParams = {
+                utm_source: searchParams.get('utm_source') || undefined,
+                utm_medium: searchParams.get('utm_medium') || undefined,
+                utm_campaign: searchParams.get('utm_campaign') || undefined,
+                utm_term: searchParams.get('utm_term') || undefined,
+                utm_content: searchParams.get('utm_content') || undefined,
+            };
             const response = await fetch('/api/send', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(formData),
+                body: JSON.stringify({ ...formData, timezone, languages, ...utmParams }),
             });
 
             const data = await response.json();
@@ -328,7 +338,7 @@ export const ContactForm = () => {
 
 const StyledContactForm = styled.div`
     width: 100%;
-    padding: ${rm(150)};
+    padding: ${rm(150)} ${rm(50)};
     background-color: #F8F9FC;
 
     ${media.md`

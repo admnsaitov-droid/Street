@@ -9,8 +9,13 @@ import { SimpleButton } from "@/components/Ui/buttons/SimpleButton"
 import { BlueButton } from "@/components/Ui/buttons/BlueButton"
 import { useEffect } from "react"
 import { useScroll } from "@/layouts/ScrollLayout/useScroll"
+import { useLocale } from "next-intl"
+import errorModalTranslations from "./errorModalTranslations"
 
 export const ErrorModal = () => {
+    const locale = useLocale()
+    const t = errorModalTranslations[locale] ?? errorModalTranslations.en
+
     const isSubmitError = useLoadingStore((state) => state.isSubmitError)
     const setIsSubmitError = useLoadingStore((state) => state.setIsSubmitError)
 
@@ -61,15 +66,15 @@ export const ErrorModal = () => {
 
                 <StyledMainText>
                     <p className="title">
-                        Oops! Something went wrong.
+                        {t.title}
                     </p>
                     <p className="description">
-                        Please try again later or contact us directly at <a href="mailto:info@yourcompany.com">info@yourcompany.com</a>.
+                        {t.description} <a href={`mailto:${t.email}`}>{t.email}</a>.
                     </p>
                 </StyledMainText>
 
                 <BlueButton isSvg onClick={handleCloseModal} className="button">
-                    Try again
+                    {t.button}
                 </BlueButton>
             </StyledModalContent>
         </StyledErrorModal>

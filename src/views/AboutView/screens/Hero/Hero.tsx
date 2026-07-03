@@ -20,7 +20,7 @@ export const Hero = ({ data }: HeroProps) => {
     const width = useWindowWidth()
     return (
         <StyledHero>
-            <MediaComponent media={data?.media} className="image" parallax={true} isExtendable={false} />
+            <MediaComponent media={data?.media} className="image" parallax={true} isExtendable={false} priority={true} />
             {width <= 768 && (
                 <StyledMobileBackgroundViewoContainer/>
             )}

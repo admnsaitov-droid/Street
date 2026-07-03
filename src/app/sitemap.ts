@@ -1,8 +1,6 @@
 import { MetadataRoute } from 'next'
 import { getLocaleCodes } from '@/utils/locales'
 
-// Force dynamic rendering so sitemap is generated at runtime, not build time
-export const dynamic = 'force-dynamic'
 export const revalidate = 3600 // Revalidate every hour
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -19,7 +17,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     '',
     '/about',
     '/contact',
-    '/products',
     '/packages',
     '/lines',
     '/projects',

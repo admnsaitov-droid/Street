@@ -1,4 +1,5 @@
 import createNextIntlPlugin from 'next-intl/plugin';
+import redirectsList from './src/redirects.mjs';
 
 const withNextIntl = createNextIntlPlugin('./src/i18n.ts');
 
@@ -28,6 +29,10 @@ const nextConfig = {
   output: 'standalone',
   // Optimize bundle
   swcMinify: true,
+
+  async redirects() {
+    return redirectsList;
+  },
 
   images: {
     formats: ['image/avif', 'image/webp'],

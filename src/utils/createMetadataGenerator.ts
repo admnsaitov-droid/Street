@@ -52,6 +52,7 @@ interface MetadataConfig {
   };
   // Optional transformer to extract metadata from different data structures
   transformData?: (data: any) => any;
+  ogType?: 'website' | 'article';
 }
 
 /**
@@ -108,6 +109,7 @@ export function createMetadataGenerator(config: MetadataConfig) {
         url: fullUrl,
         ogImage: metadata?.openGraph ? `/api/media${metadata.openGraph.url}` : undefined,
         locale: locale === 'en' ? 'en_US' : `${locale}_${locale.toUpperCase()}`,
+        ogType: config.ogType,
       });
       
       // Add hreflang tags to alternates

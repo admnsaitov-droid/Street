@@ -11,7 +11,7 @@ if (!recipientEmail) {
 
 export async function POST(request: Request) {
   try {
-    const { fullName, email, phoneNumber, subject, body } = await request.json();
+    const { fullName, email, phoneNumber, subject, body, timezone, languages, utm_source, utm_medium, utm_campaign, utm_term, utm_content } = await request.json();
 
     // Send email
     const data = await resend.emails.send({
@@ -35,6 +35,13 @@ export async function POST(request: Request) {
       phoneNumber,
       subject,
       body,
+      timezone,
+      languages,
+      utm_source,
+      utm_medium,
+      utm_campaign,
+      utm_term,
+      utm_content,
     }).catch((error) => {
       console.error('Failed to send Telegram message:', error);
     });

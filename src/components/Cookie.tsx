@@ -6,6 +6,8 @@ import styled from "styled-components"
 import { fontGolosText } from "@/styles/fonts"
 import { rm } from "@/styles"
 import { useState, useCallback } from "react"
+import { useLocale } from "next-intl"
+import cookieTranslations from "./cookieTranslations"
 
 const CookieConsent = dynamic(() => import("react-cookie-consent"), { ssr: false })
 
@@ -16,6 +18,9 @@ const StyledCookieConsent = styled(CookieConsent)`
 `
 
 export const Cookie = () => {
+    const locale = useLocale()
+    const t = cookieTranslations[locale] ?? cookieTranslations.en
+
     const { fullyLoaded } = useAssetsLoader()
     const [isVisible, setIsVisible] = useState(true)
     
@@ -58,18 +63,18 @@ export const Cookie = () => {
             onAccept={handleAccept}
             onDecline={handleDecline}
         >
-            <StyledTitle>We respect your privacy</StyledTitle>
-            <StyledDescription>This website uses cookies to improve your browsing experience, analyze traffic, and remember your preferences. To learn more, please read our 
+            <StyledTitle>{t.title}</StyledTitle>
+            <StyledDescription>{t.description}{' '}
                 <a href='/privacy-policy' aria-label='Go to Privacy Policy'>
-                    Privacy Policy
+                    {t.privacyPolicy}
                 </a>
             </StyledDescription>
             <StyledButtonContainer>
                 <StyledDeclineButton onClick={handleDecline}>
-                    DECLINE
+                    {t.decline}
                 </StyledDeclineButton>
                 <StyledAcceptButton onClick={handleAccept}>
-                    ACCEPT
+                    {t.accept}
                 </StyledAcceptButton>
             </StyledButtonContainer>
         </StyledCookieConsent>

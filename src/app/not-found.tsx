@@ -9,7 +9,8 @@ export default function GlobalNotFound() {
   // Try to extract locale from pathname, fallback to 'en'
   const segments = pathname?.split('/').filter(Boolean) || []
   const possibleLocale = segments[0]
-  const locale = ['en', 'es'].includes(possibleLocale) ? possibleLocale : 'en'
+  const supportedLocales = (process.env.NEXT_PUBLIC_LOCALES || 'en,es,fr,de').split(',').map(l => l.trim())
+  const locale = supportedLocales.includes(possibleLocale) ? possibleLocale : supportedLocales[0] || 'en'
 
   return (
     <div style={{
@@ -24,21 +25,21 @@ export default function GlobalNotFound() {
       color: '#fff',
       fontFamily: 'system-ui, -apple-system, sans-serif'
     }}>
-      <h1 style={{
+      <p style={{
         fontSize: '4rem',
         fontWeight: 'bold',
         marginBottom: '1rem',
         color: '#fff'
       }}>
         404
-      </h1>
-      <h2 style={{
+      </p>
+      <h1 style={{
         fontSize: '1.5rem',
         marginBottom: '1rem',
         color: '#ccc'
       }}>
         Page Not Found
-      </h2>
+      </h1>
       <p style={{
         fontSize: '1rem',
         marginBottom: '2rem',

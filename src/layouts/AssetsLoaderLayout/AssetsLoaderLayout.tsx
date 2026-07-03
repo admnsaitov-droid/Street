@@ -1,8 +1,9 @@
 'use client'
 
-/**
- * @fileoverview Add here all Required assets to start page
-*/
+// Module-level flag — resets on full page reload (module re-executes).
+// The cleanup function resets it between React Strict Mode's double-invocation
+// so the loader shows correctly in development too.
+let loaderShown = false;
 
 import styled from "styled-components";
 import React, { useEffect, useState, createContext, useContext } from "react";
@@ -76,14 +77,15 @@ export const AssetsLoaderLayout = ({
 }) => {
     const [delayedLoading, setDelayedLoading] = useState(true)
     const [fullyLoaded, setFullyLoaded] = useState(false)
-    const [loading, progress, currentFile] = useLoadAssets({ 
+    const [skipLoader, setSkipLoader] = useState(false)
+    const [loading, progress, currentFile] = useLoadAssets({
         // path: ' ',
         // images: [
         //     ...framesForLoadingLayout
-        // ], 
+        // ],
         // videos: [
         //     'video/hero.mp4'
-        // ] 
+        // ]
     })
     useEffect(() => { !loading && setDelayedLoading(false) }, [loading])
     useEffect(() => {
@@ -94,26 +96,39 @@ export const AssetsLoaderLayout = ({
 
     useEffect(() => {
         document.body.style.removeProperty('opacity')
+        if (loaderShown) {
+            setSkipLoader(true)
+            setFullyLoaded(true)
+            useLayoutState.setState({ fullyLoaded: true })
+        } else {
+            loaderShown = true
+        }
+        return () => {
+            // Cleanup resets the flag so React Strict Mode's second invocation
+            // doesn't find it set and incorrectly skip the loader.
+            loaderShown = false
+        }
     }, [])
 
-    const transitions = useTransition(!fullyLoaded, {
+    const transitions = useTransition(!skipLoader && !fullyLoaded, {
         from: { transform: 'translateY(0%)' },
         enter: { transform: 'translateY(0%)' },
         leave: { transform: 'translateY(100%)' },
-        delay: 3500,
+        delay: 80,
         config: {
-            duration: 400,
+            duration: 250,
             easing: easings.easeInCubic
         }
     })
 
     const wrapperValues = useSpring({
-        opacity: fullyLoaded ? 1 : 0
+        opacity: skipLoader || fullyLoaded ? 1 : 0,
+        config: skipLoader ? { duration: 0 } : undefined
     })
 
     return (
         <>
-            {transitions((styles, item) => item && (
+            {!skipLoader && transitions((styles, item) => item && (
                 <StyledLoader style={styles}>
                     <Loader setFullyLoaded={setFullyLoaded} progress={progress} isFullyLoaded={fullyLoaded}/>
                 </StyledLoader>

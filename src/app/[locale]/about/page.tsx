@@ -13,7 +13,7 @@ export const generateMetadata = createMetadataGenerator({
   },
   getPath: (locale) => `/${locale}/about`,
   fallback: {
-    title: 'About Us',
+    title: 'About Us | Street Barbell',
     description: 'Learn more about us'
   }
 });

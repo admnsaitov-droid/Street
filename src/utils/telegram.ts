@@ -23,16 +23,34 @@ interface TelegramMessageData {
   subject?: string;
   body: string;
   message?: string;
+  timezone?: string;
+  languages?: string;
+  utm_source?: string;
+  utm_medium?: string;
+  utm_campaign?: string;
+  utm_term?: string;
+  utm_content?: string;
 }
 
 /**
  * Formats contact form data into a readable Telegram message
  */
 function formatTelegramMessage(data: TelegramMessageData): string {
-  const name = data.name || data.fullName || 
+  const name = data.name || data.fullName ||
     (data.firstName && data.lastName ? `${data.firstName} ${data.lastName}` : data.firstName || 'N/A');
   const message = data.body || data.message || 'N/A';
   const subject = data.subject ? `\n📋 <b>Theme:</b> ${data.subject}` : '';
+  const location = data.timezone ? `\n🌍 <b>Location:</b> ${data.timezone}` : '';
+  const languages = data.languages ? `\n🗣 <b>System Languages:</b> ${data.languages}` : '';
+
+  const utmParts = [
+    data.utm_source ? `source: ${data.utm_source}` : '',
+    data.utm_medium ? `medium: ${data.utm_medium}` : '',
+    data.utm_campaign ? `campaign: ${data.utm_campaign}` : '',
+    data.utm_term ? `term: ${data.utm_term}` : '',
+    data.utm_content ? `content: ${data.utm_content}` : '',
+  ].filter(Boolean);
+  const utm = utmParts.length > 0 ? `\n📊 <b>UTM:</b> ${utmParts.join(' | ')}` : '';
 
   return `🔔 <b>New Request from streetbarbell.com</b>
 
@@ -40,7 +58,7 @@ function formatTelegramMessage(data: TelegramMessageData): string {
 📧 <b>Email:</b> ${data.email}
 📱 <b>Phone:</b> ${data.phoneNumber}${subject}
 💬 <b>Message:</b>
-${message}`;
+${message}${location}${languages}${utm}`;
 }
 
 /**
