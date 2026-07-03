@@ -1,4 +1,4 @@
-    
+       
 # Next.js 14 Starter with Three.js and Animation Features
 
 This Next.js 14 starter project provides an advanced setup with built-in Three.js, a variety of animation components, and a highly configurable layout system. It is designed to optimize animations, smooth scrolling, and user interactivity while maintaining seamless performance.
