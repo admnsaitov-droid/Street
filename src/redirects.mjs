@@ -606,8 +606,6 @@ const redirects = [
   { source: '/fr/uae-5', destination: '/fr/distribution', permanent: true },
   { source: '/fr/uk-4', destination: '/fr/distribution', permanent: true },
   { source: '/fr/usa-5', destination: '/fr/distribution', permanent: true },
-  { source: '/fi', destination: '/en', permanent: true },
-  { source: '/fi/:path*', destination: '/en', permanent: true },
   { source: '/2333-2', destination: '/en', permanent: true },
   { source: '/528-2', destination: '/en', permanent: true },
   { source: '/682-2', destination: '/en', permanent: true },
