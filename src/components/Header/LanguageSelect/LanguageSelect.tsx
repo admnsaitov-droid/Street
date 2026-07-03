@@ -174,7 +174,7 @@ export const LanguageSelect = ({ languages }: LanguageSelectProps) => {
     }
 
     return (
-        <StyledLanguageSelect 
+        <StyledLanguageSelect
             ref={dropdownRef}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}

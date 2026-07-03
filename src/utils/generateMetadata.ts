@@ -39,6 +39,14 @@ interface MetadataProps {
     ogType?: 'website' | 'article';
 }
 
+const BRAND_PREFIX = 'Street Barbell'
+
+function formatTitle(title: string): string {
+    return title.toLowerCase().startsWith(BRAND_PREFIX.toLowerCase())
+        ? title
+        : `${BRAND_PREFIX}: ${title}`
+}
+
 export function generateMetadata({
     title = 'Street Barbell',
     description = 'Street Barbell',
@@ -52,8 +60,9 @@ export function generateMetadata({
     locale = 'en_US',
     ogType = 'website',
 }: MetadataProps): Metadata {
+    const formattedTitle = formatTitle(title)
     return {
-        title,
+        title: formattedTitle,
         description,
         keywords,
         authors: [{ name: author }],
@@ -66,7 +75,7 @@ export function generateMetadata({
             languages: {}, // Will be populated by hreflang utility
         },
         openGraph: {
-            title,
+            title: formattedTitle,
             description,
             url: url || undefined,
             siteName,
@@ -82,7 +91,7 @@ export function generateMetadata({
         },
         twitter: {
             card: 'summary_large_image',
-            title,
+            title: formattedTitle,
             description,
             site: twitterHandle,
             creator: twitterHandle,
