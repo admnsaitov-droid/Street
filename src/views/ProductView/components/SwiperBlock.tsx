@@ -5,7 +5,7 @@ import { fontGolosText } from "@/styles/fonts"
 import { fontSageGrotesk } from "@/styles/fonts"
 import styled from "styled-components"
 import Image from "next/image"
-import { useRef, useState, useEffect } from "react"
+import { useRef, useState, useEffect, useMemo } from "react"
 import { getMediaStrapiPath } from "@/utils/getMediaStrapiPath"
 import { Swiper, SwiperSlide } from 'swiper/react'
 import type { Swiper as SwiperType } from 'swiper'
@@ -24,6 +24,11 @@ export const SwiperBlock = ({ images, title }: SwiperBlockProps) => {
     const swiperRef = useRef<SwiperType | null>(null)
 
     const hasImages = Array.isArray(images) && images.length > 0
+
+    const galleryUrls = useMemo(
+        () => (images || []).map((img) => getMediaStrapiPath(img?.poster || img)).filter(Boolean) as string[],
+        [images]
+    )
 
     const checkScrollability = (swiper: SwiperType | null) => {
         if (!swiper) {
@@ -153,7 +158,7 @@ export const SwiperBlock = ({ images, title }: SwiperBlockProps) => {
                         {images!.map((image, index) => (
                             <SwiperSlide key={index} style={{ width: 'auto' }}>
                                 <StyledSwiperSlideContainer>
-                                    <MediaComponent media={image} className="image" />
+                                    <MediaComponent media={image} className="image" imageGallery={galleryUrls} />
                                 </StyledSwiperSlideContainer>
                             </SwiperSlide>
                         ))}
