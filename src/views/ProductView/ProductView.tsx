@@ -12,10 +12,12 @@ import { useWindowWidth } from "@react-hook/window-size"
 import { useMemo, useEffect } from "react"
 import { useColorStore } from "@/store/store"
 import { SimpleButton } from "@/components/Ui/buttons/SimpleButton"
+import { SameLineProducts } from "./components/SameLineProducts/SameLineProducts"
 
 interface ProductViewProps {
     data: any
     specificationTexts?: Record<string, string | null> | null
+    linesData?: any
 }
 
 // Helper function to convert hex to rgb
@@ -31,7 +33,7 @@ const hexToRgb = (hex: string): string => {
     return `rgb(${r}, ${g}, ${b})`
 }
 
-export const ProductView = ({ data, specificationTexts }: ProductViewProps) => {
+export const ProductView = ({ data, specificationTexts, linesData }: ProductViewProps) => {
     console.log('data', data)
     const { materialMainColor, materialAccentColor, setMaterialMainColor, setMaterialAccentColor } = useColorStore()
 
@@ -174,6 +176,7 @@ export const ProductView = ({ data, specificationTexts }: ProductViewProps) => {
                 <ProductOverview data={data?.product} specificationTexts={specificationTexts} />
             </StyledWrapper>
             {hasSwiperMedias ? <SwiperBlock images={data?.product?.swiperMedias} title={swiperTitle} /> : null}
+            <SameLineProducts linesData={linesData} currentSlug={data?.product?.slug} />
         </StyledProductView>
     )
 }

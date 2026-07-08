@@ -60,7 +60,7 @@ export const Overview = ({ data }: OverviewProps) => {
                     {data?.mainDescription && <StyledTitle tag="h2">{data?.mainDescription}</StyledTitle>}
                     <div className="bottom">
                         {data?.descriptionSecondary && <StyledSubtitle tag="p">{data?.descriptionSecondary}</StyledSubtitle>}
-                        <SimpleButton className="button" link={data?.button?.link} isSvg>
+                        <SimpleButton className="button" link="/contact" isSvg>
                             {data?.button?.text}
                         </SimpleButton>
                     </div>

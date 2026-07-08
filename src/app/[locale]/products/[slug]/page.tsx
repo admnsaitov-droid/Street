@@ -35,14 +35,15 @@ export default async function ProductDetailPage({
   }) {
     const { locale, slug } = await params;
 
-    const [data, specResponse] = await Promise.all([
+    const [data, specResponse, linesData] = await Promise.all([
       getStrapiData('get-product-data?slug=' + slug, locale),
       getStrapiData('get-product-specifications', locale),
+      getStrapiData('get-lines', locale),
     ]);
 
     const specificationTexts = specResponse?.data ?? null;
 
     return (
-      <ProductView data={data} specificationTexts={specificationTexts} />
+      <ProductView data={data} specificationTexts={specificationTexts} linesData={linesData} />
     );
   } 

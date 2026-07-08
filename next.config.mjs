@@ -71,8 +71,14 @@ const nextConfig = {
         port: '1337',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'admin.streetbarbell.com',
+        port: '443',
+        pathname: '/**',
+      },
     ],
   },
-};
+}
 
-export default withNextIntl(nextConfig);
+export default withNextIntl(nextConfig)
