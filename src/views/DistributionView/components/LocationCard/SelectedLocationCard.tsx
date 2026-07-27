@@ -157,8 +157,6 @@ const StyledLogo = styled.img`
   max-width: ${rm(140)};
   object-fit: contain;
   flex-shrink: 0;
-  filter: brightness(0) invert(1);
-  opacity: 0.85;
 `
 
 const StyledHeader = styled.div`
