@@ -31,7 +31,7 @@ export const SelectedLocationCardMobile = ({ location, onClick, isExpanded = fal
           <StyledHeader>{location.name}</StyledHeader>
           <StyledTitle>{location.displayName || location.name}</StyledTitle>
         </div>
-        {location.logo && (
+        {location.logo && !isExpanded && (
           <StyledLogo src={location.logo} alt={`${location.name} logo`} />
         )}
       </StyledTopRow>
@@ -147,9 +147,9 @@ const StyledTopRow = styled.div`
 `
 
 const StyledLogo = styled.img`
-  height: ${rm(36)};
+  height: ${rm(56)};
   width: auto;
-  max-width: ${rm(80)};
+  max-width: ${rm(140)};
   object-fit: contain;
   flex-shrink: 0;
   filter: brightness(0) invert(1);
