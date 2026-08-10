@@ -23,14 +23,14 @@ export const ArticlesView = ({ data, pageData }: ArticlesViewProps) => {
         <StyledArticlesView>
             <Breadcrumbs
                 items={[
-                    ...breadcrumbs
+                    ...(breadcrumbs || [])
                 ]}
             />
             <StyledTitle tag="h1">
                 {pageData?.Title}
             </StyledTitle>
             <StyledArticlesGrid>
-                {data.map((article: any) => (
+                {(Array.isArray(data) ? data : []).map((article: any) => (
                     <ArticleCard key={article.id} article={article} />
                 ))}
             </StyledArticlesGrid>

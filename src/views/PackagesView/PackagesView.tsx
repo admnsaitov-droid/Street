@@ -21,7 +21,7 @@ export const PackagesView = ({ data }: PackagesViewProps) => {
         <StyledPackagesView>
             <Breadcrumbs
                 items={[
-                    ...breadcrumbs
+                    ...(breadcrumbs || [])
                 ]}
             />
             <StyledTop>

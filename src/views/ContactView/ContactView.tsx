@@ -65,7 +65,7 @@ export const ContactView = ({ data }: ContactViewProps) => {
                 </StyledTitle>
                 <StyledContactLeft>
                     <StyledContactDescription tag="p">
-                        {data.description}
+                        {data?.description}
                     </StyledContactDescription>
                     <ContactForm data={data?.contactForm} buttonText={data?.buttonText} />
                 </StyledContactLeft>

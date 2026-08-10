@@ -18,12 +18,12 @@ export const ArticleView = ({ data }: { data: any }) => {
         <StyledArticleView>
             <Breadcrumbs
                 items={[
-                    ...breadcrumbs,
-                    { label: data.title, slug: data.slug },
+                    ...(breadcrumbs || []),
+                    { label: data?.title, slug: data?.slug },
                 ]}
             />
             <Hero data={data} />
-            {data.content && <ContentRenderer content={data.content} />}
+            {data?.content && <ContentRenderer content={data.content} />}
         </StyledArticleView>
     )
 }

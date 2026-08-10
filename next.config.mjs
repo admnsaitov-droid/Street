@@ -14,8 +14,6 @@ const nextConfig = {
         },
       },
     },
-    // Enable server components optimizations
-    serverComponentsExternalPackages: ['axios'],
   },
   compiler: {
     styledComponents: true,

@@ -11,7 +11,7 @@ interface HistoryOverviewProps {
 export const HistoryOverview = ({ data }: HistoryOverviewProps) => {
     return (
         <StyledTop>
-            <StyledAnnotation className="blue80">{data.blockName}</StyledAnnotation>
+            <StyledAnnotation className="blue80">{data?.blockName}</StyledAnnotation>
             <div className="right">
                 <StyledTitle>{data?.title}</StyledTitle>
                 <div className="bottom">

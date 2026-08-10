@@ -83,8 +83,8 @@ export default function PrivacyPolicyView({ data }: any) {
         />
       <div className="cookie-policy-wrapper">
         <div className="cookie-policy">
-          <h1 className="title">{data.title}</h1>
-          {data.policy.map((block: any, i: number) => renderBlock(block, i))}
+          <h1 className="title">{data?.title}</h1>
+          {data?.policy?.map((block: any, i: number) => renderBlock(block, i))}
           <div className="last-update">
             Last updated: {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
           </div>
