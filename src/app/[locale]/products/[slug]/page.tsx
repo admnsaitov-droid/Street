@@ -11,11 +11,17 @@ export const generateMetadata = createMetadataGenerator({
     transformData: (data) => {
       // Extract metadata from the specific path in your data structure
 
+      // Prefer an explicitly set OG image, otherwise fall back to the product preview.
+      // Select the media object before resolving the path, since getMediaStrapiPath
+      // returns a truthy placeholder for empty media (which would break a path-level ||).
+      const ogMedia = data?.product?.metadata?.openGraph || data?.product?.previewImage;
+
       const metadata = {
-        metatitle: data?.product?.name,
-        metadescription: data?.product?.previewDescription,
+        metatitle: data?.product?.metadata?.metatitle || data?.product?.name,
+        metadescription: data?.product?.metadata?.metadescription || data?.product?.previewDescription,
+        metakeywords: data?.product?.metadata?.metakeywords,
         openGraph: {
-          url: getMediaStrapiPath(data?.product?.previewImage)
+          url: getMediaStrapiPath(ogMedia)
         }
       }
 

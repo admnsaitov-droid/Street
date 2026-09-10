@@ -104,7 +104,13 @@ const StyledTopRow = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
+  gap: ${rm(12)};
   margin-bottom: ${rm(16)};
+
+  /* Let the text column shrink/wrap so a wide logo can't push itself out of the card */
+  > div:first-child {
+    min-width: 0;
+  }
 `
 
 const StyledLogo = styled.img`
@@ -113,6 +119,11 @@ const StyledLogo = styled.img`
   max-width: ${rm(140)};
   object-fit: contain;
   flex-shrink: 0;
+
+  ${media.xsm`
+    height: ${rm(48)};
+    max-width: ${rm(110)};
+  `}
 `
 
 const StyledHeader = styled.div`

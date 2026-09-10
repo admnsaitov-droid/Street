@@ -2,10 +2,7 @@
 
 import { NextPage } from "next"
 
-import { useAssetsLoader } from '@/layouts/AssetsLoaderLayout/AssetsLoaderLayout';
-import { easings } from "@react-spring/web";
 import { memo } from "react";
-import { useIsRerouting } from "@/layouts/AnimatedRouterLayout/AnimatedRouterLayout";
 import type { EngineProps } from "@/components/Text/TextEngine";
 import { config } from "@react-spring/web";
 
@@ -23,8 +20,6 @@ export const AnimatedText: NextPage<Props & EngineProps> = memo(({
     stagger = 130,
     ...props
 }) => {
-    const { fullyLoaded } = useAssetsLoader()
-    const isRerouting = useIsRerouting()
     return (
         <TextEngine
             enabled={enabled}

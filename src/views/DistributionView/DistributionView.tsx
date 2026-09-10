@@ -97,6 +97,15 @@ export const DistributionView = ({ data }: DistributionViewProps) => {
                     ]} />
                     <StyledTitleContainer>
                         <h1>
+                            {/* Crawlable/accessible title: AnimatedGrid only paints text client-side,
+                                so the real title text is provided here for SSR HTML and screen readers. */}
+                            <VisuallyHidden>
+                                {[data?.distributionPage?.title?.textFirst, data?.distributionPage?.title?.textSecond]
+                                    .map((part: string | undefined) => part?.trim())
+                                    .filter(Boolean)
+                                    .join(' ')}
+                            </VisuallyHidden>
+                            <span aria-hidden="true">
                             <AnimatedGrid
                                 tag="span"
                                 type="words"
@@ -133,6 +142,7 @@ export const DistributionView = ({ data }: DistributionViewProps) => {
                                 <br />
                                 <span id="title-second" className="first">{data?.distributionPage?.title?.textSecond}</span>
                             </AnimatedGrid>
+                            </span>
                         </h1>
                     </StyledTitleContainer>
                 </StyledContent>
@@ -159,6 +169,19 @@ export const DistributionView = ({ data }: DistributionViewProps) => {
         </StyledDistributionView>
     )
 }
+
+// Accessible/crawlable text that stays out of the visual layout.
+const VisuallyHidden = styled.span`
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+`
 
 const StyledDistributionView = styled.div`
     width: 100%;

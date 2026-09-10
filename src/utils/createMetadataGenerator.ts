@@ -53,6 +53,8 @@ interface MetadataConfig {
   // Optional transformer to extract metadata from different data structures
   transformData?: (data: any) => any;
   ogType?: 'website' | 'article';
+  // When true, the global " | Street Barbell" brand suffix is not appended (e.g. Home).
+  skipBrandSuffix?: boolean;
 }
 
 /**
@@ -110,6 +112,7 @@ export function createMetadataGenerator(config: MetadataConfig) {
         ogImage: metadata?.openGraph ? `/api/media${metadata.openGraph.url}` : undefined,
         locale: locale === 'en' ? 'en_US' : `${locale}_${locale.toUpperCase()}`,
         ogType: config.ogType,
+        skipBrand: config.skipBrandSuffix,
       });
       
       // Add hreflang tags to alternates
@@ -140,6 +143,7 @@ export function createMetadataGenerator(config: MetadataConfig) {
         keywords: config.fallback.keywords,
         url: fullUrl,
         locale: locale === 'en' ? 'en_US' : `${locale}_${locale.toUpperCase()}`,
+        skipBrand: config.skipBrandSuffix,
       });
       
       // Add hreflang tags to alternates
