@@ -17,7 +17,7 @@ these before anything else.
 
 | Gate | From | Meaning |
 |---|---|---|
-| `fullyLoaded` | `useAssetsLoader()` — React context in `layouts/AssetsLoaderLayout` | the loader has finished and handed over |
+| `fullyLoaded` | `useAssetsLoader()` — React context in `layouts/AssetsLoaderLayout` | the loader curtain has handed over. It lifts on **min 1s · every scene the view registered has prewarmed · cap 8s**, not on a fixed timer — so on a page with a 3D scene this now fires later, and entrance motion starts against a scene that is already compiled. ADR-0107 |
 | `isRerouting` | `useIsRerouting()` — React context in `layouts/AnimatedRouterLayout` | a page transition is in flight; motion freezes. Debounced: `delayIn` 500ms, `delayOut` 0 |
 
 `Inview`, `Spring` and `TLine` read both internally. **Do not re-implement the

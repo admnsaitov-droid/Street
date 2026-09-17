@@ -101,6 +101,40 @@ Bugs and surprises no check catches. Each is also noted in its topic note.
 | `public/cesium/` copied into the build | `copy-webpack-plugin` in `next.config.mjs` | confirm it is still used; large if not |
 | `useSpringTriggerDepricated.ts` still present | `src/hooks/` | 305 lines of dead code |
 
+## ~~Blocking: the app does not render~~ — fixed 2026-09-17
+
+Every page returned HTTP 500 in dev and in production with
+`Element type is invalid … got: undefined`, while `yarn build` exited 0.
+
+**Cause:** `next.config.mjs` listed `'axios'` in
+`experimental.serverComponentsExternalPackages`. axios 1.11 is an ESM package, so
+externalising it made every importer an async webpack module — `src/utils/strapi.ts`,
+and through it `Header`, `Footer`, `Menu` and both mega menus, which are
+`'use client'`. Async client references do not resolve in Next 14.2's SSR flight
+client. `Header` and `Footer` looked guilty because they were the first two such
+modules the layout rendered; neither was at fault. The npm-vs-yarn lockfile
+theory was wrong — both resolve axios 1.11.0.
+
+**Fix:** remove the entry. All 63 prerendered pages and all five locales render.
+See [[decisions-log]] ADR-0106.
+
+## ~~Scroll performance: the loader warms up nothing~~ — fixed 2026-09-17
+
+The loader was a fixed ~1.1s curtain that preloaded nothing (`useLoadAssets` was
+called with every asset list commented out; `Loader.tsx` ignored `progress` for a
+hardcoded `setTimeout(…, 1000)`), and `useLazyScene` mounted each `<Canvas>` at
+`rootMargin: 100px`, so GLTF decode, HDR load, shader compile and texture upload
+all landed on a scroll boundary.
+
+Both are fixed — scenes mount at page load and the curtain waits for them to
+finish prewarming. Measured before/after in [[changelog]]; the trade and the
+remaining asset-side work are in [[decisions-log]] ADR-0107.
+
+**What is still true:** `useLoadAssets` remains called with empty lists. It is now
+unused rather than misleading — the curtain is driven by scene readiness, not by
+its `progress`. Either give it the page's hero images or delete it.
+
+
 ## Rules for this note
 
 1. Fix something → delete its entry here in the same change.

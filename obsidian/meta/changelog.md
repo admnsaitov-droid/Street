@@ -13,6 +13,139 @@ mattered. Link the ADR when there is one.
 
 ---
 
+## 2026-09-17 — Every page rendered again, and the first scroll stopped freezing
+
+Two things, in that order: the site was returning HTTP 500 on every route, and
+once it rendered, the first scroll through any page carrying a 3D scene froze.
+
+### The 500 on every route
+
+`next.config.mjs` listed `'axios'` in `serverComponentsExternalPackages`. axios
+1.11 is an ESM package, so externalising it made every importer a webpack async
+module — including `src/utils/strapi.ts`, and through it `Header`, `Footer`,
+`Menu` and both mega menus. Async client references do not resolve in Next
+14.2's SSR flight client, so React threw
+`Element type is invalid … got: undefined` on the first one. Removing the entry
+fixed all 63 prerendered pages and all five locales. See [[decisions-log]]
+ADR-0106.
+
+### First-scroll micro-freezes
+
+Baseline, production standalone build, warm HTTP cache, 4× CPU throttle, two
+wheel-driven scroll passes per page:
+
+| page | worst scroll frame | scroll long-tasks | programs linked mid-scroll |
+|---|---|---|---|
+| home | **2476ms** → **33ms** | 4941ms → **57ms** | 5 → **0** |
+| distribution | 24.9ms → **18.5ms** | 127ms → **0ms** | 6 → **0** |
+| package | 25.8ms → 26.7ms | 0 → 0 | 12 → **0** |
+| product | 18.1ms → 18.6ms | 0 → 0 | 11 → **0** |
+
+Home lost all six of its "bad" (>100ms) frames. On a **cold** cache the first
+measurement also showed 1.7s (product) and 2.3s (package) blocks; those pages are
+network-bound rather than compile-bound — see the open items below.
+
+What changed:
+
+- **Scenes mount at page load, not at `rootMargin: 100px`.** [[hooks]]
+  `useLazyScene` now returns `shouldLoad: true` always; the observer still drives
+  `isInView` → `frameloop`, so an off-screen scene is warm but draws nothing.
+- **The loader curtain waits for the scene.** New `useRequireScene` lets a view
+  declare the scene it owns; `Loader` hands off on *min 1s · scenes ready · cap
+  8s* instead of a hardcoded `setTimeout(…, 1000)`.
+- **`useSceneReady` actually prewarms** — `initTexture` for every texture,
+  `compileAsync` for every program, one throwaway render — instead of polling
+  `gl.info` and guessing 500ms after the first frame.
+- **The high-res earth swap is warmed before it is assigned.** `warmupMaterial`
+  compiles the replacement material against the live scene and uploads its maps
+  first; assigning it cold recompiled the program inside a running frame.
+- **DPR is clamped and the renderer flags are tiered** — new
+  `src/utils/deviceTier.ts`, read once at construction by all four canvases:
+  mobile `[0.75, 1]` + `antialias: false`, tablet `[0.75, 1.25]`, desktop
+  `[0.75, 1.5]` + `powerPreference: "high-performance"`. Previously no scene set
+  `dpr` at all, so a 3× phone rendered ~9× the fragments.
+- **The Draco decoder is served from `public/draco/`** instead of
+  `gstatic.com`, and the two `rel="prefetch"` links in `src/app/layout.tsx` that
+  warmed the gstatic connection are **removed** — they were pulling ~750KB
+  cross-origin on all thirteen page types, nine of which carry no 3D at all.
+  ADR-0108.
+- **The grid breakpoints moved to `src/styles/grid/breakpoints.ts`** so
+  `deviceTier.ts` reads the same numbers `media.*` switches on rather than
+  repeating them. `initSmartCSSGrid` is now pinned to `<Grid>` — `grid` and
+  `related` share one type parameter, and inferring from the narrower `related`
+  drops `media.lg`. Verified identical: root font-size at 1920/1440/900/390/320
+  and no horizontal overflow at any of them.
+
+The trade, stated plainly: the curtain is longer. Home 2.16s → 4.34s,
+distribution 3.53s → 7.02s (4× CPU throttle; roughly a third of that
+unthrottled). ADR-0107.
+
+### Measurement notes
+
+Three readings had to be thrown away before these numbers held, and the reasons
+are worth keeping:
+
+- A first "after" run looked clean because a bug in the new hand-off effect
+  meant the curtain never lifted at all — `isLoaded` was in the effect's
+  dependency array, so setting it re-ran the effect and the cleanup cleared its
+  own pending timer. **Screenshot the page; do not trust the counters alone.**
+- The product and package models come from Strapi at ~750KB/s (the package model
+  is 8.4MB / 11s cold), so a cold-cache run measures that download, not the
+  compile work. The harness grew a `--warm` mode for this.
+- The harness drives a **real, GPU-backed Chrome** — headless falls back to
+  SwiftShader, which makes every GPU-side number meaningless. To keep it off the
+  operator's screen it launches with `--window-position=-4000,-4000` plus
+  `--disable-features=CalculateNativeWinOcclusion` (without the second flag an
+  offscreen window gets occlusion-throttled and the frame numbers are wrong).
+- The harness settled a fixed 4s after `load`, which used to outlast the 1.1s
+  curtain and no longer does; the page's normal entrance work then fell inside
+  the first scroll window and read as jank that was not there. It now settles
+  from the curtain lift.
+
+### Still open
+
+- `public/models/high_res_earth.glb` is 11.2MB, **11.05MB of it textures**
+  (7.3MB normal, 2.6MB diffuse, 1.2MB roughness), fetched only for its material
+  — the geometry is decoded and thrown away. It is now essentially the whole
+  curtain. Re-exporting the maps at half size, or dropping the normal map, is
+  the single biggest remaining win. Needs design sign-off.
+- The CMS-hosted product and package models (8–22MB, uncompressed delivery from
+  the Strapi host) are the cold-load cost on those two pages. A CDN in front of
+  Strapi, plus `--texture-compress ktx2` on export, is the fix.
+- Skill §4/§5 (one shared rAF ticker, per-tier frame budget) remains open —
+  ADR-0103.
+- Skill §8 (one key light + IBL) was **not** done: home and distribution each run
+  `ambientLight` + `directionalLight` + an HDR `Environment`, and product adds a
+  `pointLight`. Cutting them is a visible look change with no measured win here,
+  so it was left alone deliberately.
+
+---
+
+## 2026-09-17 — Scroll-performance investigation (paused, no code changed)
+
+Audited the project against the `optimize-3d-scene` skill, installed
+dependencies, and produced a production build. **No application code was
+changed** — every file touched during diagnosis was restored.
+
+**Blocked:** the app returns HTTP 500 on every page in both dev and production
+(`Element type is invalid ... got: undefined`), narrowed to `Header` and
+`Footer` independently. No measurement was possible. See [[baseline-debt]].
+
+**Established without measuring:** the loader preloads and compiles nothing (its
+asset lists are commented out and its progress is a hardcoded 1s timer), and the
+four WebGL scenes are constructed mid-scroll at `rootMargin: 100px` — together
+these explain the reported first-scroll micro-freezes. No scene clamps `dpr`.
+
+**Profile fix:** `commands.start` was `yarn start`, which cannot run this
+project — `next.config.mjs` sets `output: 'standalone'` and Next refuses. It now
+records the real standalone command. See [[stack-profile]].
+
+A measurement harness (puppeteer-core, two scroll passes per page, long tasks +
+frame deltas + WebGL program-link timestamps) was written but not yet run; its
+location and the resume plan are in `PERF-SESSION-HANDOFF.md`.
+
+---
+
 ## 2026-09-17 — Vault rewritten against the codebase
 
 The notes inherited from the kit described an *ideal* project, not this one. Every

@@ -13,6 +13,7 @@ import { Location as DistributionLocation } from "./data/distributionData"
 import { getAllDynamicLocations, transformDynamicData } from "./data/dynamicDataTransformer"
 import { CountryPanelMobile } from "./components/CountryPanel/CountryPanelMobile"
 import { useWindowWidth } from "@react-hook/window-size"
+import { useRequireScene } from "@/hooks/useRequireScene"
 interface DistributionViewProps {
     data: any
 }
@@ -41,6 +42,9 @@ export const DistributionView = ({ data }: DistributionViewProps) => {
     const [selectedLocation, setSelectedLocation] = useState<DistributionLocation | null>(null)
     const isInternalLocationChange = useRef(false)
     const width = useWindowWidth()
+
+    // Hold the loader curtain until the globe has finished prewarming.
+    useRequireScene('distribution')
 
     console.log('data', data)
 

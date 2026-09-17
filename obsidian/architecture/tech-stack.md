@@ -51,13 +51,23 @@ exceptions in [[baseline-debt]]). See [[motion-system]] and [[motion-bindings]].
 |---|---|---|
 | `three` | 0.172 | Renderer for the four scenes (home globe, distribution globe, product, package) |
 | `@react-three/fiber` | 8.17 | React renderer for three.js |
-| `@react-three/drei` | 9.121 | Loaders, controls, helpers; Draco decoders prefetched in the root layout |
+| `@react-three/drei` | 9.121 | Loaders, controls, helpers. `useGLTF` defaults its Draco decoder to Google's CDN — every call site here passes `DRACO_DECODER_PATH` instead. ADR-0108 |
 | `tunnel-rat` | 0.1 | ⚠️ **unused** — nothing imports it. Pairs with the equally unused `src/layouts/CanvasLayout/`. Removable |
 | `leva` | 0.10 | Dev-only scene tweaking — must never be visible in production UI |
 
 Scenes load through `next/dynamic` with `ssr: false` (`DynamicScene`,
 `DynamicProductScene`, `DynamicPackageScene`). Readiness is tracked per scene in
 `src/animationStore`. Before any performance work: [[optimize-3d-scene]].
+
+**Vendored, not a dependency.** `public/draco/` holds `draco_decoder.js`,
+`draco_decoder.wasm` and `draco_wasm_wrapper.js`, copied from
+`node_modules/three/examples/jsm/libs/draco/gltf`. **Refresh them whenever
+`three` is upgraded** — a decoder from a different three generation is the kind
+of breakage that only shows up on one compressed model. ADR-0108.
+
+Per-tier DPR and renderer flags come from `src/utils/deviceTier.ts`; the prewarm
+that keeps compilation off the scroll path is `src/utils/warmupScene.ts`. See
+[[utils]] and ADR-0107.
 
 ## State, data & integrations
 

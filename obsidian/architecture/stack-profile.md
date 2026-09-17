@@ -41,10 +41,12 @@ Full descriptions: `.claude/stack.schema.json`.
 | `capabilities` | what the framework can do | all true except `islands` |
 | `conventions` | which kit conventions are on | `tokenTiers` off (ADR-0101) |
 | `commands` | verbatim shell commands | `yarn …` |
-| `notes` | what the fields cannot say | 10 entries — **read them** |
+| `notes` | what the fields cannot say | 14 entries — **read them** |
 
 `notes[]` is not decoration. It records the `BASEURL` spelling trap, the stale
-`package-lock.json`, the missing env module and the absent shared ticker.
+`package-lock.json`, the missing env module, the absent shared ticker, the
+`serverComponentsExternalPackages` trap that 500'd every page (ADR-0106), the
+vendored Draco decoder (ADR-0108) and where 3D prewarm lives (ADR-0107).
 
 ## Keeping it true
 
@@ -98,8 +100,19 @@ with WebGL scenes and a Strapi backend.
 **Capabilities:** ssr ✅ · server components ✅ · file routing ✅ · API routes ✅ ·
 image optimisation ✅ · metadata API ✅ · islands ❌
 
-**Commands:** `yarn` · `yarn dev` · `yarn build` · `yarn start` · `yarn lint` ·
+**Commands:** `yarn` · `yarn dev` · `yarn build` · `yarn lint` ·
 `npx tsc --noEmit` · *(no test command)*
+
+> [!warning] `yarn start` does not work on this project
+> `next.config.mjs` sets `output: 'standalone'`, and Next refuses to run
+> `next start` against it. A local production run is:
+> ```bash
+> yarn build
+> cp -R public .next/standalone/public
+> cp -R .next/static .next/standalone/.next/static
+> cd .next/standalone && node server.js
+> ```
+> `commands.start` in the profile records the last line. Corrected 2026-09-17.
 
 **Conventions switched off:** `tokenTiers` — this project uses a two-tier
 styled-components token system instead of the kit's three-tier CSS-variable

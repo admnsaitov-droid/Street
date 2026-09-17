@@ -67,7 +67,12 @@ How it works — `initSmartCSSGrid` in `src/styles/grid/grid.tsx`, configured in
   root font size up from 16px with `scaleUpCoeff: 0.6666`, recalculated through
   `useResizeLoop`.
 
-Current configuration:
+Current configuration — the numbers live in **`src/styles/grid/breakpoints.ts`**
+so non-styling code that has to make the same call (`src/utils/deviceTier.ts`,
+which decides a scene's DPR and renderer flags) reads them instead of repeating
+them. `initSmartCSSGrid<Grid>` is pinned to the `Grid` index-signature type on
+purpose: `grid` and `related` share one type parameter, so letting it infer from
+the narrower `related` object silently drops `media.lg` and friends.
 
 | Breakpoint | Width | `related` override |
 |---|---|---|

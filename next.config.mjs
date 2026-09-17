@@ -14,8 +14,12 @@ const nextConfig = {
         },
       },
     },
-    // Enable server components optimizations
-    serverComponentsExternalPackages: ['axios'],
+    // NOTE: axios must NOT be listed here. Externalising it makes it an ESM
+    // external, which turns every module importing it into a webpack async
+    // module. Client components in that graph (Header, Footer, Menu, the mega
+    // menus) then become async client references, which Next 14.2's SSR flight
+    // client cannot resolve — every page 500s with "Element type is invalid
+    // ... got: undefined". See ADR-0106.
   },
   compiler: {
     styledComponents: true,

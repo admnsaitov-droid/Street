@@ -28,12 +28,14 @@ Do not re-invent these; check they are wired before adding anything.
 | Mechanism | Where | Effect |
 |---|---|---|
 | `next/dynamic` + `ssr: false` | `DynamicScene.tsx` / `DynamicProductScene.tsx` / `DynamicPackageScene.tsx` | three.js never enters the server bundle |
-| `useLazyScene(sceneType, { threshold: 0.1, rootMargin: '100px' })` | `src/hooks/` | IntersectionObserver; `shouldLoad` latches true the first time the container is near the viewport |
+| `useLazyScene(sceneType, …)` | `src/hooks/` | `shouldLoad` is **always true** — the scene mounts at page load so it prewarms behind the loader curtain. The IntersectionObserver now only drives `isInView`. ADR-0107 |
+| `useRequireScene(type, enabled)` in the **view** | `src/hooks/` | declares the page's scene so the loader curtain waits for it (min 1s · ready · cap 8s) |
 | `frameloop={isInView ? "always" : "demand"}` | every `<Canvas>` | **the single biggest win** — an off-screen scene stops rendering |
 | `SceneSkeleton` + `useProgressiveLoading` | `components/Skeleton/`, `src/hooks/` | a progress-bearing placeholder instead of a blank canvas |
-| `SceneReadyDetector` → `useAnimationStore` | per view | other UI can wait on `isSceneReady` |
-| Draco decoder prefetch | `src/app/layout.tsx` | `draco_wasm_wrapper.js` + `draco_decoder.wasm` from gstatic |
-| `powerPreference: "high-performance"`, `antialias: true` | product + package scenes | — |
+| `SceneReadyDetector` → `useSceneReady` → `useAnimationStore` | inside every `<Canvas>` | real prewarm: `initTexture` for every texture, `compileAsync` for every program, one throwaway render — *then* `isSceneReady` |
+| `warmupScene` / `warmupMaterial` | `src/utils/warmupScene.ts` | the prewarm itself, and the warm-before-assign path for the high-res earth swap |
+| `DRACO_DECODER_PATH` → `public/draco/` | `src/utils/dracoDecoder.ts` | decoder served from this origin, not gstatic. There is deliberately **no prefetch** in the root layout any more — see the comment there. ADR-0108 |
+| `getDeviceTier` / `getSceneDpr` / `getSceneGlFlags` | `src/utils/deviceTier.ts` | DPR clamped per tier (mobile `[0.75,1]`, tablet `[0.75,1.25]`, desktop `[0.75,1.5]`), `antialias: false` on mobile, `powerPreference: "high-performance"` on desktop only. Read **once at construction** |
 
 ## Order of fixes
 
@@ -42,12 +44,12 @@ Do not re-invent these; check they are wired before adding anything.
    framerate, not the GPU.
 2. **Is `frameloop` demand-gated off-screen?** If a scene renders while scrolled
    away, nothing else matters.
-3. **Prewarm at load, not mid-scroll.** Shader compilation and texture upload
-   during a scroll are the classic micro-freeze. Compile materials while the
-   skeleton is still showing.
-4. **DPR budget.** Only the unused `OneViewCanvas` sets `dpr={[1, 2]}`; the live
-   scenes do not cap it, so a 3× phone renders 9× the pixels. Capping DPR is
-   usually the second-biggest win available here.
+3. ~~**Prewarm at load, not mid-scroll.**~~ **Done (2026-09-17).** The curtain
+   waits for every scene the view registered, and each scene uploads its
+   textures and compiles its programs behind it. If a program links during a
+   scroll again, that is a regression — measure it, do not re-architect.
+4. ~~**DPR budget.**~~ **Done (2026-09-17)** — all four canvases read `dpr` and
+   the renderer flags from `src/utils/deviceTier.ts`.
 5. **Geometry.** `low_res_earth.glb` exists for a reason — make sure the low-res
    variant is what mobile actually loads. Draco-compress anything new.
 6. **Textures.** `public/models/hdr/` and `public/textures/` hold several HDRs

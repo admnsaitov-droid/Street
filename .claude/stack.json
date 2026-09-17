@@ -81,7 +81,7 @@
     "install": "yarn",
     "dev": "yarn dev",
     "build": "yarn build",
-    "start": "yarn start",
+    "start": "cd .next/standalone && node server.js",
     "lint": "yarn lint",
     "typecheck": "npx tsc --noEmit",
     "test": null
@@ -97,6 +97,10 @@
     "There is no single shared rAF ticker. src/hooks/useLoop.ts starts one requestAnimationFrame per subscriber and src/layouts/ScrollLayout drives Lenis on its own loop. This deviates from the kit's one-loop rule (ADR-0005). See ADR-0103.",
     "i18n is next-intl with locale-prefixed routes under src/app/[locale]. The locale list has three sources that must agree: src/config/locales.ts (static, used by middleware and Edge), NEXT_PUBLIC_LOCALES, and Strapi via src/utils/locales.ts.",
     "commands.typecheck is not a package.json script; tsc runs through npx. There is no test command.",
+    "commands.start is NOT `yarn start`: next.config.mjs sets output:'standalone', and Next refuses to run `next start` against it. A local production run needs `yarn build`, then `cp -R public .next/standalone/public`, `cp -R .next/static .next/standalone/.next/static`, then `cd .next/standalone && node server.js`. Verified 2026-09-17.",
+    "next.config.mjs config trap: never put a package that a client component's import graph can reach into experimental.serverComponentsExternalPackages. An ESM package externalised there (axios 1.11 was) makes every importer an async webpack module, and an async client reference resolves to undefined in Next 14.2's SSR flight client — every page 500s with 'Element type is invalid' and nothing in the message names the config. See ADR-0106.",
+    "The Draco decoder is vendored at public/draco/ (from three/examples/jsm/libs/draco/gltf) and reached through DRACO_DECODER_PATH in src/utils/dracoDecoder.ts. Refresh it when three is upgraded. See ADR-0108.",
+    "3D scene performance: src/utils/deviceTier.ts owns per-tier DPR and renderer flags (read once at construction), src/utils/warmupScene.ts owns the prewarm, and the loader curtain in src/layouts/AssetsLoaderLayout/Loader.tsx waits for every scene a view registered with useRequireScene. See ADR-0107.",
     "Both yarn.lock and package-lock.json are committed. yarn.lock is the one that is actually maintained (last touched 2025-09-03 vs 2025-08-26) and the README documents yarn. Treat package-lock.json as stale."
   ]
 }

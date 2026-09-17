@@ -74,10 +74,13 @@ animation is not firing, check those two before anything else.
    view with the result — or a fallback shape if Strapi returned `null`.
 3. The shell has already established the intl provider, styled-components SSR,
    Lenis, the grid, `--vh` and global styles.
-4. The loader plays; `fullyLoaded` flips; motion is released.
-5. Views compose sections; primitives animate; scenes mount when their container
-   approaches the viewport.
-6. Content is in the server-rendered HTML regardless of motion state.
+4. Any 3D scene on the page mounts immediately and prewarms — textures
+   uploaded, programs compiled, one frame drawn — behind the loader curtain.
+5. The curtain lifts (min 1s · scenes prewarmed · cap 8s); `fullyLoaded` flips;
+   motion is released. ADR-0107.
+6. Views compose sections; primitives animate; a scene draws only while
+   `isInView` (`frameloop`), but it is already compiled by then.
+7. Content is in the server-rendered HTML regardless of motion state.
 
 ## Rendering strategy
 

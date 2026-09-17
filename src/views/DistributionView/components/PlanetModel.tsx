@@ -1,11 +1,16 @@
 "use client"
 
 import { useGLTF, useTexture } from "@react-three/drei"
+import { DRACO_DECODER_PATH } from "@/utils/dracoDecoder"
 import { useFrame } from "@react-three/fiber"
 import { Group } from "three"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import * as THREE from 'three'
-import { DRACOLoader, GLTF, GLTFLoader } from 'three-stdlib'
+import { GLTF, GLTFLoader } from 'three-stdlib'
+import { useThree } from "@react-three/fiber"
+import useAnimationStore from "@/animationStore/animationStore"
+import { warmupMaterial } from "@/utils/warmupScene"
+import { getDeviceTier } from "@/utils/deviceTier"
 import { sNoise } from "@/utils/sNoise"
 import { useWindowWidth } from "@react-hook/window-size"
 
@@ -31,49 +36,75 @@ export const PlanetModel = ({ scale }: PlanetModelProps) => {
     // Night blend texture
     // const nightBlendTexture = useTexture('/models/textures/earth_night_Diffuse.webp')
     
-    const { materials: { 'Material.002': nightBlendMaterials } } = useGLTF('/models/earth_lights.glb') as GLTFResult
+    const { materials: { 'Material.002': nightBlendMaterials } } = useGLTF('/models/earth_lights.glb', DRACO_DECODER_PATH) as GLTFResult
     const nightBlendTexture = useMemo(() => nightBlendMaterials.map, [nightBlendMaterials]) as THREE.Texture
 
-    const { nodes, materials } = useGLTF('/models/low_res_earth.glb') as GLTFResult
+    const { nodes, materials } = useGLTF('/models/low_res_earth.glb', DRACO_DECODER_PATH) as GLTFResult
     const meshRef = useRef<THREE.Mesh>(null)
     const [highResMaterial, setHighResMaterial] = useState<THREE.MeshStandardMaterial | null>(null)
+    const highResSettleRef = useRef<(() => void) | null>(null)
+    const { gl, scene, camera } = useThree()
+    const beginWarmup = useAnimationStore(state => state.beginWarmup)
+    const endWarmup = useAnimationStore(state => state.endWarmup)
+    // Read once at construction — `useWindowWidth` starts at 0 on the first
+    // render, which would let the scene report ready before this even mounts.
+    const isDesktopTier = useMemo(() => getDeviceTier() !== 'mobile', [])
     
-    // Load high res model only for screens wider than 576px
+    // The high-res earth is 11MB — almost all of it textures — and its material
+    // replaces the low-res one. Registering a warmup keeps the loader curtain up
+    // until the swap is done, so the decode and upload happen behind the curtain
+    // instead of blocking the main thread for ~2.4s on the first scroll.
     useEffect(() => {
-        if (materials['Material.002'] && windowWidth > 576) {
-            // console.log('Material loaded')
-            // Load high res model only for larger screens
-            setTimeout(() => {
-                const dracoLoader = new DRACOLoader();
-                dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.5/');
-                
-                const loader = new GLTFLoader();
-                loader.setDRACOLoader(dracoLoader);
-                
-                new Promise((resolve) => {
-                    loader.load('/models/high_res_earth.glb', (gltf) => {
-                        const highResModel = gltf as GLTFResult;
-                        const material = (highResModel.scene.children[0] as THREE.Mesh).material as THREE.MeshStandardMaterial;
-                        setHighResMaterial(material);
-                        // meshRef.current && ((meshRef.current as THREE.Mesh).material = material);
-                        resolve(highResModel);
+        if (!materials['Material.002'] || !isDesktopTier) return
 
-                        // Clean up
-                        dracoLoader.dispose();
-                    });
-                });
-            }, 0)
+        let settled = false
+        beginWarmup('distribution')
+        const finish = () => {
+            if (settled) return
+            settled = true
+            endWarmup('distribution')
         }
-    }, [materials, windowWidth])
 
-    // Replace low res material with high res material only for screens wider than 576px
+        const loader = new GLTFLoader()
+        loader.load(
+            '/models/high_res_earth.glb',
+            (gltf) => {
+                const highResModel = gltf as GLTFResult
+                const material = (highResModel.scene.children[0] as THREE.Mesh).material as THREE.MeshStandardMaterial
+                if (material) setHighResMaterial(material)
+                else finish()
+            },
+            undefined,
+            () => finish(),
+        )
+
+        // The swap effect below releases the warmup once the material is live;
+        // this cleanup covers unmount before that happens.
+        highResSettleRef.current = finish
+        return finish
+    }, [materials, isDesktopTier, beginWarmup, endWarmup])
+
+    // Replace low res material with high res material on the desktop tier only.
+    // The material is compiled and its maps uploaded *before* it goes on the
+    // mesh — assigning a cold material recompiles the program inside whatever
+    // frame is running, which reads as a stall mid-scroll.
     useEffect(() => {
-        if (highResMaterial && windowWidth > 576) {
-            const material = appllyShaders(highResMaterial, nightBlendTexture)
-            if (!material) return
-            meshRef.current && ((meshRef.current as THREE.Mesh).material = material);
-        }
-    }, [highResMaterial, nightBlendTexture, windowWidth])
+        if (!highResMaterial || !isDesktopTier) return
+        const mesh = meshRef.current
+        if (!mesh) return
+
+        const material = appllyShaders(highResMaterial, nightBlendTexture)
+        if (!material) return
+
+        let cancelled = false
+        warmupMaterial(gl, scene, camera, material, mesh.geometry).then(() => {
+            if (!cancelled) mesh.material = material
+            highResSettleRef.current?.()
+        })
+
+        return () => { cancelled = true }
+        // eslint-disable-next-line react-hooks/exhaustive-deps -- appllyShaders is declared below this effect
+    }, [highResMaterial, nightBlendTexture, isDesktopTier, gl, scene, camera])
 
     // Apply planet shader to model materials
     useEffect(() => {

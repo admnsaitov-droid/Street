@@ -12,6 +12,7 @@ import { useWindowWidth } from "@react-hook/window-size"
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib"
 import { media, rm } from "@/styles"
 import { fontGolosText } from "@/styles/fonts"
+import { getDeviceTier, getSceneDpr, getSceneGlFlags } from "@/utils/deviceTier"
 
 interface PackageSceneProps {
     packageType: 'large' | 'medium' | 'small'
@@ -99,6 +100,13 @@ export const PackageScene = ({ packageType, packageModelPath }: PackageSceneProp
     const desiredPositionRef = useRef<THREE.Vector3 | null>(null)
     const [showZoomHint, setShowZoomHint] = useState(true)
 
+    // Device tier is read once at construction — DPR and renderer flags must
+    // never drift apart between the four canvases. MSAA in particular is
+    // expensive on a phone and the DPR clamp hides its absence.
+    const deviceTier = useMemo(() => getDeviceTier(), [])
+    const sceneDpr = useMemo(() => getSceneDpr(deviceTier), [deviceTier])
+    const sceneGlFlags = useMemo(() => getSceneGlFlags(deviceTier), [deviceTier])
+
     const typeBasedCameraPosition: [number, number, number] = packageType === 'large' ? [0, 15, -30] : packageType === 'medium' ? [0, 10, -20] : [0, 8, -15]
     const typeBasedCameraFov: number = packageType === 'large' ? 30 : packageType === 'medium' ? 40 : 40
 
@@ -170,10 +178,11 @@ export const PackageScene = ({ packageType, packageModelPath }: PackageSceneProp
             </StyledActions>
             {lazyScene.shouldLoad && (
                 <StyledPackageScene
+                    dpr={sceneDpr}
                     gl={{
-                        powerPreference: "high-performance",
+                        powerPreference: sceneGlFlags.powerPreference,
                         alpha: true,
-                        antialias: true,
+                        antialias: sceneGlFlags.antialias,
                         toneMappingExposure: Math.pow(2, 0),
                         toneMapping: THREE.ACESFilmicToneMapping,
                         outputColorSpace: THREE.SRGBColorSpace,

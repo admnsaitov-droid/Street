@@ -3,6 +3,7 @@
 import styled from "styled-components"
 import { Hero } from "./components/Hero/Hero"
 import { Overview } from "./components/Overview/Overview"
+import { useRequireScene } from "@/hooks/useRequireScene"
 
 interface PackageProps {
     data: any
@@ -17,6 +18,9 @@ export const PackageView = ({ data }: PackageProps) => {
     ))
 
     const packageType: 'large' | 'medium' | 'small' = packageData?.slug as 'large' | 'medium' | 'small'
+
+    // Hold the loader curtain until the package model has finished prewarming.
+    useRequireScene('package', Boolean(packageData?.packageModel))
 
     return (
         <StyledPackage>

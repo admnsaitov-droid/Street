@@ -412,3 +412,118 @@ supported extension point.
 **Consequences.** Genuine engine bugs need explicit sign-off to fix, which is the
 intended friction. If the team decides to own these files as project code, remove
 them from `paths.protected` and supersede this ADR.
+
+---
+
+## ADR-0106 — `axios` must never sit in `serverComponentsExternalPackages`
+
+**Date.** 2026-09-17 · **Status.** Accepted.
+
+**Context.** Every route returned HTTP 500 in dev *and* production with
+`Element type is invalid: expected a string … but got: undefined`, while
+`yarn build` exited 0 and the root layout prerendered correctly. Bisecting
+pointed at `Header` and `Footer` independently; both are innocent.
+
+The real chain: `next.config.mjs` listed `'axios'` in
+`experimental.serverComponentsExternalPackages`. axios 1.11 is `"type": "module"`,
+so externalising it produces an **ESM external**, and webpack marks any module
+importing an ESM external as an **async module**. `src/utils/strapi.ts` imports
+axios, so it became async — and so did everything importing it: `Header`,
+`Footer`, `Menu`, both mega menus. Those are `'use client'` files, so they were
+emitted as client references with `"async": true` in the client-reference
+manifest, and Next 14.2's SSR flight client resolves an async client reference to
+`undefined`. React then threw on the first one it tried to render.
+
+The diagnosis came from patching the throw site in
+`next/dist/compiled/next-server/app-page.runtime.dev.js` to print
+`oZ(t.componentStack)` and the unresolved lazy payload; the manifest then showed
+exactly two async client modules, `Header.tsx` and `Footer.tsx`.
+
+**Decision.** Remove `'axios'` from `serverComponentsExternalPackages` and keep a
+comment in `next.config.mjs` saying why. Do not add a package to that list unless
+it genuinely cannot be bundled (native bindings, a large server-only SDK) — and
+never one that a client component's import graph can reach.
+
+**Consequences.** axios is bundled rather than externalised, which is what it was
+doing before the option was added. The failure mode is worth remembering because
+nothing about the error names the config: the build passes, the message blames a
+component, and the component is fine. The general rule is **an ESM external
+turns its whole importer graph async, and async client references do not render
+on the server in Next 14**.
+
+---
+
+## ADR-0107 — The loader curtain is gated on scene-ready, not on a timer
+
+**Date.** 2026-09-17 · **Status.** Accepted · Applies the `optimize-3d-scene`
+skill §3.
+
+**Context.** The reported symptom was that the first scroll through the site
+stuttered and the second was smooth. Measured on a production build at 4× CPU
+throttle, the pages carrying a scene blocked the main thread for **1.4–2.6 s** in
+a single task during a scroll pass, and linked 5–12 shader programs mid-scroll.
+
+Two causes. `useLazyScene` only mounted the `<Canvas>` once its container was
+100px from the viewport, so WebGL context creation, the GLTF fetch and decode,
+the HDR environment load, shader compilation and texture upload all landed on a
+scroll boundary. And the loader curtain was a fixed `setTimeout(…, 1000)` that
+preloaded nothing and knew nothing about the scenes — `useLoadAssets` was called
+with every asset list commented out.
+
+**Decision.** Three changes, together:
+
+1. `useLazyScene` returns `shouldLoad: true` from the first render. The
+   `IntersectionObserver` stays, but now only drives `isInView` → `frameloop`,
+   so an off-screen scene is mounted and warm while drawing nothing.
+2. A view declares the scene it owns with `useRequireScene(type, enabled)`. It
+   must be the **view**, not the scene component: the scenes are `next/dynamic`
+   chunks that mount after the first commit, and the curtain would otherwise
+   find an empty registry and hand off early.
+3. `useSceneReady` stopped polling `gl.info` and now really prewarms —
+   `initTexture` for every texture, `compileAsync` for every program, one
+   throwaway render — then reports ready. The curtain lifts on **min 1s, all
+   required scenes ready, cap 8s**.
+
+The high-res earth swap on the two globes registers a `pendingWarmups` entry so
+it is part of "ready", and its material is compiled and uploaded through
+`warmupMaterial` *before* it goes on the mesh — assigning a cold material
+recompiles the program inside whatever frame is running.
+
+**Consequences.** The trade is explicit: **the curtain gets longer, the scroll
+stops freezing.** Measured warm-cache at 4× CPU: home's curtain 2.16s → 4.34s and
+its worst scroll frame 2476ms → 33ms; distribution's curtain 3.53s → 7.02s and
+its scroll long-tasks 127ms → 0. Numbers in [[changelog]].
+
+The 8s cap is the safety valve — gating on scene-ready is a promise about the
+network that cannot be kept, so a slow or failed model must never strand a
+visitor behind a black screen. When the cap fires, the old behaviour returns for
+that visit.
+
+The curtain is now almost entirely `public/models/high_res_earth.glb`: 11.2MB, of
+which **11.05MB is textures** (7.3MB normal map, 2.6MB diffuse, 1.2MB roughness)
+and which is fetched only for its material — the geometry is discarded. Halving
+those maps, or dropping the normal map, would roughly halve the curtain. That is
+a look change and needs design sign-off, so it is recorded rather than done.
+
+---
+
+## ADR-0108 — The Draco decoder is served from this project, not a CDN
+
+**Date.** 2026-09-17 · **Status.** Accepted · Applies the `optimize-3d-scene`
+skill §12.
+
+**Context.** Both `PlanetModel`s hardcoded
+`dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.5/')`,
+and every `useGLTF` call used drei's default, which is the same CDN. Three of the
+four scenes load `KHR_draco_mesh_compression` models, so a third-party
+round-trip sat in front of every one of them before a triangle could decode.
+
+**Decision.** Vendor `three/examples/jsm/libs/draco/gltf` into `public/draco/`
+and route every loader through `DRACO_DECODER_PATH` from
+`src/utils/dracoDecoder.ts`.
+
+**Consequences.** ~760KB of decoder is served from the project's own origin,
+already warm from the same connection. The files must be refreshed when `three`
+is upgraded — that is the maintenance cost, and it is noted in
+[[tech-stack]]. `high_res_earth.glb` turned out to carry no Draco at all, so its
+imperative `GLTFLoader` no longer constructs a `DRACOLoader`.

@@ -44,16 +44,15 @@ export default function RootLayout({
             })(window,document,'script','dataLayer','${process.env.NEXT_PUBLIC_GTM_ID}');
           `}</Script>
         )}
-        <link
-          rel="prefetch"
-          crossOrigin="anonymous"
-          href="https://www.gstatic.com/draco/versioned/decoders/1.5.5/draco_wasm_wrapper.js"
-        />
-        <link
-          rel="prefetch"
-          crossOrigin="anonymous"
-          href="https://www.gstatic.com/draco/versioned/decoders/1.5.5/draco_decoder.wasm"
-        />
+        {/*
+          No Draco prefetch here. The decoder used to come from gstatic.com, so
+          warming that cross-origin connection early was worth ~750KB on every
+          route. It now ships from this project's own origin (public/draco/,
+          ADR-0108), so a prefetch in the root layout would only pull it down on
+          the nine page types that carry no 3D scene at all. The four that do
+          fetch it same-origin, on an already-warm connection, while the loader
+          curtain is up.
+        */}
       </head>
       <body className={`${onest.variable} ${golosText.variable} ${sageGrotesk.variable}`} style={{ margin: 0, padding: 0 }}>
         <noscript>

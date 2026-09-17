@@ -65,10 +65,13 @@ Four, all lazy-loaded with `next/dynamic` (`ssr: false`) and tracked in
 | `package` | `PackageView/components/Hero` | `package.glb`, zoom controls |
 
 Each scene mounts **its own `<Canvas>`** inside its view — there is no shared
-canvas. `useLazyScene` holds it back until the container is near the viewport
-(`threshold: 0.1`, `rootMargin: 100px`), `SceneSkeleton` covers the wait,
-`frameloop` flips between `"always"` and `"demand"` on visibility, and
-`SceneReadyDetector` reports readiness into `useAnimationStore`.
+canvas. The canvas mounts at **page load**, not when the container nears the
+viewport, so its shader compilation and texture upload happen behind the loader
+curtain rather than on a scroll boundary; the view declares it with
+`useRequireScene` and the curtain waits (ADR-0107). `SceneSkeleton` covers the
+wait, `frameloop` flips between `"always"` and `"demand"` on visibility, and
+`SceneReadyDetector` prewarms the scene and reports readiness into
+`useAnimationStore`.
 
 `src/layouts/CanvasLayout/` and the `tunnel-rat` dependency implement a shared
 persistent canvas — **both are unused**, left over from the starter.

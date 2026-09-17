@@ -12,6 +12,7 @@ import { useWindowWidth } from "@react-hook/window-size"
 import { useMemo, useEffect } from "react"
 import { useColorStore } from "@/store/store"
 import { SimpleButton } from "@/components/Ui/buttons/SimpleButton"
+import { useRequireScene } from "@/hooks/useRequireScene"
 
 interface ProductViewProps {
     data: any
@@ -34,6 +35,9 @@ const hexToRgb = (hex: string): string => {
 export const ProductView = ({ data, specificationTexts }: ProductViewProps) => {
     console.log('data', data)
     const { materialMainColor, materialAccentColor, setMaterialMainColor, setMaterialAccentColor } = useColorStore()
+
+    // Hold the loader curtain until the product model has finished prewarming.
+    useRequireScene('product', Boolean(data?.product?.model3D?.model))
 
     // Reset material colors when product changes
     useEffect(() => {

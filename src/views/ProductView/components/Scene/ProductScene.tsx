@@ -11,6 +11,7 @@ import { useWindowWidth } from "@react-hook/window-size"
 import { media, rm } from "@/styles"
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib"
 import { fontGolosText } from "@/styles/fonts"
+import { getDeviceTier, getSceneDpr, getSceneGlFlags } from "@/utils/deviceTier"
 
 interface ProductSceneProps {
     data?: any
@@ -102,6 +103,13 @@ export const ProductScene = ({ data, colors, accentColors }: ProductSceneProps) 
     const desiredPositionRef = useRef<THREE.Vector3 | null>(null)
     const [showZoomHint, setShowZoomHint] = useState(true)
 
+    // Device tier is read once at construction — DPR and renderer flags must
+    // never drift apart between the four canvases. MSAA in particular is
+    // expensive on a phone and the DPR clamp hides its absence.
+    const deviceTier = useMemo(() => getDeviceTier(), [])
+    const sceneDpr = useMemo(() => getSceneDpr(deviceTier), [deviceTier])
+    const sceneGlFlags = useMemo(() => getSceneGlFlags(deviceTier), [deviceTier])
+
     const initialCameraPosition = useMemo(() => new THREE.Vector3(25, 5, 13), [])
     const initialTarget = useMemo(() => new THREE.Vector3(0, 0, 0), [])
     const initialDistance = useMemo(
@@ -173,10 +181,11 @@ export const ProductScene = ({ data, colors, accentColors }: ProductSceneProps) 
             </StyledActions>
             {data?.model && lazyScene.shouldLoad && (
                 <StyledCanvas
+                    dpr={sceneDpr}
                     gl={{
-                        powerPreference: "high-performance",
+                        powerPreference: sceneGlFlags.powerPreference,
                         alpha: true,
-                        antialias: true,
+                        antialias: sceneGlFlags.antialias,
                         toneMappingExposure: Math.pow(2, 0),
                         toneMapping: THREE.ACESFilmicToneMapping,
                         outputColorSpace: THREE.SRGBColorSpace,

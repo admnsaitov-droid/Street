@@ -16,6 +16,7 @@ import { LatestNews } from "./screens/LatestNews/LatestNews";
 import { Lines } from "./screens/Lines/Lines";
 import { useWindowWidth } from "@react-hook/window-size";
 import { PackagesMobile } from "./screens/Packages/PackagedMobile";
+import { useRequireScene } from "@/hooks/useRequireScene";
 
 const StyledHomeView = styled.div`
   display: flex;
@@ -36,6 +37,11 @@ export const HomeView = ({ homeData, footerData }: { homeData: any, footerData: 
   const linesData = homeData?.linesBlock;
 
   const width = useWindowWidth()
+
+  // Hold the loader curtain until the globe has finished prewarming. The globe
+  // sits seven sections down, but compiling it here is what keeps the first
+  // scroll through the page smooth.
+  useRequireScene('home')
 
   return (
     <StyledHomeView>

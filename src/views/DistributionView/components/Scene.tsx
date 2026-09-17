@@ -5,12 +5,13 @@ import { Composition } from "./Composition"
 import { Environment, PerspectiveCamera } from "@react-three/drei"
 import { Location as DistributionLocation } from "../data/distributionData"
 import { SceneSkeleton } from "@/components/Skeleton/SceneSkeleton"
-import { Suspense } from "react"
+import { Suspense, useMemo } from "react"
 import { useLazyScene } from "@/hooks/useLazyScene"
 import { SceneReadyDetector } from "./SceneReadyDetector"
 import { media, rm } from "@/styles"
 import { useWindowWidth } from "@react-hook/window-size"
 import { heightLvh } from "@/styles/utils"
+import { getDeviceTier, getSceneDpr, getSceneGlFlags } from "@/utils/deviceTier"
 
 interface DistributionSceneProps {
     activeFilterId?: string
@@ -33,6 +34,13 @@ export const DistributionScene = ({ activeFilterId = 'all', onLocationClick, sel
 
     const width = useWindowWidth()
 
+    // Device tier is read once at construction — DPR and renderer flags must
+    // never drift apart between the four canvases. A 3x phone would otherwise
+    // render ~9x the fragments for no perceptible gain.
+    const deviceTier = useMemo(() => getDeviceTier(), [])
+    const sceneDpr = useMemo(() => getSceneDpr(deviceTier), [deviceTier])
+    const sceneGl = useMemo(() => getSceneGlFlags(deviceTier), [deviceTier])
+
     return (
         <StyledContainer ref={lazyScene.containerRef}>
             <SceneSkeleton 
@@ -42,7 +50,11 @@ export const DistributionScene = ({ activeFilterId = 'all', onLocationClick, sel
                 position={width > 768 ? "left" : "center"}
             />
             {lazyScene.shouldLoad && (
-                <StyledScene frameloop={lazyScene.isInView ? "always" : "demand"}>
+                <StyledScene
+                    dpr={sceneDpr}
+                    gl={sceneGl}
+                    frameloop={lazyScene.isInView ? "always" : "demand"}
+                >
                     <Suspense fallback={null}>
                         <SceneReadyDetector sceneType="distribution" />
                         <ambientLight intensity={2} color={0xFFFFFF} />
