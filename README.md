@@ -1,5 +1,31 @@
-    
-# Next.js 14 Starter with Three.js and Animation Features
+# Street Barbell
+
+A five-locale (`en es fr de fi`) marketing and product site on **Next.js 14.2
+App Router**, with spring-driven motion, four three.js scenes and a **Strapi**
+content backend.
+
+> **Working on this project (human or AI)? Start with the vault.**
+>
+> | | |
+> |---|---|
+> | [`obsidian/README.md`](./obsidian/README.md) | the project brain — every convention, decision and playbook |
+> | [`obsidian/architecture/site-map.md`](./obsidian/architecture/site-map.md) | route → view → Strapi endpoint |
+> | [`obsidian/architecture/stack-profile.md`](./obsidian/architecture/stack-profile.md) | the resolved stack: paths, bindings, commands |
+> | [`.claude/stack.json`](./.claude/stack.json) | the same profile, machine-readable — **resolve paths from here** |
+> | [`AGENTS.md`](./AGENTS.md) | the hard rules |
+> | `.claude/scripts/verify.sh` | the mechanical gate. Baseline: `obsidian/meta/baseline-debt.md` |
+>
+> ```bash
+> yarn && yarn dev              # requires a .env — see obsidian/architecture/environment-variables.md
+> .claude/scripts/verify.sh     # check the hard rules
+> ```
+
+---
+
+# Appendix — the starter this project was built on
+
+> Kept for its component and hook examples. It describes the **next14-starter**,
+> not Street Barbell; where the two disagree, the vault is right.
 
 This Next.js 14 starter project provides an advanced setup with built-in Three.js, a variety of animation components, and a highly configurable layout system. It is designed to optimize animations, smooth scrolling, and user interactivity while maintaining seamless performance.
 

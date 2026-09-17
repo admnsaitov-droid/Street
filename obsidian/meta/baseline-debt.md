@@ -1,0 +1,113 @@
+---
+tags: [meta, todo, stable]
+updated: 2026-09-17
+---
+
+# Baseline Debt
+
+What `.claude/scripts/verify.sh` reports on the codebase **as it was when the
+vault was installed** (2026-09-17), with a judgement on each. This exists so the
+first FAIL anyone sees is understood rather than ignored — and so the list can
+only shrink.
+
+> Baseline: **4 FAIL · 6 WARN · 0 SKIP**. Zero SKIPs means the stack profile is
+> complete — every check that could apply, applied.
+
+## FAILs
+
+### 1. Env vars read outside a validated module — ~30 sites
+
+Every `process.env.API_URL` in `src/app/api/*`, plus `RESEND_API_KEY`,
+`RECIPIENT_EMAIL`, `TELEGRAM_*`. **Real.** The reads themselves are server-side
+and safe; what is missing is one module that validates them at boot. ADR-0104.
+Fixing this also fixes the `NEXT_PUBLIC_BASEURL` / `NEXT_PUBLIC_BASE_URL`
+mismatch — see [[environment-variables]]. **Highest value fix in the repo.**
+
+### 2. Explicit `any` — ~20 sites
+
+`src/app/sitemap.ts`, `src/utils/{createMetadataGenerator,getMediaStrapiPath,strapi,math,generateStructuredData}.ts`,
+`src/styles/{utils.ts,grid/grid.tsx}`. **Real, and hidden**: `.eslintrc.json`
+disables `@typescript-eslint/no-explicit-any`, so `yarn lint` passes over all of
+it. Most of these are Strapi response shapes; typing them in `src/types/` would
+retire the majority at once. The two in `src/styles` are generic-helper
+internals and are defensible.
+
+### 3. CSS `@keyframes` — 5 blocks
+
+| File | What |
+|---|---|
+| `src/app/global-error.tsx` | `fadeIn` on the error page |
+| `src/components/Skeleton/SkeletonLoader.tsx` | `shimmer` |
+| `src/components/FullScreenPlayer/FullScreenPlayer.tsx` | `spin` |
+| `src/views/DistributionView/components/CountryPanel/CountryPanelMobile.tsx` | `fadeIn`, `slideUp` |
+
+**Legacy, low risk.** Three are indefinite loaders/spinners, which is the one
+case a keyframe genuinely suits; the two in `CountryPanelMobile` are entrance
+animations and should become `Inview`/`Spring`. Do not add a sixth. Migrate one
+when you are already editing its file.
+
+### 4. Hardcoded colour in an inline style — 2 sites
+
+`HomeView/screens/Lines/components/Preview.tsx:179` and
+`PackageView/components/Overview/components/ProductPreview.tsx:135` — both
+`backgroundColor: '#EAECF2 !important'`. **Real and trivial**: add the value to
+`_colors` in `src/styles/colors.ts` and use `colors.*`.
+
+## WARNs
+
+| Warning | Count | Judgement |
+|---|---|---|
+| `"use client"` on a view | 10 | **Real.** `HomeView`, `AboutView`, `ArticlesView`, `ContactView` and several `ProductView` pieces are client components wholesale. Each one drags its entire subtree into the bundle. Split the leaf that needs interactivity when you next touch one; do not add an eleventh. |
+| `console.log` in source | ~40 | Mostly `src/app/sitemap.ts` (heavy debug logging) and the middleware. `removeConsole` strips them in production builds, so this is noise hygiene, not a leak — but the sitemap logging makes a real bug hard to find. |
+| Click handler on a non-interactive element | 11 | **Real accessibility bug.** The 3D zoom controls in `ProductScene`/`PackageScene`, the menu items in `Header/Menu.tsx`, and the policy checkbox rows in both contact forms are `div`/`span` with `onClick` — not keyboard reachable. Make them `<button>`. |
+| Raw `<a>` for an internal link | 1 | `src/components/Cookie.tsx:68` → `/privacy-policy`. Also missing the locale prefix. Use `next/link`. |
+| Hex literal in source | ~25 | `not-found.tsx` and `global-error.tsx` style themselves inline on purpose — they must render when the app shell is broken. Acceptable; the rest are WebGL material colours, which the rule explicitly allows. |
+| TODO / FIXME | 3 | `SwiperFrameByFrame.tsx`, `Degree360.tsx`, `useDynamicInView.ts`. |
+
+## Not caught by any check, found during adaptation
+
+- **`NEXT_PUBLIC_BASEURL` vs `NEXT_PUBLIC_BASE_URL`** — canonical URLs, hreflang,
+  sitemap, robots and OG tags all fall through to a hardcoded literal.
+  [[environment-variables]].
+- **Unvalidated request bodies** in `src/app/api/send/route.ts` and
+  `send-main/route.ts` — destructured straight from JSON and interpolated into
+  an HTML email. No validation library is installed.
+- **`src/app/api/proxy-media/route.ts` fetches an arbitrary `url` parameter**
+  with no host allowlist.
+- **`.eslintrc.json` disables** `no-explicit-any`, `no-unused-vars`,
+  `no-unused-expressions`, `ban-ts-comment` and `prefer-const` — `yarn lint` is
+  a much weaker gate than it looks. Treat `verify.sh` as the real one.
+- **Both `yarn.lock` and `package-lock.json` are committed.** yarn is the
+  maintained one.
+- **No `.env.example`, no `engines`/`.nvmrc`, no tests.**
+
+## Found by reading the source (2026-09-17)
+
+Bugs and surprises no check catches. Each is also noted in its topic note.
+
+| Finding | Where | Effect |
+|---|---|---|
+| OG image URLs point at `/api/media`, which does not exist | `utils/createMetadataGenerator.ts` | **every Strapi-sourced OG image 404s** — shares are imageless |
+| Product schema emits an empty `offers.url` | `views/ProductView/ProductView.tsx` | built from `window.location.href` in a client component → `''` in the server-rendered JSON-LD |
+| `get-contact-data` endpoint has no callers | `app/api/get-contact-data/` | dead route |
+| Organization schema has an empty `sameAs` | `app/[locale]/layout.tsx` | social profiles are commented out; weakest possible entity signal |
+| `Handle` accepts `tag` and ignores it | `components/Springs/Handle.tsx` | always renders a `div`; unusable where semantics matter |
+| `useLoop` defaults to `framerate: 100` | `hooks/useLoop.ts` | 10fps unless the caller overrides it |
+| `SpringTrigger` always nests `innerTag` | `components/Springs/SpringTrigger.tsx` | two elements render; `className` lands on the outer one |
+| `columnGap` is inert on multi-word text | `components/Text/TextEngine.tsx` | word spacing is a hardcoded `0.25em` span |
+| No `prefers-reduced-motion` handling anywhere | all of `src/` | accessibility gap; the fix lives inside protected files |
+| `src/layouts/CanvasLayout/` + `tunnel-rat` unused | — | dead code and a dead dependency |
+| Unused `.glb`/`.hdr` assets in `public/models` | `test.glb`, `earth_old.glb`, `solar.glb`, `testHdr2-5.hdr` | deployed but not bundled — verify before deleting |
+| `public/cesium/` copied into the build | `copy-webpack-plugin` in `next.config.mjs` | confirm it is still used; large if not |
+| `useSpringTriggerDepricated.ts` still present | `src/hooks/` | 305 lines of dead code |
+
+## Rules for this note
+
+1. Fix something → delete its entry here in the same change.
+2. `verify.sh` reports something new → it is a regression, not baseline. Fix it;
+   do not add it here.
+3. A FAIL that is genuinely wrong for this project → an ADR, not an entry here.
+
+## Related
+
+[[decisions-log]] · [[qa-verification]] · [[changelog]] · [[environment-variables]]

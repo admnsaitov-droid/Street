@@ -1,0 +1,61 @@
+---
+tags: [frontend, catalog, stable]
+updated: 2026-09-17
+---
+
+# Utility Catalog
+
+Everything in `src/utils/`. Pure where possible; the data helpers are the
+exception and are marked as such.
+
+## Content & media
+
+| Function | Purpose |
+|---|---|
+| `getStrapiData(path, locale)` | **The only client-facing content entry point.** Calls this app's own `/api/<path>?locale=…`, dedupes in-flight requests by URL, 10s timeout, returns `null` on failure instead of throwing. |
+| `getMediaStrapiPath(media)` | Resolves a Strapi media object to a usable URL. |
+| `strapi.ts → getBaseUrl()` | Server: `NEXT_PUBLIC_BASEURL` → `NEXT_PUBLIC_BASE_URL` → `localhost:3000`. Client: `window.location.origin`. |
+
+## SEO
+
+| Function | Purpose |
+|---|---|
+| `createMetadataGenerator({ getMetadata, getPath, fallback })` | The per-route metadata factory. Every page uses it; nothing hand-writes `<meta>`. |
+| `generateMetadata(props)` | The underlying builder — title (brand-prefixed), description, OG, Twitter, canonical, alternates. |
+| `generateHreflangTags(...)` | `hreflang` alternates across the five locales. |
+| `generateStructuredData.ts` | `generateOrganizationSchema`, `generateWebSiteSchema`, `generateArticleSchema`, `combineSchemas`, `generateStructuredDataScript` — the JSON-LD builders. |
+| `localizedUrl(...)` | Builds a locale-prefixed URL. |
+| `locales.ts` | `getLocaleCodes`, `getDefaultLocale`, `getStrapiLocales` — locale list with `src/config/locales.ts` as the static fallback. |
+
+## Maths & animation
+
+| Function | Purpose |
+|---|---|
+| `math.ts` | `lerp`, `clamp`, `debounce`, `interpolate` (numeric + unit-aware) |
+| `sNoise.ts` | simplex noise for the WebGL scenes |
+| `spherePosition.ts` | lat/lon → 3D position for the globe markers |
+| `scrollTo(...)` | **the one programmatic scroll entry point** — Lenis-aware ([[smooth-scroll]]) |
+| `dateFormat.ts` | article/news date formatting |
+
+## Communications
+
+| Function | Purpose |
+|---|---|
+| `telegram.ts → sendTelegramMessage(payload)` | Server-only. Mirrors a contact submission to Telegram; called non-blocking so a Telegram failure never fails the form. |
+
+## Styling helpers
+
+Live in `src/styles/`, not here: `rm`, `em`, `media` (from `@/styles`),
+`heightLvh` / `minHeightLvh` / `marginTopLvh` and `toVars` / `printVars`
+(`src/styles/utils.ts`). See [[design-system]].
+
+## Rules
+
+- Pure: same input, same output, no DOM writes, no module state. `strapi.ts` is
+  the deliberate exception (its request cache) — keep new helpers pure.
+- No React imports. A util that needs one is a hook.
+- Named exports, one concern per file.
+
+## Related
+
+[[folder-structure]] · [[seo-metadata]] · [[component-conventions]]
