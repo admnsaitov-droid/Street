@@ -13,6 +13,75 @@ mattered. Link the ADR when there is one.
 
 ---
 
+## 2026-09-17 — The globe's textures were the freeze (correcting the entry below)
+
+The prewarm change below was reported broken from the running site: **distribution
+froze on first load, home froze on scroll.** Both were real, both were mine, and
+the harness had missed them because it only measured *scroll* windows — a freeze
+while the loader curtain is still up is a freeze the visitor still sees.
+
+### What was actually wrong
+
+1. **The warmup gate registered against the wrong scene.** `PlanetModel`
+   hardcoded its `SceneType`, but **both globes render the same component** —
+   `HomeView`'s `Composition` imports it from `DistributionView/`. Home
+   registered its warmup as `distribution`, so home's curtain never waited and
+   the texture upload landed on the first scroll. A second, completely
+   unreferenced copy of `PlanetModel` sat under
+   `HomeView/screens/Globe/components/` and made this look impossible; it has
+   been deleted.
+2. **Gating the curtain moved the stall, it did not remove it.** On distribution
+   the gate worked — and put a 2322ms upload behind a curtain whose logo
+   animation then froze for 2.3s.
+3. **The prewarm's `catch {}` was silent**, so when `initTexture` was not running
+   at all, nothing said so. It now warns outside production.
+
+### The real cost
+
+| file | maps | on disk | VRAM | upload @4× CPU |
+|---|---|---|---|---|
+| `high_res_earth.glb` | 8000², 8000², **10000²** | 11.2MB | ~900MB | **2250ms** |
+| `low_res_earth.glb` | 6000² × 3 | 1.09MB | ~430MB | ~900ms |
+| `earth_lights.glb` | 4000² | 184KB | ~64MB | ~290ms |
+
+The 11.2MB model was downloaded **only for its material** — its geometry was
+discarded — and the "low-res" fallback was already 6000², so the swap bought
+almost nothing visible. The globe renders ~800px tall.
+
+### The fix
+
+All four maps re-encoded at **2048×2048** webp and loaded with `useTexture`
+(which suspends, so the existing prewarm uploads them behind the curtain).
+`low_res_earth.glb` is kept for its geometry only; `high_res_earth.glb` and
+`earth_lights.glb` are no longer fetched. ADR-0109.
+
+| | before | after |
+|---|---|---|
+| globe texture download | 11.4MB | **548KB** |
+| globe VRAM | ~1.4GB | **~67MB** |
+| home — blocked after curtain | 3056ms (worst 2600ms) | **0ms** |
+| home — worst scroll frame | 2476ms | **42ms** |
+| distribution — worst in-curtain task | 2322ms | **637ms** |
+| distribution — curtain | 7.77s | **4.10s** |
+
+Across all 13 page types: **zero shader programs linked during scroll**, worst
+scroll frame 133ms (home) and ≤50ms everywhere else.
+
+Also removed, because the swap they existed for is gone: `pendingWarmups` /
+`beginWarmup` / `endWarmup` on the animation store, and `warmupMaterial`.
+
+### Still open
+
+- The curtain is still ~4-5s at 4× CPU throttle (roughly a third of that
+  unthrottled) and is now a *spread* of JS parse, Draco decode, HDR PMREM and
+  ~600ms of uploads rather than one stall. `adams.hdr` (1.6MB) and `sky.hdr`
+  (1.28MB) are equirect HDRs PMREM'd at runtime; pre-baking them to KTX2
+  cubemaps is the next lever.
+- The CMS product/package models (8–22MB, uncompressed, slow Strapi origin)
+  are unchanged and remain the cold-load cost on those two pages.
+
+---
+
 ## 2026-09-17 — Every page rendered again, and the first scroll stopped freezing
 
 Two things, in that order: the site was returning HTTP 500 on every route, and
@@ -56,9 +125,8 @@ What changed:
 - **`useSceneReady` actually prewarms** — `initTexture` for every texture,
   `compileAsync` for every program, one throwaway render — instead of polling
   `gl.info` and guessing 500ms after the first frame.
-- **The high-res earth swap is warmed before it is assigned.** `warmupMaterial`
-  compiles the replacement material against the live scene and uploads its maps
-  first; assigning it cold recompiled the program inside a running frame.
+- ~~**The high-res earth swap is warmed before it is assigned.**~~ **Superseded**
+  — the swap itself was removed; see the entry above and ADR-0109.
 - **DPR is clamped and the renderer flags are tiered** — new
   `src/utils/deviceTier.ts`, read once at construction by all four canvases:
   mobile `[0.75, 1]` + `antialias: false`, tablet `[0.75, 1.25]`, desktop
@@ -76,9 +144,10 @@ What changed:
   drops `media.lg`. Verified identical: root font-size at 1920/1440/900/390/320
   and no horizontal overflow at any of them.
 
-The trade, stated plainly: the curtain is longer. Home 2.16s → 4.34s,
-distribution 3.53s → 7.02s (4× CPU throttle; roughly a third of that
-unthrottled). ADR-0107.
+The trade, stated plainly: the curtain is longer. Home 2.16s → 4.95s,
+distribution 3.53s → 4.10s (4× CPU throttle; roughly a third of that
+unthrottled). ADR-0107. **Superseded in part — see the entry above: the first
+version of this shipped two regressions.**
 
 ### Measurement notes
 
@@ -104,11 +173,8 @@ are worth keeping:
 
 ### Still open
 
-- `public/models/high_res_earth.glb` is 11.2MB, **11.05MB of it textures**
-  (7.3MB normal, 2.6MB diffuse, 1.2MB roughness), fetched only for its material
-  — the geometry is decoded and thrown away. It is now essentially the whole
-  curtain. Re-exporting the maps at half size, or dropping the normal map, is
-  the single biggest remaining win. Needs design sign-off.
+- ~~`public/models/high_res_earth.glb` is 11.2MB…~~ **Done — see the entry
+  above.** The maps ship at 2048² and the model is no longer fetched. ADR-0109.
 - The CMS-hosted product and package models (8–22MB, uncompressed delivery from
   the Strapi host) are the cold-load cost on those two pages. A CDN in front of
   Strapi, plus `--texture-compress ktx2` on export, is the fix.

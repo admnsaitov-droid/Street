@@ -69,6 +69,15 @@ Per-tier DPR and renderer flags come from `src/utils/deviceTier.ts`; the prewarm
 that keeps compilation off the scroll path is `src/utils/warmupScene.ts`. See
 [[utils]] and ADR-0107.
 
+**The globe's textures are 2048² and live outside the models.**
+`public/models/textures/earth_{diffuse,normal,roughness,night}_2k.webp` (548KB
+total) are loaded with `useTexture`. `low_res_earth.glb` is still fetched, but
+**for its geometry only** — its own 6000² maps are replaced before the first
+draw. `high_res_earth.glb` (11.2MB) and `earth_lights.glb` are **no longer
+fetched at runtime**; they are kept in `public/models/` as the source art the
+2K maps were cut from. Re-cut with `dwebp` → `cwebp -resize 2048 2048 -m 6`.
+ADR-0109.
+
 ## State, data & integrations
 
 | Package | Version | Role |

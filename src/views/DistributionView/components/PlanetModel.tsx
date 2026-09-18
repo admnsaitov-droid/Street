@@ -4,13 +4,9 @@ import { useGLTF, useTexture } from "@react-three/drei"
 import { DRACO_DECODER_PATH } from "@/utils/dracoDecoder"
 import { useFrame } from "@react-three/fiber"
 import { Group } from "three"
-import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef } from "react"
 import * as THREE from 'three'
-import { GLTF, GLTFLoader } from 'three-stdlib'
-import { useThree } from "@react-three/fiber"
-import useAnimationStore from "@/animationStore/animationStore"
-import { warmupMaterial } from "@/utils/warmupScene"
-import { getDeviceTier } from "@/utils/deviceTier"
+import { GLTF } from 'three-stdlib'
 import { sNoise } from "@/utils/sNoise"
 import { useWindowWidth } from "@react-hook/window-size"
 
@@ -28,90 +24,66 @@ interface PlanetModelProps {
     scale: number
 }
 
+/**
+ * The globe. **Both scenes render this one component** — HomeView's Composition
+ * imports it from here — so nothing in it may assume which page it is on.
+ */
 export const PlanetModel = ({ scale }: PlanetModelProps) => {
     const groupRef = useRef<Group>(null)
     const time = useRef({value: 0})
     const windowWidth = useWindowWidth()
 
-    // Night blend texture
-    // const nightBlendTexture = useTexture('/models/textures/earth_night_Diffuse.webp')
-    
-    const { materials: { 'Material.002': nightBlendMaterials } } = useGLTF('/models/earth_lights.glb', DRACO_DECODER_PATH) as GLTFResult
-    const nightBlendTexture = useMemo(() => nightBlendMaterials.map, [nightBlendMaterials]) as THREE.Texture
 
+    // `low_res_earth.glb` is loaded for its **geometry**; its own maps are
+    // 6000x6000 and are replaced below before anything is drawn, so they are
+    // never uploaded.
     const { nodes, materials } = useGLTF('/models/low_res_earth.glb', DRACO_DECODER_PATH) as GLTFResult
     const meshRef = useRef<THREE.Mesh>(null)
-    const [highResMaterial, setHighResMaterial] = useState<THREE.MeshStandardMaterial | null>(null)
-    const highResSettleRef = useRef<(() => void) | null>(null)
-    const { gl, scene, camera } = useThree()
-    const beginWarmup = useAnimationStore(state => state.beginWarmup)
-    const endWarmup = useAnimationStore(state => state.endWarmup)
-    // Read once at construction — `useWindowWidth` starts at 0 on the first
-    // render, which would let the scene report ready before this even mounts.
-    const isDesktopTier = useMemo(() => getDeviceTier() !== 'mobile', [])
-    
-    // The high-res earth is 11MB — almost all of it textures — and its material
-    // replaces the low-res one. Registering a warmup keeps the loader curtain up
-    // until the swap is done, so the decode and upload happen behind the curtain
-    // instead of blocking the main thread for ~2.4s on the first scroll.
-    useEffect(() => {
-        if (!materials['Material.002'] || !isDesktopTier) return
 
-        let settled = false
-        beginWarmup('distribution')
-        const finish = () => {
-            if (settled) return
-            settled = true
-            endWarmup('distribution')
+    // The surface maps, re-encoded at 2048x2048 from the same source art that
+    // `high_res_earth.glb` carried. That file shipped 8000x8000 diffuse and
+    // roughness and a 10000x10000 normal — ~900MB of VRAM and a measured 2.25s
+    // of blocked main thread to upload, for texels a globe ~800px tall can
+    // never sample. `useTexture` suspends, so these resolve inside the same
+    // Suspense boundary as the models and are uploaded by the scene prewarm,
+    // behind the loader curtain.
+    // The night-lights map came from `earth_lights.glb`, a Draco GLB fetched
+    // purely for this one 4000x4000 texture. Same treatment, same reason.
+    const [diffuseMap, normalMap, roughnessMap, nightBlendTexture] = useTexture([
+        '/models/textures/earth_diffuse_2k.webp',
+        '/models/textures/earth_normal_2k.webp',
+        '/models/textures/earth_roughness_2k.webp',
+        '/models/textures/earth_night_2k.webp',
+    ])
+
+    // glTF authors UVs for flipY:false, and only the colour map is sRGB. Both
+    // differ from TextureLoader's defaults, so they must be set explicitly or
+    // the globe renders upside-down and washed out.
+    useMemo(() => {
+        for (const texture of [diffuseMap, normalMap, roughnessMap, nightBlendTexture]) {
+            texture.flipY = false
+            texture.needsUpdate = true
         }
-
-        const loader = new GLTFLoader()
-        loader.load(
-            '/models/high_res_earth.glb',
-            (gltf) => {
-                const highResModel = gltf as GLTFResult
-                const material = (highResModel.scene.children[0] as THREE.Mesh).material as THREE.MeshStandardMaterial
-                if (material) setHighResMaterial(material)
-                else finish()
-            },
-            undefined,
-            () => finish(),
-        )
-
-        // The swap effect below releases the warmup once the material is live;
-        // this cleanup covers unmount before that happens.
-        highResSettleRef.current = finish
-        return finish
-    }, [materials, isDesktopTier, beginWarmup, endWarmup])
-
-    // Replace low res material with high res material on the desktop tier only.
-    // The material is compiled and its maps uploaded *before* it goes on the
-    // mesh — assigning a cold material recompiles the program inside whatever
-    // frame is running, which reads as a stall mid-scroll.
+        diffuseMap.colorSpace = THREE.SRGBColorSpace
+        nightBlendTexture.colorSpace = THREE.SRGBColorSpace
+        normalMap.colorSpace = THREE.NoColorSpace
+        roughnessMap.colorSpace = THREE.NoColorSpace
+    }, [diffuseMap, normalMap, roughnessMap, nightBlendTexture])
+    
+    // Apply planet shader to model materials, and swap in the 2K surface maps
+    // before the first draw so the model's own 6000x6000 set never uploads.
     useEffect(() => {
-        if (!highResMaterial || !isDesktopTier) return
-        const mesh = meshRef.current
-        if (!mesh) return
-
-        const material = appllyShaders(highResMaterial, nightBlendTexture)
-        if (!material) return
-
-        let cancelled = false
-        warmupMaterial(gl, scene, camera, material, mesh.geometry).then(() => {
-            if (!cancelled) mesh.material = material
-            highResSettleRef.current?.()
-        })
-
-        return () => { cancelled = true }
-        // eslint-disable-next-line react-hooks/exhaustive-deps -- appllyShaders is declared below this effect
-    }, [highResMaterial, nightBlendTexture, isDesktopTier, gl, scene, camera])
-
-    // Apply planet shader to model materials
-    useEffect(() => {
-        const material = appllyShaders(materials['Material.002'], nightBlendTexture)
+        const base = materials['Material.002']
+        if (base) {
+            base.map = diffuseMap
+            base.normalMap = normalMap
+            base.roughnessMap = roughnessMap
+            base.metalnessMap = roughnessMap
+        }
+        const material = appllyShaders(base, nightBlendTexture)
         if (!material) return
         meshRef.current && ((meshRef.current as THREE.Mesh).material = material);
-    }, [materials, nightBlendTexture])
+    }, [materials, nightBlendTexture, diffuseMap, normalMap, roughnessMap])
 
     const appllyShaders = useCallback((material: THREE.MeshStandardMaterial, nightBlendTexture: THREE.Texture) => {
         if (!material) return

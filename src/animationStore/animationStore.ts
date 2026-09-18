@@ -4,13 +4,6 @@ export type SceneType = 'distribution' | 'home' | 'product' | 'package';
 
 interface SceneState {
   isSceneReady: boolean;
-  /**
-   * Prewarm jobs the scene is still waiting on beyond its own suspended
-   * assets — the high-res earth material swap is the only one today. The scene
-   * does not count as ready, and the loader curtain does not lift, until this
-   * is back to zero.
-   */
-  pendingWarmups: number;
 }
 
 interface AnimationStore {
@@ -26,13 +19,10 @@ interface AnimationStore {
   getSceneState: (sceneType: SceneType) => SceneState;
   requireScene: (sceneType: SceneType) => void;
   releaseScene: (sceneType: SceneType) => void;
-  beginWarmup: (sceneType: SceneType) => void;
-  endWarmup: (sceneType: SceneType) => void;
 }
 
 const defaultSceneState: SceneState = {
   isSceneReady: false,
-  pendingWarmups: 0,
 };
 
 const useAnimationStore = create<AnimationStore>((set, get) => ({
@@ -76,28 +66,6 @@ const useAnimationStore = create<AnimationStore>((set, get) => ({
   releaseScene: (sceneType: SceneType) =>
     set((state) => ({
       requiredScenes: state.requiredScenes.filter((type) => type !== sceneType),
-    })),
-
-  beginWarmup: (sceneType: SceneType) =>
-    set((state) => ({
-      scenes: {
-        ...state.scenes,
-        [sceneType]: {
-          ...state.scenes[sceneType],
-          pendingWarmups: state.scenes[sceneType].pendingWarmups + 1,
-        },
-      },
-    })),
-
-  endWarmup: (sceneType: SceneType) =>
-    set((state) => ({
-      scenes: {
-        ...state.scenes,
-        [sceneType]: {
-          ...state.scenes[sceneType],
-          pendingWarmups: Math.max(0, state.scenes[sceneType].pendingWarmups - 1),
-        },
-      },
     })),
 }));
 

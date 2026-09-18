@@ -32,7 +32,7 @@ Everything in `src/hooks/`, plus the context hooks exposed by the layout layers.
 | Hook | Returns | Notes |
 |---|---|---|
 | `useSceneManager` | scene lifecycle helpers | **Unused** — no call sites in `src/`. Left in place, not wired to anything. |
-| `useSceneReady(type)` | — | Runs *inside* the `<Canvas>`. Prewarms the scene — `initTexture` for every texture, `compileAsync` for every program, one throwaway render — then sets `isSceneReady` in `src/animationStore`. Waits for `pendingWarmups` to reach 0 first. |
+| `useSceneReady(type)` | — | Runs *inside* the `<Canvas>`, in the same `Suspense` boundary as the models, so it fires once every suspended asset has resolved. Prewarms the scene — `initTexture` for every texture, `compileAsync` for every program, one throwaway render — then sets `isSceneReady` in `src/animationStore`. |
 | `useLazyScene(type, opts)` | `{ containerRef, isInView, shouldLoad, progress, isLoading }` | `shouldLoad` is **always true** — the scene mounts at page load so it warms behind the loader curtain. The observer only drives `isInView` → `frameloop`. ADR-0107. |
 | `useRequireScene(type, enabled)` | — | Called from the **view**, not the scene. Declares that this page owns a scene so the loader curtain waits for it. Must be the view: the scenes are `next/dynamic` chunks that mount after the first commit. |
 | `useProgressiveLoading` | `{ progress, isLoading }` | Drives `SceneSkeleton`'s fake progress bar off `isSceneReady`. |
@@ -52,7 +52,7 @@ common mistake when wiring a new component.
 | `useLoadingStore` (default export) | zustand | `store/store.tsx` | loading flags, form success/error modals, cursor, mega-menu open |
 | `useVideoPlayerStore` | zustand | `store/store.tsx` | the full-screen image/video player and its gallery |
 | `useColorStore` | zustand | `store/store.tsx` | product colour/material selection |
-| `useAnimationStore` (default export) | zustand | `animationStore/` | per `SceneType` (`home` · `distribution` · `product` · `package`): `isSceneReady`, `pendingWarmups`; plus `requiredScenes` — the scenes the current page declared, which the loader curtain waits on |
+| `useAnimationStore` (default export) | zustand | `animationStore/` | `isSceneReady` per `SceneType` (`home` · `distribution` · `product` · `package`), plus `requiredScenes` — the scenes the current page declared, which the loader curtain waits on |
 | `usePreview` | zustand | `views/HomeView/screens/Lines/components/Preview.tsx` | view-local |
 | `useProductPreview` | zustand | `views/PackageView/components/Overview/components/ProductPreview.tsx` | view-local |
 

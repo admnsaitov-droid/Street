@@ -1,5 +1,5 @@
 import { useThree } from "@react-three/fiber";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import useAnimationStore, { SceneType } from "@/animationStore/animationStore";
 import { warmupScene } from "@/utils/warmupScene";
 
@@ -20,8 +20,6 @@ export const useSceneReady = (sceneType: SceneType) => {
     const { gl, scene, camera } = useThree();
     const setIsSceneReady = useAnimationStore((state) => state.setIsSceneReady);
     const resetScene = useAnimationStore((state) => state.resetScene);
-    const pendingWarmups = useAnimationStore((state) => state.scenes[sceneType].pendingWarmups);
-    const [warmed, setWarmed] = useState(false);
 
     // Reset scene state when component mounts
     useEffect(() => {
@@ -47,7 +45,7 @@ export const useSceneReady = (sceneType: SceneType) => {
         await warmupScene(gl, scene, camera);
         if (cancelled) return;
 
-        setWarmed(true);
+        setIsSceneReady(sceneType, true);
       };
 
       prewarm();
@@ -57,12 +55,5 @@ export const useSceneReady = (sceneType: SceneType) => {
         cancelAnimationFrame(firstFrame);
         cancelAnimationFrame(secondFrame);
       };
-    }, [gl, scene, camera, sceneType]);
-
-    // Ready means: everything this scene suspended on has resolved *and* every
-    // deferred warmup it registered (the high-res earth swap) has finished.
-    useEffect(() => {
-      if (!warmed || pendingWarmups > 0) return;
-      setIsSceneReady(sceneType, true);
-    }, [warmed, pendingWarmups, setIsSceneReady, sceneType]);
+    }, [gl, scene, camera, setIsSceneReady, sceneType]);
 };

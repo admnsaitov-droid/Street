@@ -65,15 +65,29 @@ export const collectSceneTextures = (root: THREE.Object3D): Set<THREE.Texture> =
     return textures
 }
 
+/**
+ * Uploads one texture, and **says so when it cannot**.
+ *
+ * This used to be a silent `catch {}`, which hid a prewarm that was not running
+ * at all — the uploads simply happened later, on the first frame that sampled
+ * them, which is the stall the prewarm exists to prevent. A prewarm that fails
+ * quietly is worse than no prewarm, because it reads as success.
+ */
+const initTextureOrWarn = (gl: THREE.WebGLRenderer, texture: THREE.Texture) => {
+    try {
+        gl.initTexture(texture)
+    } catch (error) {
+        if (process.env.NODE_ENV !== 'production') {
+            // eslint-disable-next-line no-console
+            console.warn('[warmupScene] initTexture failed — this upload will stall a frame later', texture, error)
+        }
+    }
+}
+
 /** Uploads every texture in `root` to the GPU. Safe to call more than once. */
 export const initSceneTextures = (gl: THREE.WebGLRenderer, root: THREE.Object3D) => {
     collectSceneTextures(root).forEach((texture) => {
-        try {
-            gl.initTexture(texture)
-        } catch {
-            // A texture whose image has not decoded yet is warmed by the
-            // throwaway render below instead; never let it break the loader.
-        }
+        initTextureOrWarn(gl, texture)
     })
 }
 
@@ -102,41 +116,3 @@ export const warmupScene = async (
     }
 }
 
-/**
- * Warms a material that is about to replace one already on screen (the high-res
- * earth swap). Without this the assignment recompiles the program and uploads
- * its maps inside whatever frame happens to be running — a visible stall.
- */
-export const warmupMaterial = async (
-    gl: THREE.WebGLRenderer,
-    scene: THREE.Scene,
-    camera: THREE.Camera,
-    material: THREE.Material,
-    geometry: THREE.BufferGeometry
-) => {
-    const textures = new Set<THREE.Texture>()
-    collectFromMaterial(material, textures)
-    textures.forEach((texture) => {
-        try {
-            gl.initTexture(texture)
-        } catch {
-            /* warmed by the compile below */
-        }
-    })
-
-    // Compile against a throwaway mesh parented to the real scene, so the
-    // program is built with the same lights, fog and environment it will run
-    // under — a different light count would compile a different variant.
-    const probe = new THREE.Mesh(geometry, material)
-    probe.visible = false
-    scene.add(probe)
-
-    try {
-        if (typeof gl.compileAsync === 'function') await gl.compileAsync(scene, camera)
-        else gl.compile(scene, camera)
-    } catch {
-        /* context lost — the swap still works, just without the warm */
-    } finally {
-        scene.remove(probe)
-    }
-}

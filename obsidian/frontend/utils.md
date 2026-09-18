@@ -42,7 +42,7 @@ exception and are marked as such.
 | Function | Purpose |
 |---|---|
 | `deviceTier.ts` | `getDeviceTier()` (`mobile` \| `tablet` \| `desktop`, thresholds read from `src/styles/grid/breakpoints.ts`), `getSceneDpr(tier)`, `getSceneGlFlags(tier)`, `prefersReducedMotion()`. **Read once at scene construction**, never on resize — all four canvases read DPR and renderer flags from here so the values cannot drift apart. ADR-0107. |
-| `warmupScene.ts` | `warmupScene(gl, scene, camera)` — uploads every texture, compiles every program, renders one throwaway frame. `warmupMaterial(...)` does the same for a material about to replace one already on screen (the high-res earth swap). `collectSceneTextures` / `initSceneTextures` are the pieces. |
+| `warmupScene.ts` | `warmupScene(gl, scene, camera)` — uploads every texture, compiles every program, renders one throwaway frame, then the scene counts as ready. `collectSceneTextures` / `initSceneTextures` are the pieces. A failed upload **warns** outside production rather than passing silently: a prewarm that fails quietly reads as success, which is how a non-running prewarm once hid. |
 | `dracoDecoder.ts` | `DRACO_DECODER_PATH` — the project's own `/draco/`, not Google's CDN. Every `useGLTF` and `GLTFLoader` goes through it. ADR-0108. |
 
 ## Communications

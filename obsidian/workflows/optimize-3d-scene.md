@@ -33,7 +33,7 @@ Do not re-invent these; check they are wired before adding anything.
 | `frameloop={isInView ? "always" : "demand"}` | every `<Canvas>` | **the single biggest win** — an off-screen scene stops rendering |
 | `SceneSkeleton` + `useProgressiveLoading` | `components/Skeleton/`, `src/hooks/` | a progress-bearing placeholder instead of a blank canvas |
 | `SceneReadyDetector` → `useSceneReady` → `useAnimationStore` | inside every `<Canvas>` | real prewarm: `initTexture` for every texture, `compileAsync` for every program, one throwaway render — *then* `isSceneReady` |
-| `warmupScene` / `warmupMaterial` | `src/utils/warmupScene.ts` | the prewarm itself, and the warm-before-assign path for the high-res earth swap |
+| `warmupScene` | `src/utils/warmupScene.ts` | the prewarm itself: `initTexture` every texture, `compileAsync` every program, one throwaway render. Failures **warn** outside production — a silent prewarm failure reads as success |
 | `DRACO_DECODER_PATH` → `public/draco/` | `src/utils/dracoDecoder.ts` | decoder served from this origin, not gstatic. There is deliberately **no prefetch** in the root layout any more — see the comment there. ADR-0108 |
 | `getDeviceTier` / `getSceneDpr` / `getSceneGlFlags` | `src/utils/deviceTier.ts` | DPR clamped per tier (mobile `[0.75,1]`, tablet `[0.75,1.25]`, desktop `[0.75,1.5]`), `antialias: false` on mobile, `powerPreference: "high-performance"` on desktop only. Read **once at construction** |
 
@@ -48,10 +48,17 @@ Do not re-invent these; check they are wired before adding anything.
    waits for every scene the view registered, and each scene uploads its
    textures and compiles its programs behind it. If a program links during a
    scroll again, that is a regression — measure it, do not re-architect.
+   **Moving a stall into the curtain is not fixing it** (skill §3.5): the first
+   attempt did exactly that and froze the loader logo for 2.3s instead. Measure
+   the curtain window too, not only the scroll.
 4. ~~**DPR budget.**~~ **Done (2026-09-17)** — all four canvases read `dpr` and
    the renderer flags from `src/utils/deviceTier.ts`.
-5. **Geometry.** `low_res_earth.glb` exists for a reason — make sure the low-res
-   variant is what mobile actually loads. Draco-compress anything new.
+5. **Check the texture *dimensions*, not the file size.** This is where the whole
+   problem was hiding: `high_res_earth.glb` was 11.2MB on disk but **8000²,
+   8000² and 10000²** in memory — ~900MB of VRAM and 2.25s to upload, for a
+   globe that renders ~800px tall. A heavily-compressed webp tells you nothing
+   about upload cost; `webpinfo` does. The maps now ship at 2048² outside the
+   models (ADR-0109), and `low_res_earth.glb` is loaded for geometry only.
 6. **Textures.** `public/models/hdr/` and `public/textures/` hold several HDRs
    (`testHdr*.hdr`, `hadrMap.hdr`) — confirm which are still referenced; an HDR
    environment is expensive on mobile and often replaceable with a lighting rig.

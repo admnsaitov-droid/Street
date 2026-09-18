@@ -97,7 +97,7 @@ Bugs and surprises no check catches. Each is also noted in its topic note.
 | `columnGap` is inert on multi-word text | `components/Text/TextEngine.tsx` | word spacing is a hardcoded `0.25em` span |
 | No `prefers-reduced-motion` handling anywhere | all of `src/` | accessibility gap; the fix lives inside protected files |
 | `src/layouts/CanvasLayout/` + `tunnel-rat` unused | — | dead code and a dead dependency |
-| Unused `.glb`/`.hdr` assets in `public/models` | `test.glb`, `earth_old.glb`, `solar.glb`, `testHdr2-5.hdr` | deployed but not bundled — verify before deleting |
+| Unused `.glb`/`.hdr` assets in `public/models` | `test.glb`, `earth_old.glb`, `solar.glb`, `testHdr2-5.hdr`, and now `high_res_earth.glb` (11.2MB) + `earth_lights.glb` | deployed but not fetched. The last two are deliberately kept as the source art the 2K globe maps were cut from (ADR-0109); the rest are just dead weight |
 | `public/cesium/` copied into the build | `copy-webpack-plugin` in `next.config.mjs` | confirm it is still used; large if not |
 | `useSpringTriggerDepricated.ts` still present | `src/hooks/` | 305 lines of dead code |
 

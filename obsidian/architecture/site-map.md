@@ -59,10 +59,14 @@ Four, all lazy-loaded with `next/dynamic` (`ssr: false`) and tracked in
 
 | Scene | Where | Assets |
 |---|---|---|
-| `home` | `HomeView/screens/Globe` | `low_res_earth.glb`, `high_res_earth.glb`, trackers |
-| `distribution` | `DistributionView/components/Scene` | earth + atmosphere + stars + markers |
+| `home` | `HomeView/screens/Globe` | `low_res_earth.glb` (**geometry only**) + the 2048² maps in `public/models/textures/`, `sky.hdr`, trackers |
+| `distribution` | `DistributionView/components/Scene` | the same globe + atmosphere, stars, markers, `adams.hdr` |
 | `product` | `ProductView/components/Scene` | `productModel.glb`, colour/material swapping |
 | `package` | `PackageView/components/Hero` | `package.glb`, zoom controls |
+
+Both globes render **one shared component**, `DistributionView/components/PlanetModel`
+— HomeView's `Composition` imports it from there. Nothing in it may assume which
+page it is on; assuming that is what broke the loader gate once (ADR-0107).
 
 Each scene mounts **its own `<Canvas>`** inside its view — there is no shared
 canvas. The canvas mounts at **page load**, not when the container nears the

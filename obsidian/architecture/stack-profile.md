@@ -41,12 +41,14 @@ Full descriptions: `.claude/stack.schema.json`.
 | `capabilities` | what the framework can do | all true except `islands` |
 | `conventions` | which kit conventions are on | `tokenTiers` off (ADR-0101) |
 | `commands` | verbatim shell commands | `yarn …` |
-| `notes` | what the fields cannot say | 14 entries — **read them** |
+| `notes` | what the fields cannot say | 16 entries — **read them** |
 
 `notes[]` is not decoration. It records the `BASEURL` spelling trap, the stale
 `package-lock.json`, the missing env module, the absent shared ticker, the
 `serverComponentsExternalPackages` trap that 500'd every page (ADR-0106), the
-vendored Draco decoder (ADR-0108) and where 3D prewarm lives (ADR-0107).
+vendored Draco decoder (ADR-0108), where 3D prewarm lives (ADR-0107), and the
+globe's 2048² texture set plus the fact that both globes share one component
+(ADR-0109).
 
 ## Keeping it true
 

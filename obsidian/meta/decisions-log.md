@@ -484,15 +484,38 @@ with every asset list commented out.
    throwaway render — then reports ready. The curtain lifts on **min 1s, all
    required scenes ready, cap 8s**.
 
-The high-res earth swap on the two globes registers a `pendingWarmups` entry so
+~~The high-res earth swap on the two globes registers a `pendingWarmups` entry so
 it is part of "ready", and its material is compiled and uploaded through
-`warmupMaterial` *before* it goes on the mesh — assigning a cold material
-recompiles the program inside whatever frame is running.
+`warmupMaterial` *before* it goes on the mesh.~~ **Superseded by ADR-0109** — the
+swap is gone, and with it `pendingWarmups` and `warmupMaterial`. Points 1–3 above
+still describe the code.
 
 **Consequences.** The trade is explicit: **the curtain gets longer, the scroll
-stops freezing.** Measured warm-cache at 4× CPU: home's curtain 2.16s → 4.34s and
-its worst scroll frame 2476ms → 33ms; distribution's curtain 3.53s → 7.02s and
+stops freezing.** Measured warm-cache at 4× CPU: home's curtain 2.16s → 4.95s and
+its worst scroll frame 2476ms → 42ms; distribution's curtain 3.53s → 4.10s and
 its scroll long-tasks 127ms → 0. Numbers in [[changelog]].
+
+**Amended 2026-09-17, after the first version shipped two regressions.** Both were
+reported from the running site, not caught by the harness, and both are worth
+keeping as warnings:
+
+1. **The gate registered against the wrong scene.** `PlanetModel` hardcoded its
+   `SceneType`, but **both globes render the same component** — HomeView's
+   `Composition` imports it from `DistributionView/`. Home therefore registered
+   its warmup as `distribution`, its curtain never waited, and the upload landed
+   on the first scroll. There was also a second, *unreferenced* copy of
+   `PlanetModel` under `HomeView/screens/Globe/components/` which looked like
+   the one home used; it has been deleted. Nothing in a shared component may
+   assume which page it is on.
+2. **Moving a freeze into the curtain is not fixing it.** Gating worked on
+   distribution and simply relocated a 2.3s stall from the scroll to the loader,
+   where it froze the logo animation instead. Skill §3.5 says exactly this. The
+   fix was to make the work small (ADR-0109), not to hide it.
+
+A third lesson is in the code: `warmupScene`'s texture upload was wrapped in a
+silent `catch {}`. When it turned out not to be running at all, the silence is
+what hid it — a prewarm that fails quietly reads as success. It now warns outside
+production.
 
 The 8s cap is the safety valve — gating on scene-ready is a promise about the
 network that cannot be kept, so a slow or failed model must never strand a
@@ -527,3 +550,57 @@ already warm from the same connection. The files must be refreshed when `three`
 is upgraded — that is the maintenance cost, and it is noted in
 [[tech-stack]]. `high_res_earth.glb` turned out to carry no Draco at all, so its
 imperative `GLTFLoader` no longer constructs a `DRACOLoader`.
+
+
+---
+
+## ADR-0109 — The globe ships 2048² maps, and no separate high-res model
+
+**Date.** 2026-09-17 · **Status.** Accepted · Supersedes the high-res swap that
+ADR-0107 tried to schedule around. Decided with the maintainer.
+
+**Context.** The globe's texture budget was the whole problem, and it was far
+larger than anything in the code suggested:
+
+| file | maps | on disk | in VRAM | upload @4× CPU |
+|---|---|---|---|---|
+| `high_res_earth.glb` | 8000² diffuse, 8000² roughness, **10000² normal** | 11.2MB | ~900MB | **2250ms** |
+| `low_res_earth.glb` | 6000² × 3 | 1.09MB | ~430MB | ~900ms |
+| `earth_lights.glb` | 4000² night | 184KB | ~64MB | ~290ms |
+
+`high_res_earth.glb` was fetched **only for its material** — its geometry was
+decoded and thrown away. `earth_lights.glb` likewise existed for one texture. And
+the "low-res" fallback was 6000², so the swap bought almost no visible detail for
+11MB and a 2.25s main-thread stall. The globe renders at most ~800px tall; a
+10000² normal map is roughly 150× more texels than can ever be sampled.
+
+**Decision.** Extract the maps from the GLBs, re-encode them at **2048×2048**
+webp, and load them with `useTexture` — which suspends, so they resolve inside
+the scene's own `Suspense` boundary and are uploaded by the normal prewarm.
+`low_res_earth.glb` is kept **for its geometry only**; its maps are replaced
+before the first draw, so they never upload. `high_res_earth.glb` and
+`earth_lights.glb` are no longer fetched at runtime.
+
+Encoding: `dwebp` to PNG, then `cwebp -resize 2048 2048 -m 6` at q88 (diffuse,
+night), q92 (normal — lossy normals band at lower quality), q82 (roughness).
+Source files stay in `public/models/` so the maps can be re-cut.
+
+**Consequences.** Texture download for the globe goes **11.2MB + 184KB → 548KB**,
+VRAM ~1.4GB → ~67MB, and the upload from ~3.4s → ~0.6s. Both reported freezes
+are gone: home blocks **0ms** after the curtain (was a single 2600ms task), and
+distribution's worst in-curtain task is **637ms**, down from 2322ms.
+
+The look is the trade, and it is small: compared side by side at 1280×800 the
+globe is indistinguishable — continents, coastlines, night city lights, clouds
+and the rim/night shader all read the same. Mobile gains the most, since it
+previously uploaded the 6000² set and now uploads 2048².
+
+Because the swap is gone, so is the machinery ADR-0107 added for it:
+`pendingWarmups`/`beginWarmup`/`endWarmup` on the animation store, and
+`warmupMaterial`. Deleted rather than left dormant.
+
+**What is left in the curtain** is no longer one stall but a spread: JS parse and
+compile, Draco geometry decode, the `Environment` HDR's PMREM pass
+(`adams.hdr` 1.6MB, `sky.hdr` 1.28MB, both equirect) and ~600ms of remaining
+uploads. Pre-baking the environments to KTX2 cubemaps is the next lever if the
+loader needs to get shorter.
