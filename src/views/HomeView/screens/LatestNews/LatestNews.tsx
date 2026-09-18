@@ -16,6 +16,7 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import { useWindowWidth } from "@react-hook/window-size";
+import { useMounted } from "@/hooks/useMounted"
 
 interface LatestNewsProps {
     latestNewsData: any
@@ -45,6 +46,14 @@ export const LatestNews = ({ latestNewsData }: LatestNewsProps) => {
     const [isEnd, setIsEnd] = useState(false);
 
     const width = useWindowWidth()
+
+    // Width-conditional markup must agree with the server on the first render,
+
+    // or React tears the tree down and rebuilds it (hydration mismatch). Until
+
+    // mounted we render as if wide, which is what the server assumed.
+
+    const mounted = useMounted()
     
     // Detect when swiper container is in view
     const [swiperInViewRef, swiperInView] = useInView({
@@ -155,17 +164,17 @@ export const LatestNews = ({ latestNewsData }: LatestNewsProps) => {
                                 </StyledSwipeButton>
                             </StyledSwipeButtonContainer>
                         )}
-                        {width > 576 && <BlueButton isSvg={false} link={latestNewsData?.button?.link}>
+                        {(!mounted || width > 576) && <BlueButton isSvg={false} link={latestNewsData?.button?.link}>
                             {latestNewsData?.button?.text}
                         </BlueButton>}
                     </animated.div>
                 </div>
             </StyledTopBar>
-            {width > 576 && <StyledSwiperContainer ref={swiperInViewRef}>
+            {(!mounted || width > 576) && <StyledSwiperContainer ref={swiperInViewRef}>
                 <Swiper
                     modules={[Navigation]}
                     spaceBetween={20}
-                    slidesPerView={width > 768 ? 4 : 3}
+                    slidesPerView={(!mounted || width > 768) ? 4 : 3}
                     navigation={false}
                     pagination={{ clickable: true }}
                     onSwiper={(swiper) => {
@@ -203,7 +212,7 @@ export const LatestNews = ({ latestNewsData }: LatestNewsProps) => {
                     <ArticleCard key={index} article={article} />
                 ))}
             </StyledNewsMobile>
-            {width <= 576 && <BlueButton isSvg={false} link={latestNewsData?.button?.link} className="mobile-button">
+            {mounted && width <= 576 && <BlueButton isSvg={false} link={latestNewsData?.button?.link} className="mobile-button">
                 {latestNewsData?.button?.text}
             </BlueButton>}
         </StyledLatestNews>

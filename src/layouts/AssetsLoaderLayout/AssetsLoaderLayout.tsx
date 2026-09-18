@@ -121,9 +121,17 @@ export const AssetsLoaderLayout = ({
         }
     })
 
+    /*
+      The content does not fade in. The curtain wiping away is the transition —
+      fading the page up underneath it as well meant that on a slow frame the
+      hero was still part-transparent after the curtain had gone, which read as
+      the content (and its backdrop blur) arriving late and at random.
+      It stays a spring so the value is still driven through the motion system,
+      but with no duration there is nothing to wait for.
+    */
     const wrapperValues = useSpring({
         opacity: skipLoader || fullyLoaded ? 1 : 0,
-        config: skipLoader ? { duration: 0 } : undefined
+        config: { duration: 0 }
     })
 
     return (

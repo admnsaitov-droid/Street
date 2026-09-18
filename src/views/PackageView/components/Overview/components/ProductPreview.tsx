@@ -131,7 +131,13 @@ export const ProductPreview = () => {
     return (
         <>
             <StyledContainer as={animated.div} ref={innerRef} style={{...moveValues, pointerEvents: url === 'poster-only' && poster && width <= 576 ? 'all' : 'none'}}>
-                <AnimLink href={`/products/${route}`} aria-label={`View product details`}>
+                {/*
+                  `route` is empty until a card is hovered, which made this an
+                  href of `/products/` — a page that does not exist. Next
+                  prefetched it and logged a 404 on every page carrying a
+                  product preview. Fall back to the products index instead.
+                */}
+                <AnimLink href={route ? `/products/${route}` : '/lines'} aria-label={`View product details`}>
                     <animated.span style={{...values, backgroundColor: '#EAECF2 !important'}}>
                         { allUrls.map((item, idx) => 
                             <VideoPlayer 

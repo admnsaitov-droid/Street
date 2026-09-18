@@ -1,3 +1,4 @@
+import { PlaceholderImage } from "@/components/Skeleton/PlaceholderImage"
 import AnimatedLink from "@/components/animated/AnimatedLink/AnimatedLink"
 import { colors, media, rm } from "@/styles"
 import { fontGolosText } from "@/styles/fonts"
@@ -6,8 +7,8 @@ import { useEffect, useState, useRef } from "react"
 import { animated, easings, useSpring } from "@react-spring/web"
 import { useLocale } from "next-intl"
 import { getStrapiData } from "@/utils/strapi"
+import { onIdle } from "@/utils/onIdle";
 import UnderlineLink from "@/components/animated/UnderlineLink/UnderlineLink"
-import Image from "next/image"
 import { getMediaStrapiPath } from "@/utils/getMediaStrapiPath"
 import useLoadingStore from "@/store/store"
 import { AnimLink } from "@/layouts/AnimatedRouterLayout/AnimatedRouterLayout"
@@ -57,7 +58,13 @@ export const ProductsMenu = ({ previewText, allText }: { previewText: string, al
             }
         };
 
-        fetchPackagesData();
+        // Deferred to idle: these panels are mounted but closed, so their
+
+
+        // contents must not compete with the page the visitor is actually looking at.
+
+
+        return onIdle(() => { fetchPackagesData() });
     }, [locale]);
 
     // Measure content height when packages data changes
@@ -183,16 +190,34 @@ export const ProductsMenu = ({ previewText, allText }: { previewText: string, al
                             <AllButton text={allText} href="/lines" lineColor={colors.red} onClick={handleLinkClick} />
                         </StyledLeft>
                         <StyledRight>
-                            <StyledProduct href={`/products/${currentPackage?.linii?.products?.[0]?.slug}`} onClick={handleLinkClick}>
-                                <div className="imageContainer">
-                                    <Image src={getMediaStrapiPath(currentPackage?.linii?.products[0]?.previewImage)} alt="Package" fill />
-                                </div>
-                            </StyledProduct>
-                            <StyledProduct href={`/products/${currentPackage?.linii?.products?.[1]?.slug}`} onClick={handleLinkClick}>
-                                <div className="imageContainer">
-                                    <Image src={getMediaStrapiPath(currentPackage?.linii?.products[1]?.previewImage)} alt="Package" fill />
-                                </div>
-                            </StyledProduct>
+                            {/*
+                              Only render a product tile once it has a real slug.
+                              These used to render while the menu's data was still
+                              loading, producing an href of `/products/` — which
+                              Next then prefetched and got a 404 for, on every page
+                              that mounts the header.
+                            */}
+                            {[0, 1].map((index) => {
+                                const product = currentPackage?.linii?.products?.[index]
+                                if (!product?.slug) return null
+
+                                return (
+                                    <StyledProduct
+                                        key={product.slug}
+                                        href={`/products/${product.slug}`}
+                                        onClick={handleLinkClick}
+                                    >
+                                        <div className="imageContainer">
+                                            <PlaceholderImage
+                                                src={getMediaStrapiPath(product?.previewImage)}
+                                                alt={product?.name || 'Product'}
+                                                fill
+                                                sizes="25vw"
+                                            />
+                                        </div>
+                                    </StyledProduct>
+                                )
+                            })}
                         </StyledRight>
                     </StyledLayout>
                 </StyledMenuContainer>

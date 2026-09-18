@@ -24,7 +24,9 @@ Everything in `src/hooks/`, plus the context hooks exposed by the layout layers.
 
 | Hook | Returns | Notes |
 |---|---|---|
-| `useWindowSize` / `useWindowWidth` | `{ width, height }` / `number` | Shared subscription — never add a per-component resize listener. |
+| `useWindowSize` / `useWindowWidth` | `{ width, height }` / `number` | Shared subscription — never add a per-component resize listener. ⚠️ **Returns 0 on the server.** Any *markup* that branches on it must be gated with `useMounted` or it fails hydration — ADR-0114. |
+| `useMounted()` | `boolean` | False on the server and the first client render. The guard for width-conditional markup: `{(!mounted \|\| width > 768) && <Desktop/>}` and `{mounted && width <= 768 && <Mobile/>}`. Desktop is the server assumption; inverting the polarity makes the server render the mobile branch. |
+| `useTouchDevice()` | `boolean` | A real touch device — `(hover: none) and (pointer: coarse)`, read once. **Not a width check**: a narrow window on a laptop still has a mouse and keeps dragging the 3D scenes normally. |
 | `useLvh` + `<Lvh />` | — | Writes `--vh` so `heightLvh()` survives a collapsing mobile URL bar. Mounted once in the locale layout. |
 
 ## 3D scenes
@@ -33,8 +35,9 @@ Everything in `src/hooks/`, plus the context hooks exposed by the layout layers.
 |---|---|---|
 | `useSceneManager` | scene lifecycle helpers | **Unused** — no call sites in `src/`. Left in place, not wired to anything. |
 | `useSceneReady(type)` | — | Runs *inside* the `<Canvas>`, in the same `Suspense` boundary as the models, so it fires once every suspended asset has resolved. Prewarms the scene — `initTexture` for every texture, `compileAsync` for every program, one throwaway render — then sets `isSceneReady` in `src/animationStore`. |
-| `useLazyScene(type, opts)` | `{ containerRef, isInView, shouldLoad, progress, isLoading }` | `shouldLoad` is **always true** — the scene mounts at page load so it warms behind the loader curtain. The observer only drives `isInView` → `frameloop`. ADR-0107. |
-| `useRequireScene(type, enabled)` | — | Called from the **view**, not the scene. Declares that this page owns a scene so the loader curtain waits for it. Must be the view: the scenes are `next/dynamic` chunks that mount after the first commit. |
+| `useLazyScene(type, opts)` | `{ containerRef, isInView, shouldLoad, progress, isLoading }` | `shouldLoad` is true for everyone who can render it (false for bots and clients without usable WebGL) — the scene mounts at page load so it warms behind the loader curtain. The observer only drives `isInView` → `frameloop`. ADR-0107. |
+| `useRequireScene(type, enabled)` | — | Called from the **view**, not the scene. Declares that this page owns a scene so the loader curtain waits for it. Must be the view: the scenes are `next/dynamic` chunks that mount after the first commit. Registers **nothing** for a bot or a client without usable WebGL — waiting for a scene that can never render is pure cost (ADR-0111). Only *hero* scenes gate; home's below-the-fold globe does not. |
+| `useRequireMedia(id, enabled, isReady)` | — | The same gate for above-the-fold imagery. Only `priority` media registers, so the curtain reveals a finished hero instead of a placeholder. |
 | `useProgressiveLoading` | `{ progress, isLoading }` | Drives `SceneSkeleton`'s fake progress bar off `isSceneReady`. |
 
 ## State — contexts and stores
@@ -52,7 +55,7 @@ common mistake when wiring a new component.
 | `useLoadingStore` (default export) | zustand | `store/store.tsx` | loading flags, form success/error modals, cursor, mega-menu open |
 | `useVideoPlayerStore` | zustand | `store/store.tsx` | the full-screen image/video player and its gallery |
 | `useColorStore` | zustand | `store/store.tsx` | product colour/material selection |
-| `useAnimationStore` (default export) | zustand | `animationStore/` | `isSceneReady` per `SceneType` (`home` · `distribution` · `product` · `package`), plus `requiredScenes` — the scenes the current page declared, which the loader curtain waits on |
+| `useAnimationStore` (default export) | zustand | `animationStore/` | `isSceneReady` per `SceneType` (`home` · `distribution` · `product` · `package`); `requiredScenes`; and `requiredMedia` / `readyMedia` for above-the-fold imagery. The loader curtain waits on all three (ADR-0111) |
 | `usePreview` | zustand | `views/HomeView/screens/Lines/components/Preview.tsx` | view-local |
 | `useProductPreview` | zustand | `views/PackageView/components/Overview/components/ProductPreview.tsx` | view-local |
 

@@ -29,6 +29,7 @@ updated: 2026-09-17
 | `LOCALES` | server | Declared in `.env`; not currently read in `src/`. |
 | `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` | public | Contact-page map. Public by necessity — **must** stay HTTP-referrer-restricted in the Google console. See `GOOGLE_MAPS_SETUP.md`. |
 | `NEXT_PUBLIC_GTM_ID` | public | Google Tag Manager container, injected in `src/app/layout.tsx`. |
+| `NEXT_PUBLIC_SUPPORT_EMAIL` | public | ⚠️ **Not set yet.** Where the "Report this" button on both error pages sends people. Unset, they fall back to `info@streetbarbell.com`, which is a **guess** — set it or the reports go nowhere. Read by `src/app/[locale]/error.tsx` and `src/app/global-error.tsx`. ADR-0112. |
 | `RESEND_API_KEY` | **server** | Contact-form email. `src/app/api/send*` throws at module load if `RECIPIENT_EMAIL` is missing. |
 | `RECIPIENT_EMAIL` | **server** | Contact-form destination. |
 | `TELEGRAM_BOT_TOKEN` | **server** | Contact-form mirror to Telegram. |

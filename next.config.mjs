@@ -40,6 +40,12 @@ const nextConfig = {
 
   images: {
     formats: ['image/avif', 'image/webp'],
+    // Strapi's nginx serves /uploads with `Cache-Control: max-age=300`, and Next
+    // derives its optimised-image cache TTL from the upstream header. Without
+    // this the optimiser re-fetched and re-encoded the originals every five
+    // minutes — and the originals are large (the home hero poster alone is an
+    // 8.1MB PNG), so every sixth minute of traffic paid full price again.
+    minimumCacheTTL: 60 * 60 * 24 * 30,
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
     remotePatterns: [

@@ -8,6 +8,7 @@ import { getMediaStrapiPath } from "@/utils/getMediaStrapiPath"
 import { AccordionText } from "@/components/animated/AccordionText/AccordionText"
 import { AnimLink } from "@/layouts/AnimatedRouterLayout/AnimatedRouterLayout"
 import { useWindowWidth } from "@react-hook/window-size"
+import { useMounted } from "@/hooks/useMounted"
 
 interface ProductProps {
     product: any
@@ -26,6 +27,14 @@ export const Product = ({ product, index, onMouseEnter, onMouseLeave }: ProductP
     const [ref, inView] = useInView()
 
     const width = useWindowWidth()
+
+    // Width-conditional markup must agree with the server on the first render,
+
+    // or React tears the tree down and rebuilds it (hydration mismatch). Until
+
+    // mounted we render as if wide, which is what the server assumed.
+
+    const mounted = useMounted()
 
 
     const exploreSpring = useSpring({
@@ -71,7 +80,7 @@ export const Product = ({ product, index, onMouseEnter, onMouseLeave }: ProductP
                     {product?.model && <StyledModel as="p">{product?.model}</StyledModel>}
                     {product?.name && <StyledProductName as="h5">{product?.name}</StyledProductName>}
                 </div>
-                {width > 768 && <StyledExploreButton style={exploreSpring}>
+                {(!mounted || width > 768) && <StyledExploreButton style={exploreSpring}>
                     <UnderlineLink href={`/products/${product.slug}`} lineColor="#0040DD" text="Explore"></UnderlineLink>
                 </StyledExploreButton>}
             </StyledTopContainer>
@@ -81,7 +90,7 @@ export const Product = ({ product, index, onMouseEnter, onMouseLeave }: ProductP
                         {product?.previewDescription}
                     </p>
                 }
-                {width <= 768 && <StyledExploreButton>
+                {mounted && width <= 768 && <StyledExploreButton>
                     <UnderlineLink href={`/products/${product.slug}`} lineColor="#0040DD" text="Explore"></UnderlineLink>
                 </StyledExploreButton>}
             </StyledDescriptionContainer>

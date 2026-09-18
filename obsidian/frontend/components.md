@@ -70,10 +70,16 @@ Built **on** the engine; this is where project-specific motion belongs.
 | `ContactForm/` | the global contact form rendered after every page's content |
 | `Modals/SuccessModal` · `ErrorModal` | form result, driven by the zustand store |
 | `FullScreenPlayer/` | global image/video lightbox with gallery paging, driven by the store |
-| `MediaComponent/` | picks image vs video and routes media URLs |
-| `Skeleton/` | `SkeletonImage`, `SkeletonVideo`, `SkeletonIcon`, `SceneSkeleton`, `VideoPlayer` — loading placeholders that mirror the final layout |
+| `MediaComponent/` | picks image vs video, routes media URLs, and owns the loading placeholder. Takes `priority` (above-the-fold), `sizes` — **pass `sizes`**, or `fill` images ask the optimiser for the largest device width — and `placeholderTone` (`dark` only for slots over dark art, e.g. the home hero video) |
+| `Skeleton/MediaPlaceholder` | the shade that holds a media slot from the first paint until the image or video is ready. No delay timer; it fades out on load. `tone="dark"` for slots over dark art. Positions itself absolutely, so **the parent must be positioned** |
+| `Scene/SceneGestureHint` | the "use two fingers to rotate" overlay for touch devices, in the style map embeds use. One finger scrolls the page, two drive the scene; this explains that the first time someone tries one. `pointer-events: none` — it only watches |
+| `Skeleton/PlaceholderImage` | **use this instead of a bare `next/image`** for content imagery. A drop-in that renders the placeholder and the image as *siblings* — no wrapper element, so it swaps in without touching a layout rule. **Resets on `src` change**, so a slot that swaps image (the header mega-menus, on hover) shows the skeleton again rather than the stale one |
+| `ProductView/.../ColorPaletreCompact` | the colour picker for **narrow layouts** (≤`md`). Renders inside `ProductScene`'s glassy toolbar next to the zoom buttons: one trigger, a sheet with Main/Accent tabs and swatches, closes on select, outside tap or Escape. Below `xsm` the label and chevron drop and it becomes a rectangle of the picked colour. Where a product has both palettes the label carries the mode (`Main · …`), because several products return identical main and accent lists |
+| `ProductView/.../ColoPaletre` (`ColorPaletre`) | the always-open palette in the corner of the configurator, **desktop only** (above `md`). Narrow layouts use `ColorPaletreCompact` in the scene's toolbar instead |
+| `Skeleton/VideoPlayer` | video + poster. The poster goes through **`next/image`**, never the `<video poster>` attribute — as an attribute the browser fetches the Strapi original (8.1MB for the home hero). Takes `priority`, `sizes` and `placeholderTone`. The poster state is **seeded from the prop, not set in an effect** — as effect-set state it was missing from the SSR HTML, so `priority` had nothing to preload and the request started 2.6s late (ADR-0111) |
+| `Skeleton/` (rest) | `SkeletonIcon`, `SceneSkeleton` in use. **`SkeletonImage` and `SkeletonVideo` have no call sites** — dead code, and `SkeletonImage` carries a `delay = 300` that is the opposite of what a placeholder should do |
 | `StructuredData/` | renders the JSON-LD graph; used at routes and the layout |
-| `Breadcrumbs/` | breadcrumb trail + its schema |
+| `Breadcrumbs/` | breadcrumb trail + its `BreadcrumbList` schema. Takes `tone` — pass `"dark"` on a hero that sits on a dark surface (distributors), or the current-page label is black on black. The trail inherits the colour; links dim with opacity |
 | `ScrollRevealWrapper/DynamicScrollRevealWrapper` | wraps page content in the scroll-reveal behaviour, dynamically imported |
 | `LinesGrid/` | the lines grid + `LineCard` / `LinesInfoCard`, shared by home and the lines page |
 | `FrameByFrame/` | scroll- and drag-driven frame sequences: `FrameByFrame`, `Degree360`, `SwiperFrameByFrame`, canvas 2D/WebGL painters, `Placeholder` |

@@ -13,6 +13,7 @@ import { Location as DistributionLocation } from "./data/distributionData"
 import { getAllDynamicLocations, transformDynamicData } from "./data/dynamicDataTransformer"
 import { CountryPanelMobile } from "./components/CountryPanel/CountryPanelMobile"
 import { useWindowWidth } from "@react-hook/window-size"
+import { useMounted } from "@/hooks/useMounted"
 import { useRequireScene } from "@/hooks/useRequireScene"
 interface DistributionViewProps {
     data: any
@@ -42,6 +43,10 @@ export const DistributionView = ({ data }: DistributionViewProps) => {
     const [selectedLocation, setSelectedLocation] = useState<DistributionLocation | null>(null)
     const isInternalLocationChange = useRef(false)
     const width = useWindowWidth()
+    // Width-conditional markup must agree with the server on the first render,
+    // or React tears the tree down and rebuilds it (hydration mismatch). Until
+    // mounted we render as if wide, which is what the server assumed.
+    const mounted = useMounted()
 
     // Hold the loader curtain until the globe has finished prewarming.
     useRequireScene('distribution')
@@ -95,7 +100,8 @@ export const DistributionView = ({ data }: DistributionViewProps) => {
         <StyledDistributionView>
             <StyledSceneWrapper>
                 <StyledContent>
-                    <Breadcrumbs items={[
+                    {/* this hero is the dark globe — the default black trail vanished on it */}
+                    <Breadcrumbs tone="dark" items={[
                         { label: 'Home', slug: '' },
                         { label: data?.distributionPage?.title?.textFirst || 'Distribution', href: undefined },
                     ]} />
@@ -147,7 +153,7 @@ export const DistributionView = ({ data }: DistributionViewProps) => {
                     data={data}
                 />
             </StyledSceneWrapper>
-            {width > 768 ? <CountryPanel 
+            {(!mounted || width > 768) ? <CountryPanel 
                 activeFilterId={activeFilterId}
                 onFilterChange={handleFilterChange} 
                 onLocationClick={handleLocationClick} 
@@ -216,17 +222,26 @@ const StyledSceneWrapper = styled.div`
 
 const StyledTitleContainer = styled.div`
     width: 100%;
+    /*
+      The country panel is absolutely positioned at right: rm(50) and is
+      rm(440) wide, so a full-width headline ran underneath it — hence both the
+      smaller desktop type and the width cap. Desktop only; the tablet and
+      phone sizes below are unchanged.
+    */
+    max-width: calc(100% - ${rm(480)});
     margin-bottom: ${rm(20)};
     line-height: 90%;
-    font-size: ${rm(100)};
+    font-size: ${rm(64)};
     text-transform: uppercase;
 
     ${media.lg`
-        font-size: ${rm(80)};
+        font-size: ${rm(56)};
     `}
 
     ${media.md`
         font-size: ${rm(56)};
+        /* below md the panel stacks underneath, so the headline is free again */
+        max-width: 100%;
     `}
 
     ${media.xsm`

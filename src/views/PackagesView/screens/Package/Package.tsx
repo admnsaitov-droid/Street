@@ -8,6 +8,7 @@ import { colors, media, rm } from "@/styles"
 import { fontGolosText } from "@/styles/fonts"
 import { getMediaStrapiPath } from "@/utils/getMediaStrapiPath"
 import { useWindowWidth } from "@react-hook/window-size"
+import { useMounted } from "@/hooks/useMounted"
 import Image from "next/image"
 import styled from "styled-components"
 
@@ -20,6 +21,14 @@ interface PackageProps {
 export const Package = ({ data, productsCountText, exploreText }: PackageProps) => {
 
     const width = useWindowWidth();
+
+    // Width-conditional markup must agree with the server on the first render,
+
+    // or React tears the tree down and rebuilds it (hydration mismatch). Until
+
+    // mounted we render as if wide, which is what the server assumed.
+
+    const mounted = useMounted();
     
     // Debug: Log the productsCount value
     console.log('Original productsCount:', data?.productsCount);
@@ -37,7 +46,7 @@ export const Package = ({ data, productsCountText, exploreText }: PackageProps) 
         <StyledPackage>
             <StyledContent>
                 <StyledLeft>
-                    {width > 576 && <StyledAnnotation>{productText}</StyledAnnotation>}
+                    {(!mounted || width > 576) && <StyledAnnotation>{productText}</StyledAnnotation>}
                     <StyledBottomContainer>
                         <MaskImageAppear className="image-container" duration={900}>  
                             <MediaComponent media={data?.previewAboveMedia} className="image" parallax={true} imageGallery={imageGallery}/>
@@ -60,7 +69,7 @@ export const Package = ({ data, productsCountText, exploreText }: PackageProps) 
                         </MaskImageAppear>
                     </StyledBottomContainer>
                 </StyledRight>
-                {width <= 576 && <StyledAnnotation>{productText}</StyledAnnotation>}
+                {mounted && width <= 576 && <StyledAnnotation>{productText}</StyledAnnotation>}
             </StyledContent>
         </StyledPackage>
     )

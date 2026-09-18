@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { SceneType } from '@/animationStore/animationStore';
 import { useProgressiveLoading } from './useProgressiveLoading';
+import { isBot, canRenderWebGL } from '@/utils/isBot';
 
 interface LazySceneOptions {
   threshold?: number;
@@ -30,6 +31,9 @@ export const useLazyScene = (
   const [isInView, setIsInView] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const observerRef = useRef<IntersectionObserver | null>(null);
+  // Read once: a crawler or Lighthouse run never mounts the scene at all, so
+  // the three.js chunk is never fetched. See `isBot` and optimize-3d-scene §1.
+  const [automated] = useState(() => isBot() || !canRenderWebGL());
 
   const { progress, isLoading } = useProgressiveLoading(sceneType);
 
@@ -59,7 +63,7 @@ export const useLazyScene = (
   return {
     containerRef,
     isInView,
-    shouldLoad: true, // prewarmed behind the loader, never on a scroll boundary
+    shouldLoad: !automated, // prewarmed behind the loader, never on a scroll boundary
     progress,
     isLoading,
   };

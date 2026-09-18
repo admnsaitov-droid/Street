@@ -1,11 +1,11 @@
 'use client'
+import { PlaceholderImage } from "@/components/Skeleton/PlaceholderImage"
 import { SimpleButton } from "@/components/Ui/buttons/SimpleButton"
 import UnderlineLink from "@/components/animated/UnderlineLink/UnderlineLink"
 import { colors, media, rm } from "@/styles"
 import { fontGolosText, fontSageGrotesk } from "@/styles/fonts"
 import { getMediaStrapiPath } from "@/utils/getMediaStrapiPath"
 import { StyledAnnotation, StyledSubtitle } from "@/views/PackagesView/screens/Package/Package"
-import Image from "next/image"
 import styled from "styled-components"
 import { useEffect, useMemo } from "react"
 import { Product } from "./components/Product"
@@ -128,7 +128,7 @@ export const Overview = ({ data }: OverviewProps) => {
                                     {line?.linii?.name && <StyledLineName as="h4">{line?.linii?.name}</StyledLineName>}
                                     <div className="translateImageWrapper">
                                         <div className="imageWrapper">
-                                            <Image src={getMediaStrapiPath(line?.linePreviewImage)} alt={line?.linii?.name} fill />
+                                            <PlaceholderImage src={getMediaStrapiPath(line?.linePreviewImage)} alt={line?.linii?.name || "Equipment line preview"} fill sizes="(max-width: 768px) 100vw, 50vw" />
                                         </div>
                                     </div>
                                 </StyledLineInfo>

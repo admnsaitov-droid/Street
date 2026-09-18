@@ -87,6 +87,22 @@ design width, so mobile designs measured at 360 translate directly.
 `media.<key>` produces a **`max-width`** query — they cascade downward. Never
 hand-write an `@media`.
 
+## Media placeholder tokens
+
+Three tokens in `_colors` drive every media skeleton, so the shade is the same
+everywhere and changing it is one edit:
+
+| Token | Value | Used for |
+|---|---|---|
+| `mediaPlaceholder` | `#F2F4F8` | the default shade a slot holds while its image loads |
+| `mediaPlaceholderShimmer` | `rgba(23, 28, 40, 0.06)` | the sweep, via `--color-shimmer` |
+| `mediaPlaceholderDark` | `#1C1F26` | slots that sit over dark art (the home hero) |
+
+Deliberately faint — a placeholder should read as "this is about to be
+something", not as a grey box. `SkeletonLoader`'s sweep is `--color-shimmer` /
+`--color-shimmer-peak` with a white default, so the same loader works on a light
+surface; a white shimmer over a near-white placeholder is invisible. ADR-0110.
+
 ## Viewport height
 
 `src/styles/utils.ts` exports `heightLvh(n)`, `minHeightLvh(n)`,

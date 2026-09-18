@@ -1,4 +1,4 @@
-import Image from "next/image"
+import { PlaceholderImage } from "@/components/Skeleton/PlaceholderImage"
 import { colors, media, rm } from "@/styles"
 import { fontGolosText } from "@/styles/fonts"
 import styled from "styled-components"
@@ -21,7 +21,7 @@ export const ProductDescriptionSection = ({ items }: ProductDescriptionSectionPr
                 return (
                     <StyledItem key={item.id}>
                         <StyledThumb>
-                            <Image
+                            <PlaceholderImage
                                 src={getMediaStrapiPath(poster)}
                                 alt={item.text || ""}
                                 fill

@@ -74,3 +74,26 @@ regression.
 ## Related
 
 [[seo-metadata]] · [[motion-system]] · [[text-motion]] · [[component-conventions]] · [[baseline-debt]]
+
+## Hydration-safe markup
+
+The server renders with **no viewport**: `useWindowWidth()` reports 0. Markup
+that branches on width therefore renders one tree on the server and another on
+the client, and React rebuilds the whole DOM. Gate it with `useMounted()`, with
+desktop as the server assumption:
+
+```tsx
+{(!mounted || width > 768) && <DesktopOnly />}
+{mounted && width <= 768 && <MobileOnly />}
+```
+
+Two related rules, both of which broke real pages here:
+
+- **Nesting must be valid.** A `<div>` inside a `<p>` is repaired by the browser
+  and hydration then disagrees — use a `span` with `display: inline-block`. The
+  three policy views hit this with `StyledDot`, which renders inside a rich-text
+  paragraph and is now a `span`.
+- **SVG attributes are camelCase in JSX**: `strokeWidth`, `fillOpacity`,
+  `clipRule`. React rejects the kebab-case form.
+
+ADR-0114.

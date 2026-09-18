@@ -11,6 +11,12 @@ export const _colors = {
     bgGray: '#E9EDF1',
     gray90: '#868D9C',
     gray700: '#B7BCCA',
+    // Media placeholders — the shade a slot holds until its image or video
+    // arrives. Deliberately faint: it should read as "this is about to be
+    // something", not as a grey box. See ADR-0110.
+    mediaPlaceholder: '#F2F4F8',
+    mediaPlaceholderShimmer: 'rgba(23, 28, 40, 0.06)',
+    mediaPlaceholderDark: '#1C1F26',
 } 
 
 

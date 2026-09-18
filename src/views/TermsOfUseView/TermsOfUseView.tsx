@@ -32,7 +32,7 @@ export default function TermsOfUseView({ data }: any) {
     const parts = text.split(/(\*\*)/);  // This will keep the delimiters in the array
     return parts.map((part, index) => {
         if (part === '**') {
-            return <StyledDot key={index}><div></div></StyledDot>;
+            return <StyledDot key={index}><span /></StyledDot>;
         }
         return <span key={index} style={{ display: 'inline-block' }}>{part}</span>;
     });

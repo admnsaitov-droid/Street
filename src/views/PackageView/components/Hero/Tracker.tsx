@@ -27,7 +27,7 @@ export const Tracker = ({ position, label }: TrackerProps) => {
                     $isHovered={isHovered}
                 >
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M4.00098 8H8.00098M8.00098 8H12.001M8.00098 8V4M8.00098 8V12" stroke="currentColor" stroke-width="1.33333" stroke-linecap="square" stroke-linejoin="round"/>
+                        <path d="M4.00098 8H8.00098M8.00098 8H12.001M8.00098 8V4M8.00098 8V12" stroke="currentColor" strokeWidth="1.33333" strokeLinecap="square" strokeLinejoin="round"/>
                     </svg>
                 </StyledTracker>
             </Html>

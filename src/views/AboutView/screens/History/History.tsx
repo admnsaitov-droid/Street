@@ -4,6 +4,7 @@ import { HistoryOverview } from "./components/HistoryOverview"
 import { StyledSubtitle } from "@/views/PackagesView/screens/Package/Package"
 import { MediaComponent } from "@/components/MediaComponent/MediaComponent"
 import { useWindowWidth } from "@react-hook/window-size"
+import { useMounted } from "@/hooks/useMounted"
 import { MaskImageAppear } from "@/components/animated/MaskImageAppear/MaskImageAppear"
 import { getMediaStrapiPath } from "@/utils/getMediaStrapiPath"
 
@@ -13,6 +14,10 @@ interface HistoryProps {
 
 export const History = ({ data }: HistoryProps) => {
     const width = useWindowWidth();
+    // Width-conditional markup must agree with the server on the first render,
+    // or React tears the tree down and rebuilds it (hydration mismatch). Until
+    // mounted we render as if wide, which is what the server assumed.
+    const mounted = useMounted();
 
     const imageGallery = [
         data?.mediaSecondary?.poster,
@@ -25,19 +30,19 @@ export const History = ({ data }: HistoryProps) => {
             <StyledBottom>
                 <StyledLeft>
                     <StyledSecndaryImageContainer>
-                        <MaskImageAppear className="image-container" enabled={width > 768}>
+                        <MaskImageAppear className="image-container" enabled={(!mounted || width > 768)}>
                             <MediaComponent media={data?.mediaSecondary} className="image" parallax={true} imageGallery={imageGallery} />
                         </MaskImageAppear>
                     </StyledSecndaryImageContainer>
-                    {width > 768 && <StyledSubtitle className="blue80">
+                    {(!mounted || width > 768) && <StyledSubtitle className="blue80">
                         {data?.descriptionSecondary}
                     </StyledSubtitle>}
                 </StyledLeft>
                 <StyledMainImageContainer>
-                    <MaskImageAppear className="image-container" enabled={width > 768}>
+                    <MaskImageAppear className="image-container" enabled={(!mounted || width > 768)}>
                         <MediaComponent media={data?.mediaMain} className="image" parallax={true} imageGallery={imageGallery} />
                     </MaskImageAppear>
-                    {width <= 768 && <StyledSubtitle className="blue80">
+                    {mounted && width <= 768 && <StyledSubtitle className="blue80">
                         {data?.descriptionSecondary}
                     </StyledSubtitle>}
                 </StyledMainImageContainer>

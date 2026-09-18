@@ -51,6 +51,14 @@ Views receive props and never fetch. Reuse before creating — check
 [[components]] first; `LinesGrid`, `Skeleton/*`, `MediaComponent`, `Breadcrumbs`
 and everything in `Ui/` already exist.
 
+**CMS media goes through `MediaComponent`**, and it needs two props from you:
+`sizes` (how wide the slot really is — without it a `fill` image asks the
+optimiser for the largest device width) and `priority` on anything above the
+fold. It brings its own placeholder, so a slot is never blank while it loads.
+Anywhere else you would reach for a bare `next/image`, use
+**`Skeleton/PlaceholderImage`** instead — same props, same layout, but the slot
+holds its shape while the bytes arrive. ADR-0110.
+
 ## 4. Styling
 
 - Colours: `colors.*`. A new one goes in `_colors` in `src/styles/colors.ts` first.
@@ -87,8 +95,9 @@ wrapper, `useLazyScene` to defer mounting, `SceneSkeleton` while it loads,
 ## 7. Markup
 
 One `<h1>`. Real `<button>` for actions. `next/link` or `AnimLink` for
-navigation. `next/image` with `alt`. Sections inside the shell's `<main>` — do
-not add a second one. [[html-semantics]]
+navigation. `MediaComponent` / `PlaceholderImage` with `alt` for imagery — never
+a bare `next/image` for content. Sections inside the shell's `<main>` — do not
+add a second one. [[html-semantics]]
 
 ## 8. SEO — in the same change
 

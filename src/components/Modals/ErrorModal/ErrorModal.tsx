@@ -56,12 +56,12 @@ export const ErrorModal = () => {
             <animated.div className="dashContainer" style={dashAppearSpring} onClick={handleCloseModal}/>
             <StyledModalContent style={modalAppearSpring}>
                 <svg className="successIcon" width="41" height="40" viewBox="0 0 41 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <rect x="0.5" width="40" height="40" rx="20" fill="#17AA52" fill-opacity="0.12"/>
-                    <path d="M15 20.5L18.8333 24.5L27 16.5" stroke="#0FB552" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <rect x="0.5" width="40" height="40" rx="20" fill="#17AA52" fillOpacity="0.12"/>
+                    <path d="M15 20.5L18.8333 24.5L27 16.5" stroke="#0FB552" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
 
                 <svg className="closeIcon" onClick={handleCloseModal} width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M6 6L18 18M18 6L6 18" stroke="#6F7685" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M6 6L18 18M18 6L6 18" stroke="#6F7685" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
 
                 <StyledMainText>

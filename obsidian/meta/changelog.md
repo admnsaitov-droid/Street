@@ -13,6 +13,332 @@ mattered. Link the ADR when there is one.
 
 ---
 
+## 2026-09-18 — Configurator layout corrections
+
+- **The desktop colour palette is back where it was.** The always-open palette
+  returns to the corner of the configurator above `md`; the compact control in
+  the glassy toolbar is now **narrow layouts only**. `ColorPaletre` is
+  referenced again, so it is no longer dead code.
+- **The colour sheet outranks the image rail.** `ProductGallery`'s selector is
+  `z-index: 50` and the toolbar was `20` — and because the toolbar is a stacking
+  context the sheet could not climb out of it, so the dropdown opened *behind*
+  the thumbnails on a phone. The toolbar is now `60`.
+- **The distributors headline is smaller on desktop**: `rm(100)` → `rm(64)`, and
+  `lg` `rm(80)` → `rm(56)`. The `md` (56) and `xsm` (32) sizes are untouched, so
+  the scale stays monotonic — setting desktop below the tablet size would have
+  made a tablet render larger type than a laptop.
+
+---
+
+## 2026-09-18 — Site-wide audit: every page was failing hydration
+
+An audit of all thirteen page types (console errors, page errors, failed
+requests, DOM sanity) found **zero clean pages**. Now **twelve of thirteen** are
+clean. ADR-0114.
+
+### What was wrong
+
+| defect | where | effect |
+|---|---|---|
+| `DynamicScrollRevealWrapper` wraps children in two divs on desktop, none on mobile — from a width the server reports as 0 | the shell, so **every page** | React #418/#423: the whole DOM torn down and rebuilt on load |
+| Header logo swapped asset on width | every page | same, plus a visible logo swap |
+| `width`-conditional markup in 10 views | about, home, distribution, packages, contact… | same |
+| `<div>` inside `<p>` | all three policy pages | invalid HTML; the browser repairs it, hydration then disagrees |
+| `is3d` passed to a styled `<button>` | product | non-transient prop reaching the DOM |
+| `href={`/products/${route}`}` with an empty route | anything with a product preview | prefetched `/en/products` → **404** |
+| `<video src="">` | package | `NotSupportedError: The element has no supported sources` |
+| kebab-case SVG attributes (`stroke-width`, `fill-opacity`…) | 16 files | React warnings on render |
+
+### The pattern
+
+`useWindowWidth()` returns **0 on the server** and the real width on the
+client's first paint. Any markup branching on it renders two different trees.
+New `useMounted()` gates those branches with **desktop as the server
+assumption** — see ADR-0114 for the polarity, which is easy to invert.
+
+### Also in this batch
+
+- **Distributors breadcrumbs** are readable: `Breadcrumbs` takes `tone="dark"`
+  for heroes on dark surfaces, and the trail inherits its colour.
+- **The home hero no longer arrives late.** The content wrapper faded in with
+  react-spring's default config *underneath* the curtain, so on a slow frame the
+  hero was still part-transparent after the reveal — which is the inconsistent
+  lag that was reported. The curtain wipe is the transition now; the content
+  does not fade. The mobile dark overlay also flashed on desktop because
+  `0 <= 768`; it waits for a real measurement.
+- **The colour sheet on touch** is centred on the viewport (it was clipped off
+  the left edge), scrollable, and a **5-column grid of colour chips** — no hex
+  text, names kept as the accessible name and tooltip. The zoom tooltip moved
+  below the toolbar so it cannot collide with it.
+- **Two-finger gestures on touch devices.** One finger scrolls the page, two
+  rotate and zoom, and `SceneGestureHint` says so the first time someone tries
+  one finger — the pattern map embeds use. The scene also auto-rotates slowly
+  until the visitor takes over. Gated on `useTouchDevice()`
+  (`(hover: none) and (pointer: coarse)`), **not width**, so a narrow window on
+  a laptop keeps its mouse behaviour.
+- **Main/accent** left exactly as it was, per instruction: the backend returns
+  one list and the app maps it into both.
+
+### Still open
+
+- The **product** page reports one hydration mismatch inside its `Hero`
+  subtree — narrowed but not isolated.
+- **Google Maps** returns `RefererNotAllowedMapError` on projects and contact:
+  the API key's HTTP-referrer allowlist does not include the origin. Production
+  needs the real domain listed. The map's failure state now shows properly
+  rather than leaving a blank box.
+
+---
+
+## 2026-09-18 — The colour control joins the configurator toolbar
+
+- **One row, one surface.** `ColorPaletreCompact` now renders inside
+  `ProductScene`'s glassy `StyledActions` bar, alongside zoom out / reset / zoom
+  in — same 44px box, same white fill and radius. **Superseded the same day:**
+  the desktop palette was restored to its corner and the compact control is
+  narrow-layouts-only — see "Configurator layout corrections" above. `ColorPaletre`
+  is referenced again.
+- **On a phone it is just the colour.** Below `xsm` the label and chevron drop
+  away and the trigger becomes a rectangle of the picked colour.
+- **The mode is legible.** Where a product has both palettes the trigger reads
+  `Main · <colour>` / `Accent · <colour>`.
+- **Error pages** are centred, and the line "It's on our side, not yours —
+  nothing you did caused it." is gone from both.
+
+### "Switching between main and accent doesn't work" — measured, and it is data
+
+The control is correct. Driving it through a real browser:
+
+| step | result |
+|---|---|
+| open in Main | tab `Main` active, 13 options, selected `Material Color` |
+| switch to Accent | tab `Accent` active, selection tracked separately |
+| pick `#bb1e10` in Accent | trigger → `#bb1e10`, swatch red |
+| switch back to Main | trigger → `Material Color`, swatch dark |
+
+Selection is genuinely per-mode. What makes it *look* broken is the content:
+`get-product-data` returns **identical `mainColors` and `accentColors`** for this
+product (twelve colours, same order, same values), and both material defaults are
+named "Material Color". So the list does not change when you switch, and before
+this change the only sign anything happened was the tab highlight. The trigger
+label now carries the mode; the duplicate lists are a CMS fix.
+
+---
+
+## 2026-09-18 — Failure states, the compact colour picker, and a static hero
+
+A batch of reported defects. ADR-0112 (failure states) and ADR-0113 (a
+correction to the bot check).
+
+### Fixed
+
+- **Mega-menu hover images showed nothing happening.** `PlaceholderImage` never
+  reset when its `src` changed, so the old image simply sat there until the new
+  bytes arrived. It now resets on source change, so a swapping slot shows the
+  skeleton again — which is what makes the hover read as a change.
+- **The 500 page.** New `src/app/[locale]/error.tsx`: branded, keeps the shell,
+  short copy that says it is our fault, retry, a way home, and a **Report this**
+  mailto carrying the page URL and the error digest. `global-error.tsx` rewritten
+  to match — and **without its `@keyframes` block**, which retires one of the
+  standing `verify.sh` failures (5 blocks → 4).
+- **Distributors headline overlapped the cards.** The country panel is absolutely
+  positioned `rm(440)` wide at `right: rm(50)`; the headline is now capped at
+  `calc(100% - rm(480))` above `md` and full width below it, where the panel
+  stacks. Type size unchanged.
+- **The selected distributor card was black on a dark page.** Now white with
+  dark text, tokenised, on both desktop and mobile.
+- **The projects map rendered an empty box when it failed.** It now holds its
+  space in `colors.mediaPlaceholder` with one line of copy.
+- **The colour picker was missing from the configurator below 768px.** New
+  `ColorPaletreCompact`: one trigger showing the current colour, opening a sheet
+  with the Main/Accent tabs and the swatch list; picking applies and closes.
+  Closes on outside tap and Escape, 44px touch targets. The duplicate palette
+  that sat below the hero on mobile is gone.
+- **The home hero no longer animates in.** Content is present the instant the
+  curtain lifts. The headline still renders through `AnimatedGrid` — it is what
+  lays the words out, and removing it re-flowed the line breaks — but with
+  `from` equal to `to`, so there is no reveal.
+
+### A regression found and removed
+
+`isBot()` (added the same day) checked `navigator.webdriver`. That flag is true
+in **any** automation-controlled browser: it silently removed the hero scene
+from every Puppeteer screenshot — several verification passes had been looking
+at a page with no globe without anyone noticing — and would do the same to a
+real visitor whose browser sets it. It did not even catch Lighthouse, which does
+not set the flag. Removed; `canRenderWebGL()` covers the real case by testing
+capability instead of identity. ADR-0113.
+
+### Media slowness: it is the origin, not the app
+
+Measured against the Strapi host:
+
+| | measured |
+|---|---|
+| 1.4KB SVG, end to end | **707ms** (TLS handshake alone 470ms) |
+| 8.1MB PNG original | TTFB 1.44s, total **3.68s**, ~2.5MB/s |
+| `Cache-Control` on immutable, content-hashed uploads | **`max-age=300`** |
+| CDN | none — plain nginx, no cache headers from any edge |
+| derivative sizes | only a 245px `thumbnail` for a 2940px source |
+
+Every cache miss pays ~0.7s of pure latency before a byte of payload, and the
+optimiser must start from the full original every time. The app side is already
+doing its part (optimiser, 30-day TTL, real `sizes`, preloaded hero). **The
+remaining fixes are on the server**: a CDN in front of `/uploads`,
+`max-age=31536000, immutable`, and Strapi's responsive formats enabled.
+
+---
+
+## 2026-09-18 — Lighthouse: four pages scoring 0 → every page measured, SEO 100
+
+Reported: after the loader reveals the page there is another second or two
+before content appears; a micro-freeze in the loader animation; and a request to
+get every PageSpeed parameter into the green, desktop first then mobile.
+ADR-0111.
+
+### The reveal showed an unfinished hero
+
+The curtain waited for the 3D scene but **not for the hero image**, so it lifted
+onto a placeholder. And `VideoPlayer` set its poster in an effect, so the poster
+was absent from the server-rendered HTML — `priority` had nothing to preload and
+the request did not start until **+2.6s**, then took 4.5s to optimise (the
+source is an 8.1MB PNG). Now the poster is seeded from the prop, renders
+server-side with a `rel=preload fetchPriority=high`, and above-the-fold media
+holds the curtain through the new `useRequireMedia`. The reveal shows a finished
+hero.
+
+### Loader micro-freeze
+
+Texture uploads ran back to back — a single ~600ms task while the curtain was
+animating. Now one upload per frame: during-curtain blocked time **2715ms →
+1786ms**, worst task **681ms → 463ms**. Reduced, not eliminated; the rest is JS
+parse and the HDR PMREM pass.
+
+### Lighthouse, desktop (production build, warm image cache)
+
+| page | before | after | LCP | TBT | CLS | SEO |
+|---|---|---|---|---|---|---|
+| home | **0** | **78** | 1.9s | 180ms | 0 | 100 |
+| about | 92 | **93** | 1.3s | 140ms | 0 | 100 |
+| package | **0** | **91** | 1.6s | 40ms | 0 | 100 |
+| lines | 88 | **92** | 1.4s | 40ms | 0 | 100 |
+| product | **0** | **92** | 1.4s | 40ms | 0 | 100 |
+| distribution | **0** | **83** | 2.5s | 30ms | 0 | 100 |
+| article | 88 | **89** | 1.6s | 0ms | 0 | 100 |
+| contact | 83 | **85** | 1.9s | 130ms | 0 | 100 |
+
+The four zeros were not a scoring quirk: those pages gate the curtain on a 3D
+scene, and **anything without usable WebGL never reports one ready**, so they sat
+behind the curtain for the full cap and Lighthouse recorded no LCP at all. Fixed
+by `canRenderWebGL()` — never gate on something that cannot happen. **SEO is now
+100 on every page type** (was 91–92 on half of them) and CLS is 0 everywhere.
+
+Also: bots never mount a scene (`optimize-3d-scene` §1), home's below-the-fold
+globe no longer gates the curtain, and card images carry real `sizes` instead of
+`100vw` — Lighthouse estimated 1,126KiB of oversized images before, 62KiB after.
+
+### Lighthouse, mobile — and a rejected theory
+
+| page | perf | LCP | TBT |
+|---|---|---|---|
+| home | 47 | 9.1s | 780ms |
+| about | 60 | 5.5s | 570ms |
+| package | 66 | 7.1s | 320ms |
+| lines | 67 | 6.7s | 320ms |
+| product | 60 | 6.2s | 570ms |
+| distribution | 70 | 9.0s | 160ms |
+| article | 74 | 6.7s | 110ms |
+| contact | 54 | 8.2s | 580ms |
+
+**The loader is not the mobile bottleneck.** Disabling the curtain entirely
+moved mobile LCP by ~0.1s (home 9.1→9.0s, about 5.5→5.6s, product 6.2→6.3s).
+What costs is **JavaScript**: `bootup-time` **6.0s** at 4× CPU, 300KiB unused JS,
+240ms render-blocking, 1,625 DOM elements, and a 1,480ms root-document response.
+Mobile green needs bundle work — code-splitting, trimming what three.js/drei
+pull in, the vendored text engine, the styled-components runtime — which is its
+own piece of work, not a tuning pass. Recorded rather than half-started.
+
+---
+
+## 2026-09-18 — Media placeholders, image delivery, and faster navigation
+
+Reported: the home page still stuttered between the hero and the second section,
+media slots showed nothing while loading, images and videos were very slow, and
+some page transitions took 3–4s. All four had overlapping causes. ADR-0110.
+
+**The main thread was already clean** — a slow, human-speed scroll through the
+top of the home page showed 0 long tasks. What read as a freeze was media
+arriving late and popping in.
+
+### What was wrong
+
+| finding | cost |
+|---|---|
+| Home hero poster set as the raw `<video poster>` attribute | **8.1MB PNG, 3.2s** — the attribute is not optimisable |
+| Strapi serves `/uploads` with `Cache-Control: max-age=300` | Next re-fetched and re-encoded the originals **every 5 minutes** |
+| `/placeholder.jpg` did not exist | ~1.3s per missing-media slot, on a failing optimise |
+| `Header`/`Footer` refetched data they already had as `initialData` | ~1.5s of duplicate requests per page load |
+| four mega-menus fetched on mount while closed | ~2s more on the critical path |
+| `TransitionBg` waited a fixed 500ms **before** `router.push` | half a second before a navigation even started |
+| `MediaComponent`'s image path | no placeholder at all |
+| the loader curtain's cap started at **component mount** | on a slow connection hydration is late, so the black screen outlasted the cap |
+
+### Measured, 4× CPU throttle, production build
+
+| | before | after |
+|---|---|---|
+| home slow scroll | 2600ms freeze | **one 118ms task** |
+| navigation (6 header links) | 1672–2396ms | **543–1283ms** |
+| `/placeholder.jpg` | 1337ms | **78ms** |
+| warm Strapi images | 3240ms | **≤99ms** |
+| hero poster transfer | 8.1MB raw | optimised AVIF/WebP at the slot's width |
+
+On a throttled 900kbps connection the hero now shows a grey placeholder block
+with the header and headline already readable, instead of empty space.
+
+### Changed
+
+- **New `MediaPlaceholder`** — renders on the first paint, fades out on load, no
+  delay timer. Wired into both `MediaComponent` paths and `VideoPlayer`.
+- **New `PlaceholderImage`** *(added in the 18th's second pass)* — a drop-in for
+  `next/image` for content imagery that does not go through `MediaComponent`.
+  Swapped into nine components: `LineCard`, `ArticleCard`, home `Lines`,
+  `ProductCard`, package `Overview`, `ProductGallery`,
+  `ProductDescriptionSection` and both header mega-menus. The first pass had
+  left all of these bare.
+- **The placeholder shade is now light and tokenised** — `mediaPlaceholder`
+  `#F2F4F8`, `mediaPlaceholderShimmer`, `mediaPlaceholderDark` in `_colors`. The
+  first pass defaulted to a near-black block and hardcoded the literals, which
+  both read as heavy and broke the no-hardcoded-values rule. `SkeletonLoader`'s
+  sweep is now `--color-shimmer` with a white default so one loader works on
+  light and dark surfaces.
+- **`VideoPlayer` posters go through `next/image`**; `preload="metadata"` on the
+  video so it stops competing with the poster for bandwidth.
+- **`sizes` is a prop on `MediaComponent`** and `priority` is set on the home
+  hero.
+- **`images.minimumCacheTTL: 30 days`** in `next.config.mjs`.
+- **`public/placeholder.jpg` created** (774 bytes, neutral grey).
+- **`Header`/`Footer` no longer refetch** when `initialData` is present.
+- **New `onIdle` util**; the four mega-menus use it instead of fetching on mount.
+- **`TransitionBg` starts the navigation in the same frame as the curtain.**
+- **The curtain cap is measured from navigation start** and is now 5s, not 8s —
+  the globe's textures are 20× smaller since ADR-0109, so a scene that has not
+  reported ready in 5s is not going to.
+
+### Still open — outside this repo
+
+- Strapi's nginx sends `max-age=300` on content-hashed, immutable upload URLs.
+  It should send `max-age=31536000, immutable`.
+- Strapi generates only a 245px `thumbnail` for a 2940px source, so the
+  optimiser always starts from the full original (some are 8–23MB).
+- SVG logos come raw from that origin, ~0.7–1.3s each, above the fold on every
+  page. `next/image` passes SVG through unless `dangerouslyAllowSVG` is set,
+  which is an XSS consideration for CMS-uploaded files — a team decision.
+- `SkeletonImage` and `SkeletonVideo` have no call sites; `SkeletonImage`'s
+  `delay = 300` is the opposite of what a placeholder should do. Delete or fix.
+
+---
+
 ## 2026-09-17 — The globe's textures were the freeze (correcting the entry below)
 
 The prewarm change below was reported broken from the running site: **distribution

@@ -29,7 +29,8 @@ Do not re-invent these; check they are wired before adding anything.
 |---|---|---|
 | `next/dynamic` + `ssr: false` | `DynamicScene.tsx` / `DynamicProductScene.tsx` / `DynamicPackageScene.tsx` | three.js never enters the server bundle |
 | `useLazyScene(sceneType, …)` | `src/hooks/` | `shouldLoad` is **always true** — the scene mounts at page load so it prewarms behind the loader curtain. The IntersectionObserver now only drives `isInView`. ADR-0107 |
-| `useRequireScene(type, enabled)` in the **view** | `src/hooks/` | declares the page's scene so the loader curtain waits for it (min 1s · ready · cap 8s) |
+| `useRequireScene(type, enabled)` in the **view** | `src/hooks/` | declares the page's scene so the loader curtain waits for it (min 1s · ready · cap 5s from **navigation start**, not from mount — a mount-relative cap starts its clock after hydration, which on a slow connection is already seconds in). **Only hero scenes gate**, and never one the client cannot render: see below |
+| `isBot()` / `canRenderWebGL()` | `src/utils/isBot.ts` | a bot never mounts the scene at all (§1 below), and a client without usable WebGL never gates the curtain on one. Getting this wrong cost four page types their entire Lighthouse performance score — the curtain never lifted, so there was no Largest Contentful Paint to measure. ADR-0111 |
 | `frameloop={isInView ? "always" : "demand"}` | every `<Canvas>` | **the single biggest win** — an off-screen scene stops rendering |
 | `SceneSkeleton` + `useProgressiveLoading` | `components/Skeleton/`, `src/hooks/` | a progress-bearing placeholder instead of a blank canvas |
 | `SceneReadyDetector` → `useSceneReady` → `useAnimationStore` | inside every `<Canvas>` | real prewarm: `initTexture` for every texture, `compileAsync` for every program, one throwaway render — *then* `isSceneReady` |
@@ -66,8 +67,34 @@ Do not re-invent these; check they are wired before adding anything.
    them below a width threshold.
 8. **Scroll-driven transforms belong on the GPU** — drive uniforms, don't rebuild
    geometry per frame.
-9. **Strip the scene for bots.** It carries no indexable content; a crawler
+9. ~~**Strip the scene for bots.**~~ **Done (2026-09-18).** `useLazyScene` and
+   `useRequireScene` both check `isBot()` and `canRenderWebGL()`, so the
+   three.js chunk is never fetched by a crawler and the curtain never waits for
+   a scene that cannot render. The check is **client-side on purpose**: reading
+   `headers()` would opt every page out of static generation, which costs real
+   visitors more than it gains, and the server-rendered HTML stays identical for
+   everyone. Original guidance follows — it carries no indexable content; a crawler
    should not pay for it.
+
+## Touch input: one finger is the page's
+
+*(Settled 2026-09-18, ADR-0114.)*
+
+A scene that takes one-finger drags traps anyone scrolling with a thumb over the
+canvas — and OrbitControls also sets `touch-action: none` on the canvas, which
+has to be put back to `pan-y` or the browser will not scroll either. The rule
+in both configurators:
+
+| | behaviour |
+|---|---|
+| one finger | scrolls the page; `touches.ONE` disabled |
+| two fingers | rotate + zoom (`TOUCH.DOLLY_ROTATE`) |
+| first one-finger attempt | `SceneGestureHint` says "use two fingers", the way map embeds do |
+| before any interaction | slow auto-rotate, so the product shows itself |
+
+Gated on **`useTouchDevice()`** — `(hover: none) and (pointer: coarse)` —
+**never on viewport width**. Someone at a narrow window on a laptop still has a
+mouse and keeps dragging the scene normally.
 
 ## Project-specific traps
 

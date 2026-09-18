@@ -7,6 +7,7 @@ import { DynamicProductScene as ProductScene } from "./Scene/DynamicProductScene
 import { ColorPaletre } from "./ColorPaletre/ColoPaletre"
 import { AnimatedText } from "@/components/animated/AnimatedText/AnimatedText"
 import { useWindowWidth } from "@react-hook/window-size"
+import { useMounted } from "@/hooks/useMounted"
 import { SimpleButton } from "@/components/Ui/buttons/SimpleButton"
 import { ProductGallery } from "./ProductGallery"
 import { useMemo, useState, useEffect, useCallback } from "react"
@@ -28,6 +29,9 @@ interface HeroProps {
 
 export const Hero = ({ data, colors, accentColors = [] }: HeroProps) => {
     const width = useWindowWidth()
+    // The quote button is desktop-only markup; the server cannot know the width,
+    // so assume wide until measured or the tree changes shape during hydration.
+    const mounted = useMounted()
     const quoteLink = data?.quoteButton?.link || "/contact"
     const quoteText = data?.quoteButton?.text || "Contact us"
 
@@ -110,8 +114,13 @@ export const Hero = ({ data, colors, accentColors = [] }: HeroProps) => {
                     onCloseImage={() => setActiveImageUrl(null)}
                 />
             )}
-            {width > 768 ? <ColorPaletre mainColors={colors} accentColors={accentColors} /> : null}
-            {width > 768 ? (
+            {/*
+              Desktop keeps the full always-open palette in the corner, as it
+              was. Narrow layouts get the compact control inside the scene's
+              glassy toolbar instead (see ProductScene).
+            */}
+            {(!mounted || width > 768) ? <ColorPaletre mainColors={colors} accentColors={accentColors} /> : null}
+            {(!mounted || width > 768) ? (
                 <StyledQuoteButtonWrapper>
                     <SimpleButton isSvg link={quoteLink}>
                         {quoteText}

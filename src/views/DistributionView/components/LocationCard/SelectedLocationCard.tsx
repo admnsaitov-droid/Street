@@ -64,7 +64,7 @@ export const SelectedLocationCard = ({ location, onClick, isExpanded = false, an
       {isExpanded && (
         <StyledCloseButton onClick={() => onClick?.()}>
             <svg width="20" height="19" viewBox="0 0 20 19" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M5.25 4.75L14.75 14.25M14.75 4.75L5.25 14.25" stroke="white" stroke-width="1.58333" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M5.25 4.75L14.75 14.25M14.75 4.75L5.25 14.25" stroke="white" strokeWidth="1.58333" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
         </StyledCloseButton>
       )}
@@ -80,9 +80,12 @@ const StyledLocationCard = styled.div<{
   border-radius: ${rm(8)};
   padding: ${rm(20)};
   margin-bottom: ${rm(10)};
-  border: 1px solid #B7BCCA33;
-//   background-color: #6F768526;
-  background-color: rgba(0, 0, 0, 0.9);
+  border: 1px solid ${colors.gray700};
+  /*
+    The selected card is white, not black. It sits over the dark globe, where
+    a near-black panel had effectively no contrast against its background.
+  */
+  background-color: ${colors.white100};
   transition: all 0.3s ease;
   // -webkit-backdrop-filter: blur(32px);
   // backdrop-filter: blur(32px);
@@ -125,8 +128,8 @@ const StyledLocationCard = styled.div<{
 
   &:hover {
     ${({ $isExpanded }) => !$isExpanded && `
-      border-color: rgba(255, 255, 255, 0.3);
-      background-color: #6F768540;
+      border-color: ${colors.gray90};
+      background-color: ${colors.bgGray};
     `}
   }
 
@@ -174,7 +177,7 @@ const StyledHeader = styled.div`
 `
 
 const StyledTitle = styled.div`
-  color: ${colors.white100};
+  color: ${colors.black100};
   ${fontSageGrotesk(500)};
   font-size: ${rm(22)};
   line-height: 100%;
@@ -209,11 +212,10 @@ const StyledDetailItem = styled.div`
 `
 
 const StyledDetailLabel = styled.div`
-  color: ${colors.white100};
+  color: ${colors.gray};
   ${fontGolosText(400)};
   font-size: ${rm(12)};
   line-height: 130%;
-  opacity: 0.7;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 
@@ -223,7 +225,7 @@ const StyledDetailLabel = styled.div`
 `
 
 const StyledDetailValue = styled.div`
-  color: ${colors.white100};
+  color: ${colors.black100};
   ${fontGolosText(400)};
   font-size: ${rm(14)};
   line-height: 140%;
@@ -250,12 +252,12 @@ const StyledAccordionContent = styled.div<{ $isExpanded: boolean }>`
 const StyledDivider = styled.div`
   width: 100%;
   height: 1px;
-  background-color: #FFFFFF14;
+  background-color: ${colors.gray700};
   margin: ${rm(24)} 0;
 `
 
 const StyledDescription = styled.div`
-  color: ${colors.white100};
+  color: ${colors.gray};
   ${fontGolosText(400)};
   font-size: ${rm(16)};
   line-height: 150%;

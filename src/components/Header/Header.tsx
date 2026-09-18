@@ -17,15 +17,27 @@ import { getMediaStrapiPath } from "@/utils/getMediaStrapiPath";
 import { PackageMenu } from "./MegaMenus/PackageMenu";
 import { ProductsMenu } from "./MegaMenus/ProductsMenu";
 import useLoadingStore from "@/store/store";
+import { useMounted } from "@/hooks/useMounted";
 
 export const Header = ({ initialData }: { initialData?: any }) => {
     const [headerData, setHeaderData] = useState<any>(initialData ?? null);
     const width = useWindowWidth();
+    // The server cannot know the viewport, so the first render must match it.
+    // Without this the logo swapped between the desktop and mobile asset during
+    // hydration and React reported a mismatch (#418) on every page of the site.
+    const mounted = useMounted();
+    const isMobileWidth = mounted && width <= 576;
     const locale = useLocale();
 
     const setIsMegaMenuOpen = useLoadingStore((state: any) => state.setIsMegaMenuOpen);
 
     useEffect(() => {
+        // The layout already renders this from the server and passes it as
+        // `initialData`; refetching it on mount duplicated the request on every
+        // page load for no new data. Only fetch when we genuinely have none
+        // (a locale change that the server payload does not cover).
+        if (headerData) return
+
         const fetchHeaderData = async () => {
             try {
                 const data = await getStrapiData('get-header-data', locale);
@@ -36,7 +48,7 @@ export const Header = ({ initialData }: { initialData?: any }) => {
         };
 
         fetchHeaderData();
-    }, [locale]);
+    }, [locale, headerData]);
 
     return (
         <StyledHeader>
@@ -49,9 +61,9 @@ export const Header = ({ initialData }: { initialData?: any }) => {
                     {headerData?.data && (
                         <Image 
                             src={
-                                width > 576 
-                                    ? getMediaStrapiPath(headerData?.data?.logo) || '/logo.png'
-                                    : getMediaStrapiPath(headerData?.data?.logoMobile || headerData?.data?.logo) || '/logo.png'
+                                isMobileWidth
+                                    ? getMediaStrapiPath(headerData?.data?.logoMobile || headerData?.data?.logo) || '/logo.png'
+                                    : getMediaStrapiPath(headerData?.data?.logo) || '/logo.png'
                             }
                             alt="Street Barbell Logo" 
                             fill

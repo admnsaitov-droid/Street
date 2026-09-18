@@ -76,7 +76,7 @@ animation is not firing, check those two before anything else.
    Lenis, the grid, `--vh` and global styles.
 4. Any 3D scene on the page mounts immediately and prewarms — textures
    uploaded, programs compiled, one frame drawn — behind the loader curtain.
-5. The curtain lifts (min 1s · scenes prewarmed · cap 8s); `fullyLoaded` flips;
+5. The curtain lifts (min 1s · scenes prewarmed · cap 5s from navigation start); `fullyLoaded` flips;
    motion is released. ADR-0107.
 6. Views compose sections; primitives animate; a scene draws only while
    `isInView` (`frameloop`), but it is already compiled by then.

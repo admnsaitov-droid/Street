@@ -32,11 +32,13 @@ it. Most of these are Strapi response shapes; typing them in `src/types/` would
 retire the majority at once. The two in `src/styles` are generic-helper
 internals and are defensible.
 
-### 3. CSS `@keyframes` — 5 blocks
+### 3. CSS `@keyframes` — 4 blocks
+
+*(was 5 — `global-error.tsx`'s `fadeIn` went when that page was rewritten,
+ADR-0112.)*
 
 | File | What |
 |---|---|
-| `src/app/global-error.tsx` | `fadeIn` on the error page |
 | `src/components/Skeleton/SkeletonLoader.tsx` | `shimmer` |
 | `src/components/FullScreenPlayer/FullScreenPlayer.tsx` | `spin` |
 | `src/views/DistributionView/components/CountryPanel/CountryPanelMobile.tsx` | `fadeIn`, `slideUp` |
@@ -100,6 +102,15 @@ Bugs and surprises no check catches. Each is also noted in its topic note.
 | Unused `.glb`/`.hdr` assets in `public/models` | `test.glb`, `earth_old.glb`, `solar.glb`, `testHdr2-5.hdr`, and now `high_res_earth.glb` (11.2MB) + `earth_lights.glb` | deployed but not fetched. The last two are deliberately kept as the source art the 2K globe maps were cut from (ADR-0109); the rest are just dead weight |
 | `public/cesium/` copied into the build | `copy-webpack-plugin` in `next.config.mjs` | confirm it is still used; large if not |
 | `useSpringTriggerDepricated.ts` still present | `src/hooks/` | 305 lines of dead code |
+| Product page still fails hydration | `ProductView/components/Hero` subtree | React #418/#423 remain on that one page; the other twelve are clean. Narrowed to Hero's children, not isolated. ADR-0114 |
+| Google Maps `RefererNotAllowedMapError` | projects + contact | the API key's HTTP-referrer allowlist does not include the serving origin. Production must list the real domain; the map's failure state is designed now (ADR-0112) so it degrades cleanly |
+| Product CMS returns identical `mainColors` and `accentColors` | Strapi product content | measured on `mb-729-vertical-press`: twelve identical colours in both lists, and both material defaults named "Material Color". Switching mode therefore changes nothing visible in the list — a content fix, not a code one |
+| `SkeletonImage` / `SkeletonVideo` unused | `src/components/Skeleton/` | no call sites. `SkeletonImage` also delays revealing the image by 300ms, which is what a placeholder should never do. Media now goes through `MediaPlaceholder` (ADR-0110) |
+| Strapi serves `/uploads` with `Cache-Control: max-age=300` | nginx on the Strapi host | content-hashed URLs should be `max-age=31536000, immutable`. Mitigated app-side with `images.minimumCacheTTL`, but the browser still re-validates every 5 minutes |
+| `NEXT_PUBLIC_SUPPORT_EMAIL` is unset | both error pages | they fall back to `info@streetbarbell.com`, which is a **guess**. Set it. ADR-0112 |
+| Mobile Lighthouse is 47–74, bound by JavaScript | whole app | `bootup-time` **6.0s** at 4× CPU, 300KiB unused JS, 240ms render-blocking, 1,625 DOM elements, 1,480ms root response. The loader curtain was **measured and ruled out** (disabling it moves mobile LCP ~0.1s). Needs bundle work — code-splitting, what three.js/drei pull in, the vendored text engine, the styled-components runtime. ADR-0111 |
+| Hydration never completes under CDP network throttling | whole app | At ≤3000kbps emulated bandwidth the loader curtain never lifts — `Loader`'s mount effect never runs, so its timers never fire, on `/en/lines` and `/en/contact` (but not `/en/privacy-policy`). **Verified against commit `6f57977`, so it pre-dates the 2026-09-18 media work.** Unthrottled it is fine. Either a real slow-connection hydration problem or an artefact of `Network.emulateNetworkConditions`; it makes throttled measurement unreliable, so use request-level delays instead (`perf/delayimg.mjs`) |
+| Strapi generates only a 245px `thumbnail` format | Strapi upload config | a 2940px source has no intermediate sizes, so Next's optimiser always starts from the full original — several are 8–23MB |
 
 ## ~~Blocking: the app does not render~~ — fixed 2026-09-17
 

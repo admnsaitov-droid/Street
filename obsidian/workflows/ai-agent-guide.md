@@ -54,7 +54,10 @@ Rules of engagement for AI agents (Claude Code, Cursor) working in this repo.
 7. **No new `any`.** Note `.eslintrc.json` disables the rule, so `yarn lint` will
    not catch you — `verify.sh` will.
 8. **`next/link` or `AnimLink` for internal links, `next/image` for images.**
-   A raw `<a href="/…">` also loses the locale prefix.
+   A raw `<a href="/…">` also loses the locale prefix. For *content* imagery
+   reach for `MediaComponent` (CMS media) or `Skeleton/PlaceholderImage`, not a
+   bare `next/image` — a media slot must never be blank while it loads
+   (ADR-0110).
 9. **`API_URL` and every secret stay server-side**, read only inside
    `src/app/api/*`. The browser calls same-origin `/api/*` and nothing else.
    [[api-architecture]]

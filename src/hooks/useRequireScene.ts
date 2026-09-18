@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react'
 import useAnimationStore, { SceneType } from '@/animationStore/animationStore'
+import { isBot, canRenderWebGL } from '@/utils/isBot'
 
 /**
  * Declares, from the view, that this page owns a 3D scene.
@@ -23,7 +24,11 @@ export const useRequireScene = (sceneType: SceneType, enabled = true) => {
     const releaseScene = useAnimationStore((state) => state.releaseScene)
 
     useEffect(() => {
-        if (!enabled) return
+        // A bot never mounts the scene, and a client without usable WebGL can
+        // never finish one — in both cases nothing would report it ready, so
+        // the curtain would sit out its full cap and then reveal. Waiting for
+        // something impossible is the one case where the gate is pure cost.
+        if (!enabled || isBot() || !canRenderWebGL()) return
 
         requireScene(sceneType)
         return () => releaseScene(sceneType)

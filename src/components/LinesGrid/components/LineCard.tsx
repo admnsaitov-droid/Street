@@ -1,6 +1,6 @@
+import { PlaceholderImage } from "@/components/Skeleton/PlaceholderImage"
 import { media, rm } from "@/styles";
 import styled from "styled-components";
-import Image from "next/image";
 import { getMediaStrapiPath } from "@/utils/getMediaStrapiPath";
 import { AnimLink } from "@/layouts/AnimatedRouterLayout/AnimatedRouterLayout";
 import { LinesInfoCard } from "./LinesInfoCard";
@@ -20,7 +20,7 @@ export const LineCard = ({ lineData, machinesText, exploreText }: LineCardProps)
         <StyledLineCard onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
             <StyledHiddenLink href={`/lines/${lineData?.linii?.slug}`} aria-label={`View ${lineData?.linii?.name} line details`}></StyledHiddenLink>
             <StyledImageWrapper className="image-wrapper">
-                <Image src={getMediaStrapiPath(lineData?.linePreviewImage)} alt={lineData?.name} fill/>
+                <PlaceholderImage src={getMediaStrapiPath(lineData?.linePreviewImage)} alt={lineData?.name || "Equipment line preview"} fill sizes="(max-width: 768px) 100vw, 50vw" />
             </StyledImageWrapper>
             <LinesInfoCard count={lineData?.productsQuantity} name={lineData?.linii?.name} machinesText={machinesText} exploreText={exploreText} isHovered={isHovered} />
         </StyledLineCard>

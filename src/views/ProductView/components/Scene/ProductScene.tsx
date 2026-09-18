@@ -4,14 +4,18 @@ import { ProductModel } from "./components/ProductModel"
 import { Environment, OrbitControls, PerspectiveCamera } from "@react-three/drei"
 import * as THREE from "three"
 import { SceneSkeleton } from "@/components/Skeleton/SceneSkeleton"
-import { Suspense, useCallback, useMemo, useRef, useState, type MutableRefObject } from "react"
+import { Suspense, useCallback, useEffect, useMemo, useRef, useState, type MutableRefObject } from "react"
 import { useLazyScene } from "@/hooks/useLazyScene"
 import { SceneReadyDetector } from "@/views/DistributionView/components/SceneReadyDetector"
 import { useWindowWidth } from "@react-hook/window-size"
 import { media, rm } from "@/styles"
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib"
 import { fontGolosText } from "@/styles/fonts"
+import { ColorPaletreCompact } from "../ColorPaletre/ColorPaletreCompact"
 import { getDeviceTier, getSceneDpr, getSceneGlFlags } from "@/utils/deviceTier"
+import { useTouchDevice } from "@/hooks/useTouchDevice"
+import { useMounted } from "@/hooks/useMounted"
+import { SceneGestureHint } from "@/components/Scene/SceneGestureHint"
 
 interface ProductSceneProps {
     data?: any
@@ -103,6 +107,37 @@ export const ProductScene = ({ data, colors, accentColors }: ProductSceneProps) 
     const desiredPositionRef = useRef<THREE.Vector3 | null>(null)
     const [showZoomHint, setShowZoomHint] = useState(true)
 
+    // A real touch device, not a narrow window on a laptop — a mouse keeps
+    // dragging the scene exactly as before.
+    const isTouch = useTouchDevice()
+    // width-conditional markup must match the server on the first render
+    const mounted = useMounted()
+    // Auto-rotate until the visitor takes over, so a touch layout shows the
+    // product from every side without anyone having to discover the gesture.
+    const [hasDriven, setHasDriven] = useState(false)
+    const handleGesture = useCallback(() => setHasDriven(true), [])
+
+    /*
+      OrbitControls sets `touch-action: none` on the canvas when it connects,
+      which is what swallows the page scroll. With one-finger rotation disabled
+      we want the opposite: let the browser pan vertically, and leave the
+      two-finger gestures to the controls. Re-applied on an interval because
+      the controls re-assert their own value when they reconnect.
+    */
+    useEffect(() => {
+        if (!isTouch) return
+        const node = lazyScene.containerRef.current
+        if (!node) return
+
+        const apply = () => {
+            const canvas = node.querySelector('canvas')
+            if (canvas && canvas.style.touchAction !== 'pan-y') canvas.style.touchAction = 'pan-y'
+        }
+        apply()
+        const timer = setInterval(apply, 1000)
+        return () => clearInterval(timer)
+    }, [isTouch, lazyScene.containerRef])
+
     // Device tier is read once at construction — DPR and renderer flags must
     // never drift apart between the four canvases. MSAA in particular is
     // expensive on a phone and the DPR clamp hides its absence.
@@ -161,7 +196,24 @@ export const ProductScene = ({ data, colors, accentColors }: ProductSceneProps) 
                 label="machine"
                 translateBottom={true}
             />
+            <SceneGestureHint
+                containerRef={lazyScene.containerRef}
+                enabled={isTouch}
+                onGesture={handleGesture}
+            />
             <StyledActions>
+                {/*
+                  The compact control shares the glassy bar with the zoom
+                  buttons on narrow layouts only. Desktop keeps the full
+                  always-open palette in the corner (see Hero).
+                */}
+                {(!mounted || width <= 768) && (
+                    <ColorPaletreCompact
+                        className="colorControl"
+                        mainColors={colors}
+                        accentColors={accentColors || []}
+                    />
+                )}
                 <div className="buttonWrapper zoomOut" onClick={handleZoomOut}>
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M13.5957 2.01172C18.1863 2.24437 21.8369 6.04008 21.8369 10.6885L21.8262 11.1348C21.5937 15.7253 17.7976 19.3756 13.1494 19.376L12.7021 19.3652C10.8507 19.2714 9.15288 18.5967 7.78516 17.5215L2.48633 22.8223L1.31641 21.6523L6.58691 16.3799C5.35446 14.96 4.57408 13.1374 4.47266 11.1348L4.46094 10.6885C4.46094 5.89016 8.3511 2 13.1494 2L13.5957 2.01172ZM13.1494 3.65527C9.26507 3.65527 6.11621 6.80413 6.11621 10.6885C6.11641 14.5727 9.26519 17.7217 13.1494 17.7217C17.0333 17.7213 20.1824 14.5724 20.1826 10.6885C20.1826 6.80436 17.0334 3.65565 13.1494 3.65527ZM16.8721 11.5156H9.42578V9.86133H16.8721V11.5156Z" fill="currentColor"/>
@@ -200,10 +252,19 @@ export const ProductScene = ({ data, colors, accentColors }: ProductSceneProps) 
                             enableZoom={width <= 768} 
                             enableRotate={true}
                             enablePan={false}
-                            touches={{
-                                ONE: THREE.TOUCH.ROTATE,
-                                TWO: THREE.TOUCH.DOLLY_PAN
-                            }}
+                            autoRotate={isTouch && !hasDriven}
+                            autoRotateSpeed={0.45}
+                            /*
+                              On touch, one finger belongs to the page: a scene
+                              that swallowed it trapped anyone scrolling with a
+                              thumb over the canvas. Two fingers rotate and
+                              zoom, and SceneGestureHint says so the first time
+                              someone tries one.
+                            */
+                            touches={isTouch
+                                ? { ONE: undefined as unknown as THREE.TOUCH, TWO: THREE.TOUCH.DOLLY_ROTATE }
+                                : { ONE: THREE.TOUCH.ROTATE, TWO: THREE.TOUCH.DOLLY_PAN }}
+                            onStart={() => setHasDriven(true)}
                             minDistance={10}
                             maxDistance={31.9}
                             target={[0, 0, 0]}
@@ -284,7 +345,13 @@ const StyledActions = styled.div`
     position: absolute;
     bottom: ${rm(50)};
     left: 50%;
-    z-index: 20;
+    /*
+      Above ProductGallery's image rail (z-index 50). The colour sheet opens out
+      of this bar, and because the bar is a stacking context the sheet cannot
+      escape it — so the bar itself has to win, or the dropdown renders behind
+      the thumbnails on a phone.
+    */
+    z-index: 60;
     transform: translateX(-50%);
     display: flex;
     gap: ${rm(6)};
@@ -325,8 +392,10 @@ const StyledActions = styled.div`
         }
 
         .tooltip{
+            /* below the bar, so it cannot collide with the colour sheet that
+               opens above it */
             position: absolute;
-            bottom: calc(100% + ${rm(6)});
+            top: calc(100% + ${rm(6)});
             left: 50%;
             transform: translateX(-50%);
             background: #0B57D0;
@@ -341,14 +410,14 @@ const StyledActions = styled.div`
             &:after{
                 content: '';
                 position: absolute;
-                top: 100%;
+                bottom: 100%;
                 left: 50%;
                 transform: translateX(-50%);
                 width: 0;
                 height: 0;
                 border-left: ${rm(6)} solid transparent;
                 border-right: ${rm(6)} solid transparent;
-                border-top: ${rm(6)} solid #0B57D0;
+                border-bottom: ${rm(6)} solid #0B57D0;
             }
         }
     }

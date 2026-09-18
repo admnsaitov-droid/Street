@@ -1,8 +1,8 @@
+import { PlaceholderImage } from "@/components/Skeleton/PlaceholderImage"
 import { colors } from "@/styles/colors"
 import styled from "styled-components"
 import { media, rm } from "@/styles"
 import { fontGolosText } from "@/styles/fonts"
-import Image from "next/image"
 import { getMediaStrapiPath } from "@/utils/getMediaStrapiPath"
 import { formatDate } from "@/utils/dateFormat"
 import { AnimLink } from "@/layouts/AnimatedRouterLayout/AnimatedRouterLayout"
@@ -27,7 +27,7 @@ export const ArticleCard = ({ article }: ArticleCardProps) => {
                     {article?.title}
                 </StyledDescription>
                 <StyledImageContainer className="imageContainer">
-                    <Image src={getMediaStrapiPath(article?.poster)} alt={article?.title} fill/>
+                    <PlaceholderImage src={getMediaStrapiPath(article?.poster)} alt={article?.title || "Article preview"} fill sizes="(max-width: 768px) 100vw, 33vw" />
                 </StyledImageContainer>
                 {article?.date && (
                     <StyledDate>

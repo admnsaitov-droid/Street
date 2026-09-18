@@ -3,6 +3,7 @@
 import { fontGolosText } from "@/styles/fonts";
 import { colors, media, rm } from "@/styles";
 import { getStrapiData } from "@/utils/strapi";
+import { onIdle } from "@/utils/onIdle";
 import { useLocale } from "next-intl";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
@@ -40,7 +41,13 @@ export const PackageMenuMobile = ({ isOpen, setIsOpen, setMenuOpen }: PackageMen
             }
         };
 
-        fetchPackagesData();
+        // Deferred to idle: these panels are mounted but closed, so their
+
+
+        // contents must not compete with the page the visitor is actually looking at.
+
+
+        return onIdle(() => { fetchPackagesData() });
     }, [locale]);
 
     const menuAnimation = useSpring({
@@ -56,7 +63,7 @@ export const PackageMenuMobile = ({ isOpen, setIsOpen, setMenuOpen }: PackageMen
                         setIsOpen(false);
                     }}>
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M15 6L9 12L15 18" stroke="black" stroke-width="2"/>
+                            <path d="M15 6L9 12L15 18" stroke="black" strokeWidth="2"/>
                         </svg>
                         <span>Back</span>
                     </StyledBackButton>

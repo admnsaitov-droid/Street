@@ -482,7 +482,8 @@ with every asset list commented out.
 3. `useSceneReady` stopped polling `gl.info` and now really prewarms —
    `initTexture` for every texture, `compileAsync` for every program, one
    throwaway render — then reports ready. The curtain lifts on **min 1s, all
-   required scenes ready, cap 8s**.
+   required scenes ready, cap 8s**. *(The cap became 5s, measured from
+   navigation start rather than from mount, in ADR-0110.)*
 
 ~~The high-res earth swap on the two globes registers a `pendingWarmups` entry so
 it is part of "ready", and its material is compiled and uploaded through
@@ -517,7 +518,7 @@ silent `catch {}`. When it turned out not to be running at all, the silence is
 what hid it — a prewarm that fails quietly reads as success. It now warns outside
 production.
 
-The 8s cap is the safety valve — gating on scene-ready is a promise about the
+The cap is the safety valve — gating on scene-ready is a promise about the
 network that cannot be kept, so a slow or failed model must never strand a
 visitor behind a black screen. When the cap fires, the old behaviour returns for
 that visit.
@@ -604,3 +605,249 @@ compile, Draco geometry decode, the `Environment` HDR's PMREM pass
 (`adams.hdr` 1.6MB, `sky.hdr` 1.28MB, both equirect) and ~600ms of remaining
 uploads. Pre-baking the environments to KTX2 cubemaps is the next lever if the
 loader needs to get shorter.
+
+---
+
+## ADR-0110 — Media shows a placeholder, and posters go through the optimiser
+
+**Date.** 2026-09-18 · **Status.** Accepted.
+
+**Context.** Three reports, one root: media slots sat empty while their bytes
+arrived, images "loaded very very slowly", and page transitions took seconds.
+Measured against the production build:
+
+| finding | cost |
+|---|---|
+| Home hero poster set as the raw `<video poster>` attribute | **8.1MB PNG, 3.2s** — `poster` is not optimisable, so the browser fetched the Strapi original |
+| Strapi's nginx serves `/uploads` with `Cache-Control: max-age=300` | Next derives its optimised-image TTL from upstream, so it **re-fetched and re-encoded** those originals every five minutes |
+| `getMediaStrapiPath` falls back to `/placeholder.jpg` | the file **did not exist** — every missing-media slot spent ~1.3s on a failing optimise |
+| `Header`/`Footer` refetched on mount | they already receive server-rendered `initialData`; ~1.5s of duplicate requests per page load |
+| four mega-menus fetched on mount | always mounted, always closed — ~2s more, for panels nobody had opened |
+| `TransitionBg.show()` | waited a fixed **500ms before** calling `router.push`, so every navigation paid half a second before any work started |
+| `MediaComponent`'s image path | no placeholder at all |
+
+**Decision.**
+
+1. **A placeholder is the default, not an add-on.** `MediaPlaceholder` renders on
+   the first paint and fades out on load, in both the image and video paths.
+   There is no delay timer — `SkeletonImage`'s `delay = 300` is what made the
+   old skeleton read as lingering, and that component is unused anyway.
+   Content imagery that does not go through `MediaComponent` uses
+   **`PlaceholderImage`**, a drop-in for `next/image` that renders the
+   placeholder as a *sibling* — no wrapper element, so it swaps in without
+   touching a layout rule, at the cost of requiring a positioned parent (which
+   every `fill` image already has).
+2. **Posters go through `next/image`.** `VideoPlayer` renders the poster as an
+   `<Image fill>` above the video and fades it when the video can play.
+3. **`images.minimumCacheTTL` is 30 days**, so an expensive optimise is paid once
+   per asset per deployment rather than every five minutes.
+4. **`sizes` is a first-class prop on `MediaComponent`**, and `priority` is set
+   on hero media.
+5. **Nothing fetches on mount that the server already rendered**, and anything a
+   closed panel needs waits for `onIdle`.
+6. **The navigation starts in the same frame as the curtain**, which is what
+   covering the screen is for.
+
+**Amended 2026-09-18.** The first pass covered `MediaComponent` but left every
+direct `next/image` call site bare — the line, article and product cards among
+them — and defaulted the placeholder to a near-black shade, which read as heavy
+rather than as a hint. Now: the default tone is **light**, the shades are
+tokens (`mediaPlaceholder`, `mediaPlaceholderShimmer`, `mediaPlaceholderDark` in
+`_colors`) rather than the literals the first pass hardcoded, and nine card and
+gallery components render through `PlaceholderImage`. `SkeletonLoader`'s sweep
+became `--color-shimmer` with a white default, because a white shimmer over a
+near-white placeholder is invisible.
+
+**Consequences.** Measured at 4× CPU throttle on the production build: home's
+slow scroll goes from a 2600ms freeze to a single 118ms task; navigation from
+1672–2396ms to 543–1283ms; the placeholder asset from 1337ms to 78ms; warm
+Strapi images from 3240ms to ≤99ms. On a throttled 900kbps connection the hero
+slot now shows a grey block with the text and header already readable, instead
+of empty space.
+
+**What this does not fix, because it is not in this repo.** Strapi's nginx sends
+`max-age=300` on immutable, content-hashed upload URLs — it should send
+`max-age=31536000, immutable`. Strapi is also generating only a 245px
+`thumbnail` format for a 2940px source, so the optimiser always starts from the
+full-size original. And SVG logos still come raw from that origin (~0.7–1.3s
+each, above the fold on every page) because `next/image` passes SVG through
+unless `dangerouslyAllowSVG` is set — which is a real XSS consideration for
+CMS-uploaded files and is therefore a decision for the team, not a default.
+
+---
+
+## ADR-0111 — The curtain waits for the hero, and never for the impossible
+
+**Date.** 2026-09-18 · **Status.** Accepted · Refines ADR-0107.
+
+**Context.** Three findings, measured on the production build.
+
+1. **The reveal showed an unfinished hero.** The curtain waited for the 3D scene
+   but not for the hero image, so it lifted onto a placeholder and the visitor
+   watched the LCP element arrive a second or two later. Worse, `VideoPlayer`
+   set its poster in an effect, so the poster was **absent from the
+   server-rendered HTML** — `priority` had nothing to preload and the request
+   did not start until +2.6s.
+2. **A scene that cannot render held the curtain to its cap.** Anything without
+   usable WebGL — headless Chrome, Lighthouse, PageSpeed Insights — never
+   reports a scene ready. Those pages sat behind the curtain for the full cap
+   and Lighthouse recorded **no Largest Contentful Paint at all**: `home`,
+   `package`, `product` and `distribution` each scored **0** for performance.
+3. **Gating on a below-the-fold scene is a bad trade.** Home's globe is seven
+   sections down, yet it held a full-screen curtain in front of the hero.
+
+**Decision.**
+
+- **The poster renders server-side.** `VideoPlayer` seeds its poster state from
+  the prop instead of an effect, so it is in the first HTML and Next emits its
+  `rel=preload`.
+- **Above-the-fold media gates the curtain**, through `useRequireMedia` and
+  `requiredMedia`/`readyMedia` on the animation store. Only `priority` media
+  registers; below-the-fold imagery keeps its placeholder.
+- **Only a scene that can actually render may gate.** `useRequireScene` checks
+  `canRenderWebGL()` and `isBot()` and registers nothing otherwise. Waiting for
+  something impossible is the one case where the gate is pure cost.
+- **A bot never mounts a scene at all** (`optimize-3d-scene` §1), so the three.js
+  chunk is never fetched. The check is client-side on purpose: reading
+  `headers()` would opt every page out of static generation, and the
+  server-rendered HTML stays byte-identical for everyone.
+- **Home's globe no longer gates.** It still mounts at page load and prewarms in
+  the background, which is what keeps the scroll smooth; it simply finishes
+  after the reveal. Hero scenes — product, package, distribution — still gate,
+  because there the scene *is* the hero.
+- **Texture uploads are chunked one per frame** so the curtain's own animation
+  keeps running.
+
+**Consequences.** Desktop Lighthouse went from four pages scoring **0** to every
+page measured, SEO **100 everywhere**, CLS 0 everywhere, LCP ≤2.5s. Numbers in
+[[changelog]].
+
+**What this is not.** The bot check is not cloaking — the HTML is identical and
+only a decorative WebGL layer is skipped. And it does not detect Lighthouse:
+Lighthouse sends an ordinary mobile Chrome user agent. What fixes the
+measurement is `canRenderWebGL()`, which is a correctness fix that happens to
+apply there.
+
+**Measured and rejected: "the loader curtain is the mobile bottleneck."** It is
+not. Disabling the curtain entirely changed mobile LCP by about 0.1s (home
+9.1→9.0s, about 5.5→5.6s, product 6.2→6.3s). Mobile is bound by **JavaScript
+execution** — `bootup-time` 6.0s at 4× CPU, 300KiB of unused JS — not by the
+loader. Any future attempt to buy mobile performance by shortening the curtain
+is chasing the wrong thing.
+
+---
+
+## ADR-0112 — Failure states are designed, not blank
+
+**Date.** 2026-09-18 · **Status.** Accepted.
+
+**Context.** Three places rendered *nothing* when something went wrong, and a
+fourth rendered the wrong thing:
+
+- `ProjectsMap` returned an empty container on error, so a failed map read as a
+  hole in the page.
+- There was no route-level `error.tsx`, so a render failure fell all the way to
+  `global-error.tsx` — which replaces the whole document and looked nothing like
+  the site.
+- The header's mega-menu images never showed a placeholder when the hover
+  changed their source, so the hover appeared to do nothing while the new image
+  loaded.
+- The selected distributor card was `rgba(0, 0, 0, 0.9)` on a page whose
+  background is the dark globe — effectively no contrast.
+
+**Decision.**
+
+- **`src/app/[locale]/error.tsx`** — a branded error boundary that keeps the
+  shell: centred, one line of copy ("This page didn't load."), a retry, a way
+  home and a "Report this" mailto carrying the page URL and the error digest.
+  Address comes from `NEXT_PUBLIC_SUPPORT_EMAIL`. *(The copy was trimmed and the
+  layout centred later the same day; the original wording explained whose fault
+  it was, which is noise on a page nobody wants to be reading.)*
+- **`global-error.tsx`** rewritten to match, self-contained (it has no provider
+  to lean on) and **without the `@keyframes` block** it used to carry, which
+  retires one of the standing `verify.sh` failures.
+- **The map failure state** holds its space with `colors.mediaPlaceholder` — the
+  same shade media placeholders use — and one line of copy.
+- **`PlaceholderImage` resets on `src` change**, so a swapping slot shows the
+  skeleton again instead of the stale image.
+- **The selected distributor card is white with dark text.**
+
+**Consequences.** `NEXT_PUBLIC_SUPPORT_EMAIL` is new and unset; both error pages
+fall back to `info@streetbarbell.com`, which is a guess — set the variable.
+
+---
+
+## ADR-0113 — Capability, not identity, decides whether the scene mounts
+
+**Date.** 2026-09-18 · **Status.** Accepted · Corrects ADR-0111.
+
+**Context.** ADR-0111 added `isBot()`, and it included a `navigator.webdriver`
+check for "headless Chrome without a UA giveaway". That flag is true in **any**
+automation-controlled browser. It silently removed the hero scene from every
+screenshot taken through Puppeteer — which is how it was found, after several
+verification passes had quietly been looking at a page with no globe — and it
+would do the same to a real visitor whose browser sets the flag.
+
+It did not even achieve what it was added for: Lighthouse drives Chrome through
+`chrome-launcher`, which does not set `webdriver`, and sends an ordinary mobile
+Chrome user agent.
+
+**Decision.** Remove the `webdriver` check. `isBot()` matches on the user-agent
+pattern only, which is what real crawlers actually announce. The case that
+mattered — an environment that cannot render WebGL — is handled by
+`canRenderWebGL()`, which tests **capability rather than identity**.
+
+**Consequences.** A heuristic that guesses *who* is asking will misfire on
+people; a check for *what the client can do* cannot. Prefer the latter. The
+scene mounts again under automation, which also means screenshots taken through
+the harness are trustworthy again.
+
+---
+
+## ADR-0114 — Width-conditional markup must agree with the server
+
+**Date.** 2026-09-18 · **Status.** Accepted.
+
+**Context.** Every page of the site threw React **#418** (hydration failed) and
+**#423** (error hydrating a Suspense boundary) in production. A site-wide audit
+of all thirteen page types found **zero clean pages**.
+
+The cause is one pattern, repeated: `useWindowWidth()` reports **0 on the
+server** and the real width on the client's first paint, so anything shaped like
+`width > 768 ? <A/> : <B/>` renders two different trees and React tears the
+whole thing down and rebuilds it.
+
+The worst instance was in the shell, so it hit every page:
+`DynamicScrollRevealWrapper` wraps `children` in **two divs on desktop and none
+on mobile**, decided from that width. Every page was therefore server-rendered
+in the mobile shape and hydrated in the desktop one.
+
+**Decision.** A `useMounted()` hook — false on the server and during the first
+client render, true after. Width-conditional **markup** is gated on it, with
+**desktop as the server assumption**:
+
+```tsx
+{(!mounted || width > 768) && <DesktopOnly />}   // wide  → renders on the server
+{mounted && width <= 768 && <MobileOnly />}      // narrow → never on the server
+```
+
+The polarity matters and is easy to get backwards: gating a wide branch as
+`mounted && width > 768` makes the *server* render the mobile branch, which is
+both a worse first paint for most visitors and a flash on desktop.
+
+This applies to markup only. A width that feeds a prop, a number or a behaviour
+does not change the DOM shape and needs no guard.
+
+**Consequences.** Twelve of thirteen page types are clean. The product page still
+reports one mismatch inside its `Hero` subtree, not yet isolated — recorded in
+[[baseline-debt]] rather than left implied.
+
+Four other real defects surfaced in the same audit and were fixed: an `href` of
+`/products/` built from an empty slug (prefetched, 404, on every page carrying a
+product preview); `<video src="">`, which throws `NotSupportedError`; `<div>`
+inside `<p>` on all three policy pages; and thirteen files of kebab-case SVG
+attributes (`stroke-width`) that React rejects.
+
+**The lesson worth keeping:** these were invisible in normal use and only showed
+up when something actually read the console on every page. A page that *looks*
+right can still be rebuilding its entire DOM on load.

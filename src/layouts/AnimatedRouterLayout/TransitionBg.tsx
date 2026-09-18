@@ -28,22 +28,24 @@ export const TransitionBg = forwardRef(({}, outerRef) => {
     const isFirstRender = useRef(true)
     const initialRender = useRef(true)
     
-    useImperativeHandle(outerRef, () => ({ 
+    useImperativeHandle(outerRef, () => ({
         show: (callback?: () => void) => {
             // Always reset to initial position before showing
             api.set({ transform: 'translateY(-100%)' })
-            
-            // Small delay to ensure the reset has been applied
-            setTimeout(() => {
+
+            // Start the navigation immediately, in the same frame the curtain
+            // starts moving. It used to wait a fixed 500ms *before* calling
+            // router.push, so every navigation paid half a second before any
+            // work began — on top of the fetch it was meant to be hiding.
+            // Next can now fetch the route while the curtain wipes in, which is
+            // the whole point of covering the screen.
+            requestAnimationFrame(() => {
                 isFirstRender.current = false
                 setOpened(true)
-                
-                setTimeout(() => {
-                    callback && callback()
-                }, 500) // Duration for the transition effect
-            }, 10)
-        }, 
-        hide: () => setOpened(false) 
+                callback && callback()
+            })
+        },
+        hide: () => setOpened(false)
     }))
 
     const [springs, api] = useSpring(() => ({

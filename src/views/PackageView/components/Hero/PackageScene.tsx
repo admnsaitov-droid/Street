@@ -5,7 +5,7 @@ import { PackageModel } from "./PackageModel"
 import * as THREE from "three"
 import { Tracker } from "./Tracker"
 import { SceneSkeleton } from "@/components/Skeleton/SceneSkeleton"
-import { Suspense, useCallback, useMemo, useRef, useState, type MutableRefObject } from "react"
+import { Suspense, useCallback, useEffect, useMemo, useRef, useState, type MutableRefObject } from "react"
 import { useLazyScene } from "@/hooks/useLazyScene"
 import { SceneReadyDetector } from "@/views/DistributionView/components/SceneReadyDetector"
 import { useWindowWidth } from "@react-hook/window-size"
@@ -13,6 +13,8 @@ import type { OrbitControls as OrbitControlsImpl } from "three-stdlib"
 import { media, rm } from "@/styles"
 import { fontGolosText } from "@/styles/fonts"
 import { getDeviceTier, getSceneDpr, getSceneGlFlags } from "@/utils/deviceTier"
+import { useTouchDevice } from "@/hooks/useTouchDevice"
+import { SceneGestureHint } from "@/components/Scene/SceneGestureHint"
 
 interface PackageSceneProps {
     packageType: 'large' | 'medium' | 'small'
@@ -100,6 +102,27 @@ export const PackageScene = ({ packageType, packageModelPath }: PackageSceneProp
     const desiredPositionRef = useRef<THREE.Vector3 | null>(null)
     const [showZoomHint, setShowZoomHint] = useState(true)
 
+    // A real touch device, not a narrow window on a laptop.
+    const isTouch = useTouchDevice()
+    const [hasDriven, setHasDriven] = useState(false)
+    const handleGesture = useCallback(() => setHasDriven(true), [])
+
+    // OrbitControls sets `touch-action: none`, which swallows the page scroll.
+    // With one-finger rotation off we want vertical panning back.
+    useEffect(() => {
+        if (!isTouch) return
+        const node = lazyScene.containerRef.current
+        if (!node) return
+
+        const apply = () => {
+            const canvas = node.querySelector('canvas')
+            if (canvas && canvas.style.touchAction !== 'pan-y') canvas.style.touchAction = 'pan-y'
+        }
+        apply()
+        const timer = setInterval(apply, 1000)
+        return () => clearInterval(timer)
+    }, [isTouch, lazyScene.containerRef])
+
     // Device tier is read once at construction — DPR and renderer flags must
     // never drift apart between the four canvases. MSAA in particular is
     // expensive on a phone and the DPR clamp hides its absence.
@@ -158,6 +181,11 @@ export const PackageScene = ({ packageType, packageModelPath }: PackageSceneProp
                 theme="dark"
                 label="machine"
             />
+            <SceneGestureHint
+                containerRef={lazyScene.containerRef}
+                enabled={isTouch}
+                onGesture={handleGesture}
+            />
             <StyledActions>
                 <div className="buttonWrapper zoomOut" onClick={handleZoomOut}>
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -198,10 +226,13 @@ export const PackageScene = ({ packageType, packageModelPath }: PackageSceneProp
                             enableZoom={width <= 768}
                             enableRotate={true}
                             enablePan={false}
-                            touches={{
-                                ONE: THREE.TOUCH.ROTATE,
-                                TWO: THREE.TOUCH.DOLLY_PAN
-                            }}
+                            autoRotate={isTouch && !hasDriven}
+                            autoRotateSpeed={0.45}
+                            /* one finger is the page's, two are the scene's */
+                            touches={isTouch
+                                ? { ONE: undefined as unknown as THREE.TOUCH, TWO: THREE.TOUCH.DOLLY_ROTATE }
+                                : { ONE: THREE.TOUCH.ROTATE, TWO: THREE.TOUCH.DOLLY_PAN }}
+                            onStart={() => setHasDriven(true)}
                             minDistance={PACKAGE_MIN_DISTANCE}
                             maxDistance={PACKAGE_MAX_DISTANCE}
                             target={[0, 0, 0]}

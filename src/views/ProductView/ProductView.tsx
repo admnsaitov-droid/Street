@@ -7,7 +7,6 @@ import styled from "styled-components"
 import { SwiperBlock } from "./components/SwiperBlock"
 import { StructuredData } from "@/components/StructuredData/StructuredData"
 import { generateProductSchema } from "@/utils/generateStructuredData"
-import { ColorPaletre } from "./components/ColorPaletre/ColoPaletre"
 import { useWindowWidth } from "@react-hook/window-size"
 import { useMemo, useEffect } from "react"
 import { useColorStore } from "@/store/store"
@@ -168,7 +167,7 @@ export const ProductView = ({ data, specificationTexts }: ProductViewProps) => {
             <Hero data={data?.product} colors={mainColors} accentColors={accentColors} />
             {width <= 768 ? (
                 <StyledMobileControls>
-                    <ColorPaletre mainColors={mainColors} accentColors={accentColors} />
+                    {/* the colour picker now lives inside the configurator itself */}
                     <SimpleButton isSvg link={quoteLink}>
                         {quoteText}
                     </SimpleButton>

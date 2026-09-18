@@ -119,3 +119,12 @@ replaces an old URL.
 ## Related
 
 [[site-map]] · [[folder-structure]] · [[seo-metadata]] · [[component-conventions]] · [[data-flow]]
+
+## Error boundaries
+
+| File | When it renders |
+|---|---|
+| `src/app/[locale]/error.tsx` | a route failed to render. **Keeps the shell** (header, footer, styles), so it reads as part of the site. Centred, one line of copy, a retry, a way home and a "Report this" mailto carrying the URL and the error digest |
+| `src/app/global-error.tsx` | the shell itself failed. Replaces the whole document, so it has no provider to lean on and inlines its own CSS |
+
+Both read the support address from `NEXT_PUBLIC_SUPPORT_EMAIL`. ADR-0112.

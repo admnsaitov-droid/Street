@@ -84,11 +84,29 @@ const initTextureOrWarn = (gl: THREE.WebGLRenderer, texture: THREE.Texture) => {
     }
 }
 
-/** Uploads every texture in `root` to the GPU. Safe to call more than once. */
-export const initSceneTextures = (gl: THREE.WebGLRenderer, root: THREE.Object3D) => {
-    collectSceneTextures(root).forEach((texture) => {
-        initTextureOrWarn(gl, texture)
+/** Yields to the browser so the loader's own animation gets a frame. */
+const nextFrame = () =>
+    new Promise<void>((resolve) => {
+        if (typeof requestAnimationFrame === 'function') requestAnimationFrame(() => resolve())
+        else setTimeout(resolve, 0)
     })
+
+/**
+ * Uploads every texture in `root` to the GPU, **one per frame**.
+ *
+ * Uploading them back to back is a single long task — four 2048² maps measured
+ * ~600ms — and it runs while the loader is on screen, so the curtain's logo
+ * animation visibly hitches. One upload per frame keeps each task short enough
+ * that the animation keeps running; the total is the same, and it is still
+ * finished before the curtain lifts because the curtain waits for it.
+ */
+export const initSceneTextures = async (gl: THREE.WebGLRenderer, root: THREE.Object3D) => {
+    const textures = Array.from(collectSceneTextures(root))
+
+    for (const texture of textures) {
+        initTextureOrWarn(gl, texture)
+        await nextFrame()
+    }
 }
 
 /**
@@ -100,7 +118,7 @@ export const warmupScene = async (
     scene: THREE.Scene,
     camera: THREE.Camera
 ) => {
-    initSceneTextures(gl, scene)
+    await initSceneTextures(gl, scene)
 
     try {
         if (typeof gl.compileAsync === 'function') await gl.compileAsync(scene, camera)

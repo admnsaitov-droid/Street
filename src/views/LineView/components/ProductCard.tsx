@@ -1,8 +1,8 @@
+import { PlaceholderImage } from "@/components/Skeleton/PlaceholderImage"
 import { AnimLink } from "@/layouts/AnimatedRouterLayout/AnimatedRouterLayout"
 import { colors, media, rm } from "@/styles"
 import { fontGolosText } from "@/styles/fonts"
 import { getMediaStrapiPath } from "@/utils/getMediaStrapiPath"
-import Image from "next/image"
 import styled from "styled-components"
 
 interface ProductCardProps {
@@ -15,7 +15,7 @@ export const ProductCard = ({ data }: ProductCardProps) => {
             <StyledHiddenLink href={`/products/${data?.slug}`} aria-label={`View ${data?.name} product details`}/>
             <StyledWrapper>
                 <StyledImageContainer>
-                    <Image src={getMediaStrapiPath(data?.previewImage)} alt={data?.name} fill />
+                    <PlaceholderImage src={getMediaStrapiPath(data?.previewImage)} alt={data?.name || "Product preview"} fill sizes="(max-width: 768px) 50vw, 25vw" />
                 </StyledImageContainer>
                 <StyledContent>
                     {data?.name && <h3 className="title">{data?.name}</h3>}
