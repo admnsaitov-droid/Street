@@ -1,3 +1,4 @@
+import { PlaceholderImage } from "@/components/Skeleton/PlaceholderImage"
 import AnimatedLink from "@/components/animated/AnimatedLink/AnimatedLink"
 import { colors, media, rm } from "@/styles"
 import { fontGolosText } from "@/styles/fonts"
@@ -6,8 +7,8 @@ import { useEffect, useState, useRef } from "react"
 import { animated, easings, useSpring } from "@react-spring/web"
 import { useLocale } from "next-intl"
 import { getStrapiData } from "@/utils/strapi"
+import { onIdle } from "@/utils/onIdle";
 import UnderlineLink from "@/components/animated/UnderlineLink/UnderlineLink"
-import Image from "next/image"
 import { getMediaStrapiPath } from "@/utils/getMediaStrapiPath"
 import useLoadingStore from "@/store/store"
 import { AnimLink } from "@/layouts/AnimatedRouterLayout/AnimatedRouterLayout"
@@ -56,7 +57,13 @@ export const PackageMenu = ({ previewText, allText }: { previewText: string, all
             }
         };
 
-        fetchPackagesData();
+        // Deferred to idle: these panels are mounted but closed, so their
+
+
+        // contents must not compete with the page the visitor is actually looking at.
+
+
+        return onIdle(() => { fetchPackagesData() });
     }, [locale]);
 
     // Measure content height when packages data changes
@@ -178,7 +185,7 @@ export const PackageMenu = ({ previewText, allText }: { previewText: string, all
                             <AllButton text={allText} href="/packages" lineColor={colors.red} onClick={handleLinkClick} />
                         </StyledLeft>
                         <StyledRight>
-                            <Image src={getMediaStrapiPath(currentPackage?.mainMediaLeft?.poster)} alt={currentPackage?.name || "Package preview"} fill />
+                            <PlaceholderImage src={getMediaStrapiPath(currentPackage?.mainMediaLeft?.poster)} alt={currentPackage?.name || "Package preview"} fill sizes="33vw" />
                         </StyledRight>
                     </StyledLayout>
                 </StyledMenuContainer>

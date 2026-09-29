@@ -4,6 +4,8 @@ import styled from "styled-components"
 import { MapMarker } from "./MapMarker"
 import { InfoWindow } from "./InfoWindow"
 import { createRoot } from "react-dom/client"
+import { colors, media, rm } from "@/styles"
+import { fontGolosText, fontSageGrotesk } from "@/styles/fonts"
 
 // Custom map styles for a dark theme
 const mapStyles = [
@@ -485,7 +487,7 @@ export const ProjectsMap = ({
                             url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
                                 <svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
                                     <g transform="rotate(45 24 24)">
-                                        <rect x="12" y="12" width="24" height="24" fill="rgba(237,30,42,0.16)" stroke="rgba(237,30,42,0.16)" stroke-width="1"/>
+                                        <rect x="12" y="12" width="24" height="24" fill="rgba(237,30,42,0.16)" stroke="rgba(237,30,42,0.16)" strokeWidth="1"/>
                                         <rect x="21" y="21" width="6" height="6" fill="#ED1E2A"/>
                                     </g>
                                 </svg>
@@ -555,8 +557,19 @@ export const ProjectsMap = ({
     }, [map])
 
     if (error) {
+        // Previously this returned an empty container, so a failed map read as a
+        // hole in the page. Hold the space with the same shade media
+        // placeholders use, and say what happened in one line.
         return (
             <StyledProjectsMap>
+                <StyledMapFallback role="status">
+                    <div className="inner">
+                        <p className="title">Map unavailable</p>
+                        <p className="copy">
+                            We can&apos;t load the map right now. Our projects are listed below.
+                        </p>
+                    </div>
+                </StyledMapFallback>
             </StyledProjectsMap>
         )
     }
@@ -575,6 +588,48 @@ const StyledProjectsMap = styled.div`
     width: 100%;
     height: 100%;
     overflow: hidden;
+`
+
+const StyledMapFallback = styled.div`
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: ${rm(32)};
+    text-align: center;
+    background-color: ${colors.mediaPlaceholder};
+
+    .inner {
+        display: flex;
+        flex-direction: column;
+        gap: ${rm(8)};
+        max-width: ${rm(360)};
+    }
+
+    .title {
+        ${fontSageGrotesk(500)};
+        font-size: ${rm(20)};
+        line-height: 110%;
+        text-transform: uppercase;
+        letter-spacing: -0.01em;
+        color: ${colors.black100};
+
+        ${media.xsm`
+            font-size: ${rm(18)};
+        `}
+    }
+
+    .copy {
+        ${fontGolosText(400)};
+        font-size: ${rm(15)};
+        line-height: 140%;
+        color: ${colors.gray};
+
+        ${media.xsm`
+            font-size: ${rm(13)};
+        `}
+    }
 `
 
 const MapContainer = styled.div`

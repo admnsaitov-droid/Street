@@ -147,13 +147,13 @@ export const Menu = ({ data }: MenuProps) => {
                             <span className="item" onClick={() => setIsPackageMenuOpen(true)}>
                                 Packages
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M9 6L15 12L9 18" stroke="black" stroke-width="2"/>
+                                    <path d="M9 6L15 12L9 18" stroke="black" strokeWidth="2"/>
                                 </svg>
                             </span>
                             <span className="item" onClick={() => setIsProductsMenuOpen(true)}>
                                 Products
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M9 6L15 12L9 18" stroke="black" stroke-width="2"/>
+                                    <path d="M9 6L15 12L9 18" stroke="black" strokeWidth="2"/>
                                 </svg>
                             </span>
                             {data?.links?.links?.map((item: any, index: number) => (

@@ -7,17 +7,15 @@ import styled from "styled-components"
 import { SwiperBlock } from "./components/SwiperBlock"
 import { StructuredData } from "@/components/StructuredData/StructuredData"
 import { generateProductSchema } from "@/utils/generateStructuredData"
-import { ColorPaletre } from "./components/ColorPaletre/ColoPaletre"
 import { useWindowWidth } from "@react-hook/window-size"
 import { useMemo, useEffect } from "react"
 import { useColorStore } from "@/store/store"
 import { SimpleButton } from "@/components/Ui/buttons/SimpleButton"
-import { SameLineProducts } from "./components/SameLineProducts/SameLineProducts"
+import { useRequireScene } from "@/hooks/useRequireScene"
 
 interface ProductViewProps {
     data: any
     specificationTexts?: Record<string, string | null> | null
-    linesData?: any
 }
 
 // Helper function to convert hex to rgb
@@ -33,9 +31,12 @@ const hexToRgb = (hex: string): string => {
     return `rgb(${r}, ${g}, ${b})`
 }
 
-export const ProductView = ({ data, specificationTexts, linesData }: ProductViewProps) => {
+export const ProductView = ({ data, specificationTexts }: ProductViewProps) => {
     console.log('data', data)
     const { materialMainColor, materialAccentColor, setMaterialMainColor, setMaterialAccentColor } = useColorStore()
+
+    // Hold the loader curtain until the product model has finished prewarming.
+    useRequireScene('product', Boolean(data?.product?.model3D?.model))
 
     // Reset material colors when product changes
     useEffect(() => {
@@ -166,7 +167,7 @@ export const ProductView = ({ data, specificationTexts, linesData }: ProductView
             <Hero data={data?.product} colors={mainColors} accentColors={accentColors} />
             {width <= 768 ? (
                 <StyledMobileControls>
-                    <ColorPaletre mainColors={mainColors} accentColors={accentColors} />
+                    {/* the colour picker now lives inside the configurator itself */}
                     <SimpleButton isSvg link={quoteLink}>
                         {quoteText}
                     </SimpleButton>
@@ -176,7 +177,6 @@ export const ProductView = ({ data, specificationTexts, linesData }: ProductView
                 <ProductOverview data={data?.product} specificationTexts={specificationTexts} />
             </StyledWrapper>
             {hasSwiperMedias ? <SwiperBlock images={data?.product?.swiperMedias} title={swiperTitle} /> : null}
-            <SameLineProducts linesData={linesData} currentSlug={data?.product?.slug} />
         </StyledProductView>
     )
 }

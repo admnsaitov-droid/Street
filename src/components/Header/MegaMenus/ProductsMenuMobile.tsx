@@ -3,6 +3,7 @@
 import { fontGolosText } from "@/styles/fonts";
 import { colors, media, rm } from "@/styles";
 import { getStrapiData } from "@/utils/strapi";
+import { onIdle } from "@/utils/onIdle";
 import { useLocale } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
@@ -36,7 +37,11 @@ export const ProductsMenuMobile = ({ isOpen, setIsOpen, setMenuOpen }: ProductsM
                 setLoading(false);
             }
         };
-        fetchProductsData();
+        // Deferred to idle: these panels are mounted but closed, so their
+
+        // contents must not compete with the page the visitor is actually looking at.
+
+        return onIdle(() => { fetchProductsData() });
     }, [locale]);
 
     // Scroll panel to top each time it opens

@@ -129,12 +129,12 @@ export const SwiperBlock = ({ images, title }: SwiperBlockProps) => {
                     <div className="buttonsBlock">
                         <StyledSwiperButton side="left" onClick={handlePrev} aria-label="Previous slide">
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M15 6L9 12L15 18" stroke="black" stroke-width="2"/>
+                                <path d="M15 6L9 12L15 18" stroke="black" strokeWidth="2"/>
                             </svg>
                         </StyledSwiperButton>
                         <StyledSwiperButton side="right" onClick={handleNext} aria-label="Next slide">
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M15 6L9 12L15 18" stroke="black" stroke-width="2"/>
+                                <path d="M15 6L9 12L15 18" stroke="black" strokeWidth="2"/>
                             </svg>
                         </StyledSwiperButton>
                     </div>

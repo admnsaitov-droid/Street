@@ -33,7 +33,18 @@ const StyledSkeletonLoader = styled.div`
         bottom: 0;
         left: 0;
         transform: translateX(-100%);
-        background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.1) 20%, rgba(255, 255, 255, 0.2) 60%, rgba(255, 255, 255, 0));
+        /*
+          The sweep colour is a variable so the same loader works on a light
+          surface. A white shimmer over a near-white placeholder is invisible,
+          which is why media placeholders set --color-shimmer to a faint dark.
+        */
+        background: linear-gradient(
+            90deg,
+            transparent 0%,
+            var(--color-shimmer, rgba(255, 255, 255, 0.1)) 20%,
+            var(--color-shimmer-peak, rgba(255, 255, 255, 0.2)) 60%,
+            transparent 100%
+        );
         content: '';
     }
 

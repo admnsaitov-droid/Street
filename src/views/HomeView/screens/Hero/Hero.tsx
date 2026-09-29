@@ -1,6 +1,4 @@
 import AnimatedGrid from "@/components/animated/AnimatedContent"
-import { AnimatedText } from "@/components/animated/AnimatedText/AnimatedText"
-import { AnimatedTranslate } from "@/components/animated/AnimatedTranslate/AnimatedTranslate"
 import { MediaComponent } from "@/components/MediaComponent/MediaComponent"
 import SkeletonVideo from "@/components/Skeleton/SkeletonVideo"
 import { WhiteButton } from "@/components/Ui/buttons/WhiteButton"
@@ -21,28 +19,47 @@ export const Hero = ({ heroData }: HeroProps) => {
 
     return (
         <StyledHero>
-            <MediaComponent media={heroData?.mainVideo} className="hero-media" isExtendable={false}/>
-            {width <= 768 && (
+            <MediaComponent media={heroData?.mainVideo} className="hero-media" isExtendable={false} priority={true} sizes="100vw" placeholderTone="dark"/>
+            {/*
+              `useWindowWidth` reports 0 until it has measured, and 0 <= 768, so
+              this dark overlay flashed over the desktop hero for a frame before
+              being removed. Wait for a real measurement.
+            */}
+            {width > 0 && width <= 768 && (
                 <StyledMobileBackgroundViewoContainer />
             )}
             <BackgroundProgressiveBlur/>
             <StyledContent>
                 <div className="left">
-                    <AnimatedText className="description" tag="p">{heroData?.description}</AnimatedText>
+                    {/*
+                      The hero renders statically — no entrance animation.
+                      The loader curtain already covers the page's arrival, so
+                      replaying a reveal underneath it meant the visitor watched
+                      the headline assemble *after* the reveal. Everything below
+                      the fold keeps its motion; this is the one screen that is
+                      already on show the instant the curtain lifts.
+                    */}
+                    <p className="description">{heroData?.description}</p>
                     <div className="divider" />
                     <StyledTitleContainer>
                         <h1>
+                            {/*
+                              Still AnimatedGrid, but with `from` equal to `to`:
+                              it is what lays the headline out word by word, so
+                              dropping it re-flowed the line breaks. The cells
+                              simply start at their final state, so there is no
+                              reveal to wait through.
+                            */}
                             <AnimatedGrid
                                 tag="span"
                                 type="words"
                                 animation={{
-                                    from: { opacity: 0, y: '40px' },
+                                    from: { opacity: 1, y: '0px' },
                                     to: { opacity: 1, y: '0px' },
-                                    delayStep: 60
+                                    delayStep: 0
                                 }}
-                                overflow={true}
+                                overflow={false}
                                 gap={{ horizontal: '0.5em', vertical: '0em' }}
-                                containerStyle={{ overflow: 'hidden' }}
                                 cellConfigs={{
                                     'title-first': {
                                         style: {
@@ -68,15 +85,15 @@ export const Hero = ({ heroData }: HeroProps) => {
                             >
                                 <span id="title-first" className="first">{heroData?.title?.textFirst}</span>
                                 <span id="title-second" className="second">{heroData?.title?.textSecond}</span>
-                        </AnimatedGrid>
-                    </h1>
+                            </AnimatedGrid>
+                        </h1>
                     </StyledTitleContainer>
                 </div>
-                <AnimatedTranslate className="button">
+                <div className="button">
                     <WhiteButton isSvg={true} link={heroData?.button?.link}>
                         {heroData?.button?.text}
                     </WhiteButton>
-                </AnimatedTranslate>
+                </div>
             </StyledContent>
         </StyledHero>
     )
@@ -145,11 +162,8 @@ const StyledTitleContainer = styled.div`
         margin: 0;
         padding: 0;
         font-size: inherit;
-        font-weight: inherit;
         line-height: inherit;
-        color: inherit;
         text-transform: inherit;
-        font-family: inherit;
 
         > span > span > span {
             align-items: baseline;

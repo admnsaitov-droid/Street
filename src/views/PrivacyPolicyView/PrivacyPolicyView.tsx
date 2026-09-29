@@ -32,7 +32,7 @@ export default function PrivacyPolicyView({ data }: any) {
     const parts = text.split(/(\*\*)/);  // This will keep the delimiters in the array
     return parts.map((part, index) => {
         if (part === '**') {
-            return <StyledDot key={index}><div></div></StyledDot>;
+            return <StyledDot key={index}><span /></StyledDot>;
         }
         return <span key={index} style={{ display: 'inline-block' }}>{part}</span>;
     });
@@ -83,8 +83,8 @@ export default function PrivacyPolicyView({ data }: any) {
         />
       <div className="cookie-policy-wrapper">
         <div className="cookie-policy">
-          <h1 className="title">{data?.title}</h1>
-          {data?.policy?.map((block: any, i: number) => renderBlock(block, i))}
+          <h1 className="title">{data.title}</h1>
+          {data.policy.map((block: any, i: number) => renderBlock(block, i))}
           <div className="last-update">
             Last updated: {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
           </div>

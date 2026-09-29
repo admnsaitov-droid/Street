@@ -5,6 +5,7 @@ import { colors } from "@/styles/colors"
 import { useRef, useEffect, useState } from "react"
 import styled from "styled-components"
 import useLoadingStore from "@/store/store"
+import useAnimationStore from "@/animationStore/animationStore"
 import { animated, easings, useSpring } from "@react-spring/web"
 
 interface LoaderProps {
@@ -13,10 +14,34 @@ interface LoaderProps {
     isFullyLoaded: boolean
 }
 
+/** The curtain is never shorter than this, so the logo animation can play. */
+const MIN_CURTAIN_MS = 1000
+/**
+ * ...and never longer than this, measured from **navigation start**. Gating on
+ * scene-ready is a promise about the network we cannot keep, so a slow or failed
+ * scene load must not strand the visitor behind a black screen. 8s was chosen
+ * when the globe cost 2.25s of texture uploads; at 2048x2048 (ADR-0109) a scene
+ * that has not reported ready within 5s is not going to, and the content
+ * underneath is server-rendered and ready to read.
+ */
+const MAX_CURTAIN_MS = 5000
+
 export const Loader = ({ setFullyLoaded, progress, isFullyLoaded }: LoaderProps) => {
     const [isLoaded, setIsLoaded] = useState(false)
+    const [minElapsed, setMinElapsed] = useState(false)
+    const [capReached, setCapReached] = useState(false)
     const progressRef = useRef(0)
     const setContentLoaded = useLoadingStore(state => state.setContentLoaded)
+
+    // Scenes the current page declared it owns, and their prewarm state.
+    const requiredScenes = useAnimationStore(state => state.requiredScenes)
+    const scenes = useAnimationStore(state => state.scenes)
+    const scenesReady = requiredScenes.every(sceneType => scenes[sceneType]?.isSceneReady)
+
+    // ...and the above-the-fold media, so the reveal shows a finished hero.
+    const requiredMedia = useAnimationStore(state => state.requiredMedia)
+    const readyMedia = useAnimationStore(state => state.readyMedia)
+    const mediaReady = requiredMedia.every(id => readyMedia.includes(id))
 
     const [shouldLogoAnimate, setShouldLogoAnimate] = useState(false)
 
@@ -39,17 +64,47 @@ export const Loader = ({ setFullyLoaded, progress, isFullyLoaded }: LoaderProps)
         return () => clearTimeout(timer)
     }, [])
 
-    // Fake Progress
-    // Replace it with real progress/logic
+    // Curtain timing bounds.
+    //
+    // The cap is measured from **navigation start**, not from this component's
+    // mount. On a slow connection the bundle downloads and hydrates late, so a
+    // mount-relative cap started its clock seconds after the visitor was
+    // already looking at a black screen — the curtain then outlasted the cap by
+    // however long hydration took. `performance.now()` is navigation-relative,
+    // so the deadline is the same wall-clock promise on every connection.
     useEffect(() => {
-        setTimeout(() => {
-            setIsLoaded(true)
-            setTimeout(() => {
-                setFullyLoaded(true)
-                setContentLoaded(true)
-            }, 100)
-        }, 1000)
-    }, [progressRef.current])
+        const sinceNavigation = typeof performance !== 'undefined' ? performance.now() : 0
+        const capRemaining = Math.max(0, MAX_CURTAIN_MS - sinceNavigation)
+
+        const min = setTimeout(() => setMinElapsed(true), MIN_CURTAIN_MS)
+        const cap = setTimeout(() => setCapReached(true), capRemaining)
+        return () => {
+            clearTimeout(min)
+            clearTimeout(cap)
+        }
+    }, [])
+
+    // Hand off once the page's scenes have prewarmed — shaders compiled,
+    // textures uploaded, one frame drawn — rather than after a fixed timer that
+    // knew nothing about them and let the work land on the first scroll.
+    const canHandOff = capReached || (minElapsed && scenesReady && mediaReady)
+
+    // The guard is a ref, not `isLoaded`: keeping `isLoaded` in the dependency
+    // array made this effect re-run the moment it set it, and the cleanup then
+    // cleared its own pending hand-off timer — the curtain never lifted.
+    const handedOff = useRef(false)
+
+    useEffect(() => {
+        if (!canHandOff || handedOff.current) return
+
+        handedOff.current = true
+        setIsLoaded(true)
+        const timer = setTimeout(() => {
+            setFullyLoaded(true)
+            setContentLoaded(true)
+        }, 100)
+        return () => clearTimeout(timer)
+    }, [canHandOff, setContentLoaded, setFullyLoaded])
 
 
     const secondSvgValues = useSpring({

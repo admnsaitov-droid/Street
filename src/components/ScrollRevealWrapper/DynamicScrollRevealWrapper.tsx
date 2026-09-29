@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useScroll } from "@/layouts/ScrollLayout/useScroll";
 import styled from "styled-components";
 import { useWindowWidth } from "@react-hook/window-size";
+import { useMounted } from "@/hooks/useMounted";
 
 const BlurOverlay = styled.div`
   position: fixed;
@@ -37,7 +38,15 @@ export const DynamicScrollRevealWrapper = ({ children }: ScrollRevealWrapperProp
   const [contentHeight, setContentHeight] = useState(0);
   const [isFooterVisible, setIsFooterVisible] = useState(false);
   const width = useWindowWidth();
-  const isMobile = width <= 768;
+  /*
+    This wraps `children` in two divs on desktop and in nothing on mobile, and
+    it decides from a viewport width the server reports as 0 — so every page
+    was server-rendered with the mobile shape and hydrated with the desktop
+    one. That single mismatch is what produced React #418/#423 site-wide.
+    Assume desktop until measured, which is what the server assumed.
+  */
+  const mounted = useMounted();
+  const isMobile = mounted && width <= 768;
 
   useEffect(() => {
     if (!containerRef.current) return;

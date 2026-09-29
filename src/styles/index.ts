@@ -5,25 +5,21 @@ import { printVars } from "./utils"
 import { _colors, colors } from "./colors"
 import { fontOnest } from "./fonts"
 
-import { initSmartCSSGrid } from "@/styles/grid/grid"
+import { initSmartCSSGrid, type Grid } from "@/styles/grid/grid"
+import { breakpoints, relatedBreakpoints } from "@/styles/grid/breakpoints"
 
 const {
     SmartCSSGrid,
     media,
     rm,
     em
-} = initSmartCSSGrid({
+// <Grid> is pinned explicitly: `grid` and `related` share one type parameter, so
+// letting it infer from the narrower `related` would drop `media.lg` and friends.
+} = initSmartCSSGrid<Grid>({
     fontBase: 16,
     scaleUpCoeff: 0.6666,
-    grid: {
-        xlg: 1920,
-        lg: 1440,
-        md: 768,
-        xsm: 576,
-    },
-    related: {
-        xsm: 360
-    }
+    grid: { ...breakpoints },
+    related: { ...relatedBreakpoints }
 })
 
 // Global css

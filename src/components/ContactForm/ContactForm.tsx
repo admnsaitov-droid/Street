@@ -15,6 +15,7 @@ import { BlueButton } from "../Ui/buttons/BlueButton"
 import { usePathname, useSearchParams } from "next/navigation"
 import UnderlineLink from "../animated/UnderlineLink/UnderlineLink"
 import { useWindowWidth } from "@react-hook/window-size"
+import { useMounted } from "@/hooks/useMounted"
 import AnimatedGrid from "@/components/animated/AnimatedContent"
 import { LineAppear } from "./components/LineAppear"
 import { scrollTo } from "@/utils/scrollTo"
@@ -26,6 +27,10 @@ export const ContactForm = () => {
     const pathname = usePathname()
     const searchParams = useSearchParams()
     const width = useWindowWidth()
+    // Width-conditional markup must agree with the server on the first render,
+    // or React tears the tree down and rebuilds it (hydration mismatch). Until
+    // mounted we render as if wide, which is what the server assumed.
+    const mounted = useMounted()
 
     const setIsSubmitSuccessful = useLoadingStore((state: any) => (state.setIsSubmitSuccessful))
     const setIsSubmitError = useLoadingStore((state: any) => (state.setIsSubmitError))
@@ -219,7 +224,7 @@ export const ContactForm = () => {
             </StyledTitleContainer>
             <StyledNote>{data?.data?.note}</StyledNote>
             <StyledForm onSubmit={handleSubmit}>
-                {width > 576 && <>
+                {(!mounted || width > 576) && <>
                     <LineAppear>
                         <StyledSection>
                             <StyledFormText>{data?.data?.contactForm?.nameText}</StyledFormText>
@@ -257,7 +262,7 @@ export const ContactForm = () => {
                         </StyledSection>
                     </LineAppear>
                 </>}
-                {width <= 576 && <>
+                {mounted && width <= 576 && <>
                     <LineAppear>
                         <StyledSection>
                             <StyledFormText>{data?.data?.contactForm?.nameText}</StyledFormText>

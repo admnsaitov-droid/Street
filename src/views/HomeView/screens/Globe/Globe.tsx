@@ -9,6 +9,7 @@ import { AnimatedTranslate } from "@/components/animated/AnimatedTranslate/Anima
 import AnimatedGrid from "@/components/animated/AnimatedContent"
 import dynamic from "next/dynamic"
 import { useWindowWidth } from "@react-hook/window-size";
+import { useMounted } from "@/hooks/useMounted"
 
 const Scene = dynamic(() => import("./components/DynamicScene").then((mod) => mod.DynamicScene), {
     ssr: false,
@@ -29,6 +30,10 @@ interface GlobeProps {
 
 export const Globe = ({ globeData }: GlobeProps) => {
     const width = useWindowWidth()
+    // Width-conditional markup must agree with the server on the first render,
+    // or React tears the tree down and rebuilds it (hydration mismatch). Until
+    // mounted we render as if wide, which is what the server assumed.
+    const mounted = useMounted()
     return (
         <StyledGlobe>
             <div className="left">
@@ -72,7 +77,7 @@ export const Globe = ({ globeData }: GlobeProps) => {
                     </StyledTitleContainer>
                     <StyledDescription>{globeData?.description}</StyledDescription>
                 </div>
-                {width <= 768 ? <Scene /> : null}
+                {mounted && width <= 768 ? <Scene /> : null}
                 <div>
                     <StyledContinents style={{pointerEvents: 'none', userSelect: 'none'}}>
                         {globeData?.continents?.map((continent: any) => (
@@ -86,7 +91,7 @@ export const Globe = ({ globeData }: GlobeProps) => {
                             </StyledContinent>
                         ))}
                     </StyledContinents>
-                    {width > 768 ? <AnimatedTranslate className="button-container">
+                    {(!mounted || width > 768) ? <AnimatedTranslate className="button-container">
                         <BlueButton link={globeData?.button?.link} isSvg className="button">{globeData?.button?.text}</BlueButton>
                     </AnimatedTranslate>
                     :
@@ -96,7 +101,7 @@ export const Globe = ({ globeData }: GlobeProps) => {
                 }
                 </div>
             </div>
-            {width <= 768 ? null : <Scene />}
+            {mounted && width <= 768 ? null : <Scene />}
         </StyledGlobe>
     )
 }

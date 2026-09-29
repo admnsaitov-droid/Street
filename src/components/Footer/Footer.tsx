@@ -15,6 +15,12 @@ export const Footer = ({ initialData }: { initialData?: any }) => {
     const locale = useLocale();
 
     useEffect(() => {
+        // The layout already renders this from the server and passes it as
+        // `initialData`; refetching it on mount duplicated the request on every
+        // page load for no new data. Only fetch when we genuinely have none
+        // (a locale change that the server payload does not cover).
+        if (footerData) return
+
         const fetchFooterData = async () => {
             try {
                 const data = await getStrapiData('get-footer-data', locale);
@@ -25,7 +31,7 @@ export const Footer = ({ initialData }: { initialData?: any }) => {
         };
 
         fetchFooterData();
-    }, [locale]);
+    }, [locale, footerData]);
 
     const phoneHref = footerData?.companyData?.phone
         ? `tel:${String(footerData.companyData.phone).replace(/\s+/g, '')}`
@@ -103,7 +109,7 @@ export const Footer = ({ initialData }: { initialData?: any }) => {
                 <div className="dividerMain"></div>
                 <div className="first">
                     <svg width="275" height="25" viewBox="0 0 275 25" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <g clip-path="url(#clip0_5049_372)">
+                        <g clipPath="url(#clip0_5049_372)">
                         <path d="M144.771 12.4971L139.631 7.35742L134.491 12.4971L139.631 17.6367L144.771 12.4971Z" fill="white"/>
                         <path d="M132.438 10.4385L137.578 5.29883L132.438 0.159179L127.299 5.29883L132.438 10.4385Z" fill="#FF0021"/>
                         <path d="M137.579 19.6924L132.439 14.5527L127.3 19.6924L132.439 24.832L137.579 19.6924Z" fill="white"/>

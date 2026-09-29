@@ -1,0 +1,36 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/scripts/hooks/session-start.sh",
+            "statusMessage": "Loading project guide"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/scripts/hooks/user-prompt.sh"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/scripts/hooks/stop.sh",
+            "statusMessage": "Checking vault docs are in sync"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -31,7 +31,7 @@ export default function CookiePolicyView({ data }: any) {
     const parts = text.split(/(\*\*)/);  // This will keep the delimiters in the array
     return parts.map((part, index) => {
         if (part === '**') {
-            return <StyledDot key={index}><div></div></StyledDot>;
+            return <StyledDot key={index}><span /></StyledDot>;
         }
         return <span key={index} style={{ display: 'inline-block' }}>{part}</span>;
     });
@@ -82,8 +82,8 @@ export default function CookiePolicyView({ data }: any) {
         />
       <div className="cookie-policy-wrapper">
         <div className="cookie-policy">
-          <h1 className="title">{data?.title}</h1>
-          {data?.policy?.map((block: any, i: number) => renderBlock(block, i))}
+          <h1 className="title">{data.title}</h1>
+          {data.policy.map((block: any, i: number) => renderBlock(block, i))}
           <div className="last-update">
             Last updated: {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
           </div>
@@ -201,7 +201,13 @@ export const StyledCookieAndPrivacyPolicy = styled.div`
   }
 `;
 
-export const StyledDot = styled.div`
+/*
+  A span, not a div. These dots render inside the <p> of a rich-text block, and
+  a <div> inside a <p> is invalid HTML — the browser closes the paragraph early
+  to repair it, which made the served markup and the React tree disagree and
+  broke hydration on all three policy pages.
+*/
+export const StyledDot = styled.span`
     width: ${rm(16)};
     height: ${rm(16)};
     display: inline-flex;
@@ -210,7 +216,7 @@ export const StyledDot = styled.div`
     vertical-align: -0.15em;
     margin: 0 0.1em;
 
-    div{
+    span{
         width: ${rm(4)};
         height: ${rm(4)};
         background-color: ${colors.blue};

@@ -11,17 +11,11 @@ export const generateMetadata = createMetadataGenerator({
     transformData: (data) => {
       // Extract metadata from the specific path in your data structure
 
-      // Prefer an explicitly set OG image, otherwise fall back to the product preview.
-      // Select the media object before resolving the path, since getMediaStrapiPath
-      // returns a truthy placeholder for empty media (which would break a path-level ||).
-      const ogMedia = data?.product?.metadata?.openGraph || data?.product?.previewImage;
-
       const metadata = {
-        metatitle: data?.product?.metadata?.metatitle || data?.product?.name,
-        metadescription: data?.product?.metadata?.metadescription || data?.product?.previewDescription,
-        metakeywords: data?.product?.metadata?.metakeywords,
+        metatitle: data?.product?.name,
+        metadescription: data?.product?.previewDescription,
         openGraph: {
-          url: getMediaStrapiPath(ogMedia)
+          url: getMediaStrapiPath(data?.product?.previewImage)
         }
       }
 
@@ -41,15 +35,14 @@ export default async function ProductDetailPage({
   }) {
     const { locale, slug } = await params;
 
-    const [data, specResponse, linesData] = await Promise.all([
+    const [data, specResponse] = await Promise.all([
       getStrapiData('get-product-data?slug=' + slug, locale),
       getStrapiData('get-product-specifications', locale),
-      getStrapiData('get-lines', locale),
     ]);
 
     const specificationTexts = specResponse?.data ?? null;
 
     return (
-      <ProductView data={data} specificationTexts={specificationTexts} linesData={linesData} />
+      <ProductView data={data} specificationTexts={specificationTexts} />
     );
   } 

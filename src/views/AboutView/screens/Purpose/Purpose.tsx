@@ -4,6 +4,7 @@ import { colors, media, rm } from "@/styles"
 import { fontGolosText, fontSageGrotesk } from "@/styles/fonts"
 import { MediaComponent } from "@/components/MediaComponent/MediaComponent"
 import { useWindowWidth } from "@react-hook/window-size"
+import { useMounted } from "@/hooks/useMounted"
 import AnimatedGrid from "@/components/animated/AnimatedContent"
 import { MaskImageAppear } from "@/components/animated/MaskImageAppear/MaskImageAppear"
 import { getMediaStrapiPath } from "@/utils/getMediaStrapiPath"
@@ -15,6 +16,10 @@ interface PurposeProps {
 
 export const Purpose = ({ data }: PurposeProps) => {
     const width = useWindowWidth();
+    // Width-conditional markup must agree with the server on the first render,
+    // or React tears the tree down and rebuilds it (hydration mismatch). Until
+    // mounted we render as if wide, which is what the server assumed.
+    const mounted = useMounted();
 
     // Create image gallery from all available media
     const allImageGallery = useMemo(() => {
@@ -112,7 +117,7 @@ export const Purpose = ({ data }: PurposeProps) => {
                     </StyledPurposeTitleContainer>
                     <div className="bottom">
                         <StyledSubtitle>{data?.description}</StyledSubtitle>
-                        {width > 768 && <StyledSubtitle>{data?.descriptionSecondary}</StyledSubtitle>}
+                        {(!mounted || width > 768) && <StyledSubtitle>{data?.descriptionSecondary}</StyledSubtitle>}
                     </div>
                 </StyledRightTop>
             </StyledTop>
@@ -120,7 +125,7 @@ export const Purpose = ({ data }: PurposeProps) => {
                 <div className="left">
                     {data?.mediaSecondary?.map((image: any, index: number) => (
                         <StyledImageContainer key={index} className="imageContainer">
-                            <MaskImageAppear className="image-container" enabled={width > 768}>
+                            <MaskImageAppear className="image-container" enabled={(!mounted || width > 768)}>
                                 <MediaComponent media={image} className="image" parallax={true} imageGallery={allImageGallery} />
                             </MaskImageAppear>
                         </StyledImageContainer>
@@ -128,7 +133,7 @@ export const Purpose = ({ data }: PurposeProps) => {
                 </div>
                 <div className="right">
                     <StyledImageContainer className="imageContainer">
-                        <MaskImageAppear className="image-container" enabled={width > 768}>
+                        <MaskImageAppear className="image-container" enabled={(!mounted || width > 768)}>
                             <MediaComponent media={data?.mainImage} className="image" parallax={true} imageGallery={allImageGallery} />
                         </MaskImageAppear>
                     </StyledImageContainer>

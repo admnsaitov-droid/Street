@@ -1,11 +1,12 @@
 "use client"
 
 import { useGLTF, useTexture } from "@react-three/drei"
+import { DRACO_DECODER_PATH } from "@/utils/dracoDecoder"
 import { useFrame } from "@react-three/fiber"
 import { Group } from "three"
-import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef } from "react"
 import * as THREE from 'three'
-import { DRACOLoader, GLTF, GLTFLoader } from 'three-stdlib'
+import { GLTF } from 'three-stdlib'
 import { sNoise } from "@/utils/sNoise"
 import { useWindowWidth } from "@react-hook/window-size"
 
@@ -23,64 +24,66 @@ interface PlanetModelProps {
     scale: number
 }
 
+/**
+ * The globe. **Both scenes render this one component** — HomeView's Composition
+ * imports it from here — so nothing in it may assume which page it is on.
+ */
 export const PlanetModel = ({ scale }: PlanetModelProps) => {
     const groupRef = useRef<Group>(null)
     const time = useRef({value: 0})
     const windowWidth = useWindowWidth()
 
-    // Night blend texture
-    // const nightBlendTexture = useTexture('/models/textures/earth_night_Diffuse.webp')
-    
-    const { materials: { 'Material.002': nightBlendMaterials } } = useGLTF('/models/earth_lights.glb') as GLTFResult
-    const nightBlendTexture = useMemo(() => nightBlendMaterials.map, [nightBlendMaterials]) as THREE.Texture
 
-    const { nodes, materials } = useGLTF('/models/low_res_earth.glb') as GLTFResult
+    // `low_res_earth.glb` is loaded for its **geometry**; its own maps are
+    // 6000x6000 and are replaced below before anything is drawn, so they are
+    // never uploaded.
+    const { nodes, materials } = useGLTF('/models/low_res_earth.glb', DRACO_DECODER_PATH) as GLTFResult
     const meshRef = useRef<THREE.Mesh>(null)
-    const [highResMaterial, setHighResMaterial] = useState<THREE.MeshStandardMaterial | null>(null)
+
+    // The surface maps, re-encoded at 2048x2048 from the same source art that
+    // `high_res_earth.glb` carried. That file shipped 8000x8000 diffuse and
+    // roughness and a 10000x10000 normal — ~900MB of VRAM and a measured 2.25s
+    // of blocked main thread to upload, for texels a globe ~800px tall can
+    // never sample. `useTexture` suspends, so these resolve inside the same
+    // Suspense boundary as the models and are uploaded by the scene prewarm,
+    // behind the loader curtain.
+    // The night-lights map came from `earth_lights.glb`, a Draco GLB fetched
+    // purely for this one 4000x4000 texture. Same treatment, same reason.
+    const [diffuseMap, normalMap, roughnessMap, nightBlendTexture] = useTexture([
+        '/models/textures/earth_diffuse_2k.webp',
+        '/models/textures/earth_normal_2k.webp',
+        '/models/textures/earth_roughness_2k.webp',
+        '/models/textures/earth_night_2k.webp',
+    ])
+
+    // glTF authors UVs for flipY:false, and only the colour map is sRGB. Both
+    // differ from TextureLoader's defaults, so they must be set explicitly or
+    // the globe renders upside-down and washed out.
+    useMemo(() => {
+        for (const texture of [diffuseMap, normalMap, roughnessMap, nightBlendTexture]) {
+            texture.flipY = false
+            texture.needsUpdate = true
+        }
+        diffuseMap.colorSpace = THREE.SRGBColorSpace
+        nightBlendTexture.colorSpace = THREE.SRGBColorSpace
+        normalMap.colorSpace = THREE.NoColorSpace
+        roughnessMap.colorSpace = THREE.NoColorSpace
+    }, [diffuseMap, normalMap, roughnessMap, nightBlendTexture])
     
-    // Load high res model only for screens wider than 576px
+    // Apply planet shader to model materials, and swap in the 2K surface maps
+    // before the first draw so the model's own 6000x6000 set never uploads.
     useEffect(() => {
-        if (materials['Material.002'] && windowWidth > 576) {
-            // console.log('Material loaded')
-            // Load high res model only for larger screens
-            setTimeout(() => {
-                const dracoLoader = new DRACOLoader();
-                dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.5/');
-                
-                const loader = new GLTFLoader();
-                loader.setDRACOLoader(dracoLoader);
-                
-                new Promise((resolve) => {
-                    loader.load('/models/high_res_earth.glb', (gltf) => {
-                        const highResModel = gltf as GLTFResult;
-                        const material = (highResModel.scene.children[0] as THREE.Mesh).material as THREE.MeshStandardMaterial;
-                        setHighResMaterial(material);
-                        // meshRef.current && ((meshRef.current as THREE.Mesh).material = material);
-                        resolve(highResModel);
-
-                        // Clean up
-                        dracoLoader.dispose();
-                    });
-                });
-            }, 0)
+        const base = materials['Material.002']
+        if (base) {
+            base.map = diffuseMap
+            base.normalMap = normalMap
+            base.roughnessMap = roughnessMap
+            base.metalnessMap = roughnessMap
         }
-    }, [materials, windowWidth])
-
-    // Replace low res material with high res material only for screens wider than 576px
-    useEffect(() => {
-        if (highResMaterial && windowWidth > 576) {
-            const material = appllyShaders(highResMaterial, nightBlendTexture)
-            if (!material) return
-            meshRef.current && ((meshRef.current as THREE.Mesh).material = material);
-        }
-    }, [highResMaterial, nightBlendTexture, windowWidth])
-
-    // Apply planet shader to model materials
-    useEffect(() => {
-        const material = appllyShaders(materials['Material.002'], nightBlendTexture)
+        const material = appllyShaders(base, nightBlendTexture)
         if (!material) return
         meshRef.current && ((meshRef.current as THREE.Mesh).material = material);
-    }, [materials, nightBlendTexture])
+    }, [materials, nightBlendTexture, diffuseMap, normalMap, roughnessMap])
 
     const appllyShaders = useCallback((material: THREE.MeshStandardMaterial, nightBlendTexture: THREE.Texture) => {
         if (!material) return

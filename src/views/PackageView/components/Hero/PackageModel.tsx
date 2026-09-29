@@ -1,4 +1,5 @@
 import { useGLTF } from "@react-three/drei"
+import { DRACO_DECODER_PATH } from "@/utils/dracoDecoder"
 import { useWindowWidth } from "@react-hook/window-size"
 import { useEffect, useRef } from "react"
 import { Group } from "three"
@@ -13,7 +14,7 @@ interface PackageModelProps {
 const LOGO_MATERIAL_NAMES = ["logo", "logo.001", "logo.002"]
 
 export const PackageModel = ({ packageType, modelPath }: PackageModelProps) => {
-    const { scene } = useGLTF(getMediaStrapiPath(modelPath)) as any
+    const { scene } = useGLTF(getMediaStrapiPath(modelPath), DRACO_DECODER_PATH) as any
     const groupRef = useRef<Group>(null)
     const width = useWindowWidth()
 

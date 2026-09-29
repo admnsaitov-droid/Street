@@ -11,17 +11,11 @@ export const generateMetadata = createMetadataGenerator({
     transformData: (data) => {
       // Extract metadata from the specific path in your data structure
 
-      // Prefer an explicitly set OG image, otherwise fall back to the line poster.
-      // Select the media object before resolving the path, since getMediaStrapiPath
-      // returns a truthy placeholder for empty media (which would break a path-level ||).
-      const ogMedia = data?.line?.metadata?.openGraph || data?.line?.mainMedia?.poster;
-
       const metadata = {
-        metatitle: data?.line?.metadata?.metatitle || data?.line?.name,
-        metadescription: data?.line?.metadata?.metadescription || data?.line?.description,
-        metakeywords: data?.line?.metadata?.metakeywords,
+        metatitle: data?.line?.name,
+        metadescription: data?.line?.description,
         openGraph: {
-          url: getMediaStrapiPath(ogMedia)
+          url: getMediaStrapiPath(data?.line?.mainMedia?.poster)
         }
       }
 

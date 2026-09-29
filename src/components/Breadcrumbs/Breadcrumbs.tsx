@@ -25,9 +25,16 @@ interface BreadcrumbsProps {
   items: BreadcrumbItem[];
   className?: string;
   separator?: string; // default: '·'
+  /**
+   * `dark` for pages whose hero sits on a dark surface — the distributors globe
+   * is the case this exists for, where the default black current-page label was
+   * invisible. It is a prop rather than a per-page override so the next dark
+   * hero gets it for free.
+   */
+  tone?: 'light' | 'dark';
 }
 
-export function Breadcrumbs({ items, className, separator = "·" }: BreadcrumbsProps) {
+export function Breadcrumbs({ items, className, separator = "·", tone = 'light' }: BreadcrumbsProps) {
   const pathname = usePathname();
   const locale = getFirstPathSegment(pathname) || "en";
 
@@ -47,7 +54,7 @@ export function Breadcrumbs({ items, className, separator = "·" }: BreadcrumbsP
   return (
     <>
       <StructuredData schemas={[breadcrumbSchema]} />
-      <StyledBreadcrumbs className={className} aria-label="Breadcrumb">
+      <StyledBreadcrumbs className={className} aria-label="Breadcrumb" $tone={tone}>
         {items.map((item, idx) => {
           const isLast = idx === items.length - 1;
           const href = item.href ?? withLocale(locale, item.slug);
@@ -83,10 +90,12 @@ function withLocale(locale: string, slug?: string) {
 }
 
 // Styles
-const StyledBreadcrumbs = styled.nav`
+const StyledBreadcrumbs = styled.nav<{ $tone: 'light' | 'dark' }>`
   display: flex;
   align-items: center;
   margin-bottom: ${rm(20)};
+  /* the trail inherits this; links dim themselves with opacity */
+  color: ${({ $tone }) => ($tone === 'dark' ? colors.white100 : colors.black100)};
 `;
 
 const StyledItem = styled.span`
@@ -96,13 +105,15 @@ const StyledItem = styled.span`
 
 const StyledSeparator = styled.span`
   margin: 0 ${rm(8)};
-  color: ${colors.gray};
+  color: inherit;
+  opacity: 0.45;
   user-select: none;
 `;
 
 const StyledLink = styled(AnimLink)`
   ${fontGolosText(400)};
-  color: ${colors.gray};
+  color: inherit;
+  opacity: 0.65;
   font-size: ${rm(16)};
   text-decoration: none;
   line-height: 1;
@@ -110,7 +121,7 @@ const StyledLink = styled(AnimLink)`
   transition: color 0.3s ease;
 
   &:hover {
-    color: ${colors.black100};
+    opacity: 1;
   }
 
   ${media.lg`
@@ -124,7 +135,7 @@ const StyledLink = styled(AnimLink)`
 
 const StyledCurrent = styled.span`
   ${fontGolosText(400)};
-  color: ${colors.black100};
+  color: inherit;
   font-size: ${rm(16)};
   line-height: 1;
 

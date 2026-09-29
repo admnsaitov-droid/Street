@@ -1,4 +1,5 @@
 import { useGLTF } from "@react-three/drei"
+import { DRACO_DECODER_PATH } from "@/utils/dracoDecoder"
 import { useColorStore } from "@/store/store"
 import { useEffect, useMemo, useRef } from "react"
 import * as THREE from "three"
@@ -47,7 +48,7 @@ export const ProductModel = ({ model, colors, accentColors, params = {
     rotation: [0, 0, 0],
     scale: 1
 } }: ProductModelProps) => {
-    const { scene }: any = useGLTF(getMediaStrapiPath(model))
+    const { scene }: any = useGLTF(getMediaStrapiPath(model), DRACO_DECODER_PATH)
     // const { scene }: any = useGLTF('/models/testProductModel.glb')
     // Clone the scene so multiple Canvas instances don't mutate the same object
     const clonedScene: any = useMemo(() => scene?.clone(true), [scene])

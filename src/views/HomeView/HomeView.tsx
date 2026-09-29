@@ -15,6 +15,7 @@ import { Globe } from "./screens/Globe/Globe";
 import { LatestNews } from "./screens/LatestNews/LatestNews";
 import { Lines } from "./screens/Lines/Lines";
 import { useWindowWidth } from "@react-hook/window-size";
+import { useMounted } from "@/hooks/useMounted"
 import { PackagesMobile } from "./screens/Packages/PackagedMobile";
 
 const StyledHomeView = styled.div`
@@ -37,11 +38,27 @@ export const HomeView = ({ homeData, footerData }: { homeData: any, footerData: 
 
   const width = useWindowWidth()
 
+  // Width-conditional markup must agree with the server on the first render,
+
+  // or React tears the tree down and rebuilds it (hydration mismatch). Until
+
+  // mounted we render as if wide, which is what the server assumed.
+
+  const mounted = useMounted()
+
+  // The globe is NOT gated on the curtain. It sits seven sections down, so
+  // holding a full-screen curtain for it delays the hero for every visitor —
+  // and it is the Largest Contentful Paint, so that delay is measured. The
+  // scene still mounts at page load and prewarms in the background (see
+  // `useLazyScene`), which is what keeps the scroll smooth; it simply finishes
+  // after the reveal rather than before it. Hero scenes — product, package,
+  // distribution — still gate, because there the scene *is* the hero.
+
   return (
     <StyledHomeView>
       <Hero heroData={heroData} />
       <Achievements achievementsData={achievementsData} />
-      {width > 576 ? <Packages packagesData={packagesData} /> : <PackagesMobile packagesData={packagesData} />}
+      {(!mounted || width > 576) ? <Packages packagesData={packagesData} /> : <PackagesMobile packagesData={packagesData} />}
       <Lines linesData={linesData} isHome={true} exploreLineText={linesData?.overviewText}/>
       <Benefits benefitsData={benefitsData} />
       <About aboutData={aboutData} />

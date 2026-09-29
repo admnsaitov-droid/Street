@@ -1,3 +1,4 @@
+import { PlaceholderImage } from "@/components/Skeleton/PlaceholderImage"
 import { ProductPreview, useProductPreview } from "@/views/PackageView/components/Overview/components/ProductPreview";
 import { Product } from "@/views/PackageView/components/Overview/components/Product";
 import { colors, media, rm } from "@/styles";
@@ -6,7 +7,6 @@ import styled from "styled-components";
 import { useEffect, useMemo } from "react";
 import { AnimatedText } from "@/components/animated/AnimatedText/AnimatedText";
 import { getMediaStrapiPath } from "@/utils/getMediaStrapiPath";
-import Image from "next/image";
 import { animated } from "@react-spring/web";
 import UnderlineLink from "@/components/animated/UnderlineLink/UnderlineLink";
 import { LinesGrid } from "@/components/LinesGrid/LinesGrid";
@@ -63,7 +63,7 @@ export const Lines = ({ linesData, isTop = true, isHome = false, exploreLineText
                             <div className="translateImageWrapper">
                                 <div className="stickyWrapper" style={{ position: isHome ? 'relative' : 'sticky', top: isHome ? '0%' : '30%'}}>
                                     <div className="imageWrapper">
-                                        <Image src={getMediaStrapiPath(line?.linePreviewImage)} alt={line?.linii?.name} width={440} height={282} />
+                                        <PlaceholderImage src={getMediaStrapiPath(line?.linePreviewImage)} alt={line?.linii?.name || "Line preview"} width={440} height={282} sizes="(max-width: 768px) 100vw, 440px" />
                                     </div>
                                     <StyledExploreButton>
                                         <UnderlineLink href={`/lines/${line?.linii?.slug}`} lineColor="#0040DD" text={exploreLineText || 'Explore line'}></UnderlineLink>
