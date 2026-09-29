@@ -68,7 +68,8 @@ Adding a locale means touching `src/config/locales.ts` first.
 
 - Metadata comes from `createMetadataGenerator` per route — never hand-written
   `<meta>` tags in a component.
-- **Add every new route to `src/app/sitemap.ts` in the same change.** That is the
+- **Add every new route to the sitemap (`src/utils/sitemap.ts` +
+  `src/app/sitemap-pages.xml/route.ts`) in the same change.** That is the
   single most common drift in this repo.
 - Structured data goes through `@/utils/generateStructuredData` and the
   `StructuredData` component, at the route or layout.
