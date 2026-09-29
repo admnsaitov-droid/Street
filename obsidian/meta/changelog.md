@@ -13,6 +13,32 @@ mattered. Link the ADR when there is one.
 
 ---
 
+## 2026-09-29 (2) — SEO fix set: sitemap lastmod, metadata fields, crawlable animated headings
+
+- **`<lastmod>` now moves when Strapi publishes.** The static single-type pages
+  (home, about, contact, projects, distribution, the three policies) had no
+  `<lastmod>` at all — a publish never changed the sitemap. `fetchStaticPageDates`
+  reads each single-type's `updatedAt`, per locale; lines/articles/packages/
+  products dates are per-locale too (a URL's date is its own locale's, falling
+  back to the newest across locales). Revalidation dropped to 600s on all three
+  sitemap routes and is set explicitly on the inner fetches; `fetchJson` retries
+  once so a flaky locale request can't silently roll dates back.
+- **Page metadata now reads the `metadata` component.** Lines list, line,
+  product, package and articles-list routes were reading on-page copy
+  (`name`/`title`/`description`) while the SEO team's `metadata`
+  (metatitle/metadescription/metakeywords/openGraph) sat unused — articles list
+  even read fields that don't exist (`newsPage.metatitle`). All five now prefer
+  `…metadata.*` with the old fields as fallback. Individual articles have no
+  metadata component and keep title/description.
+- **`AnimatedGrid` headings exist for crawlers.** The component renders rows
+  only after client-side measurement, so every heading built with it (the
+  Distribution and Projects `<h1>` among them) was an **empty element in the
+  server HTML**. It now always renders a visually-hidden plain-text copy of its
+  children (TextEngine's `seo` idea); the animated rows are `aria-hidden`.
+  Verified: `/en/distribution` and `/en/projects` now serve their `<h1>` text.
+
+---
+
 ## 2026-09-29 — textura/den merged in; distributor grouping; media fixes; content audit
 
 - **Merged the `textura/den` repository into `main`** (`--allow-unrelated-histories`

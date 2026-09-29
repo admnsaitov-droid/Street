@@ -116,6 +116,20 @@ const AnimatedContent = styled(animated.div)`
   position: relative;
 `;
 
+// Always-rendered plain-text copy of the animated content (same idea as
+// TextEngine's `seo` prop). The animated rows only exist after client-side
+// measurement, so without this the server HTML — and any crawler — sees an
+// empty element (an <h1> with no text on every page using this component).
+const SeoText = styled.span`
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+`;
+
 const AnimatedContentSpan = styled(animated.span)`
   display: inline;
   white-space: pre;
@@ -321,6 +335,17 @@ const processNode = (node: React.ReactNode): React.ReactNode[] => {
     () => parseChildren(true),
     [children, containerWrapperWordClassName, cellConfigs]
   ) as { elements: React.ReactNode[]; elementIdMap: { [index: number]: string | undefined } };
+
+  // Server-renderable text content for crawlers and screen readers.
+  const seoText = useMemo(
+    () =>
+      Children.toArray(children)
+        .map(extractTextContent)
+        .join(' ')
+        .replace(/\s+/g, ' ')
+        .trim(),
+    [children]
+  );
 
   useLayoutEffect(() => {
     if (!containerRef.current) return;
@@ -575,24 +600,28 @@ const processNode = (node: React.ReactNode): React.ReactNode[] => {
   if (tag === "span") {
     return (
       <span ref={ref} style={{ position: "relative", width: "100%", boxSizing: "border-box" }}>
+        {seoText && <SeoText>{seoText}</SeoText>}
         <MainContainerSpan
           ref={containerRef}
           className={containerClassName}
           style={{ ...style, counterReset: debug ? "row-counter" : undefined }}
           $isSpan={true}
+          aria-hidden="true"
         >
           {animatedRows}
         </MainContainerSpan>
       </span>
     );
   }
-  
+
   return (
     <div ref={ref} style={{ position: "relative", width: "100%", boxSizing: "border-box" }}>
+      {seoText && <SeoText>{seoText}</SeoText>}
       <MainContainer
         ref={containerRef}
         className={containerClassName}
         style={{ ...style, counterReset: debug ? "row-counter" : undefined }}
+        aria-hidden="true"
       >
         {animatedRows}
       </MainContainer>

@@ -63,9 +63,19 @@ and OG URLs.
     packages × 5 locales.
   - `src/app/sitemap-products.xml/route.ts` — the large, rarely-changing
     product set.
-  - `src/utils/sitemap.ts` — shared fetchers (`fetchLines`, `fetchArticles`,
-    `fetchPackages`), XML builders, `maxDate`, `XML_HEADERS`. All `revalidate =
-    3600`.
+  - `src/utils/sitemap.ts` — shared fetchers (`fetchStaticPageDates`,
+    `fetchLines`, `fetchArticles`, `fetchPackages`), XML builders,
+    `pickDate`/`maxDate`/`maxOverItems`, `XML_HEADERS`.
+- **`<lastmod>` is per locale and covers every page.** Each fetcher queries all
+  five locales; a URL's `<lastmod>` is that locale's own `updatedAt` (falling
+  back to the newest across locales). The static single-type pages (home,
+  about, contact, projects, distribution, the three policies) get theirs from
+  their single-type's `updatedAt` via `fetchStaticPageDates` — they used to
+  have none, which is why a Strapi publish never moved the sitemap.
+- **Revalidation is 600s everywhere** — the three routes AND the inner fetches
+  (`next: { revalidate: SITEMAP_REVALIDATE }`). The inner value must stay
+  explicit: a cached fetch without it can keep serving one payload to every
+  route regeneration, freezing `<lastmod>` forever.
 - **Adding a route means adding it to the static list in
   `sitemap-pages.xml/route.ts` (via `src/utils/sitemap.ts`) in the same
   change.** This is the most common drift in this repo.

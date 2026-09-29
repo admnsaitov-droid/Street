@@ -9,14 +9,17 @@ export const generateMetadata = createMetadataGenerator({
       return data;
     },
     transformData: (data) => {
-      // Extract metadata from the specific path in your data structure
+      // SEO fields live in the product's `metadata` component;
+      // name/previewDescription are the on-page copy, kept only as fallback.
+      const meta = data?.product?.metadata;
 
       const metadata = {
-        metatitle: data?.product?.name,
-        metadescription: data?.product?.previewDescription,
-        openGraph: {
-          url: getMediaStrapiPath(data?.product?.previewImage)
-        }
+        metatitle: meta?.metatitle || data?.product?.name,
+        metadescription: meta?.metadescription || data?.product?.previewDescription,
+        metakeywords: meta?.metakeywords,
+        openGraph: meta?.openGraph?.url
+          ? meta.openGraph
+          : { url: getMediaStrapiPath(data?.product?.previewImage) }
       }
 
       return metadata;

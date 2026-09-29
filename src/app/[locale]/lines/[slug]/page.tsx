@@ -9,14 +9,17 @@ export const generateMetadata = createMetadataGenerator({
       return data;
     },
     transformData: (data) => {
-      // Extract metadata from the specific path in your data structure
+      // SEO fields live in the line's `metadata` component; name/description
+      // are the on-page copy, kept only as fallback.
+      const meta = data?.line?.metadata;
 
       const metadata = {
-        metatitle: data?.line?.name,
-        metadescription: data?.line?.description,
-        openGraph: {
-          url: getMediaStrapiPath(data?.line?.mainMedia?.poster)
-        }
+        metatitle: meta?.metatitle || data?.line?.name,
+        metadescription: meta?.metadescription || data?.line?.description,
+        metakeywords: meta?.metakeywords,
+        openGraph: meta?.openGraph?.url
+          ? meta.openGraph
+          : { url: getMediaStrapiPath(data?.line?.mainMedia?.poster) }
       }
 
       return metadata;

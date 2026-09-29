@@ -46,7 +46,7 @@ Built **on** the engine; this is where project-specific motion belongs.
 | Component | Purpose |
 |---|---|
 | `AnimatedText` | text reveal with project defaults |
-| `AnimatedContent` | generic content reveal |
+| `AnimatedContent` | generic content reveal (`AnimatedGrid`). Rows only exist after client-side measurement, so it always renders a visually-hidden plain-text copy of its children (same idea as TextEngine's `seo` prop) — that copy is what the server HTML and crawlers see; the animated rows are `aria-hidden` |
 | `AnimatedTranslate` | translate-in wrapper |
 | `AnimatedDivider` | line that draws itself in |
 | `AnimatedLink` / `UnderlineLink` | link with hover underline motion |

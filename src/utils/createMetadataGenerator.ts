@@ -109,7 +109,7 @@ export function createMetadataGenerator(config: MetadataConfig) {
         url: fullUrl,
         // og:image must be an absolute, reachable URL. `/api/media` does not
         // exist as a route — point straight at the Strapi upload instead.
-        ogImage: metadata?.openGraph
+        ogImage: metadata?.openGraph?.url
           ? metadata.openGraph.url.startsWith('http')
             ? metadata.openGraph.url
             : `${process.env.NEXT_PUBLIC_IMAGE_URL || 'https://admin.streetbarbell.com'}${metadata.openGraph.url}`

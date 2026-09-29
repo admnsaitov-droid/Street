@@ -7,9 +7,13 @@ export const generateMetadata = createMetadataGenerator({
       const data = await getStrapiData('get-news-page-data', locale);
       return data;
     },
+    // SEO fields live in the `metadata` component, not on the page itself
+    // (newsPage only carries `Title`).
     transformData: (data) => ({
-      metatitle: data?.newsPage?.metatitle || data?.newsPage?.title,
-      metadescription: data?.newsPage?.metadescription || data?.newsPage?.description,
+      metatitle: data?.newsPage?.metadata?.metatitle || data?.newsPage?.Title,
+      metadescription: data?.newsPage?.metadata?.metadescription,
+      metakeywords: data?.newsPage?.metadata?.metakeywords,
+      openGraph: data?.newsPage?.metadata?.openGraph,
     }),
     getPath: (locale: string) => `/${locale}/articles`,
     fallback: {
