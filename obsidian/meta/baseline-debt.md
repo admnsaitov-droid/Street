@@ -60,7 +60,7 @@ when you are already editing its file.
 | Warning | Count | Judgement |
 |---|---|---|
 | `"use client"` on a view | 10 | **Real.** `HomeView`, `AboutView`, `ArticlesView`, `ContactView` and several `ProductView` pieces are client components wholesale. Each one drags its entire subtree into the bundle. Split the leaf that needs interactivity when you next touch one; do not add an eleventh. |
-| `console.log` in source | ~40 | Mostly `src/app/sitemap.ts` (heavy debug logging) and the middleware. `removeConsole` strips them in production builds, so this is noise hygiene, not a leak — but the sitemap logging makes a real bug hard to find. |
+| `console.log` in source | ~40 | Was mostly `src/app/sitemap.ts` (deleted 2026-09-29 with its logging; the route-based sitemap replaced it) and the middleware. `removeConsole` strips the rest in production builds — noise hygiene, not a leak. |
 | Click handler on a non-interactive element | 11 | **Real accessibility bug.** The 3D zoom controls in `ProductScene`/`PackageScene`, the menu items in `Header/Menu.tsx`, and the policy checkbox rows in both contact forms are `div`/`span` with `onClick` — not keyboard reachable. Make them `<button>`. |
 | Raw `<a>` for an internal link | 1 | `src/components/Cookie.tsx:68` → `/privacy-policy`. Also missing the locale prefix. Use `next/link`. |
 | Hex literal in source | ~25 | `not-found.tsx` and `global-error.tsx` style themselves inline on purpose — they must render when the app shell is broken. Acceptable; the rest are WebGL material colours, which the rule explicitly allows. |
@@ -74,8 +74,9 @@ when you are already editing its file.
 - **Unvalidated request bodies** in `src/app/api/send/route.ts` and
   `send-main/route.ts` — destructured straight from JSON and interpolated into
   an HTML email. No validation library is installed.
-- **`src/app/api/proxy-media/route.ts` fetches an arbitrary `url` parameter**
-  with no host allowlist.
+- ~~**`src/app/api/proxy-media/route.ts` fetches an arbitrary `url` parameter**
+  with no host allowlist.~~ **Fixed 2026-09-29** — allowlisted to the Strapi
+  hosts, streams instead of buffering, forwards `Range`.
 - **`.eslintrc.json` disables** `no-explicit-any`, `no-unused-vars`,
   `no-unused-expressions`, `ban-ts-comment` and `prefer-const` — `yarn lint` is
   a much weaker gate than it looks. Treat `verify.sh` as the real one.
@@ -89,7 +90,7 @@ Bugs and surprises no check catches. Each is also noted in its topic note.
 
 | Finding | Where | Effect |
 |---|---|---|
-| OG image URLs point at `/api/media`, which does not exist | `utils/createMetadataGenerator.ts` | **every Strapi-sourced OG image 404s** — shares are imageless |
+| ~~OG image URLs point at `/api/media`, which does not exist~~ **fixed 2026-09-29**: OG images now point straight at the Strapi upload | `utils/createMetadataGenerator.ts` | was: every Strapi-sourced OG image 404s |
 | Product schema emits an empty `offers.url` | `views/ProductView/ProductView.tsx` | built from `window.location.href` in a client component → `''` in the server-rendered JSON-LD |
 | `get-contact-data` endpoint has no callers | `app/api/get-contact-data/` | dead route |
 | Organization schema has an empty `sameAs` | `app/[locale]/layout.tsx` | social profiles are commented out; weakest possible entity signal |

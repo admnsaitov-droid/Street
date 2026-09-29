@@ -37,10 +37,10 @@ OpenGraph, Twitter card and `alternates`.
 
 `generateHreflangTags` fills `alternates.languages` across all five locales.
 
-> ⚠️ **Known bug.** `createMetadataGenerator` builds the OG image as
-> `` `/api/media${metadata.openGraph.url}` `` — **there is no `/api/media`
-> route.** The only media endpoint is `/api/proxy-media?url=`. Every
-> Strapi-sourced OG image is a 404. See [[baseline-debt]].
+OG images point straight at the Strapi upload
+(`${NEXT_PUBLIC_IMAGE_URL}${metadata.openGraph.url}`, absolute URLs passed
+through). Fixed 2026-09-29 — it previously built `/api/media${…}`, a route that
+never existed, so every Strapi-sourced OG image 404'd.
 
 ## Base URL
 
@@ -54,12 +54,21 @@ and OG URLs.
 
 ## Sitemap and robots
 
-- `src/app/sitemap.ts` — `revalidate = 3600`. Emits 11 static paths × 5 locales,
-  then fetches lines, their products, and packages from the API to add dynamic
-  URLs. Home gets `priority: 1`, everything else `0.8`, all `changeFrequency:
-  'weekly'`. It carries heavy `console.log` debug output.
-- **Adding a route means adding it to `staticPages` in the same change.** This is
-  the most common drift in this repo.
+- The sitemap is a **route-based index**, not `app/sitemap.ts` (deleted
+  2026-09-29 — the two claimed the same `/sitemap.xml` URL; ADR-0115):
+  - `src/app/sitemap.xml/route.ts` — index pointing at the two children, each
+    with a real `<lastmod>` (newest entity inside) so Google skips unchanged
+    children.
+  - `src/app/sitemap-pages.xml/route.ts` — static pages, lines, articles,
+    packages × 5 locales.
+  - `src/app/sitemap-products.xml/route.ts` — the large, rarely-changing
+    product set.
+  - `src/utils/sitemap.ts` — shared fetchers (`fetchLines`, `fetchArticles`,
+    `fetchPackages`), XML builders, `maxDate`, `XML_HEADERS`. All `revalidate =
+    3600`.
+- **Adding a route means adding it to the static list in
+  `sitemap-pages.xml/route.ts` (via `src/utils/sitemap.ts`) in the same
+  change.** This is the most common drift in this repo.
 - `src/app/robots.ts` — allows `/`, disallows `/_next/`, `/api/`, `/admin/`,
   `/login/`, `/dashboard/`, and points at `${baseUrl}/sitemap.xml`.
 - `src/redirects.mjs` feeds `next.config.mjs → redirects()`. Changing a URL means
@@ -111,7 +120,8 @@ version. `HtmlLangSetter` syncs `<html lang>` client-side — the static
 ## Checklist for a new page
 
 1. `generateMetadata` via `createMetadataGenerator`, with a real fallback.
-2. Add the path to `src/app/sitemap.ts`.
+2. Add the path to the pages sitemap (`src/utils/sitemap.ts` +
+   `src/app/sitemap-pages.xml/route.ts`).
 3. One `<h1>`, clean heading outline.
 4. Structured data if a type fits (Product, Article, FAQ…).
 5. A redirect in `src/redirects.mjs` if it replaces an old URL.

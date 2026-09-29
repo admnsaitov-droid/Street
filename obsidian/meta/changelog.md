@@ -1,6 +1,6 @@
 ---
 tags: [meta, changelog]
-updated: 2026-09-17
+updated: 2026-09-29
 ---
 
 # Changelog
@@ -10,6 +10,32 @@ change: dependencies, architecture, conventions, launches.
 
 Format: `## YYYY-MM-DD — short title` followed by what changed and why it
 mattered. Link the ADR when there is one.
+
+---
+
+## 2026-09-29 — textura/den merged in; distributor grouping; media fixes; content audit
+
+- **Merged the `textura/den` repository into `main`** (`--allow-unrelated-histories`
+  — the two repos share no ancestor; remote `textura` added). Den won every
+  conflict except the sitemap: the route-based index stayed and den's legacy
+  `app/sitemap.ts` was deleted (ADR-0115). Den's dead `SameLineProducts` and the
+  old Globe `PlanetModel` were dropped with it.
+- **Distributors are grouped by country.** Several distributors can share one
+  country (Benelux ×3, USA ×3) and rendered as stacked, half-clickable markers.
+  `Trackers` now dedupes to one marker per country; selecting a country shows
+  every distributor in it — a scrollable card group on desktop
+  (`CountryPanel`), the full list in the mobile popup (`CountryPanelMobile`).
+  New helper: `getDynamicLocationsByCountry` in `dynamicDataTransformer.ts`.
+- **`proxy-media` hardened**: host allowlist (was an open SSRF proxy), streams
+  instead of buffering whole files, forwards `Range` so video seeks work.
+- **OG images fixed**: `createMetadataGenerator` pointed at a nonexistent
+  `/api/media` route; now uses the Strapi upload URL directly.
+- **Content audit** of all 5 locales × 129 products shipped to
+  `docs/content-audit-2026-09-29.md`: swapped gallery/reference images
+  (MB 7.69↔7.70, 7.72←7.71, 7.103←7.102, kids 7.06.1←7.06), `mb-779` existing
+  only in EN, one product with no 3D model, EN-only distributor descriptions in
+  every locale, untranslated legal pages (fr/de/fi), and the heavy-media list
+  (50MB home video, 42MB `.MOV`, 6MB muscle PNGs).
 
 ---
 

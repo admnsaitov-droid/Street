@@ -91,15 +91,20 @@ blunt; it is the one env check the codebase has.
 
 ## `proxy-media`
 
-`GET /api/proxy-media?url=` fetches an arbitrary URL and streams it back with
-`Cache-Control: public, max-age=31536000, immutable`. It exists because Strapi
-serves media over plain HTTP from a fixed IP while the site is HTTPS.
+`GET /api/proxy-media?url=` proxies Strapi media with `Cache-Control: public,
+max-age=31536000, immutable`. It exists because Strapi serves media over plain
+HTTP from a fixed IP while the site is HTTPS. Since 2026-09-29 it:
 
-> ⚠️ **No host allowlist.** It will proxy any URL it is given. Any change here
-> should add one — restrict it to the Strapi host from `NEXT_PUBLIC_IMAGE_URL`.
+- **allowlists hosts** — only `NEXT_PUBLIC_IMAGE_URL`, `API_URL` and the known
+  Strapi addresses; anything else is a 403 (it used to proxy any URL — an SSRF
+  hole);
+- **streams the upstream body** instead of buffering it (`arrayBuffer()` held
+  50MB+ videos in memory and delayed first byte until the last upstream byte);
+- **forwards `Range`** and passes through `Content-Range`/`Accept-Ranges`/206,
+  so video seeking works through it.
 
-Note the `/api/media` path referenced by `createMetadataGenerator` does not
-exist — see [[seo-metadata]].
+The `/api/media` path `createMetadataGenerator` used to reference never existed;
+OG images now point straight at Strapi — see [[seo-metadata]].
 
 ## Secrets
 

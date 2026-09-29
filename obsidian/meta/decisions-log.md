@@ -851,3 +851,25 @@ attributes (`stroke-width`) that React rejects.
 **The lesson worth keeping:** these were invisible in normal use and only showed
 up when something actually read the console on every page. A page that *looks*
 right can still be rebuilding its entire DOM on load.
+
+## ADR-0115 — The sitemap is a route-based index, not `app/sitemap.ts`
+
+**Date.** 2026-09-29 · **Status.** Accepted.
+
+**Context.** Merging the `textura/den` branch (the second, actively developed
+repository — no shared git ancestor, merged with `--allow-unrelated-histories`)
+brought back the convention-based `src/app/sitemap.ts` while this repo already
+had a hand-built sitemap index (`sitemap.xml/route.ts` + `sitemap-pages.xml` +
+`sitemap-products.xml` over `src/utils/sitemap.ts`). Both claim the same
+`/sitemap.xml` URL, so one had to go.
+
+**Decision.** Keep the route-based index, delete `app/sitemap.ts`. The index
+splits pages from the large, rarely-changing product set, emits a real
+`<lastmod>` per child (newest entity inside), fetches Strapi through the shared
+helpers instead of a hardcoded `street-barbell.vercel.app` base, and carries no
+debug logging. `app/sitemap.ts` had none of that.
+
+**Consequences.** Adding a route means touching `src/utils/sitemap.ts` /
+`sitemap-pages.xml/route.ts`, not a `staticPages` array in a convention file —
+[[seo-metadata]] and `.claude/rules/routing-views.md` both say so. Any future
+merge from the textura repo will re-add `app/sitemap.ts`; delete it again.
