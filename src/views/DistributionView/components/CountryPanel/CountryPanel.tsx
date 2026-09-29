@@ -3,7 +3,7 @@ import { fontGolosText } from "@/styles/fonts"
 import styled from "styled-components"
 import { useState, useEffect, useCallback } from "react"
 import { Filter, Location as DistributionLocation } from "../../data/distributionData"
-import { transformDynamicData, getDynamicFilterNames, getDynamicLocationsByFilter } from "../../data/dynamicDataTransformer"
+import { transformDynamicData, getDynamicFilterNames, getDynamicLocationsByCountry } from "../../data/dynamicDataTransformer"
 import { LocationCard } from "../LocationCard/LocationCard"
 import { SelectedLocationCard } from "../LocationCard/SelectedLocationCard"
 
@@ -328,16 +328,20 @@ export const CountryPanel = ({ activeFilterId, onFilterChange, onLocationClick, 
                 })}
                 
                 {/* Selected Card Instance - Appears from Top */}
+                {/* One country can hold several distributors — show the whole group, clicked one first */}
                 {(activeCard || isFadingOut) && displayedLocation && (
                     <StyledSelectedCardWrapper>
-                        <SelectedLocationCard
-                            location={displayedLocation}
-                            onClick={() => handleCardClick(displayedLocation)}
-                            isExpanded={true}
-                            animationPhase={animationPhase}
-                            locationText={data?.distributionPage?.locationText}
-                            websiteText={data?.distributionPage?.websiteText}
-                        />
+                        {(data?.distributionPage ? getDynamicLocationsByCountry(data, displayedLocation) : [displayedLocation]).map((groupLocation) => (
+                            <SelectedLocationCard
+                                key={groupLocation.id}
+                                location={groupLocation}
+                                onClick={() => handleCardClick(displayedLocation)}
+                                isExpanded={true}
+                                animationPhase={animationPhase}
+                                locationText={data?.distributionPage?.locationText}
+                                websiteText={data?.distributionPage?.websiteText}
+                            />
+                        ))}
                     </StyledSelectedCardWrapper>
                 )}
             </StyledCardsContainer>
@@ -556,6 +560,12 @@ const StyledSelectedCardWrapper = styled.div`
     right: ${rm(50)};
     width: ${rm(440)};
     z-index: 20;
+    /* A country can list several distributor cards — let the group scroll */
+    max-height: calc(100vh - ${rm(113)} - ${rm(60)} - ${rm(40)});
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.2) rgba(255, 255, 255, 0.05);
 
     ${media.md`
         position: static;

@@ -1,34 +1,72 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+// Hosts this proxy is allowed to fetch from. An open proxy here is an SSRF
+// hole: anyone could make this server fetch arbitrary internal URLs.
+const ALLOWED_HOSTS = new Set(
+  [
+    process.env.NEXT_PUBLIC_IMAGE_URL,
+    process.env.API_URL,
+    'http://153.92.1.45:1337',
+    'https://admin.streetbarbell.com',
+  ]
+    .filter((value): value is string => Boolean(value))
+    .map((value) => {
+      try {
+        return new URL(value).host;
+      } catch {
+        return '';
+      }
+    })
+    .filter(Boolean),
+);
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const mediaUrl = searchParams.get('url');
-    
+
     if (!mediaUrl) {
       return new NextResponse('Missing URL parameter', { status: 400 });
     }
 
-    // Fetch the media from your HTTP Strapi server
-    const response = await fetch(mediaUrl);
-    
-    if (!response.ok) {
+    let target: URL;
+    try {
+      target = new URL(mediaUrl);
+    } catch {
+      return new NextResponse('Invalid URL parameter', { status: 400 });
+    }
+
+    if (!ALLOWED_HOSTS.has(target.host)) {
+      return new NextResponse('Host not allowed', { status: 403 });
+    }
+
+    // Forward Range so videos can start playing before the whole file has
+    // downloaded and the player can seek (Strapi answers with 206).
+    const range = request.headers.get('range');
+    const response = await fetch(target, {
+      headers: range ? { Range: range } : undefined,
+    });
+
+    if (!response.ok && response.status !== 206) {
       return new NextResponse('Media not found', { status: 404 });
     }
 
-    // Get the content type from the original response
-    const contentType = response.headers.get('content-type') || 'application/octet-stream';
-    
-    // Stream the response back with proper headers
-    const mediaBuffer = await response.arrayBuffer();
-    
-    return new NextResponse(mediaBuffer, {
-      headers: {
-        'Content-Type': contentType,
-        'Cache-Control': 'public, max-age=31536000, immutable', // Cache for 1 year
-      },
+    // Stream the upstream body through instead of buffering it: the old
+    // arrayBuffer() version held entire videos (50MB+) in memory per request
+    // and only started responding after the last upstream byte arrived.
+    const headers = new Headers({
+      'Content-Type': response.headers.get('content-type') || 'application/octet-stream',
+      'Cache-Control': 'public, max-age=31536000, immutable',
     });
-    
+    for (const name of ['content-length', 'content-range', 'accept-ranges']) {
+      const value = response.headers.get(name);
+      if (value) headers.set(name, value);
+    }
+
+    return new NextResponse(response.body, {
+      status: response.status,
+      headers,
+    });
   } catch (error) {
     console.error('Media proxy error:', error);
     return new NextResponse('Internal Server Error', { status: 500 });

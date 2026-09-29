@@ -246,6 +246,14 @@ export const getAllDynamicLocations = (dynamicData: DynamicDistributionData): Lo
   return dynamicData.distributionPage.locations.map(transformDynamicLocation)
 }
 
+// All locations that belong to the same country, with `first` (the clicked
+// one) leading the list. Several distributors can share one country — the map
+// shows one marker per country and the panel lists the whole group.
+export const getDynamicLocationsByCountry = (dynamicData: DynamicDistributionData, first: Location): Location[] => {
+  const group = getAllDynamicLocations(dynamicData).filter(location => location.country === first.country)
+  return [first, ...group.filter(location => location.id !== first.id)]
+}
+
 // Helper function to get filter names from dynamic data
 export const getDynamicFilterNames = (dynamicData: DynamicDistributionData): string[] => {
   const transformedData = transformDynamicData(dynamicData)

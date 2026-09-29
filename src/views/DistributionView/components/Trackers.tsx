@@ -98,7 +98,14 @@ export const getRotationAdjustmentByLabel = (label: string, data?: any): [number
 
 export const Trackers = ({ onLocationClick, selectedLocation, currentRotationRef, cameraRotationRef, data }: TrackersProps) => {
     // Get tracker configs from dynamic data or fallback to static
-    const trackerConfigs = data?.distributionPage ? createTrackerConfigsFromDynamicData(data) : []
+    const allConfigs = data?.distributionPage ? createTrackerConfigsFromDynamicData(data) : []
+    // One marker per country. Several distributors can share a country (and a
+    // scene position) — without this they render as stacked markers, and only
+    // the top one is clickable. Clicking the country marker selects the first
+    // distributor; the panel then lists the whole group.
+    const trackerConfigs = allConfigs.filter(
+        (config, index) => allConfigs.findIndex((other) => other.label === config.label) === index
+    )
     
     // Function to find corresponding location data for a tracker
     const getLocationForTracker = (trackerLabel: string): DistributionLocation | null => {

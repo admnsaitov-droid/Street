@@ -3,7 +3,7 @@ import { fontGolosText } from "@/styles/fonts"
 import styled from "styled-components"
 import { useState, useEffect, useCallback } from "react"
 import { Filter, Location as DistributionLocation } from "../../data/distributionData"
-import { transformDynamicData, getDynamicFilterNames } from "../../data/dynamicDataTransformer"
+import { transformDynamicData, getDynamicFilterNames, getDynamicLocationsByCountry } from "../../data/dynamicDataTransformer"
 import { LocationCard } from "../LocationCard/LocationCard"
 import { SelectedLocationCardMobile } from "../LocationCard/SelectedLocationCardMobile"
 import { useScroll } from "@/layouts/ScrollLayout/useScroll"
@@ -236,17 +236,21 @@ export const CountryPanelMobile = ({ activeFilterId, onFilterChange, onLocationC
                     $isClosing={isPopupClosing}
                     onClick={() => handleCardClick(popupLocation)}
                 >
-                    <StyledPopupContent 
+                    <StyledPopupContent
                         $isClosing={isPopupClosing}
                         onClick={(e) => e.stopPropagation()}
                     >
-                        <SelectedLocationCardMobile
-                            location={popupLocation}
-                            onClick={() => handleCardClick(popupLocation)}
-                            isExpanded={true}
-                            locationText={data?.distributionPage?.locationText}
-                            websiteText={data?.distributionPage?.websiteText}
-                        />
+                        {/* One country can hold several distributors — show the whole group, clicked one first */}
+                        {(data?.distributionPage ? getDynamicLocationsByCountry(data, popupLocation) : [popupLocation]).map((groupLocation) => (
+                            <SelectedLocationCardMobile
+                                key={groupLocation.id}
+                                location={groupLocation}
+                                onClick={() => handleCardClick(popupLocation)}
+                                isExpanded={true}
+                                locationText={data?.distributionPage?.locationText}
+                                websiteText={data?.distributionPage?.websiteText}
+                            />
+                        ))}
                     </StyledPopupContent>
                 </StyledPopupOverlay>
             )}
