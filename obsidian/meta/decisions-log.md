@@ -665,9 +665,12 @@ Strapi images from 3240ms to ≤99ms. On a throttled 900kbps connection the hero
 slot now shows a grey block with the text and header already readable, instead
 of empty space.
 
-**What this does not fix, because it is not in this repo.** Strapi's nginx sends
-`max-age=300` on immutable, content-hashed upload URLs — it should send
-`max-age=31536000, immutable`. Strapi is also generating only a 245px
+**What this does not fix, because it is not in this repo.** Strapi sends
+`max-age=300` on immutable, content-hashed upload URLs — it should send a long
+`max-age` + `immutable`. (Located 2026-09-30: it is not nginx but the Strapi
+repo's `config/plugins.ts` → `upload.providerOptions.localServer.maxage`;
+edited there to 30 days + `immutable`, pending that repo's commit + redeploy.)
+Strapi is also generating only a 245px
 `thumbnail` format for a 2940px source, so the optimiser always starts from the
 full-size original. And SVG logos still come raw from that origin (~0.7–1.3s
 each, above the fold on every page) because `next/image` passes SVG through
