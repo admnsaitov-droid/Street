@@ -1,6 +1,6 @@
 ---
 tags: [architecture, config, stable]
-updated: 2026-09-17
+updated: 2026-10-01
 ---
 
 # Environment Variables
@@ -14,13 +14,13 @@ updated: 2026-09-17
 - **There is no validated env module yet** (`paths.env` is `null`). 52
   `process.env` reads are scattered across `src/`, so `verify.sh` FAILs the env
   check by design until one exists — see ADR-0104 and [[baseline-debt]].
-- There is no committed `.env.example`. Adding one is part of ADR-0104.
+- **`.env.example`** (committed 2026-10-01) lists every variable with no secret values. Keep it in step with this table.
 
 ## Current variables
 
 | Name | Scope | Purpose |
 |---|---|---|
-| `API_URL` | **server** | Strapi origin. Read in 21 places, all inside `src/app/api/*`. The single most important variable — every page is empty without it. |
+| `API_URL` | **server** | Strapi origin. Read for content only in `src/app/api/_lib/fetchStrapi.ts` (plus `src/utils/locales.ts`). The single most important variable — every page is empty without it. |
 | `NEXT_PUBLIC_IMAGE_URL` | public | Strapi media host. Parsed in `next.config.mjs` to build an `images.remotePatterns` entry — a malformed value breaks the build. |
 | `NEXT_PUBLIC_BASE_URL` | public | Site origin, used by `src/utils/strapi.ts` for server-side self-calls. |
 | `NEXT_PUBLIC_BASEURL` | public | ⚠️ **A different variable.** What the other ten call sites actually read: `metadataBase`, canonical URLs, hreflang, sitemap, robots, breadcrumbs, article schema. |
@@ -34,6 +34,7 @@ updated: 2026-09-17
 | `RECIPIENT_EMAIL` | **server** | Contact-form destination. |
 | `TELEGRAM_BOT_TOKEN` | **server** | Contact-form mirror to Telegram. |
 | `TELEGRAM_CHAT_ID` | **server** | — |
+| `REVALIDATE_SECRET` | **server** | Shared secret for `POST /api/revalidate` (header `x-revalidate-secret`), sent by the Strapi publish webhook. Unset → endpoint disabled (503); content then refreshes on the 300s TTL. Generate with `openssl rand -hex 32`. ADR-0117. |
 
 > [!warning] `NEXT_PUBLIC_BASEURL` vs `NEXT_PUBLIC_BASE_URL`
 > `.env` declares the underscored spelling; ten call sites read the unspaced one.

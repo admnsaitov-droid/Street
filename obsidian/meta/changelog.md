@@ -13,6 +13,26 @@ mattered. Link the ADR when there is one.
 
 ---
 
+## 2026-10-01 (2) — Strapi data cache, real 404s, per-locale sitemap
+
+- **Content caching (ADR-0117).** All Strapi reads now go through `fetch` with a
+  300s revalidate and the `strapi` tag — the twenty `/api/get-*` routes via the
+  new `src/app/api/_lib/fetchStrapi.ts`, page renders via `getStrapiData`, and
+  the sitemap. Warm page TTFB 25–45ms (was 0.2–1.1s cold / up to 3.1s on prod),
+  warm API 3–7ms. New `POST /api/revalidate` (env `REVALIDATE_SECRET`) purges
+  everything on a Strapi publish webhook. `getStrapiData` uses an
+  `AbortController` timeout so the browser path still works on Safari <16.
+- **Unknown slugs are real 404s.** Product/line/package/article routes call
+  `notFound()` when Strapi returns an empty entity; before, every bad URL was an
+  empty 200 page (verified on prod). Failed requests (`null`) still degrade.
+- **Sitemap emits a URL only in locales that list it** — it was emitting every
+  slug for all five locales, e.g. `/de/articles/<en-only article>`. All 810
+  sitemap URLs now return 200 (was 10 empty/404).
+- **`.env.example` committed** (no secret values), including `REVALIDATE_SECRET`
+  and `NEXT_PUBLIC_SUPPORT_EMAIL`.
+
+---
+
 ## 2026-10-01 — Restored main's July–September work lost in the den merge
 
 The 2026-09-29 merge of `textura/den` used `--allow-unrelated-histories` and

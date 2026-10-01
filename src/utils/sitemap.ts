@@ -1,3 +1,5 @@
+import { CONTENT_CACHE_TAG } from '@/config/cache'
+
 /**
  * Shared helpers for building the sitemap index and its child sitemaps.
  *
@@ -31,7 +33,19 @@ export type LocaleDates = Record<string, string | null>
 
 export interface SitemapItem {
   slug: string
+  /** Has a key for every locale whose list contains this item. */
   dates: LocaleDates
+}
+
+/**
+ * Whether to emit `item` under `locale`. Only where that locale's list actually
+ * contains it — emitting every slug for every locale produced URLs like
+ * /de/articles/<en-only-article> that render empty (now 404). If a locale's
+ * list could not be fetched at all, fall back to emitting it rather than
+ * dropping the whole locale from the sitemap for one regeneration.
+ */
+export function listedIn(item: SitemapItem, locale: string, loaded: Set<string>): boolean {
+  return !loaded.has(locale) || locale in item.dates
 }
 
 async function fetchJson(path: string): Promise<any | null> {
@@ -43,7 +57,9 @@ async function fetchJson(path: string): Promise<any | null> {
       const res = await fetch(`${API_BASE}${path}`, {
         headers: { Accept: 'application/json' },
         signal: AbortSignal.timeout(8000),
-        next: { revalidate: SITEMAP_REVALIDATE },
+        // Tagged like every Strapi read, so a publish webhook refreshes the
+        // sitemap's <lastmod> immediately rather than after the TTL (ADR-0117).
+        next: { revalidate: SITEMAP_REVALIDATE, tags: [CONTENT_CACHE_TAG] },
       })
       if (!res.ok) {
         console.warn(`[sitemap] ${path} -> ${res.status}`)
@@ -118,8 +134,10 @@ export async function fetchLines(locales: string[]): Promise<{
   pageUpdatedAt: LocaleDates
   lines: SitemapItem[]
   products: SitemapItem[]
+  loaded: Set<string>
 }> {
   const pageUpdatedAt: LocaleDates = {}
+  const loaded = new Set<string>()
   const lineMap = new Map<string, LocaleDates>()
   const productMap = new Map<string, LocaleDates>()
 
@@ -130,6 +148,7 @@ export async function fetchLines(locales: string[]): Promise<{
 
       const wrappers = data?.linesPageData?.lines
       if (!Array.isArray(wrappers)) return
+      loaded.add(locale)
 
       for (const wrapper of wrappers) {
         const line = wrapper?.linii
@@ -158,19 +177,22 @@ export async function fetchLines(locales: string[]): Promise<{
 
   const lines = Array.from(lineMap, ([slug, dates]) => ({ slug, dates }))
   const products = Array.from(productMap, ([slug, dates]) => ({ slug, dates }))
-  return { pageUpdatedAt, lines, products }
+  return { pageUpdatedAt, lines, products, loaded }
 }
 
 export async function fetchArticles(locales: string[]): Promise<{
   pageUpdatedAt: LocaleDates
   articles: SitemapItem[]
+  loaded: Set<string>
 }> {
+  const loaded = new Set<string>()
   const articleMap = new Map<string, LocaleDates>()
 
   await Promise.all(
     locales.map(async (locale) => {
       const data = await fetchJson(`/api/get-articles?locale=${locale}`)
       if (!Array.isArray(data)) return
+      loaded.add(locale)
       for (const article of data) {
         if (!article?.slug) continue
         const dates = articleMap.get(article.slug) ?? {}
@@ -186,14 +208,16 @@ export async function fetchArticles(locales: string[]): Promise<{
   for (const locale of locales) {
     pageUpdatedAt[locale] = maxDate(...articles.map((article) => article.dates[locale]))
   }
-  return { pageUpdatedAt, articles }
+  return { pageUpdatedAt, articles, loaded }
 }
 
 export async function fetchPackages(locales: string[]): Promise<{
   pageUpdatedAt: LocaleDates
   packages: SitemapItem[]
+  loaded: Set<string>
 }> {
   const pageUpdatedAt: LocaleDates = {}
+  const loaded = new Set<string>()
   const packageMap = new Map<string, LocaleDates>()
 
   await Promise.all(
@@ -202,6 +226,7 @@ export async function fetchPackages(locales: string[]): Promise<{
       pageUpdatedAt[locale] = data?.updatedAt ?? null
       const list = data?.package
       if (!Array.isArray(list)) return
+      loaded.add(locale)
       for (const pkg of list) {
         if (!pkg?.slug) continue
         const dates = packageMap.get(pkg.slug) ?? {}
@@ -214,7 +239,7 @@ export async function fetchPackages(locales: string[]): Promise<{
   )
 
   const packages = Array.from(packageMap, ([slug, dates]) => ({ slug, dates }))
-  return { pageUpdatedAt, packages }
+  return { pageUpdatedAt, packages, loaded }
 }
 
 /** Latest of a set of ISO date strings (ISO-8601 UTC sorts lexicographically). */

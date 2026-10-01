@@ -13,25 +13,23 @@ Strapi's origin (`API_URL`) and every secret stay server-side.
 
 ## The content-proxy shape
 
-Twenty endpoints are the same nine lines. Match it exactly when adding one:
+Twenty endpoints are the same few lines. Match it exactly when adding one:
 
 ```ts
 import { NextResponse, NextRequest } from 'next/server';
-import axios from 'axios';
+import { fetchStrapi } from '../_lib/fetchStrapi';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const locale = searchParams.get('locale') || 'en';
+    const locale = encodeURIComponent(searchParams.get('locale') || 'en');
 
-    const response = await axios.get(
-      `${process.env.API_URL}/api/home/get-home-data?locale=${locale}`,
-      { headers: { Accept: 'application/json' }, timeout: 10000 }
-    );
+    // Served from the Next data cache (5 min, purged on Strapi publish) — see fetchStrapi.
+    const data = await fetchStrapi(`/api/home/get-home-data?locale=${locale}`);
 
-    return NextResponse.json(response.data);
+    return NextResponse.json(data);
   } catch (error) {
     console.error('Error getting home data:', error);
     return NextResponse.json({ error: 'Failed to get home data' }, { status: 500 });
@@ -39,9 +37,28 @@ export async function GET(request: NextRequest) {
 }
 ```
 
-Non-negotiable parts: `dynamic = 'force-dynamic'`, the `locale` param with an
-`'en'` default, the 10s timeout, and a caught error that logs and returns a
-status without leaking the upstream response.
+Non-negotiable parts: **Strapi is only reached through `fetchStrapi`**
+(`src/app/api/_lib/fetchStrapi.ts` — the one place `API_URL` is read for
+content; never `axios`/raw `fetch`, which bypass the cache), the `locale` param
+with an `'en'` default, URL-encoded query values, and a caught error that logs
+and returns a status without leaking the upstream response.
+
+## Caching (ADR-0117)
+
+Every Strapi read is a `fetch` with `next: { revalidate: CONTENT_REVALIDATE,
+tags: [CONTENT_CACHE_TAG] }` (`src/config/cache.ts`: 300s, tag `strapi`) — in
+`fetchStrapi`, in server-side `getStrapiData`, and in the sitemap fetchers.
+
+- Repeat requests are served from the Next data cache: measured locally, warm
+  page TTFB 25–45ms (cold 0.2–1.1s), warm `/api/get-*` 3–7ms.
+- After 300s an entry is served stale once and refreshed in the background.
+- **`POST /api/revalidate`** with header `x-revalidate-secret: $REVALIDATE_SECRET`
+  calls `revalidateTag('strapi')` — everything refreshes at once. Wire it to a
+  Strapi webhook (Settings → Webhooks, entry + media events). 401 on a wrong
+  secret, 503 when `REVALIDATE_SECRET` is unset, 405 on GET.
+- Only `200` responses are cached, so a Strapi error never sticks.
+- Pages stay dynamically rendered (next-intl reads request headers); the win is
+  the data, not a full-route cache.
 
 Endpoint → page mapping: [[site-map]].
 
@@ -55,7 +72,12 @@ Endpoint → page mapping: [[site-map]].
 - **Dedupes in-flight requests** by full URL in a module-level `Map`, cleared on
   settle. Two components asking for the same data in one render produce one
   request.
-- 10s timeout, and **returns `null` on any failure** rather than throwing.
+- 10s timeout (`AbortController`, not `AbortSignal.timeout`, which Safari <16
+  lacks — this runs in the browser for Header/Footer/menus), and **returns
+  `null` on any failure** rather than throwing.
+- Uses `fetch`, not axios: server-side it carries the content cache options, so
+  a page render reuses cached data instead of a round trip to `/api` and on to
+  Strapi. In the browser the `next` option is ignored.
 - Origin: server-side `NEXT_PUBLIC_BASEURL || NEXT_PUBLIC_BASE_URL ||
   http://localhost:3000`; client-side `window.location.origin`.
 

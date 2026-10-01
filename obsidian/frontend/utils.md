@@ -12,7 +12,7 @@ exception and are marked as such.
 
 | Function | Purpose |
 |---|---|
-| `getStrapiData(path, locale)` | **The only client-facing content entry point.** Calls this app's own `/api/<path>?locale=…`, dedupes in-flight requests by URL, 10s timeout, returns `null` on failure instead of throwing. |
+| `getStrapiData(path, locale)` | **The only client-facing content entry point.** Calls this app's own `/api/<path>?locale=…`, dedupes in-flight requests by URL, 10s timeout, returns `null` on failure instead of throwing. Uses `fetch`; server-side it is cached (300s, tag `strapi`, ADR-0117). |
 | `getMediaStrapiPath(media)` | Resolves a Strapi media object to a usable URL. |
 | `strapi.ts → getBaseUrl()` | Server: `NEXT_PUBLIC_BASEURL` → `NEXT_PUBLIC_BASE_URL` → `localhost:3000`. Client: `window.location.origin`. |
 

@@ -16,9 +16,10 @@ Full notes: `obsidian/backend/cms.md` · `obsidian/backend/api-architecture.md`
 
 ```
 Strapi (API_URL, server-only)
-   └─ src/app/api/get-*/route.ts     ← the only place API_URL is read
-        └─ getStrapiData(path, locale)  (src/utils/strapi.ts)
-             └─ route file (server component)  ──props──►  view
+   └─ src/app/api/_lib/fetchStrapi.ts  ← the only place API_URL is read (cached, tag `strapi`)
+        └─ src/app/api/get-*/route.ts
+             └─ getStrapiData(path, locale)  (src/utils/strapi.ts — also cached server-side)
+                  └─ route file (server component)  ──props──►  view
 ```
 
 - **There is no Strapi SDK and no generated types.** Responses are `any` today.

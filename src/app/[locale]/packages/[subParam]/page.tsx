@@ -1,4 +1,5 @@
 import { getStrapiData } from "@/utils/strapi";
+import { notFound } from "next/navigation";
 import { PackageView } from "@/views/PackageView/PackageView";
 import { createMetadataGenerator } from "@/utils/createMetadataGenerator";
 import { getMediaStrapiPath } from "@/utils/getMediaStrapiPath";
@@ -44,6 +45,10 @@ export default async function PackageDetailPage({
 
     // Fetch specific package data using both slug and subParam
     const data = await getStrapiData('get-package-data?slug=' + subParam, locale)
+
+    // Unknown slug → `{}`. `null` data means the request failed: degrade
+    // then, don't 404 a real page.
+    if (data && !data.package) notFound();
   
     return (
       <PackageView data={data} />

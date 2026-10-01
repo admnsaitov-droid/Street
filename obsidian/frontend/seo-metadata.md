@@ -73,6 +73,19 @@ and OG URLs.
   about, contact, projects, distribution, the three policies) get theirs from
   their single-type's `updatedAt` via `fetchStaticPageDates` — they used to
   have none, which is why a Strapi publish never moved the sitemap.
+- **A URL is emitted only in locales whose list contains it** (`listedIn`).
+  Emitting every slug for all five locales listed pages that don't exist in
+  that locale (an EN-only article under `/de/…`). If a locale's list can't be
+  fetched, that locale falls back to emitting everything rather than vanishing
+  from the sitemap. Checked 2026-10-01: all 810 sitemap URLs return 200.
+- **Detail pages 404 for unknown slugs.** Strapi answers an unknown slug with
+  200 and an empty entity (`{product:{…no slug}}`, `{line:null}`, `{}`,
+  `{article:null}`); the product/line/package/article routes now call
+  `notFound()` then — they used to render an empty 200 page (a soft 404).
+  `null` data means the request failed, and those pages still degrade instead of
+  404ing, so a Strapi outage can't drop real pages from the index.
+- Sitemap fetches carry the `strapi` cache tag too, so the publish webhook
+  (ADR-0117) refreshes `<lastmod>` immediately.
 - **Revalidation is 600s everywhere** — the three routes AND the inner fetches
   (`next: { revalidate: SITEMAP_REVALIDATE }`). The inner value must stay
   explicit: a cached fetch without it can keep serving one payload to every

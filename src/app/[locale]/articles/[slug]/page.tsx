@@ -1,4 +1,5 @@
 import { getStrapiData } from "@/utils/strapi";
+import { notFound } from "next/navigation";
 import { ArticleView } from "@/views/ArticleView/ArticleView";
 import { createMetadataGenerator } from "@/utils/createMetadataGenerator";
 import { getMediaStrapiPath } from "@/utils/getMediaStrapiPath";
@@ -40,6 +41,10 @@ export default async function LineDetailPage({
 
     const data = await getStrapiData('get-article?slug=' + slug, locale);
     const article = data?.article;
+
+    // Unknown slug → `{ article: null }`. `null` data means the request
+    // failed: degrade then, don't 404 a real page.
+    if (data && !article) notFound();
 
     const baseUrl = process.env.NEXT_PUBLIC_BASEURL || 'https://www.streetbarbell.com';
     const articleSchema = article ? generateArticleSchema({

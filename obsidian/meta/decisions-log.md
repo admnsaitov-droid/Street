@@ -905,3 +905,43 @@ resolve a merge from that repo with a blanket `--ours`/`--theirs`.
 **Consequences.** `refs/replace` is not pushed by default, so the graft has to
 be recreated in each clone that merges. The 2026-09-29 merge commit stays in
 history as-is; its damage was repaired by a forward commit, not a rewrite.
+
+## ADR-0117 — Strapi content is cached in the Next data cache, purged by a publish webhook
+
+**Date.** 2026-10-01 · **Status.** Accepted.
+
+**Context.** Every page render called `getStrapiData` → HTTP to this site's own
+public `/api/get-*` → axios → Strapi, and Header/Footer/menus did the same from
+every visitor's browser. Nothing was cached: axios bypasses Next's data cache,
+and all twenty routes are `force-dynamic`. Production TTFB was 0.5–3s
+(`/en/lines` up to 3.1s), pages `cache-control: no-store`, CDN `DYNAMIC`.
+
+**Decision.** All Strapi reads go through `fetch` with
+`next: { revalidate: CONTENT_REVALIDATE, tags: [CONTENT_CACHE_TAG] }`
+(`src/config/cache.ts`: 300s, tag `strapi`):
+
+- `src/app/api/_lib/fetchStrapi.ts` — the only content reader of `API_URL`;
+  all twenty `/api/get-*` routes use it (axios removed from them).
+- `src/utils/strapi.ts` `getStrapiData` — `fetch` with the same options
+  server-side (browser behaviour unchanged).
+- `src/utils/sitemap.ts` fetches carry the tag.
+
+Freshness: `POST /api/revalidate` (header `x-revalidate-secret`, env
+`REVALIDATE_SECRET`, timing-safe compare) calls `revalidateTag('strapi')`.
+A Strapi webhook on publish/unpublish/update/delete and media events makes
+edits live immediately; without it they land within 300s.
+
+**Consequences.**
+- Measured on a local production build: warm page TTFB **25–45ms** (cold
+  0.2–1.1s), warm `/api/get-*` **3–7ms** (cold 0.15–1.1s). Strapi sees at most
+  one request per URL per 5 minutes instead of one per page view.
+- Only `200` responses are cached (Next's own rule), so a Strapi error never
+  sticks; a stale entry keeps being served if a background refresh fails.
+- Pages remain dynamically rendered — next-intl reads request headers, so
+  there is no full-route cache. That is a further, separate step
+  (`setRequestLocale` + static params) if TTFB ever needs to go lower.
+- The cache lives on the server's disk (`.next/cache/fetch-cache`); a fresh
+  deploy starts cold. With several instances behind a balancer each has its
+  own cache, and a webhook purges only the instance it reaches.
+- **Never** reach Strapi with axios or an untagged `fetch` from the content
+  path — it silently opts that read out of caching and of the webhook purge.

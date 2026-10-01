@@ -1,52 +1,65 @@
-import axios from "axios";
+import { CONTENT_CACHE_TAG, CONTENT_REVALIDATE } from "@/config/cache";
 
 // Request deduplication cache
 const requestCache = new Map<string, Promise<any>>();
 
+const REQUEST_TIMEOUT_MS = 10000;
+
 export const getStrapiData = async (path: string, locale?: string) => {
     try {
       const baseUrl = getBaseUrl();
-      
+
       // Get current locale if not provided
       // If no locale is provided, we'll default to 'en' for client-side calls
       const currentLocale = locale || 'en';
-      
+
       // Add locale parameter to the path
       const separator = path.includes('?') ? '&' : '?';
       const localeParam = `${separator}locale=${currentLocale}`;
       const pathWithLocale = `${path}${localeParam}`;
-      
+
       // Create cache key for deduplication
       const cacheKey = `${baseUrl}/api/${pathWithLocale}`;
-      
+
       // Check if request is already in progress
       if (requestCache.has(cacheKey)) {
         return await requestCache.get(cacheKey);
       }
 
-      // Create new request and cache it
-      const requestPromise = axios.get(cacheKey, {
+      // AbortController rather than AbortSignal.timeout(): this also runs in
+      // the browser (Header/Footer/menus), and Safari < 16 lacks the latter.
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+
+      // `fetch`, not axios: on the server it goes through the Next data cache,
+      // so a page render reuses the response instead of a fresh round trip to
+      // /api and on to Strapi (ADR-0117). In the browser `next` is ignored.
+      const requestPromise = fetch(cacheKey, {
         headers: {
           'Accept': 'application/json',
         },
-        timeout: 10000, // 10 second timeout
-      }).then(response => {
-        // Remove from cache after completion
+        signal: controller.signal,
+        ...(typeof window === 'undefined'
+          ? { next: { revalidate: CONTENT_REVALIDATE, tags: [CONTENT_CACHE_TAG] } }
+          : {}),
+      }).then(async (response) => {
+        if (!response.ok) {
+          throw new Error(`${response.status} for ${cacheKey}`);
+        }
+        return response.json();
+      }).finally(() => {
+        clearTimeout(timer);
+        // Remove from the in-flight map once settled
         requestCache.delete(cacheKey);
-        return response.data;
-      }).catch(error => {
-        // Remove from cache on error
-        requestCache.delete(cacheKey);
-        throw error;
       });
-      
+
       // Cache the request
       requestCache.set(cacheKey, requestPromise);
-      
+
       return await requestPromise;
     } catch (error) {
       console.error('Error getting strapi data:', error);
-      
+
       // Return null instead of throwing to prevent page crashes
       // Pages should handle null data gracefully
       return null;

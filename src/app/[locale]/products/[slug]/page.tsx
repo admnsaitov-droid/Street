@@ -1,4 +1,5 @@
 import { getStrapiData } from "@/utils/strapi";
+import { notFound } from "next/navigation";
 import { ProductView } from "@/views/ProductView/ProductView";
 import { getMediaStrapiPath } from "@/utils/getMediaStrapiPath";
 import { createMetadataGenerator } from "@/utils/createMetadataGenerator";
@@ -47,6 +48,10 @@ export default async function ProductDetailPage({
       getStrapiData('get-product-specifications', locale),
       getStrapiData('get-lines', locale),
     ]);
+
+    // Strapi answers an unknown slug with 200 and an empty product. `null`
+    // means the request itself failed — degrade then, don't 404 a real page.
+    if (data && !data.product?.slug) notFound();
 
     const specificationTexts = specResponse?.data ?? null;
 

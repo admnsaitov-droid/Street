@@ -1,29 +1,19 @@
 import { NextResponse, NextRequest } from 'next/server';
-import axios from 'axios';
+import { fetchStrapi } from '../_lib/fetchStrapi';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
   try {
-    // Get locale from search params
     const { searchParams } = new URL(request.url);
-    const locale = searchParams.get('locale') || 'en';
+    const locale = encodeURIComponent(searchParams.get('locale') || 'en');
 
-    const response = await axios.get(
-      `${process.env.API_URL}/api/contact?populate=*&locale=${locale}`,
-      {
-        headers: {
-          'Accept': 'application/json',
-        },
-        timeout: 10000, // 10 second timeout
-      }
-    );
+    // Served from the Next data cache (5 min, purged on Strapi publish) — see fetchStrapi.
+    const data = await fetchStrapi(`/api/contact?populate=*&locale=${locale}`);
 
-    const res = NextResponse.json(response.data);
-
-    return res;
+    return NextResponse.json(data);
   } catch (error) {
-    console.error('Error getting footer data:', error);
-    return NextResponse.json({ error: 'Failed to get footer data' }, { status: 500 });
+    console.error('Error getting contact data:', error);
+    return NextResponse.json({ error: 'Failed to get contact data' }, { status: 500 });
   }
-} 
+}

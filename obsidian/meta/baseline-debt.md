@@ -82,7 +82,7 @@ when you are already editing its file.
   a much weaker gate than it looks. Treat `verify.sh` as the real one.
 - **Both `yarn.lock` and `package-lock.json` are committed.** yarn is the
   maintained one.
-- **No `.env.example`, no `engines`/`.nvmrc`, no tests.**
+- **No `engines`/`.nvmrc`, no tests.** (`.env.example` was added 2026-10-01.)
 
 ## Found by reading the source (2026-09-17)
 

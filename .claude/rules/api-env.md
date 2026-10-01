@@ -22,11 +22,10 @@ Full note: `obsidian/backend/api-architecture.md`. Endpoints live in
 export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
-  const locale = new URL(request.url).searchParams.get('locale') || 'en';
+  const locale = encodeURIComponent(new URL(request.url).searchParams.get('locale') || 'en');
   try {
-    const response = await axios.get(`${process.env.API_URL}/api/…?locale=${locale}`,
-      { headers: { Accept: 'application/json' }, timeout: 10000 });
-    return NextResponse.json(response.data);
+    const data = await fetchStrapi(`/api/…?locale=${locale}`); // cached, 10s timeout
+    return NextResponse.json(data);
   } catch (error) {
     console.error('…', error);
     return NextResponse.json({ error: '…' }, { status: 500 });
@@ -34,15 +33,17 @@ export async function GET(request: NextRequest) {
 }
 ```
 
-Keep new endpoints to that shape: read `locale`, call Strapi with a timeout,
-return JSON, log and return a 4xx/5xx on failure. `src/utils/strapi.ts` is the
+Keep new endpoints to that shape: read `locale`, call Strapi **only through
+`fetchStrapi`** (`src/app/api/_lib/fetchStrapi.ts` — cached + tagged, ADR-0117;
+axios or a bare `fetch` would bypass the cache), return JSON, log and return a
+4xx/5xx on failure. `src/utils/strapi.ts` is the
 only client-side entry point and it dedupes in-flight requests by URL.
 
 ## Hard lines
 
 - **Third-party calls run server-side.** The browser only calls same-origin
-  `/api/*`. `API_URL`, `RESEND_API_KEY`, `RECIPIENT_EMAIL`, `TELEGRAM_BOT_TOKEN`
-  and `TELEGRAM_CHAT_ID` are server-only and must never gain a `NEXT_PUBLIC_`
+  `/api/*`. `API_URL`, `RESEND_API_KEY`, `RECIPIENT_EMAIL`, `TELEGRAM_BOT_TOKEN`,
+  `TELEGRAM_CHAT_ID` and `REVALIDATE_SECRET` are server-only and must never gain a `NEXT_PUBLIC_`
   prefix.
 - **`NEXT_PUBLIC_` is a security boundary**, not a naming style. Anything behind
   it is baked into the browser bundle — `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` is

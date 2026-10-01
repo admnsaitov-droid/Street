@@ -5,6 +5,7 @@ import {
   fetchLines,
   fetchPackages,
   fetchStaticPageDates,
+  listedIn,
   pickDate,
   UrlEntry,
   XML_HEADERS,
@@ -70,6 +71,7 @@ export async function GET() {
     })
 
     for (const line of lines.lines) {
+      if (!listedIn(line, locale, lines.loaded)) continue
       entries.push({
         path: `/${locale}/lines/${line.slug}`,
         lastModified: pickDate(line.dates, locale),
@@ -79,6 +81,7 @@ export async function GET() {
     }
 
     for (const article of articles.articles) {
+      if (!listedIn(article, locale, articles.loaded)) continue
       entries.push({
         path: `/${locale}/articles/${article.slug}`,
         lastModified: pickDate(article.dates, locale),
@@ -88,6 +91,7 @@ export async function GET() {
     }
 
     for (const pkg of packages.packages) {
+      if (!listedIn(pkg, locale, packages.loaded)) continue
       entries.push({
         path: `/${locale}/packages/${pkg.slug}`,
         lastModified: pickDate(pkg.dates, locale),

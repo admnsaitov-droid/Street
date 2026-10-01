@@ -1,5 +1,5 @@
 import { getLocaleCodes } from '@/utils/locales'
-import { buildUrlset, fetchLines, pickDate, UrlEntry, XML_HEADERS } from '@/utils/sitemap'
+import { buildUrlset, fetchLines, listedIn, pickDate, UrlEntry, XML_HEADERS } from '@/utils/sitemap'
 
 // Dedicated products sitemap. It is large (all products across every line and
 // locale); its own <lastmod> in the index lets Google skip re-crawls when
@@ -9,11 +9,12 @@ export const revalidate = 600
 
 export async function GET() {
   const locales = await getLocaleCodes()
-  const { products } = await fetchLines(locales)
+  const { products, loaded } = await fetchLines(locales)
 
   const entries: UrlEntry[] = []
   for (const locale of locales) {
     for (const product of products) {
+      if (!listedIn(product, locale, loaded)) continue
       entries.push({
         path: `/${locale}/products/${product.slug}`,
         lastModified: pickDate(product.dates, locale),

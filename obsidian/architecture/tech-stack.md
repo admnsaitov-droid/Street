@@ -83,7 +83,7 @@ ADR-0109.
 | Package | Version | Role |
 |---|---|---|
 | `zustand` | 5.0 | Two stores — UI/loading/player/colour, and per-scene readiness ([[data-flow]]) |
-| `axios` | 1.11 | Strapi calls from `src/app/api/*` and `src/utils/strapi.ts`; externalised via `serverComponentsExternalPackages` |
+| `axios` | 1.11 | Only `src/utils/locales.ts` now. Content reads moved to cached `fetch` (ADR-0117); never put it in `serverComponentsExternalPackages` (ADR-0106) |
 | `resend` | 4.7 | Contact-form email |
 | `swiper` | 11.2 | Galleries and mobile carousels |
 | `react-cookie-consent` | 9.0 | Cookie banner, styled in `GlobalStyles` |

@@ -1,4 +1,5 @@
 import { getStrapiData } from "@/utils/strapi";
+import { notFound } from "next/navigation";
 import { LineView } from "@/views/LineView/LineView";
 import { createMetadataGenerator } from "@/utils/createMetadataGenerator";
 import { getMediaStrapiPath } from "@/utils/getMediaStrapiPath";
@@ -44,6 +45,10 @@ export default async function LineDetailPage({
 
     // Fetch specific package data using both slug and subParam
     const data = await getStrapiData('get-line-data?slug=' + slug, locale)
+
+    // Unknown slug → `{ line: null }`. `null` data means the request failed:
+    // degrade then, don't 404 a real page.
+    if (data && !data.line) notFound();
   
     return (
       <LineView data={data} />
