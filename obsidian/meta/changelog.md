@@ -13,6 +13,21 @@ mattered. Link the ADR when there is one.
 
 ---
 
+## 2026-10-01 (3) — Sitemap follows the publish webhook; locale fallback
+
+- **SEO items 11–12, fully:** the sitemap routes were ISR (`revalidate 600`),
+  and Next 14.2 never tag-invalidates a cached route handler — so after a
+  publish webhook the XML stayed cached (`HIT`) with old `<lastmod>` for up to
+  10 minutes. They are now `force-dynamic` over cached, tagged data: warm
+  10–25ms, and the first request after a webhook refetches. Verified locally:
+  purge → next sitemap request refetches (1.4s) → then warm again.
+- `getStrapiLocales` cached its *failure* fallback (`['en']`) for the life of
+  the process — one slow Strapi response at boot dropped four locales from the
+  sitemap and `generateStaticParams` until a restart. It now falls back to
+  `src/config/locales.ts` (all five) and doesn't memoise the fallback.
+
+---
+
 ## 2026-10-01 (2) — Strapi data cache, real 404s, per-locale sitemap
 
 - **Content caching (ADR-0117).** All Strapi reads now go through `fetch` with a

@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { supportedLocales } from '@/config/locales';
 
 export interface StrapiLocale {
   id: number;
@@ -31,12 +32,15 @@ export async function getStrapiLocales(): Promise<StrapiLocale[]> {
     return locales;
   } catch (error) {
     console.error('Error fetching locales from Strapi:', error);
-    // Fallback locales if Strapi is not available
-    const fallbackLocales = [
-      { id: 1, localeCode: 'en', localeName: 'English' }
-    ];
-    cachedStrapiLocales = fallbackLocales;
-    return fallbackLocales;
+    // Fall back to the static config (all five locales), and do NOT memoise
+    // it: caching a failure here used to pin the process to ['en'] until the
+    // next restart, silently dropping four locales from the sitemap and
+    // generateStaticParams after one slow Strapi response.
+    return supportedLocales.map((localeCode, index) => ({
+      id: index + 1,
+      localeCode,
+      localeName: localeCode,
+    }));
   }
 }
 

@@ -1,4 +1,4 @@
-import { CONTENT_CACHE_TAG } from '@/config/cache'
+import { CONTENT_CACHE_TAG, CONTENT_REVALIDATE } from '@/config/cache'
 
 /**
  * Shared helpers for building the sitemap index and its child sitemaps.
@@ -17,15 +17,20 @@ export const SITEMAP_BASE_URL =
 
 const API_BASE = process.env.NEXT_PUBLIC_BASEURL || 'https://www.streetbarbell.com'
 
-// One revalidation cadence for the sitemap routes AND their inner fetches.
-// The inner fetch must carry it explicitly: a cached fetch with no revalidate
-// would keep serving the same payload to every route regeneration, which is
-// exactly the "published in Strapi but <lastmod> never moves" failure.
-export const SITEMAP_REVALIDATE = 600
+// Caching model (ADR-0117): the sitemap routes are rendered per request
+// (`dynamic = 'force-dynamic'`) and only the *data* is cached — every fetch
+// below is cached for CONTENT_REVALIDATE and tagged CONTENT_CACHE_TAG. Building
+// the XML from cached data costs milliseconds, and a Strapi publish webhook
+// (revalidateTag) refreshes the data, so <lastmod> moves immediately.
+// Do NOT give these routes an ISR `revalidate`: Next 14.2's file-system cache
+// never applies revalidateTag to a cached route handler (only to pages and
+// fetches), so the XML would ignore the webhook until its own timer ran out.
 
+// Short shared-cache window so a CDN in front can't hold a stale sitemap for
+// long after a publish.
 export const XML_HEADERS = {
   'Content-Type': 'application/xml; charset=utf-8',
-  'Cache-Control': 'public, max-age=0, s-maxage=600, stale-while-revalidate=86400',
+  'Cache-Control': 'public, max-age=0, s-maxage=60, stale-while-revalidate=300',
 }
 
 /** Update date per locale, e.g. `{ en: '2026-…', es: null }`. */
@@ -59,7 +64,7 @@ async function fetchJson(path: string): Promise<any | null> {
         signal: AbortSignal.timeout(8000),
         // Tagged like every Strapi read, so a publish webhook refreshes the
         // sitemap's <lastmod> immediately rather than after the TTL (ADR-0117).
-        next: { revalidate: SITEMAP_REVALIDATE, tags: [CONTENT_CACHE_TAG] },
+        next: { revalidate: CONTENT_REVALIDATE, tags: [CONTENT_CACHE_TAG] },
       })
       if (!res.ok) {
         console.warn(`[sitemap] ${path} -> ${res.status}`)

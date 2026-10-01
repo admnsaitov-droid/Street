@@ -945,3 +945,9 @@ edits live immediately; without it they land within 300s.
   own cache, and a webhook purges only the instance it reaches.
 - **Never** reach Strapi with axios or an untagged `fetch` from the content
   path — it silently opts that read out of caching and of the webhook purge.
+- **Route handlers can't be ISR'd and purged.** Next 14.2's file-system cache
+  applies `revalidateTag` to cached pages and fetches but not to cached route
+  handlers (`kind: "ROUTE"`), and `revalidatePath` goes through the same tag
+  check. So any route handler that must follow the webhook — the sitemaps —
+  is `force-dynamic` over cached, tagged data instead of having a
+  `revalidate`.

@@ -3,9 +3,11 @@ import { buildUrlset, fetchLines, listedIn, pickDate, UrlEntry, XML_HEADERS } fr
 
 // Dedicated products sitemap. It is large (all products across every line and
 // locale); its own <lastmod> in the index lets Google skip re-crawls when
-// nothing changed. Same revalidation cadence as the pages sitemap so a Strapi
-// publish shows up in both within minutes.
-export const revalidate = 600
+// nothing changed.
+// Rendered per request from cached, tagged data: an ISR `revalidate` here would
+// ignore the publish webhook (Next 14.2 never tag-invalidates a cached route
+// handler). See the caching note in src/utils/sitemap.ts and ADR-0117.
+export const dynamic = 'force-dynamic'
 
 export async function GET() {
   const locales = await getLocaleCodes()

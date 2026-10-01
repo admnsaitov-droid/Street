@@ -13,11 +13,15 @@ import {
 
 // "Pages" sitemap: static pages + line, article and package detail pages.
 // Products live in their own sitemap (sitemap-products.xml).
-export const revalidate = 600
+// Rendered per request from cached, tagged data: an ISR `revalidate` here would
+// ignore the publish webhook (Next 14.2 never tag-invalidates a cached route
+// handler). See the caching note in src/utils/sitemap.ts and ADR-0117.
+export const dynamic = 'force-dynamic'
 
 // Priorities/changefreq for the static single-type pages. Their <lastmod>
 // comes from the single-type's own updatedAt (per locale), so publishing an
-// edit in Strapi moves the date within the revalidation window (10 min).
+// edit in Strapi moves the date immediately via the publish webhook (or within
+// CONTENT_REVALIDATE without it).
 const STATIC_PAGES: { path: string; priority: number; changeFrequency: UrlEntry['changeFrequency'] }[] = [
   { path: '', priority: 1, changeFrequency: 'weekly' },
   { path: '/about', priority: 0.8, changeFrequency: 'monthly' },

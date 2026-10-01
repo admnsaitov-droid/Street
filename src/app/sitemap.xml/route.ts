@@ -12,7 +12,10 @@ import {
 // Sitemap index. Splits the site into a "pages" sitemap (static pages, lines,
 // articles, packages) and a large, rarely-changing "products" sitemap so Google
 // can re-crawl each independently.
-export const revalidate = 600
+// Rendered per request from cached, tagged data: an ISR `revalidate` here would
+// ignore the publish webhook (Next 14.2 never tag-invalidates a cached route
+// handler). See the caching note in src/utils/sitemap.ts and ADR-0117.
+export const dynamic = 'force-dynamic'
 
 export async function GET() {
   const locales = await getLocaleCodes()

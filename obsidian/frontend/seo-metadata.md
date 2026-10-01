@@ -84,12 +84,18 @@ and OG URLs.
   `notFound()` then — they used to render an empty 200 page (a soft 404).
   `null` data means the request failed, and those pages still degrade instead of
   404ing, so a Strapi outage can't drop real pages from the index.
-- Sitemap fetches carry the `strapi` cache tag too, so the publish webhook
-  (ADR-0117) refreshes `<lastmod>` immediately.
-- **Revalidation is 600s everywhere** — the three routes AND the inner fetches
-  (`next: { revalidate: SITEMAP_REVALIDATE }`). The inner value must stay
-  explicit: a cached fetch without it can keep serving one payload to every
-  route regeneration, freezing `<lastmod>` forever.
+- **The three sitemap routes are `force-dynamic`; only their data is cached.**
+  Every fetch inside carries `revalidate: CONTENT_REVALIDATE` (300s) and the
+  `strapi` tag, so building the XML costs 10–25ms warm, and a Strapi publish
+  webhook (ADR-0117) makes the next request refetch → `<lastmod>` moves
+  immediately (without the webhook: within 300s). **Never give these routes an
+  ISR `revalidate`** — Next 14.2's file-system cache does not apply
+  `revalidateTag` to a cached *route handler* (it checks tags only for pages
+  and fetches), so an ISR sitemap ignored the webhook until its own timer ran
+  out. Verified 2026-10-01: cached XML stayed `HIT` after a purge; dynamic XML
+  refetches.
+- `XML_HEADERS` is `s-maxage=60, stale-while-revalidate=300`, so a CDN can't
+  hold a stale sitemap for long.
 - **Adding a route means adding it to the static list in
   `sitemap-pages.xml/route.ts` (via `src/utils/sitemap.ts`) in the same
   change.** This is the most common drift in this repo.
