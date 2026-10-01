@@ -54,9 +54,11 @@ export async function GET(request: NextRequest) {
     // Stream the upstream body through instead of buffering it: the old
     // arrayBuffer() version held entire videos (50MB+) in memory per request
     // and only started responding after the last upstream byte arrived.
+    // One day, not `immutable`: Strapi's "Replace media" keeps the same URL,
+    // so a long immutable cache would pin the old file (ADR-0118).
     const headers = new Headers({
       'Content-Type': response.headers.get('content-type') || 'application/octet-stream',
-      'Cache-Control': 'public, max-age=31536000, immutable',
+      'Cache-Control': 'public, max-age=86400',
     });
     for (const name of ['content-length', 'content-range', 'accept-ranges']) {
       const value = response.headers.get(name);

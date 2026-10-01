@@ -13,6 +13,26 @@ mattered. Link the ADR when there is one.
 
 ---
 
+## 2026-10-01 (4) — Media cache 1 day (Replace media keeps URLs); Next 14.2.35, axios 1.20
+
+- **`images.minimumCacheTTL` 30 days → 1 day (ADR-0118).** Strapi's "Replace
+  media" keeps the file's URL, and Next uses this value as the browser
+  `max-age` of `/_next/image` too — a replaced image would have stayed stale on
+  the site and in browsers for a month. `proxy-media` likewise drops
+  `max-age=31536000, immutable` for 1 day. The pending Strapi-repo fix is now
+  1 day without `immutable` (was going to be 30 days + `immutable`).
+- **`next` 14.2.25 → 14.2.35, `eslint-config-next` 14.2.23 → 14.2.35, `axios`
+  1.11 → 1.20** (both lockfiles). Patch/minor only; closes 7 Next advisories
+  (incl. two high RSC DoS, middleware-redirect SSRF, image-optimiser cache-key
+  confusion and content injection). **Still open** and fixed only in Next
+  15.5.x: a critical RCE in the image optimiser for AVIF *inputs* (requires a
+  malicious AVIF in Strapi media, i.e. admin access) and 8 high — a Next 15 +
+  React 19 migration, not a bump. Re-verified on 14.2.35: build, 810/810
+  sitemap URLs 200, 404s, titles, `<h1>`, cache + webhook, optimiser
+  `max-age=86400`.
+
+---
+
 ## 2026-10-01 (3) — Sitemap follows the publish webhook; locale fallback
 
 - **SEO items 11–12, fully:** the sitemap routes were ISR (`revalidate 600`),

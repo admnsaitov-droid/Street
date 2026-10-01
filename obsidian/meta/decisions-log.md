@@ -639,8 +639,10 @@ Measured against the production build:
    every `fill` image already has).
 2. **Posters go through `next/image`.** `VideoPlayer` renders the poster as an
    `<Image fill>` above the video and fades it when the video can play.
-3. **`images.minimumCacheTTL` is 30 days**, so an expensive optimise is paid once
-   per asset per deployment rather than every five minutes.
+3. **`images.minimumCacheTTL` was 30 days**, so an expensive optimise is paid once
+   per asset per deployment rather than every five minutes. *Superseded by
+   ADR-0118: now 1 day — 30 days also became the browser `max-age`, and
+   "Replace media" keeps the URL.*
 4. **`sizes` is a first-class prop on `MediaComponent`**, and `priority` is set
    on hero media.
 5. **Nothing fetches on mount that the server already rendered**, and anything a
@@ -666,10 +668,11 @@ slot now shows a grey block with the text and header already readable, instead
 of empty space.
 
 **What this does not fix, because it is not in this repo.** Strapi sends
-`max-age=300` on immutable, content-hashed upload URLs — it should send a long
-`max-age` + `immutable`. (Located 2026-09-30: it is not nginx but the Strapi
-repo's `config/plugins.ts` → `upload.providerOptions.localServer.maxage`;
-edited there to 30 days + `immutable`, pending that repo's commit + redeploy.)
+`max-age=300` on upload URLs. (Located 2026-09-30: it is not nginx but the
+Strapi repo's `config/plugins.ts` → `upload.providerOptions.localServer.maxage`.
+The upload URLs are **not** immutable — "Replace media" keeps the hash — so the
+fix there is 1 day without `immutable`, ADR-0118; pending that repo's commit +
+redeploy.)
 Strapi is also generating only a 245px
 `thumbnail` format for a 2940px source, so the optimiser always starts from the
 full-size original. And SVG logos still come raw from that origin (~0.7–1.3s
@@ -951,3 +954,33 @@ edits live immediately; without it they land within 300s.
   check. So any route handler that must follow the webhook — the sitemaps —
   is `force-dynamic` over cached, tagged data instead of having a
   `revalidate`.
+
+## ADR-0118 — Media is cached for one day, never "immutable"
+
+**Date.** 2026-10-01 · **Status.** Accepted. Supersedes the 30-day TTL in ADR-0110.
+
+**Context.** Strapi upload URLs look content-hashed (`DSC_04848_1_89ec867487.webp`)
+but are not: in `@strapi/upload` `replace()`, "Replace media" **keeps the
+existing `hash` and `ext`** ("so the file url doesn't change when the file is
+replaced"). Meanwhile:
+- `images.minimumCacheTTL` was 30 days, and Next uses
+  `max(upstream max-age, minimumCacheTTL)` both for its optimiser cache *and* as
+  the browser `Cache-Control` of `/_next/image` — so a replaced image stayed
+  stale on the site, and in visitors' browsers, for up to a month;
+- the pending Strapi fix set `/uploads` to 30 days + `immutable`;
+- `proxy-media` sent `max-age=31536000, immutable`.
+
+URL versioning was considered and rejected: only about half of the media
+objects the custom Strapi controllers return carry `updatedAt` (format variants
+never do), so there is no reliable version key.
+
+**Decision.** One day everywhere, no `immutable`:
+`images.minimumCacheTTL = 86400`; Strapi `localServer.maxage = 86400000`
+(→ `max-age=86400`); `proxy-media` `public, max-age=86400`.
+
+**Consequences.** Re-encoding happens at most once a day per size (288× rarer
+than the original 5-minute cycle). A replaced image is visible within a day. To
+make one visible **immediately**, upload it as a new file and attach that
+instead of using "Replace media" — a new file has a new URL. Re-linking
+existing files (e.g. fixing swapped product images) is instant once the page
+data refreshes (ADR-0117 webhook).

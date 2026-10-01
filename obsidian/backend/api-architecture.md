@@ -114,7 +114,7 @@ blunt; it is the one env check the codebase has.
 ## `proxy-media`
 
 `GET /api/proxy-media?url=` proxies Strapi media with `Cache-Control: public,
-max-age=31536000, immutable`. It exists because Strapi serves media over plain
+max-age=86400` (1 day, not immutable — ADR-0118). It exists because Strapi serves media over plain
 HTTP from a fixed IP while the site is HTTPS. Since 2026-09-29 it:
 
 - **allowlists hosts** — only `NEXT_PUBLIC_IMAGE_URL`, `API_URL` and the known

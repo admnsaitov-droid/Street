@@ -33,7 +33,7 @@ Full descriptions: `.claude/stack.schema.json`.
 
 | Group | Answers | Here |
 |---|---|---|
-| `framework` | which framework, version, render model | nextjs 14.2.25, server-components |
+| `framework` | which framework, version, render model | nextjs 14.2.35, server-components |
 | `language`, `packageManager` | is `any` checkable; which command prefix | ts, yarn |
 | `paths` | where routes, views, components, styles, server code, env and protected zones live | see below |
 | `extensions` | which file types are source | `.tsx`, `.ts` |
@@ -68,7 +68,7 @@ agents write into paths that no longer exist.
 
 Written by `/adapt` on **2026-09-17**. Source of truth: `.claude/stack.json`.
 
-**Framework:** `nextjs` — Next.js App Router **14.2.25**, render model
+**Framework:** `nextjs` — Next.js App Router **14.2.35**, render model
 **server-components**.
 **Language / package manager:** TypeScript / **yarn** (both lockfiles are
 committed; `yarn.lock` is the maintained one).
