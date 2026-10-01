@@ -1,5 +1,5 @@
 # Street Barbell
-
+   
 A five-locale (`en es fr de fi`) marketing and product site on **Next.js 14.2
 App Router**, with spring-driven motion, four three.js scenes and a **Strapi**
 content backend.
