@@ -22,6 +22,8 @@ export const generateMetadata = createMetadataGenerator({
     return homeData;
   },
   getPath: (locale) => `/${locale}`,
+  // Home page must not carry the global " | Street Barbell" brand suffix.
+  skipBrandSuffix: true,
   fallback: {
     title: 'Street Barbell - Home',
     description: 'Street Barbell is a barbell brand that makes high-quality barbell products.'

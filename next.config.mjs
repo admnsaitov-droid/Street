@@ -81,8 +81,17 @@ const nextConfig = {
         port: '1337',
         pathname: '/**',
       },
+      // Production Strapi host, explicitly — so images still load if
+      // NEXT_PUBLIC_IMAGE_URL is missing at build time. No `port`: Next
+      // compares it to `url.port`, which is '' for a default-port https URL,
+      // so `port: '443'` made this pattern never match.
+      {
+        protocol: 'https',
+        hostname: 'admin.streetbarbell.com',
+        pathname: '/**',
+      },
     ],
   },
-};
+}
 
-export default withNextIntl(nextConfig);
+export default withNextIntl(nextConfig)

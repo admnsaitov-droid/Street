@@ -27,7 +27,7 @@ export const Hero = ({ data, breadcrumbs, packageType }: HeroProps) => {
             <StyledContent>
                 <Breadcrumbs
                     items={[
-                        ...breadcrumbs,
+                        ...(breadcrumbs || []),
                         // { label: data?.hero?.title || data?.title || "", href: undefined },
                     ]}
                 />

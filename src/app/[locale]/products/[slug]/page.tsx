@@ -11,15 +11,19 @@ export const generateMetadata = createMetadataGenerator({
     transformData: (data) => {
       // SEO fields live in the product's `metadata` component;
       // name/previewDescription are the on-page copy, kept only as fallback.
-      const meta = data?.product?.metadata;
+
+      // Prefer an explicitly set OG image, otherwise fall back to the product preview.
+      // Select the media object before resolving the path, since getMediaStrapiPath
+      // returns a truthy placeholder for empty media (which would break a path-level ||).
+      const ogMedia = data?.product?.metadata?.openGraph || data?.product?.previewImage;
 
       const metadata = {
-        metatitle: meta?.metatitle || data?.product?.name,
-        metadescription: meta?.metadescription || data?.product?.previewDescription,
-        metakeywords: meta?.metakeywords,
-        openGraph: meta?.openGraph?.url
-          ? meta.openGraph
-          : { url: getMediaStrapiPath(data?.product?.previewImage) }
+        metatitle: data?.product?.metadata?.metatitle || data?.product?.name,
+        metadescription: data?.product?.metadata?.metadescription || data?.product?.previewDescription,
+        metakeywords: data?.product?.metadata?.metakeywords,
+        openGraph: {
+          url: getMediaStrapiPath(ogMedia)
+        }
       }
 
       return metadata;
@@ -38,14 +42,15 @@ export default async function ProductDetailPage({
   }) {
     const { locale, slug } = await params;
 
-    const [data, specResponse] = await Promise.all([
+    const [data, specResponse, linesData] = await Promise.all([
       getStrapiData('get-product-data?slug=' + slug, locale),
       getStrapiData('get-product-specifications', locale),
+      getStrapiData('get-lines', locale),
     ]);
 
     const specificationTexts = specResponse?.data ?? null;
 
     return (
-      <ProductView data={data} specificationTexts={specificationTexts} />
+      <ProductView data={data} specificationTexts={specificationTexts} linesData={linesData} />
     );
   } 

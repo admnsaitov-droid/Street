@@ -21,7 +21,7 @@ exception and are marked as such.
 | Function | Purpose |
 |---|---|
 | `createMetadataGenerator({ getMetadata, getPath, fallback })` | The per-route metadata factory. Every page uses it; nothing hand-writes `<meta>`. |
-| `generateMetadata(props)` | The underlying builder — title (brand-prefixed), description, OG, Twitter, canonical, alternates. |
+| `generateMetadata(props)` | The underlying builder — title (`<title> | Street Barbell` suffix, skipped when the brand is already in the title or `skipBrandSuffix` is set — Home), description, OG, Twitter, canonical, alternates. |
 | `generateHreflangTags(...)` | `hreflang` alternates across the five locales. |
 | `generateStructuredData.ts` | `generateOrganizationSchema`, `generateWebSiteSchema`, `generateArticleSchema`, `combineSchemas`, `generateStructuredDataScript` — the JSON-LD builders. |
 | `localizedUrl(...)` | Builds a locale-prefixed URL. |

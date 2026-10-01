@@ -22,7 +22,7 @@ export const LinesView = ({ data }: LinesViewProps) => {
         <StyledLinesView>
             <Breadcrumbs
                 items={[
-                    ...breadcrumbs
+                    ...(breadcrumbs || [])
                 ]}
             />
             <StyledTop>

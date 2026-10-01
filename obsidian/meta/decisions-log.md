@@ -860,7 +860,7 @@ right can still be rebuilding its entire DOM on load.
 **Date.** 2026-09-29 · **Status.** Accepted.
 
 **Context.** Merging the `textura/den` branch (the second, actively developed
-repository — no shared git ancestor, merged with `--allow-unrelated-histories`)
+repository — merged with `--allow-unrelated-histories`, which ADR-0116 later showed was wrong: the repos share a base)
 brought back the convention-based `src/app/sitemap.ts` while this repo already
 had a hand-built sitemap index (`sitemap.xml/route.ts` + `sitemap-pages.xml` +
 `sitemap-products.xml` over `src/utils/sitemap.ts`). Both claim the same
@@ -876,3 +876,32 @@ debug logging. `app/sitemap.ts` had none of that.
 `sitemap-pages.xml/route.ts`, not a `staticPages` array in a convention file —
 [[seo-metadata]] and `.claude/rules/routing-views.md` both say so. Any future
 merge from the textura repo will re-add `app/sitemap.ts`; delete it again.
+
+## ADR-0116 — Merge the textura repo against its real base, never as unrelated histories
+
+**Date.** 2026-10-01 · **Status.** Accepted.
+
+**Context.** This repo started as a copy of `textura-agency/street-barbell`: its
+root commit `fd10313` ("migrating street", 2026-07-03) has the same tree as
+textura's `e45e7dc` (one `.md` file apart). Git does not know that, so the
+2026-09-29 merge of `textura/den` ran with `--allow-unrelated-histories`, saw
+84 add/add conflicts, and had no base to tell "changed here" from "unchanged
+there". Resolving them all in den's favour silently reverted every file this
+repo had changed since July (robots, a security bump, the title format, SEO
+metadata, a product-page feature — see the 2026-10-01 changelog).
+
+**Decision.** Before merging from the textura repo, graft the shared base:
+
+```bash
+git fetch textura <branch>
+git replace --graft fd10313 e45e7dc     # local only; gives git the real base
+git merge textura/<branch>              # now a true 3-way merge
+git replace -d fd10313                  # optional cleanup
+```
+
+With the base in place the den merge had **3** real conflicts, not 84. Never
+resolve a merge from that repo with a blanket `--ours`/`--theirs`.
+
+**Consequences.** `refs/replace` is not pushed by default, so the graft has to
+be recreated in each clone that merges. The 2026-09-29 merge commit stays in
+history as-is; its damage was repaired by a forward commit, not a rewrite.

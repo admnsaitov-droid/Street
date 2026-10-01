@@ -136,6 +136,26 @@ const AnimatedContentSpan = styled(animated.span)`
   position: relative;
 `;
 
+// Plain text of a React subtree. Pure — lives at module scope so hooks that
+// use it don't need it as a dependency.
+const extractTextContent = (element: React.ReactNode): string => {
+  if (typeof element === 'string') return element;
+  if (typeof element === 'number') return element.toString();
+  if (!React.isValidElement(element)) return '';
+
+  if (element.props.children) {
+    if (typeof element.props.children === 'string') {
+      return element.props.children;
+    }
+    if (Array.isArray(element.props.children)) {
+      return element.props.children.map(extractTextContent).join('');
+    }
+    return extractTextContent(element.props.children);
+  }
+
+  return '';
+};
+
 const SAFETY_MARGIN = 15;
 
 const AnimatedGrid: React.FC<AnimatedGridProps> = ({
@@ -203,25 +223,6 @@ const AnimatedGrid: React.FC<AnimatedGridProps> = ({
     document.body.removeChild(tempDiv);
 
     return width;
-  };
-
-  // Function to extract text content from React elements
-  const extractTextContent = (element: React.ReactNode): string => {
-    if (typeof element === 'string') return element;
-    if (typeof element === 'number') return element.toString();
-    if (!React.isValidElement(element)) return '';
-    
-    if (element.props.children) {
-      if (typeof element.props.children === 'string') {
-        return element.props.children;
-      }
-      if (Array.isArray(element.props.children)) {
-        return element.props.children.map(extractTextContent).join('');
-      }
-      return extractTextContent(element.props.children);
-    }
-    
-    return '';
   };
 
   // Function to process text for measurement (same logic as processText but for measurement)

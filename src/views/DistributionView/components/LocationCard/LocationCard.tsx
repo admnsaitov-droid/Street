@@ -104,17 +104,26 @@ const StyledTopRow = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
+  gap: ${rm(12)};
   margin-bottom: ${rm(16)};
+
+  /* Let the text column shrink/wrap so a wide logo can't push itself out of the card */
+  > div:first-child {
+    min-width: 0;
+  }
 `
 
 const StyledLogo = styled.img`
-  height: ${rm(36)};
+  height: ${rm(56)};
   width: auto;
-  max-width: ${rm(80)};
+  max-width: ${rm(140)};
   object-fit: contain;
   flex-shrink: 0;
-  filter: brightness(0) invert(1);
-  opacity: 0.85;
+
+  ${media.xsm`
+    height: ${rm(48)};
+    max-width: ${rm(110)};
+  `}
 `
 
 const StyledHeader = styled.div`

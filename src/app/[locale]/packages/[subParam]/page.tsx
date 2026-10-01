@@ -11,15 +11,19 @@ export const generateMetadata = createMetadataGenerator({
     transformData: (data) => {
       // SEO fields live in the package's `metadata` component;
       // hero.title/mainDescription are the on-page copy, kept only as fallback.
-      const meta = data?.package?.metadata;
+
+      // Prefer an explicitly set OG image, otherwise fall back to the package media.
+      // Select the media object before resolving the path, since getMediaStrapiPath
+      // returns a truthy placeholder for empty media (which would break a path-level ||).
+      const ogMedia = data?.package?.metadata?.openGraph || data?.package?.mainMediaLeft?.poster;
 
       const metadata = {
-        metatitle: meta?.metatitle || data?.package?.hero?.title,
-        metadescription: meta?.metadescription || data?.package?.mainDescription,
-        metakeywords: meta?.metakeywords,
-        openGraph: meta?.openGraph?.url
-          ? meta.openGraph
-          : { url: getMediaStrapiPath(data?.package?.mainMediaLeft?.poster) }
+        metatitle: data?.package?.metadata?.metatitle || data?.package?.hero?.title,
+        metadescription: data?.package?.metadata?.metadescription || data?.package?.mainDescription,
+        metakeywords: data?.package?.metadata?.metakeywords,
+        openGraph: {
+          url: getMediaStrapiPath(ogMedia)
+        }
       }
 
       return metadata;

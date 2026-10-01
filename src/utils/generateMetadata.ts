@@ -37,14 +37,18 @@ interface MetadataProps {
     siteName?: string;
     locale?: string;
     ogType?: 'website' | 'article';
+    skipBrand?: boolean;
 }
 
-const BRAND_PREFIX = 'Street Barbell'
+const BRAND_SUFFIX = 'Street Barbell'
 
-function formatTitle(title: string): string {
-    return title.toLowerCase().startsWith(BRAND_PREFIX.toLowerCase())
+function formatTitle(title: string, skipBrand = false): string {
+    // Home page (and any explicitly opted-out page) keeps its raw title.
+    if (skipBrand) return title
+    // Avoid double branding when the title already mentions the brand.
+    return title.toLowerCase().includes(BRAND_SUFFIX.toLowerCase())
         ? title
-        : `${BRAND_PREFIX}: ${title}`
+        : `${title} | ${BRAND_SUFFIX}`
 }
 
 export function generateMetadata({
@@ -59,8 +63,9 @@ export function generateMetadata({
     siteName = 'Street Barbell',
     locale = 'en_US',
     ogType = 'website',
+    skipBrand = false,
 }: MetadataProps): Metadata {
-    const formattedTitle = formatTitle(title)
+    const formattedTitle = formatTitle(title, skipBrand)
     return {
         title: formattedTitle,
         description,

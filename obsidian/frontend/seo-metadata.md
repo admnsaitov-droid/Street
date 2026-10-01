@@ -31,8 +31,9 @@ export const generateMetadata = createMetadataGenerator({
 It reads `metadata.metatitle`, `metadescription`, `metakeywords` and `openGraph`
 from the Strapi payload, falls back on error (twice — fetch failure and generation
 failure are both handled), and delegates to `generateMetadata` in
-`src/utils/generateMetadata.ts`, which builds title (brand-prefixed with
-`Street Barbell: ` unless already prefixed), description, keywords, canonical,
+`src/utils/generateMetadata.ts`, which builds title (`<title> | Street Barbell`
+suffix; skipped when the title already contains the brand, and on Home via
+`skipBrandSuffix: true`), description, keywords, canonical,
 OpenGraph, Twitter card and `alternates`.
 
 `generateHreflangTags` fills `alternates.languages` across all five locales.
@@ -79,8 +80,12 @@ and OG URLs.
 - **Adding a route means adding it to the static list in
   `sitemap-pages.xml/route.ts` (via `src/utils/sitemap.ts`) in the same
   change.** This is the most common drift in this repo.
-- `src/app/robots.ts` — allows `/`, disallows `/_next/`, `/api/`, `/admin/`,
+- `src/app/robots.ts` — allows `/`, disallows `/api/`, `/admin/`,
   `/login/`, `/dashboard/`, and points at `${baseUrl}/sitemap.xml`.
+  **Never disallow `/_next/`.** It holds the JS/CSS chunks Googlebot needs to
+  render the page and `/_next/image` — every optimised image. Blocking it makes
+  Google index unrendered, imageless pages. (It was removed 2026-09-10, silently
+  re-added by the 2026-09-29 merge, removed again 2026-10-01.)
 - `src/redirects.mjs` feeds `next.config.mjs → redirects()`. Changing a URL means
   adding a redirect there.
 

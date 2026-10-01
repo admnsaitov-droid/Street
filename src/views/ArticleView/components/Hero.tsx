@@ -9,7 +9,7 @@ import styled from "styled-components"
 export const Hero = ({ data }: { data: any }) => {
     return (
         <StyledHero>
-            <StyledTitle>{data.title}</StyledTitle>
+            <StyledTitle>{data?.title}</StyledTitle>
             <StyledAuthor>
                 <div className="imageContainer">
                     <Image src={getMediaStrapiPath(data?.author?.avatar)} alt={data?.author?.name} fill priority />

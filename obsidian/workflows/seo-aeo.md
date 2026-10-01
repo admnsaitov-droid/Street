@@ -34,7 +34,7 @@ WebGL scenes are `ssr: false` and contain nothing indexable.
 `src/app/sitemap.ts`, for all five locales. This drifts constantly.
 
 **Metadata** — unique title and description per page and per locale, sourced from
-Strapi with a real fallback. Titles are brand-prefixed automatically; do not
+Strapi with a real fallback. Titles get the ` | Street Barbell` suffix automatically (Home opts out with `skipBrandSuffix`); do not
 double-prefix in the CMS.
 
 **Hreflang** — `generateHreflangTags` emits alternates for `en es fr de fi`.
@@ -52,7 +52,7 @@ loses the locale prefix and produces a 404-ish redirect chain.
 
 **Performance** — LCP is usually a Strapi image or a scene. [[optimize-3d-scene]].
 
-**Robots** — `src/app/robots.ts` allows `/` and disallows `/_next/`, `/api/`,
+**Robots** — `src/app/robots.ts` allows `/` and disallows `/api/`,
 `/admin/`, `/login/`, `/dashboard/`. Verify nothing staging-ish survives.
 
 ## Answer-engine visibility (AEO)

@@ -53,6 +53,8 @@ interface MetadataConfig {
   // Optional transformer to extract metadata from different data structures
   transformData?: (data: any) => any;
   ogType?: 'website' | 'article';
+  // When true, the global " | Street Barbell" brand suffix is not appended (e.g. Home).
+  skipBrandSuffix?: boolean;
 }
 
 /**
@@ -60,6 +62,22 @@ interface MetadataConfig {
  * @param config Configuration object with metadata fetching logic and fallbacks
  * @returns generateMetadata function that can be exported from page components
  */
+/**
+ * og:image must be an absolute, reachable URL. Strapi uploads (`/uploads/…`)
+ * live on the Strapi host; any other relative path is a site asset and is
+ * resolved against `metadataBase`. `getMediaStrapiPath` returns
+ * `/placeholder.jpg` for empty media — that is not a share image, so it falls
+ * through to the site default (`/open-graph.png` in generateMetadata).
+ */
+function resolveOgImage(url: string | undefined): string | undefined {
+  if (!url || url === '/placeholder.jpg') return undefined;
+  if (url.startsWith('http')) return url;
+  if (url.startsWith('/uploads')) {
+    return `${process.env.NEXT_PUBLIC_IMAGE_URL || 'https://admin.streetbarbell.com'}${url}`;
+  }
+  return url;
+}
+
 export function createMetadataGenerator(config: MetadataConfig) {
   return async function generateMetadata({
     params,
@@ -107,15 +125,10 @@ export function createMetadataGenerator(config: MetadataConfig) {
         description: metadata?.metadescription || config.fallback.description,
         keywords: metadata?.metakeywords || config.fallback.keywords,
         url: fullUrl,
-        // og:image must be an absolute, reachable URL. `/api/media` does not
-        // exist as a route — point straight at the Strapi upload instead.
-        ogImage: metadata?.openGraph?.url
-          ? metadata.openGraph.url.startsWith('http')
-            ? metadata.openGraph.url
-            : `${process.env.NEXT_PUBLIC_IMAGE_URL || 'https://admin.streetbarbell.com'}${metadata.openGraph.url}`
-          : undefined,
+        ogImage: resolveOgImage(metadata?.openGraph?.url),
         locale: locale === 'en' ? 'en_US' : `${locale}_${locale.toUpperCase()}`,
         ogType: config.ogType,
+        skipBrand: config.skipBrandSuffix,
       });
       
       // Add hreflang tags to alternates
@@ -146,6 +159,7 @@ export function createMetadataGenerator(config: MetadataConfig) {
         keywords: config.fallback.keywords,
         url: fullUrl,
         locale: locale === 'en' ? 'en_US' : `${locale}_${locale.toUpperCase()}`,
+        skipBrand: config.skipBrandSuffix,
       });
       
       // Add hreflang tags to alternates

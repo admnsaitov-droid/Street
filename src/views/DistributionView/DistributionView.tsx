@@ -107,6 +107,7 @@ export const DistributionView = ({ data }: DistributionViewProps) => {
                     ]} />
                     <StyledTitleContainer>
                         <h1>
+                            {/* AnimatedGrid renders its own crawlable/accessible text copy */}
                             <AnimatedGrid
                                 tag="span"
                                 type="words"
@@ -169,6 +170,7 @@ export const DistributionView = ({ data }: DistributionViewProps) => {
         </StyledDistributionView>
     )
 }
+
 
 const StyledDistributionView = styled.div`
     width: 100%;

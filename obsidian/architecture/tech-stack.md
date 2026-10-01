@@ -12,7 +12,7 @@ machine-readable list is `package.json`; this note is the *why*.
 
 | Package | Version | Role |
 |---|---|---|
-| `next` | 14.2.23 | App Router, server components, API routes, image optimisation, metadata API |
+| `next` | 14.2.25 | App Router, server components, API routes, image optimisation, metadata API |
 | `react` / `react-dom` | 18 | — |
 | `typescript` | 5 | `strict: true`; `@/*` → `src/*` |
 | `next-intl` | 4.3.4 | Locale-prefixed routing (`/[locale]/…`) + middleware. Locale list: [[routing-views]] |
@@ -117,7 +117,7 @@ field or `.nvmrc` — the Node floor is unpinned.
 
 | Package | Held at | Why |
 |---|---|---|
-| `next` | 14.2.23 | The app is written against 14.2 App Router semantics; a 15/16 move is a planned migration, not a bump. Re-run `/adapt` after it. |
+| `next` | 14.2.25 (security floor: CVE-2025-29927 middleware bypass is fixed in 14.2.25 — never go below) | The app is written against 14.2 App Router semantics; a 15/16 move is a planned migration, not a bump. Re-run `/adapt` after it. |
 | `three` + `@react-three/fiber` | 0.172 / 8.x | R3F 9 requires React 19. Locked together with the React 18 floor. |
 
 ## Not installed — decided per project

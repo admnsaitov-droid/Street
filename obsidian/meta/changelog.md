@@ -1,6 +1,6 @@
 ---
 tags: [meta, changelog]
-updated: 2026-09-29
+updated: 2026-10-01
 ---
 
 # Changelog
@@ -10,6 +10,50 @@ change: dependencies, architecture, conventions, launches.
 
 Format: `## YYYY-MM-DD — short title` followed by what changed and why it
 mattered. Link the ADR when there is one.
+
+---
+
+## 2026-10-01 — Restored main's July–September work lost in the den merge
+
+The 2026-09-29 merge of `textura/den` used `--allow-unrelated-histories` and
+resolved all 84 conflicts in den's favour. The two repos **do** share a base —
+this repo's root `fd10313` is den's `e45e7dc` (2026-07-03) — and den's
+September work never contained this repo's July–September commits, so taking
+den silently reverted them. Redone as a true 3-way merge (ADR-0116): 3 real
+conflicts instead of 84, applied as a forward fix (no history rewrite).
+
+Restored:
+- **`robots.ts` no longer disallows `/_next/`** — the re-added line blocked
+  Googlebot from the JS/CSS chunks and `/_next/image`.
+- **Next 14.2.25** (security floor — CVE-2025-29927 middleware bypass); lockfiles
+  now updated too, the original bump only touched `package.json`.
+- **Titles:** `<title> | Street Barbell`, Home without the brand
+  (`skipBrandSuffix`). The `Street Barbell: ` prefix was the July state, not a
+  den decision.
+- **Metadata from the `metadata` component** for line/product/package (the
+  original 2026-09-10 version, which also resolves the OG media object before
+  the path).
+- **"Explore the line"** (`SameLineProducts`) on product pages + the `linesData`
+  fetch in the product route.
+- Distributor logo sizing/original colours, the package "send request" button
+  → `/contact`, null-safety in Article/Articles/Policy/Contact/Lines/Packages
+  views, AnimatedText unused imports.
+
+Also:
+- The Distribution `<h1>` had a per-page visually-hidden copy from main *and*
+  now the generic `AnimatedGrid` copy — the per-page one is removed (one text
+  copy, no `aria-hidden` wrapper hiding it from screen readers).
+- `og:image`: `/placeholder.jpg` (what `getMediaStrapiPath` returns for empty
+  media) now falls through to the site default `/open-graph.png` instead of
+  becoming a 404 on the Strapi host.
+- `next.config` `admin.streetbarbell.com` remote pattern had `port: '443'`,
+  which never matches (Next compares against `url.port`, `''` for default
+  https) — removed, so it works as a fallback when `NEXT_PUBLIC_IMAGE_URL` is
+  unset.
+
+Verified on a local production build: robots, titles on 6 page types, one `<h1>`
+with text on 5 page types, absolute og:image URLs, explore-the-line links,
+sitemap `<lastmod>`. `verify.sh` 4 FAIL / 6 WARN — unchanged baseline.
 
 ---
 
@@ -42,10 +86,13 @@ mattered. Link the ADR when there is one.
 ## 2026-09-29 — textura/den merged in; distributor grouping; media fixes; content audit
 
 - **Merged the `textura/den` repository into `main`** (`--allow-unrelated-histories`
-  — the two repos share no ancestor; remote `textura` added). Den won every
-  conflict except the sitemap: the route-based index stayed and den's legacy
-  `app/sitemap.ts` was deleted (ADR-0115). Den's dead `SameLineProducts` and the
-  old Globe `PlanetModel` were dropped with it.
+  — remote `textura` added). Den won every conflict except the sitemap: the
+  route-based index stayed and den's legacy `app/sitemap.ts` was deleted
+  (ADR-0115); the old Globe `PlanetModel` was dropped too.
+  **Correction (2026-10-01):** the repos *do* share an ancestor, and "den won
+  every conflict" reverted this repo's July–September work — including
+  `SameLineProducts`, which was this repo's feature, not dead den code.
+  Repaired in the 2026-10-01 entry; see ADR-0116.
 - **Distributors are grouped by country.** Several distributors can share one
   country (Benelux ×3, USA ×3) and rendered as stacked, half-clickable markers.
   `Trackers` now dedupes to one marker per country; selecting a country shows

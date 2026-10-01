@@ -13,7 +13,7 @@
   "framework": {
     "id": "nextjs",
     "name": "Next.js App Router",
-    "version": "14.2.23",
+    "version": "14.2.25",
     "renderModel": "server-components"
   },
 
