@@ -26,6 +26,8 @@ exception and are marked as such.
 | `generateStructuredData.ts` | `generateOrganizationSchema`, `generateWebSiteSchema`, `generateArticleSchema`, `combineSchemas`, `generateStructuredDataScript` — the JSON-LD builders. |
 | `localizedUrl(...)` | Builds a locale-prefixed URL. |
 | `locales.ts` | `getLocaleCodes`, `getDefaultLocale`, `getStrapiLocales` — locale list with `src/config/locales.ts` as the static fallback. |
+| `sitemap.ts` | Sitemap data + XML: `fetchStaticPageDates`, `fetchLines`, `fetchArticles`, `fetchPackages` (per-locale `updatedAt`, each also returns the `loaded` locale set), `listedIn` (emit a URL only in locales that list the item), `pickDate`/`maxDate`/`maxOverItems`, `buildUrlset`/`buildSitemapIndex`. Fetches are cached and tagged `strapi`. See [[seo-metadata]]. |
+| `../config/cache.ts` | `CONTENT_REVALIDATE` (300s) and `CONTENT_CACHE_TAG` (`strapi`) — the one TTL/tag shared by `fetchStrapi`, `getStrapiData` and the sitemap (ADR-0117). |
 
 ## Maths & animation
 
