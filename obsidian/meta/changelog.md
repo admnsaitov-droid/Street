@@ -40,9 +40,12 @@ browser sweep of 14 page types × mobile/desktop:
   `getStrapiData`: the Hostinger edge and the Strapi host drop ~3% of TLS
   handshakes under parallel connections (Google/Cloudflare controls: 0%).
 
-Not code (hosting/content, reported): `REVALIDATE_SECRET` still unset on prod
-(webhook 503); Hostinger CDN answers GPTBot with 429 (ClaudeBot/Perplexity 200);
-EN contact title starts with a Cyrillic "С".
+Not code (hosting/content, reported): **Google Maps is broken on prod** — the
+API key's referrer allow-list lacks `https://www.streetbarbell.com/*`
+(`RefererNotAllowedMapError` on contact + projects, 5/5 loads);
+`REVALIDATE_SECRET` still unset on prod (webhook 503); Hostinger CDN answers
+GPTBot with 429 (ClaudeBot/Perplexity 200); EN contact title starts with a
+Cyrillic "С".
 
 ---
 
