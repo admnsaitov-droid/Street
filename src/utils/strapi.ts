@@ -34,14 +34,21 @@ export const getStrapiData = async (path: string, locale?: string) => {
       // `fetch`, not axios: on the server it goes through the Next data cache,
       // so a page render reuses the response instead of a fresh round trip to
       // /api and on to Strapi (ADR-0117). In the browser `next` is ignored.
-      const requestPromise = fetch(cacheKey, {
+      const isServer = typeof window === 'undefined';
+      const doFetch = () => fetch(cacheKey, {
         headers: {
           'Accept': 'application/json',
         },
         signal: controller.signal,
-        ...(typeof window === 'undefined'
+        ...(isServer
           ? { next: { revalidate: CONTENT_REVALIDATE, tags: [CONTENT_CACHE_TAG] } }
           : {}),
+      });
+      // Server-side self-calls go out through the CDN, which intermittently
+      // drops a TLS handshake; retry a connection failure once (not an abort).
+      const requestPromise = doFetch().catch((error) => {
+        if (!isServer || controller.signal.aborted) throw error;
+        return doFetch();
       }).then(async (response) => {
         if (!response.ok) {
           throw new Error(`${response.status} for ${cacheKey}`);

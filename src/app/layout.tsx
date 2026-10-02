@@ -4,6 +4,7 @@ import { Golos_Text } from "next/font/google";
 import localFont from "next/font/local";
 import Script from "next/script";
 import { HtmlLangSetter } from "@/components/HtmlLangSetter";
+import { getLocale } from "next-intl/server";
 
 const onest = Onest({
   subsets: ["latin"],
@@ -27,13 +28,25 @@ export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_BASEURL || 'https://www.streetbarbell.com'),
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // The server HTML must carry the page's real language — it used to ship
+  // lang="en" on every locale and only HtmlLangSetter fixed it client-side, so
+  // crawlers saw /es, /de, /fr, /fi as English. next-intl's middleware passes
+  // the locale on the request; pages are dynamically rendered already, so
+  // reading it here costs nothing.
+  let locale = 'en';
+  try {
+    locale = await getLocale();
+  } catch {
+    // outside a locale (e.g. the root not-found) — keep the default
+  }
+
   return (
-    <html lang="en">
+    <html lang={locale}>
       <head>
         {process.env.NEXT_PUBLIC_GTM_ID && (
           <Script id="gtm-script" strategy="afterInteractive">{`

@@ -6,7 +6,6 @@ import { colors, media, rm } from "@/styles"
 import { fontGolosText, fontSageGrotesk } from "@/styles/fonts"
 import { heightLvh } from "@/styles/utils"
 import { getMediaStrapiPath } from "@/utils/getMediaStrapiPath"
-import { useWindowWidth } from "@react-hook/window-size"
 import Image from "next/image"
 import styled from "styled-components"
 
@@ -15,19 +14,17 @@ interface HeroProps {
 }
 
 export const Hero = ({ heroData }: HeroProps) => {
-    const width = useWindowWidth()
-
     return (
         <StyledHero>
             <MediaComponent media={heroData?.mainVideo} className="hero-media" isExtendable={false} priority={true} sizes="100vw" placeholderTone="dark"/>
             {/*
-              `useWindowWidth` reports 0 until it has measured, and 0 <= 768, so
-              this dark overlay flashed over the desktop hero for a frame before
-              being removed. Wait for a real measurement.
+              Always rendered; CSS alone decides visibility (display:none, block
+              on media.xsm). Gating it on `useWindowWidth()` rendered a different
+              tree on the server (width 0) than on a phone's first client render
+              (real width), so every mobile visit threw hydration errors
+              #418/#423 and React discarded the server HTML (ADR-0114).
             */}
-            {width > 0 && width <= 768 && (
-                <StyledMobileBackgroundViewoContainer />
-            )}
+            <StyledMobileBackgroundViewoContainer />
             <BackgroundProgressiveBlur/>
             <StyledContent>
                 <div className="left">

@@ -42,13 +42,18 @@ interface MetadataProps {
 
 const BRAND_SUFFIX = 'Street Barbell'
 
-function formatTitle(title: string, skipBrand = false): string {
+// Matches the brand however the CMS spells it: "Street Barbell",
+// "StreetBarbell", and the "Street Barbel" typo found in several metatitles —
+// all of which used to get a second " | Street Barbell" appended.
+const BRAND_PATTERN = /street\s*barbel/i
+
+function formatTitle(rawTitle: string, skipBrand = false): string {
+    // CMS titles arrive with stray leading/trailing spaces.
+    const title = rawTitle.trim()
     // Home page (and any explicitly opted-out page) keeps its raw title.
     if (skipBrand) return title
     // Avoid double branding when the title already mentions the brand.
-    return title.toLowerCase().includes(BRAND_SUFFIX.toLowerCase())
-        ? title
-        : `${title} | ${BRAND_SUFFIX}`
+    return BRAND_PATTERN.test(title) ? title : `${title} | ${BRAND_SUFFIX}`
 }
 
 export function generateMetadata({

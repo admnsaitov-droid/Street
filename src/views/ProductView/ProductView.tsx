@@ -8,6 +8,7 @@ import { SwiperBlock } from "./components/SwiperBlock"
 import { StructuredData } from "@/components/StructuredData/StructuredData"
 import { generateProductSchema } from "@/utils/generateStructuredData"
 import { useWindowWidth } from "@react-hook/window-size"
+import { useMounted } from "@/hooks/useMounted"
 import { useMemo, useEffect } from "react"
 import { useColorStore } from "@/store/store"
 import { SimpleButton } from "@/components/Ui/buttons/SimpleButton"
@@ -156,6 +157,9 @@ export const ProductView = ({ data, specificationTexts, linesData }: ProductView
     })
 
     const width = useWindowWidth()
+    // Mobile-only markup appears after mount, so the first client render
+    // matches the server's (desktop) HTML (ADR-0114).
+    const mounted = useMounted()
     const hasSwiperMedias = Array.isArray(data?.product?.swiperMedias) && data.product.swiperMedias.length > 0
     const swiperTitle = data?.product?.referencesTitle || { textFirst: "References"}
     const quoteLink = data?.product?.quoteButton?.link || "/contact"
@@ -167,7 +171,7 @@ export const ProductView = ({ data, specificationTexts, linesData }: ProductView
         <StyledProductView>
             <StructuredData schemas={[productSchema]} />
             <Hero data={data?.product} colors={mainColors} accentColors={accentColors} />
-            {width <= 768 ? (
+            {mounted && width <= 768 ? (
                 <StyledMobileControls>
                     {/* the colour picker now lives inside the configurator itself */}
                     <SimpleButton isSvg link={quoteLink}>

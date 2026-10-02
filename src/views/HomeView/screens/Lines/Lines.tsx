@@ -39,7 +39,7 @@ export const Lines = ({ linesData, isTop = true, isHome = false, exploreLineText
     console.log(linesData)
 
   return (
-    <StyledLines ref={containerRef} isTop={isTop}>
+    <StyledLines ref={containerRef} $isTop={isTop}>
         <ProductPreview />
         {isTop && <StyledTopContainer>
             <AnimatedText className="title" tag="h2">
@@ -93,14 +93,14 @@ export const Lines = ({ linesData, isTop = true, isHome = false, exploreLineText
   )
 };
 
-const StyledLines = styled.div<{ isTop: boolean }>`
+const StyledLines = styled.div<{ $isTop: boolean }>`
   display: flex;
   flex-direction: column;
   width: 100%;
   padding: ${rm(150)} ${rm(50)};
   position: relative;
 
-  ${({ isTop }) => !isTop && `
+  ${({ $isTop }) => !$isTop && `
     padding: 0 !important;
     margin-top: ${rm(80)} !important;
 

@@ -1,6 +1,6 @@
 ---
 tags: [meta, changelog]
-updated: 2026-10-01
+updated: 2026-10-02
 ---
 
 # Changelog
@@ -10,6 +10,39 @@ change: dependencies, architecture, conventions, launches.
 
 Format: `## YYYY-MM-DD — short title` followed by what changed and why it
 mattered. Link the ADR when there is one.
+
+---
+
+## 2026-10-02 — Production audit fixes: hydration, html lang, titles, mobile distributor cards
+
+Found by checking the live deploy (810/810 sitemap URLs 200 on prod) and a
+browser sweep of 14 page types × mobile/desktop:
+
+- **Hydration errors gone (ADR-0114 closed).** Mobile home/es threw #418/#423 on
+  every visit and desktop product pages failed hydration entirely (React threw
+  the server HTML away). Causes: width-gated markup in the home and About hero
+  overlays (now always rendered — CSS already decided visibility), ProductView
+  mobile controls and `SameLineProducts` (now `useMounted`, desktop-first), and
+  `Math.random()` ids in `SimpleInput`/`ContactInput`/`SimpleTextarea` (now
+  `useId()`, so `<label htmlFor>` matches the input). Also transient `$isTop`
+  (home `Lines`) and `$isActive` (`ColorPaletre`) props no longer leak to the DOM.
+- **`<html lang>` is server-rendered per locale** (was `en` on every language).
+- **Titles:** brand detection matches "StreetBarbell"/"Street Barbel" too (no
+  more "… StreetBarbell … | Street Barbell"); titles are trimmed.
+- **`AnimatedGrid` h1 text no longer duplicated** in the rendered DOM: the
+  hidden SEO copy is shown only until the animated rows exist.
+- **Mobile distributor popup was unreadable** — the 2026-09-18 change made the
+  card text dark but left the surface transparent over a black popup. Cards are
+  white like desktop; the close "×" (both) is a real `<button aria-label>` with
+  a visible icon.
+- **Bare domain 308 → www** (`src/redirects.mjs`); both hosts served 200.
+- **One retry on connection-level failures** in `fetchStrapi` and server-side
+  `getStrapiData`: the Hostinger edge and the Strapi host drop ~3% of TLS
+  handshakes under parallel connections (Google/Cloudflare controls: 0%).
+
+Not code (hosting/content, reported): `REVALIDATE_SECRET` still unset on prod
+(webhook 503); Hostinger CDN answers GPTBot with 429 (ClaudeBot/Perplexity 200);
+EN contact title starts with a Cyrillic "С".
 
 ---
 

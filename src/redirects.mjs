@@ -1,5 +1,14 @@
 /** @type {import('next').NextConfig['redirects']} */
 const redirects = [
+  // Bare domain -> www. Both hosts served the full site with 200 (canonicals
+  // already point at www). Next anchors the host pattern (^…$), so this never
+  // matches www.streetbarbell.com — no loop. Query strings are kept.
+  {
+    source: '/:path*',
+    has: [{ type: 'host', value: 'streetbarbell\\.com' }],
+    destination: 'https://www.streetbarbell.com/:path*',
+    permanent: true,
+  },
   { source: '/about', destination: '/en/about', permanent: true },
   { source: '/contacts', destination: '/en/contact', permanent: true },
   { source: '/privacy-policy', destination: '/en/privacy-policy', permanent: true },

@@ -1,6 +1,6 @@
 import styled from "styled-components"
 import { rm, colors, media } from "@/styles"
-import { useState, FocusEvent, TextareaHTMLAttributes, forwardRef } from "react"
+import { useState, FocusEvent, TextareaHTMLAttributes, forwardRef, useId } from "react"
 import { fontGolosText } from "@/styles/fonts"
 
 interface SimpleTextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
@@ -12,7 +12,10 @@ export const SimpleTextarea = forwardRef<HTMLTextAreaElement, SimpleTextareaProp
   const [focused, setFocused] = useState(false)
   
   // Generate unique ID for accessibility
-  const textareaId = props.id || `textarea-${Math.random().toString(36).substr(2, 9)}`
+  // useId, not Math.random: a random id differs between server and client, so
+  // the server's <label htmlFor> pointed at an id the input no longer had.
+  const generatedId = useId()
+  const textareaId = props.id || `textarea-${generatedId}`
 
   const handleFocus = () => setFocused(true)
   const handleBlur = (e: FocusEvent<HTMLTextAreaElement>) => {

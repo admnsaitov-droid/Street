@@ -62,9 +62,9 @@ export const SelectedLocationCardMobile = ({ location, onClick, isExpanded = fal
         </StyledButtonContainer>
       )}
       {isExpanded && (
-        <StyledCloseButton onClick={() => onClick?.()}>
+        <StyledCloseButton type="button" aria-label="Close" onClick={() => onClick?.()}>
             <svg width="20" height="19" viewBox="0 0 20 19" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M5.25 4.75L14.75 14.25M14.75 4.75L5.25 14.25" stroke="white" strokeWidth="1.58333" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M5.25 4.75L14.75 14.25M14.75 4.75L5.25 14.25" stroke="currentColor" strokeWidth="1.58333" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
         </StyledCloseButton>
       )}
@@ -77,9 +77,17 @@ const StyledLocationCard = styled.div<{
   $isExpanded: boolean
   $animationPhase?: 'idle' | 'hiding' | 'showing'
 }>`
+  position: relative;
   padding: ${rm(20)};
-  margin-bottom: 0;
-  background-color: transparent;
+  margin-bottom: ${rm(10)};
+  /*
+    White, like the desktop selected card. The text colours were switched to
+    dark on 2026-09-18 but the surface stayed transparent over the popup's
+    near-black background, so name, location and website were invisible.
+  */
+  background-color: ${colors.white100};
+  border: 1px solid ${colors.gray700};
+  border-radius: ${rm(8)};
   transition: all 0.3s ease;
   cursor: ${({ $isExpanded }) => $isExpanded ? 'default' : 'pointer'};
 
@@ -303,13 +311,17 @@ const StyledButtonContainer = styled.div<{ $isExpanded: boolean }>`
   margin-top: ${({ $isExpanded }) => $isExpanded ? rm(20) : '0'};
 `
 
-const StyledCloseButton = styled.div`
+const StyledCloseButton = styled.button`
     position: absolute;
     top: ${rm(28)};
     right: ${rm(20)};
     cursor: pointer;
     transition: opacity 0.3s ease;
-    background-color: #6F768526;
+    /* the card is white now — a white X on a translucent square was invisible */
+    border: 0;
+    padding: 0;
+    color: ${colors.black100};
+    background-color: ${colors.bgGray};
     border-radius: ${rm(3)};
     width: ${rm(38)};
     height: ${rm(38)};

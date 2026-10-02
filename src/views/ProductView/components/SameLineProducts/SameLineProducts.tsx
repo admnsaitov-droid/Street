@@ -19,6 +19,7 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import { useWindowWidth } from "@react-hook/window-size";
+import { useMounted } from "@/hooks/useMounted";
 
 interface SameLineProductsProps {
     // Full response from the `get-lines` endpoint (lines-page data)
@@ -79,6 +80,10 @@ export const SameLineProducts = ({ linesData, currentSlug }: SameLineProductsPro
     const [isEnd, setIsEnd] = useState(false);
 
     const width = useWindowWidth()
+    // Width-conditional markup must match the server, which renders the desktop
+    // branch (ADR-0114): desktop until mounted, mobile only after.
+    const mounted = useMounted()
+    const isNarrow = mounted && width <= 576
 
     const [swiperInViewRef, swiperInView] = useInView({ once: true });
     const [buttonsInViewRef, buttonsInView] = useInView({ once: true });
@@ -96,7 +101,7 @@ export const SameLineProducts = ({ linesData, currentSlug }: SameLineProductsPro
 
     const productsMobile = products?.slice(0, 3)
 
-    const slidesPerView = width > 768 ? 4 : 3
+    const slidesPerView = (!mounted || width > 768) ? 4 : 3
     const canSwipe = products.length > slidesPerView
     const lineLink = lineSlug ? `/lines/${lineSlug}` : undefined
 
@@ -176,17 +181,17 @@ export const SameLineProducts = ({ linesData, currentSlug }: SameLineProductsPro
                                 </StyledSwipeButton>
                             </StyledSwipeButtonContainer>
                         )}
-                        {width > 576 && lineLink && <BlueButton isSvg={false} link={lineLink}>
+                        {!isNarrow && lineLink && <BlueButton isSvg={false} link={lineLink}>
                             {t.button.text}
                         </BlueButton>}
                     </animated.div>
                 </div>
             </StyledTopBar>
-            {width > 576 && <StyledSwiperContainer ref={swiperInViewRef}>
+            {!isNarrow && <StyledSwiperContainer ref={swiperInViewRef}>
                 <Swiper
                     modules={[Navigation]}
                     spaceBetween={20}
-                    slidesPerView={width > 768 ? 4 : 3}
+                    slidesPerView={slidesPerView}
                     navigation={false}
                     pagination={{ clickable: true }}
                     onSwiper={(swiper) => {
@@ -224,7 +229,7 @@ export const SameLineProducts = ({ linesData, currentSlug }: SameLineProductsPro
                     <ProductCard key={index} data={product} />
                 ))}
             </StyledProductsMobile>
-            {width <= 576 && lineLink && <BlueButton isSvg={false} link={lineLink} className="mobile-button">
+            {isNarrow && lineLink && <BlueButton isSvg={false} link={lineLink} className="mobile-button">
                 {t.button.text}
             </BlueButton>}
         </StyledSameLineProducts>

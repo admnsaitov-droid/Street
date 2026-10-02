@@ -62,9 +62,9 @@ export const SelectedLocationCard = ({ location, onClick, isExpanded = false, an
         </StyledButtonContainer>
       )}
       {isExpanded && (
-        <StyledCloseButton onClick={() => onClick?.()}>
+        <StyledCloseButton type="button" aria-label="Close" onClick={() => onClick?.()}>
             <svg width="20" height="19" viewBox="0 0 20 19" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M5.25 4.75L14.75 14.25M14.75 4.75L5.25 14.25" stroke="white" strokeWidth="1.58333" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M5.25 4.75L14.75 14.25M14.75 4.75L5.25 14.25" stroke="currentColor" strokeWidth="1.58333" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
         </StyledCloseButton>
       )}
@@ -300,13 +300,17 @@ const StyledButtonContainer = styled.div<{ $isExpanded: boolean }>`
   margin-top: ${({ $isExpanded }) => $isExpanded ? rm(20) : '0'};
 `
 
-const StyledCloseButton = styled.div`
+const StyledCloseButton = styled.button`
     position: absolute;
     top: ${rm(28)};
     right: ${rm(20)};
     cursor: pointer;
     transition: opacity 0.3s ease;
-    background-color: #6F768526;
+    /* the card is white now — a white X on a translucent square was invisible */
+    border: 0;
+    padding: 0;
+    color: ${colors.black100};
+    background-color: ${colors.bgGray};
     border-radius: ${rm(3)};
     width: ${rm(38)};
     height: ${rm(38)};

@@ -25,13 +25,25 @@ export class StrapiError extends Error {
   }
 }
 
-/** GET `${API_URL}${path}` through the Next data cache; resolves to parsed JSON. */
-export async function fetchStrapi<T = unknown>(path: string): Promise<T> {
-  const response = await fetch(`${process.env.API_URL}${path}`, {
+const request = (path: string) =>
+  fetch(`${process.env.API_URL}${path}`, {
     headers: { Accept: 'application/json' },
     signal: AbortSignal.timeout(10000),
     next: { revalidate: CONTENT_REVALIDATE, tags: [CONTENT_CACHE_TAG] },
   });
+
+/** GET `${API_URL}${path}` through the Next data cache; resolves to parsed JSON. */
+export async function fetchStrapi<T = unknown>(path: string): Promise<T> {
+  let response: Response;
+  try {
+    response = await request(path);
+  } catch (error) {
+    // The Strapi host intermittently drops a TLS handshake under concurrent
+    // connections (measured ~3% at 6 parallel). Retry a connection-level
+    // failure once; never a timeout, which would only double the wait.
+    if ((error as Error)?.name === 'TimeoutError') throw error;
+    response = await request(path);
+  }
 
   if (!response.ok) {
     throw new StrapiError(`Strapi ${path} -> ${response.status}`, response.status);

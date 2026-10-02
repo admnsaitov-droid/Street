@@ -9,7 +9,6 @@ import { heightLvh } from "@/styles/utils"
 import { getMediaStrapiPath } from "@/utils/getMediaStrapiPath"
 import Image from "next/image"
 import styled from "styled-components"
-import { useWindowWidth } from "@react-hook/window-size"
 import { StyledMobileBackgroundViewoContainer } from "@/views/HomeView/screens/Hero/Hero"
 
 interface HeroProps {
@@ -17,16 +16,17 @@ interface HeroProps {
 }
 
 export const Hero = ({ data }: HeroProps) => {
-    const width = useWindowWidth()
     return (
         <StyledHero>
             <MediaComponent media={data?.media} className="image" parallax={true} isExtendable={false} priority={true} />
-            {width <= 768 && (
-                <StyledMobileBackgroundViewoContainer/>
-            )}
-            {width > 768 && (
-                <BackgroundProgressiveBlur/>
-            )}
+            {/*
+              Both always rendered; CSS decides which shows (overlay on xsm,
+              blur above md). Choosing them with useWindowWidth() rendered a
+              different tree on the server than on the client — a hydration
+              mismatch on every About visit (ADR-0114).
+            */}
+            <StyledMobileBackgroundViewoContainer/>
+            <BackgroundProgressiveBlur/>
             <StyledContent>
                 <div className="left">
                     <AnimatedText className="description">{data?.description}</AnimatedText>
@@ -153,6 +153,11 @@ export const BackgroundProgressiveBlur = styled.div`
     border-bottom-left-radius: ${rm(10)};
     border-bottom-right-radius: ${rm(10)};
     overflow: hidden;
+
+    /* desktop-only: it used to be rendered only above 768px */
+    ${media.md`
+        display: none;
+    `}
 
     ${media.xsm`
         display: none;

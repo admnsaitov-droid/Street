@@ -338,6 +338,10 @@ const processNode = (node: React.ReactNode): React.ReactNode[] => {
   ) as { elements: React.ReactNode[]; elementIdMap: { [index: number]: string | undefined } };
 
   // Server-renderable text content for crawlers and screen readers.
+  // Shown only until the measured rows exist: the server HTML (and any
+  // non-JS crawler) gets the text, and once the visible rows render the copy
+  // is dropped — otherwise the rendered DOM held the heading twice and Google
+  // read every <h1> as "Title Title".
   const seoText = useMemo(
     () =>
       Children.toArray(children)
@@ -598,16 +602,18 @@ const processNode = (node: React.ReactNode): React.ReactNode[] => {
     return () => observer.disconnect();
   }, [animatedElements.elements.length, children]);
 
+  const showSeoCopy = Boolean(seoText) && animatedRows.length === 0;
+
   if (tag === "span") {
     return (
       <span ref={ref} style={{ position: "relative", width: "100%", boxSizing: "border-box" }}>
-        {seoText && <SeoText>{seoText}</SeoText>}
+        {showSeoCopy && <SeoText>{seoText}</SeoText>}
         <MainContainerSpan
           ref={containerRef}
           className={containerClassName}
           style={{ ...style, counterReset: debug ? "row-counter" : undefined }}
           $isSpan={true}
-          aria-hidden="true"
+          aria-hidden={showSeoCopy}
         >
           {animatedRows}
         </MainContainerSpan>
@@ -617,12 +623,12 @@ const processNode = (node: React.ReactNode): React.ReactNode[] => {
 
   return (
     <div ref={ref} style={{ position: "relative", width: "100%", boxSizing: "border-box" }}>
-      {seoText && <SeoText>{seoText}</SeoText>}
+      {showSeoCopy && <SeoText>{seoText}</SeoText>}
       <MainContainer
         ref={containerRef}
         className={containerClassName}
         style={{ ...style, counterReset: debug ? "row-counter" : undefined }}
-        aria-hidden="true"
+        aria-hidden={showSeoCopy}
       >
         {animatedRows}
       </MainContainer>

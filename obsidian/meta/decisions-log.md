@@ -848,6 +848,15 @@ does not change the DOM shape and needs no guard.
 reports one mismatch inside its `Hero` subtree, not yet isolated — recorded in
 [[baseline-debt]] rather than left implied.
 
+**Update 2026-10-02 — all clean.** A browser sweep of 14 page types × mobile and
+desktop found the remaining offenders, all the same pattern: the product page
+(`ProductView` mobile controls, and `SameLineProducts`' swiper/buttons/
+`slidesPerView`, which full-page-failed on desktop), the home and About hero
+overlays (now always rendered, CSS picks the visible one), and random
+`Math.random()` input ids (now `useId()`). 28/28 page×viewport runs report no
+hydration warning. Rule of thumb confirmed: if CSS can hide it, don't branch on
+width at all.
+
 Four other real defects surfaced in the same audit and were fixed: an `href` of
 `/products/` built from an empty slug (prefetched, 404, on every page carrying a
 product preview); `<video src="">`, which throws `NotSupportedError`; `<div>`

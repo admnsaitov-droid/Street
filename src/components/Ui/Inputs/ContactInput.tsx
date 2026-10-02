@@ -1,6 +1,6 @@
 import styled from "styled-components"
 import { rm, colors, media } from "@/styles"
-import { useState, FocusEvent, InputHTMLAttributes, forwardRef } from "react"
+import { useState, FocusEvent, InputHTMLAttributes, forwardRef, useId } from "react"
 import { fontGolosText } from "@/styles/fonts"
 
 interface ContactInputProps extends InputHTMLAttributes<HTMLInputElement> {
@@ -12,7 +12,10 @@ export const ContactInput = forwardRef<HTMLInputElement, ContactInputProps>(({ l
   const [focused, setFocused] = useState(false)
   
   // Generate unique ID for accessibility
-  const inputId = props.id || `contact-input-${Math.random().toString(36).substr(2, 9)}`
+  // useId, not Math.random: a random id differs between server and client, so
+  // the server's <label htmlFor> pointed at an id the input no longer had.
+  const generatedId = useId()
+  const inputId = props.id || `contact-input-${generatedId}`
 
   const handleFocus = () => setFocused(true)
   const handleBlur = (e: FocusEvent<HTMLInputElement>) => {

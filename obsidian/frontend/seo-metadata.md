@@ -32,7 +32,9 @@ It reads `metadata.metatitle`, `metadescription`, `metakeywords` and `openGraph`
 from the Strapi payload, falls back on error (twice — fetch failure and generation
 failure are both handled), and delegates to `generateMetadata` in
 `src/utils/generateMetadata.ts`, which builds title (`<title> | Street Barbell`
-suffix; skipped when the title already contains the brand, and on Home via
+suffix, title trimmed; skipped when the title already contains the brand — matched
+by `/street\s*barbel/i`, so "StreetBarbell" and the CMS typo "Street Barbel"
+count too — and on Home via
 `skipBrandSuffix: true`), description, keywords, canonical,
 OpenGraph, Twitter card and `alternates`.
 
@@ -148,8 +150,15 @@ microdata.
 ## Localisation
 
 `localePrefix: 'always'`, so `/en/...` is canonical and there is no unprefixed
-version. `HtmlLangSetter` syncs `<html lang>` client-side — the static
-`lang="en"` in `src/app/layout.tsx` is what ships in the initial HTML.
+version. **`<html lang>` is server-rendered** from the request locale
+(`getLocale()` from `next-intl/server` in `src/app/layout.tsx`, default `en`
+outside a locale). Until 2026-10-02 it shipped a static `lang="en"` on every
+locale and only `HtmlLangSetter` fixed it client-side; that component stays for
+client-side navigations.
+
+**Bare domain → www.** `src/redirects.mjs` 308-redirects `streetbarbell.com`
+to `https://www.streetbarbell.com` (host-matched; Next anchors the pattern, so
+`www.` never matches). Both hosts used to serve the full site with 200.
 
 ## Checklist for a new page
 

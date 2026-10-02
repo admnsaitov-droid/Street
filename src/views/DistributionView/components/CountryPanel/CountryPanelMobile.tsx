@@ -476,10 +476,9 @@ const StyledPopupContent = styled.div<{ $isClosing: boolean }>`
     height: 100%;
     // margin-top: ${rm(120)};
     overflow-y: auto;
-    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.95) 100%);
+    /* the white cards carry their own surface; the overlay dims and blurs the page */
+    background: transparent;
     border-radius: ${rm(8)};
-    border: 1px solid #B7BCCA33;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
     
     /* Ensure proper scrolling behavior */
     overscroll-behavior: contain;

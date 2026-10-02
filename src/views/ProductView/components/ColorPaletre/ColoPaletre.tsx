@@ -51,7 +51,7 @@ export const ColorPaletre = ({ mainColors, accentColors }: ColorPaletreProps) =>
         <StyledColorPaletre>
             <StyledTop>
                 <StyledText 
-                    isActive={colorMode === 'main'} 
+                    $isActive={colorMode === 'main'} 
                     onClick={() => setColorMode('main')}
                 >
                     Main Color
@@ -60,7 +60,7 @@ export const ColorPaletre = ({ mainColors, accentColors }: ColorPaletreProps) =>
                     <>
                         <div className="divider"></div>
                         <StyledText 
-                            isActive={colorMode === 'accent'} 
+                            $isActive={colorMode === 'accent'} 
                             onClick={() => setColorMode('accent')}
                         >
                             Accent color
@@ -118,10 +118,10 @@ const StyledTop = styled.div`
     }
 `
 
-const StyledText = styled.p<{ isActive: boolean }>`
+const StyledText = styled.p<{ $isActive: boolean }>`
     font-size: ${rm(16)};
     ${fontGolosText(400)};
-    color: ${({ isActive }) => isActive ? 'black' : '#868D9C'};
+    color: ${({ $isActive }) => $isActive ? 'black' : '#868D9C'};
     transition: color 0.3s ease-in-out;
     text-transform: uppercase;
     cursor: pointer;
