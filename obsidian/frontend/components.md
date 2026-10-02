@@ -46,7 +46,7 @@ Built **on** the engine; this is where project-specific motion belongs.
 | Component | Purpose |
 |---|---|
 | `AnimatedText` | text reveal with project defaults |
-| `AnimatedContent` | generic content reveal (`AnimatedGrid`). Rows only exist after client-side measurement, so it always renders a visually-hidden plain-text copy of its children (same idea as TextEngine's `seo` prop) — that copy is what the server HTML and crawlers see; the animated rows are `aria-hidden` |
+| `AnimatedContent` | generic content reveal (`AnimatedGrid`). Rows only exist after client-side measurement, so until they do it renders a visually-hidden plain-text copy of its children (rows container `aria-hidden` meanwhile) — that copy is what the server HTML and non-JS crawlers see. Once the rows render the copy is dropped and the rows are exposed, so the rendered DOM holds the text once (it used to read "Title Title") |
 | `AnimatedTranslate` | translate-in wrapper |
 | `AnimatedDivider` | line that draws itself in |
 | `AnimatedLink` / `UnderlineLink` | link with hover underline motion |
@@ -58,7 +58,7 @@ Built **on** the engine; this is where project-specific motion belongs.
 | Component | Notes |
 |---|---|
 | `buttons/BlueButton` · `WhiteButton` · `SimpleButton` | the three house buttons |
-| `Inputs/ContactInput` · `SimpleInput` · `SimpleTextarea` | form controls |
+| `Inputs/ContactInput` · `SimpleInput` · `SimpleTextarea` | form controls. Default ids come from `useId()` (never `Math.random()`, which differed between server and client and broke `<label htmlFor>`) |
 | `checkbox/SimpleCheckbox` | — |
 
 ## Shared infrastructure
