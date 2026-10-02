@@ -53,10 +53,18 @@ reach across into another view's folder.
 
 - **No literal copy, numbers or image paths inside a component.** Content arrives
   as props, sourced from Strapi at the route.
-- Translated UI strings that are not editorial live next to the component in a
+- **Interface texts (buttons, labels, breadcrumbs, aria-labels, error/404
+  copy) come from Strapi's "Тексты интерфейса" single type** via
+  `useUiStrings()` (`src/components/UiStrings/UiStringsProvider.tsx`) — never a
+  literal in JSX (ADR-0119). New text = a field in the Strapi schema + every
+  locale in its `seed/ui-strings.json` + the English default in
+  `src/config/uiStrings.ts`; the next Strapi deploy fills it everywhere.
+- Older translated UI strings still live next to their component in a
   `*Translations.ts` file (`contactFormTranslations.ts`,
-  `successModalTranslations.ts`, `cookieTranslations.ts`) — that is the existing
-  pattern, keyed by locale.
+  `successModalTranslations.ts`, `errorModalTranslations.ts`,
+  `cookieTranslations.ts`, `sameLineProductsTranslations.ts`) — translated, but
+  not editable in the admin. Don't add new ones; move them to the Strapi type
+  when you touch them.
 - Every async surface needs `loading` / `error` / `empty` states. The `Skeleton/`
   components exist for this and should mirror the final layout.
 

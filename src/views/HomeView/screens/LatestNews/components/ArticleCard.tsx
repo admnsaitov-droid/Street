@@ -7,11 +7,14 @@ import { getMediaStrapiPath } from "@/utils/getMediaStrapiPath"
 import { formatDate } from "@/utils/dateFormat"
 import { AnimLink } from "@/layouts/AnimatedRouterLayout/AnimatedRouterLayout"
 
+import { useUiStrings } from "@/components/UiStrings/UiStringsProvider"
 interface ArticleCardProps {
     article: any
 }
 
 export const ArticleCard = ({ article }: ArticleCardProps) => {
+
+    const ui = useUiStrings()
 
     return (
         <StyledArticleCard>
@@ -21,7 +24,7 @@ export const ArticleCard = ({ article }: ArticleCardProps) => {
                 <StyledTitle>
                     <div className="square" />
                     {/* <span className="text">{article?.type}</span> */}
-                    <span className="text">Event</span>
+                    <span className="text">{ui.newsCardTag}</span>
                 </StyledTitle>
                 <StyledDescription className="description" as="h3">
                     {article?.title}

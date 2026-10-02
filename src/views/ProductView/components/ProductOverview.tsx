@@ -10,6 +10,7 @@ import { Specifications } from "./Specifications"
 import { Muscles } from "./Muscles"
 import { AnimatedText } from "@/components/animated/AnimatedText/AnimatedText"
 
+import { useUiStrings } from "@/components/UiStrings/UiStringsProvider"
 const SPEC_FIELDS: { textKey: string; valueKey: string }[] = [
     { textKey: "widthText", valueKey: "widthValue" },
     { textKey: "lengthText", valueKey: "lengthValue" },
@@ -27,7 +28,8 @@ export interface ProductOverviewProps {
 }
 
 export const ProductOverview = ({ data, specificationTexts }: ProductOverviewProps) => {
-    const aboutText = data?.aboutText || "About"
+    const ui = useUiStrings()
+    const aboutText = data?.aboutText || ui.productAboutTitle
 
     const specifications = useMemo(() => {
         if (!data || !specificationTexts) return []

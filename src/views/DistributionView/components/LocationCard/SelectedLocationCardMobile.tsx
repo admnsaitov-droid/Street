@@ -4,6 +4,7 @@ import styled from "styled-components"
 import { Location as DistributionLocation } from "../../data/distributionData"
 import { BlueButton } from "@/components/Ui/buttons/BlueButton"
 
+import { useUiStrings } from "@/components/UiStrings/UiStringsProvider"
 interface SelectedLocationCardMobileProps {
   location: DistributionLocation
   onClick?: () => void
@@ -14,6 +15,7 @@ interface SelectedLocationCardMobileProps {
 }
 
 export const SelectedLocationCardMobile = ({ location, onClick, isExpanded = false, animationPhase = 'idle', locationText, websiteText }: SelectedLocationCardMobileProps) => {
+  const ui = useUiStrings()
   const handleClick = () => {
     if (onClick) {
       onClick()
@@ -58,11 +60,11 @@ export const SelectedLocationCardMobile = ({ location, onClick, isExpanded = fal
       </StyledDetails>
       {location.websiteItem && (
         <StyledButtonContainer $isExpanded={isExpanded}>
-          <BlueButton link={location?.websiteItem} isSvg className="button">VISIT WEBSITE</BlueButton>
+          <BlueButton link={location?.websiteItem} isSvg className="button">{ui.distributionVisitWebsite}</BlueButton>
         </StyledButtonContainer>
       )}
       {isExpanded && (
-        <StyledCloseButton type="button" aria-label="Close" onClick={() => onClick?.()}>
+        <StyledCloseButton type="button" aria-label={ui.closeLabel} onClick={() => onClick?.()}>
             <svg width="20" height="19" viewBox="0 0 20 19" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M5.25 4.75L14.75 14.25M14.75 4.75L5.25 14.25" stroke="currentColor" strokeWidth="1.58333" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>

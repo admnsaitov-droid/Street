@@ -86,6 +86,7 @@ Built **on** the engine; this is where project-specific motion belongs.
 | `Clouds/SphereClouds` | the cloud shell used by both globes |
 | `Cookie` | cookie-consent banner (styled in `GlobalStyles`) |
 | `HtmlLangSetter` | syncs `<html lang>` with the active locale |
+| `UiStrings/UiStringsProvider` | `UiStringsProvider` + `useUiStrings()`: the locale's interface texts from Strapi `ui-string`, resolved server-side in the `[locale]` layout (English defaults for anything missing). Use it for every button/label/aria text — ADR-0119 |
 
 ## Feature components
 

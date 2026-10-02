@@ -28,6 +28,6 @@ export default async function TermsOfUsePage({
     const data = await getStrapiData('get-terms-of-use-page-data', locale)
 
     return (
-      <TermsOfUseView data={data?.termsOfUsePage?.content} />
+      <TermsOfUseView data={data?.termsOfUsePage?.content} updatedAt={data?.termsOfUsePage?.updatedAt} />
     );
   } 

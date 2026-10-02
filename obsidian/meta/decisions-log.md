@@ -993,3 +993,47 @@ make one visible **immediately**, upload it as a new file and attach that
 instead of using "Replace media" — a new file has a new URL. Re-linking
 existing files (e.g. fixing swapped product images) is instant once the page
 data refreshes (ADR-0117 webhook).
+
+## ADR-0119 — Interface texts live in Strapi and are seeded for every locale on boot
+
+**Date.** 2026-10-02 · **Status.** Accepted.
+
+**Context.** A code audit (TypeScript AST over every `.tsx`) found ~55
+user-facing strings hardcoded in English and shown on all five locales:
+breadcrumbs ("Home", "Products", policy names), the mobile menu "Back", the
+distributor "VISIT WEBSITE" button and the continent filter tabs, product page
+labels (References fallback, "Contact us", colour palette, "Zoom in", gallery
+and slider aria-labels), the projects map fallback, "Last updated:" (which also
+printed *today's* date in US format), the error page and the locale 404. The
+editor could not change any of them, and filling five locales by hand for each
+new text was the obstacle.
+
+**Decision.**
+- A localized Strapi single type **`ui-string`** ("Тексты интерфейса", no
+  draft/publish) with one field per text — Strapi repo, `src/api/ui-string`.
+- **Seeding on boot** (`src/api/ui-string/seed/seed.ts`, called from
+  `bootstrap`): fills only empty fields, for every locale configured in Strapi,
+  from `seed/ui-strings.json` (en/es/de/fr/fi, translated once in the repo);
+  creates missing locale entries; grants public `find`; never throws. Deploying
+  a new field therefore translates it everywhere with no manual entry, and
+  admin edits are never overwritten.
+- **Frontend:** `get-ui-strings` (cached like every Strapi read, ADR-0117) is
+  fetched in the `[locale]` layout, merged over English defaults
+  (`src/config/uiStrings.ts`) and provided by `UiStringsProvider`;
+  components read `useUiStrings()`. The server-only `[locale]/not-found`
+  fetches it directly. Missing type/locale/field → English, so the frontend
+  and Strapi can be deployed in either order.
+
+**Consequences.**
+- Adding a text: Strapi `schema.json` field + all five locales in
+  `ui-strings.json` + the English default in `src/config/uiStrings.ts`.
+- A field cleared in the admin is refilled from the seed on the next boot
+  (an empty UI label is never wanted).
+- Not moved (translated already, in code): the `*Translations.ts` files of the
+  contact form, modals, cookie banner and "Explore the line". `global-error.tsx`
+  and the root `app/not-found.tsx` stay English — they render outside the locale
+  layout (a crashed root, or a URL outside every locale).
+- Same pass: real `updatedAt` + locale date format for "Last updated", the 404
+  home link uses the visitor's locale, `/[locale]/[...rest]` routes unknown
+  paths to the translated 404, CMS images use Strapi `alternativeText` instead
+  of `alt="Poster"`, the cookie banner's privacy link is locale-prefixed.

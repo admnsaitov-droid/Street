@@ -163,7 +163,7 @@ export const SceneSkeleton = ({ isLoading, progress = 0, className, position = '
                         </ProgressRing>
                     </IconContainer>
                 </StyledIconsContainer>
-                {previewSrc && <Image className="preview" src={previewSrc} alt="Preview" width={127} height={127} />}
+                {previewSrc && <Image className="preview" src={previewSrc} alt="" width={127} height={127} />}
                 <PercentageText $theme={theme}>{Math.round(progress)}%</PercentageText>
             </LoaderContainer>
         </StyledSceneSkeleton>

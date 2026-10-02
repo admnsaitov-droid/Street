@@ -5,6 +5,7 @@ import { useColorStore } from "@/store/store"
 import { fontGolosText } from "@/styles/fonts"
 import { useEffect } from "react"
 
+import { useUiStrings } from "@/components/UiStrings/UiStringsProvider"
 interface ColorPaletreProps {
     mainColors: {
         name: string
@@ -17,6 +18,7 @@ interface ColorPaletreProps {
 }
 
 export const ColorPaletre = ({ mainColors, accentColors }: ColorPaletreProps) => {    
+    const ui = useUiStrings()
     const { 
         activeMainColor, 
         activeAccentColor, 
@@ -54,7 +56,7 @@ export const ColorPaletre = ({ mainColors, accentColors }: ColorPaletreProps) =>
                     $isActive={colorMode === 'main'} 
                     onClick={() => setColorMode('main')}
                 >
-                    Main Color
+                    {ui.productMainColor}
                 </StyledText>
                 {hasAccentColor && (
                     <>
@@ -63,7 +65,7 @@ export const ColorPaletre = ({ mainColors, accentColors }: ColorPaletreProps) =>
                             $isActive={colorMode === 'accent'} 
                             onClick={() => setColorMode('accent')}
                         >
-                            Accent color
+                            {ui.productAccentColor}
                         </StyledText>
                     </>
                 )}

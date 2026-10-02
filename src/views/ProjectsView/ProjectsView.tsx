@@ -8,11 +8,14 @@ import Breadcrumbs from "@/components/Breadcrumbs/Breadcrumbs"
 import { ProjectsMap } from "./components/ProjectsMap"
 import { MapMarker } from "./components/MapMarker"
 
+import { useUiStrings } from "@/components/UiStrings/UiStringsProvider"
 interface ProjectsViewProps {
     data: any
 }
 
 export const ProjectsView = ({ data }: ProjectsViewProps) => {
+
+    const ui = useUiStrings()
 
     console.log(data);
 
@@ -39,7 +42,7 @@ export const ProjectsView = ({ data }: ProjectsViewProps) => {
         <StyledProjectsView>
             <StyledContent>
                 <Breadcrumbs items={[
-                    { label: 'Home', slug: '' },
+                    { label: ui.breadcrumbHome, slug: '' },
                     { label: [data?.projectsPage?.title?.textFirst, data?.projectsPage?.title?.textSecond].filter(Boolean).join(' ') || 'Projects', href: undefined },
                 ]} />
                 <StyledTitleContainer>

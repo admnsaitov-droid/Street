@@ -75,7 +75,7 @@ export const MediaComponent = ({ media, className, isExtendable = true, parallax
                         <Image
                             className="media"
                             src={getMediaStrapiPath(poster)}
-                            alt="Poster"
+                            alt={poster?.alternativeText || ""}
                             fill
                             sizes={sizes}
                             priority={priority}

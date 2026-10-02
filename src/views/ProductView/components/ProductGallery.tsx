@@ -11,6 +11,7 @@ import { Box, PerspectiveCamera } from "@react-three/drei"
 import { ProductModel } from "./Scene/components/ProductModel"
 import { heightLvh } from "@/styles/utils"
 
+import { useUiStrings } from "@/components/UiStrings/UiStringsProvider"
 interface ProductGalleryProps {
     images?: any[]
     model3D?: any
@@ -22,6 +23,7 @@ interface ProductGalleryProps {
 }
 
 export const ProductGallery = ({ images = [], model3D, colors = [], accentColors = [], onOpenImage, activeImageUrl = null, onCloseImage }: ProductGalleryProps) => {
+    const ui = useUiStrings()
     const { openImage, isOpen, contentType, content, closePlayer, nextImage, previousImage } = useVideoPlayerStore()
     const railRef = useRef<HTMLDivElement>(null)
     const thumbRefs = useRef<Map<string, HTMLButtonElement>>(new Map())
@@ -166,12 +168,12 @@ export const ProductGallery = ({ images = [], model3D, colors = [], accentColors
 
     return (
         <StyledWrapper style={{pointerEvents: isOpen ? 'auto' : 'none', userSelect: isOpen ? 'auto' : 'none'}}>
-        <StyledRail ref={railRef} onWheel={handleWheel} aria-label="Product media thumbnails">
+        <StyledRail ref={railRef} onWheel={handleWheel} aria-label={ui.galleryThumbnailsAriaLabel}>
             <StyledThumbButton 
                 ref={sceneButtonRef}
                 $active={isSceneActive} 
                 onClick={handleOpenScene} 
-                aria-label="3D scene"
+                aria-label={ui.sceneLabel}
                 $is3d={true}
             >
                 <div className="badge">
@@ -214,10 +216,10 @@ export const ProductGallery = ({ images = [], model3D, colors = [], accentColors
         </StyledRail>
         {canNavigate && (
             <StyledNavigationContainer>
-                <StyledNavButton onClick={handlePreviousImage} aria-label="Previous image">
+                <StyledNavButton onClick={handlePreviousImage} aria-label={ui.galleryPreviousImage}>
                     <ChevronLeftIcon />
                 </StyledNavButton>
-                <StyledNavButton onClick={handleNextImage} aria-label="Next image">
+                <StyledNavButton onClick={handleNextImage} aria-label={ui.galleryNextImage}>
                     <ChevronRightIcon />
                 </StyledNavButton>
             </StyledNavigationContainer>

@@ -9,6 +9,7 @@ import { useState, useCallback } from "react"
 import { useLocale } from "next-intl"
 import cookieTranslations from "./cookieTranslations"
 
+import { useUiStrings } from "@/components/UiStrings/UiStringsProvider"
 const CookieConsent = dynamic(() => import("react-cookie-consent"), { ssr: false })
 
 const StyledCookieConsent = styled(CookieConsent)`
@@ -20,6 +21,8 @@ const StyledCookieConsent = styled(CookieConsent)`
 export const Cookie = () => {
     const locale = useLocale()
     const t = cookieTranslations[locale] ?? cookieTranslations.en
+
+    const ui = useUiStrings()
 
     const { fullyLoaded } = useAssetsLoader()
     const [isVisible, setIsVisible] = useState(true)
@@ -65,7 +68,7 @@ export const Cookie = () => {
         >
             <StyledTitle>{t.title}</StyledTitle>
             <StyledDescription>{t.description}{' '}
-                <a href='/privacy-policy' aria-label='Go to Privacy Policy'>
+                <a href={`/${locale}/privacy-policy`} aria-label={ui.cookiePrivacyAriaLabel}>
                     {t.privacyPolicy}
                 </a>
             </StyledDescription>

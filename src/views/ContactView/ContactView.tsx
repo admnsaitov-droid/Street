@@ -11,11 +11,13 @@ import { ContactMap } from "./screens/ContactMap"
 import { StructuredData } from "@/components/StructuredData/StructuredData"
 import { generateOrganizationSchema } from "@/utils/generateStructuredData"
 
+import { useUiStrings } from "@/components/UiStrings/UiStringsProvider"
 interface ContactViewProps {
     data: any
 }
 
 export const ContactView = ({ data }: ContactViewProps) => {
+    const ui = useUiStrings()
     console.log('contacs data' ,data)
     
     const mapCenter = {
@@ -56,7 +58,7 @@ export const ContactView = ({ data }: ContactViewProps) => {
         <StyledContactView>
             <StructuredData schemas={[organizationSchema]} />
             <Breadcrumbs items={[
-                { label: 'Home', slug: '' },
+                { label: ui.breadcrumbHome, slug: '' },
                 { label: data?.title || 'Contact', href: undefined },
             ]} />
             <StyledTop>

@@ -19,7 +19,9 @@ import { ProductsMenu } from "./MegaMenus/ProductsMenu";
 import useLoadingStore from "@/store/store";
 import { useMounted } from "@/hooks/useMounted";
 
+import { useUiStrings } from "@/components/UiStrings/UiStringsProvider"
 export const Header = ({ initialData }: { initialData?: any }) => {
+    const ui = useUiStrings()
     const [headerData, setHeaderData] = useState<any>(initialData ?? null);
     const width = useWindowWidth();
     // The server cannot know the viewport, so the first render must match it.
@@ -57,7 +59,7 @@ export const Header = ({ initialData }: { initialData?: any }) => {
                     if (width <= 576) {
                         setIsMegaMenuOpen(false);
                     }
-                }} aria-label="Street Barbell - Home">
+                }} aria-label={ui.headerHomeAriaLabel}>
                     {headerData?.data && (
                         <Image 
                             src={
@@ -65,7 +67,7 @@ export const Header = ({ initialData }: { initialData?: any }) => {
                                     ? getMediaStrapiPath(headerData?.data?.logoMobile || headerData?.data?.logo) || '/logo.png'
                                     : getMediaStrapiPath(headerData?.data?.logo) || '/logo.png'
                             }
-                            alt="Street Barbell Logo" 
+                            alt={ui.headerLogoAlt} 
                             fill
                         />
                     )}

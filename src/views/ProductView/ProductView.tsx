@@ -15,6 +15,7 @@ import { SimpleButton } from "@/components/Ui/buttons/SimpleButton"
 import { SameLineProducts } from "./components/SameLineProducts/SameLineProducts"
 import { useRequireScene } from "@/hooks/useRequireScene"
 
+import { useUiStrings } from "@/components/UiStrings/UiStringsProvider"
 interface ProductViewProps {
     data: any
     specificationTexts?: Record<string, string | null> | null
@@ -35,6 +36,7 @@ const hexToRgb = (hex: string): string => {
 }
 
 export const ProductView = ({ data, specificationTexts, linesData }: ProductViewProps) => {
+    const ui = useUiStrings()
     console.log('data', data)
     const { materialMainColor, materialAccentColor, setMaterialMainColor, setMaterialAccentColor } = useColorStore()
 
@@ -161,9 +163,9 @@ export const ProductView = ({ data, specificationTexts, linesData }: ProductView
     // matches the server's (desktop) HTML (ADR-0114).
     const mounted = useMounted()
     const hasSwiperMedias = Array.isArray(data?.product?.swiperMedias) && data.product.swiperMedias.length > 0
-    const swiperTitle = data?.product?.referencesTitle || { textFirst: "References"}
+    const swiperTitle = data?.product?.referencesTitle?.textFirst ? data.product.referencesTitle : { textFirst: ui.productReferencesTitle }
     const quoteLink = data?.product?.quoteButton?.link || "/contact"
-    const quoteText = data?.product?.quoteButton?.text || "Contact us"
+    const quoteText = data?.product?.quoteButton?.text || ui.productQuoteButton
 
     console.log('product data' ,data)
 

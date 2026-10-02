@@ -7,6 +7,7 @@ import { createRoot } from "react-dom/client"
 import { colors, media, rm } from "@/styles"
 import { fontGolosText, fontSageGrotesk } from "@/styles/fonts"
 
+import { useUiStrings } from "@/components/UiStrings/UiStringsProvider"
 // Custom map styles for a dark theme
 const mapStyles = [
     {
@@ -389,6 +390,7 @@ export const ProjectsMap = ({
     zoom,
     markers
 }: ProjectsMapProps) => {
+    const ui = useUiStrings()
     // Default Place ID for StreetBarbell Outdoor Gym Utenberg
     // Extracted from: 0x478ffb000904357d:0xe8d6436e57ee01b1
     // For other locations, get Place ID from: https://developers.google.com/maps/documentation/javascript/examples/places-placeid-finder
@@ -564,10 +566,8 @@ export const ProjectsMap = ({
             <StyledProjectsMap>
                 <StyledMapFallback role="status">
                     <div className="inner">
-                        <p className="title">Map unavailable</p>
-                        <p className="copy">
-                            We can&apos;t load the map right now. Our projects are listed below.
-                        </p>
+                        <p className="title">{ui.mapUnavailableTitle}</p>
+                        <p className="copy">{ui.mapUnavailableText}</p>
                     </div>
                 </StyledMapFallback>
             </StyledProjectsMap>

@@ -7,6 +7,7 @@ import { transformDynamicData, getDynamicFilterNames, getDynamicLocationsByCount
 import { LocationCard } from "../LocationCard/LocationCard"
 import { SelectedLocationCard } from "../LocationCard/SelectedLocationCard"
 
+import { useUiStrings } from "@/components/UiStrings/UiStringsProvider"
 interface CountryPanelProps {
     activeFilterId?: string
     onFilterChange?: (filterId: string) => void
@@ -16,6 +17,16 @@ interface CountryPanelProps {
 }
 
 export const CountryPanel = ({ activeFilterId, onFilterChange, onLocationClick, selectedLocation, data }: CountryPanelProps) => {
+    const ui = useUiStrings()
+    // Filter names stay the English keys the panel logic matches on; only the
+    // visible tab text is translated.
+    const filterLabels: Record<string, string> = {
+        All: ui.distributionFilterAll,
+        Europe: ui.distributionEurope,
+        Africa: ui.distributionAfrica,
+        America: ui.distributionAmerica,
+        Asia: ui.distributionAsia,
+    }
     const [activeFilter, setActiveFilter] = useState('All')
     const [activeCard, setActiveCard] = useState<string | null>(null)
     const [animationPhase, setAnimationPhase] = useState<'idle' | 'hiding' | 'showing'>('idle')
@@ -293,7 +304,7 @@ export const CountryPanel = ({ activeFilterId, onFilterChange, onLocationClick, 
                         className={`filter ${activeFilter === filter ? 'active' : ''}`} 
                         onClick={() => handleFilterClick(filter)}
                     >
-                        {filter}
+                        {filterLabels[filter] ?? filter}
                     </div>
                 ))}
             </StyledTopContainer>

@@ -13,12 +13,14 @@ import 'swiper/css'
 import { MediaComponent } from "@/components/MediaComponent/MediaComponent"
 import AnimatedGrid from "@/components/animated/AnimatedContent"
 
+import { useUiStrings } from "@/components/UiStrings/UiStringsProvider"
 interface SwiperBlockProps {
     images?: any[]
     title?: any
 }
 
 export const SwiperBlock = ({ images, title }: SwiperBlockProps) => {
+    const ui = useUiStrings()
     const [currentIndex, setCurrentIndex] = useState(0)
     const [isScrollable, setIsScrollable] = useState(false)
     const swiperRef = useRef<SwiperType | null>(null)
@@ -127,12 +129,12 @@ export const SwiperBlock = ({ images, title }: SwiperBlockProps) => {
                 </StyledTitleContainer>
                 {isScrollable && (
                     <div className="buttonsBlock">
-                        <StyledSwiperButton side="left" onClick={handlePrev} aria-label="Previous slide">
+                        <StyledSwiperButton side="left" onClick={handlePrev} aria-label={ui.sliderPrevious}>
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M15 6L9 12L15 18" stroke="black" strokeWidth="2"/>
                             </svg>
                         </StyledSwiperButton>
-                        <StyledSwiperButton side="right" onClick={handleNext} aria-label="Next slide">
+                        <StyledSwiperButton side="right" onClick={handleNext} aria-label={ui.sliderNext}>
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M15 6L9 12L15 18" stroke="black" strokeWidth="2"/>
                             </svg>
@@ -141,7 +143,7 @@ export const SwiperBlock = ({ images, title }: SwiperBlockProps) => {
                 )}
             </StyledTop>
             {hasImages && (
-                <StyledViewport aria-label="Product images">
+                <StyledViewport aria-label={ui.sliderAriaLabel}>
                     <Swiper
                         slidesPerView="auto"
                         spaceBetween={10}

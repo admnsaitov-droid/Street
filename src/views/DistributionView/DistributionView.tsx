@@ -15,6 +15,7 @@ import { CountryPanelMobile } from "./components/CountryPanel/CountryPanelMobile
 import { useWindowWidth } from "@react-hook/window-size"
 import { useMounted } from "@/hooks/useMounted"
 import { useRequireScene } from "@/hooks/useRequireScene"
+import { useUiStrings } from "@/components/UiStrings/UiStringsProvider"
 interface DistributionViewProps {
     data: any
 }
@@ -37,6 +38,7 @@ const getLocationFromParam = (locationParam: string | null, data: any): Distribu
 }
 
 export const DistributionView = ({ data }: DistributionViewProps) => {
+    const ui = useUiStrings()
     const router = useRouter()
     const searchParams = useSearchParams()
     const [activeFilterId, setActiveFilterId] = useState('all')
@@ -102,7 +104,7 @@ export const DistributionView = ({ data }: DistributionViewProps) => {
                 <StyledContent>
                     {/* this hero is the dark globe — the default black trail vanished on it */}
                     <Breadcrumbs tone="dark" items={[
-                        { label: 'Home', slug: '' },
+                        { label: ui.breadcrumbHome, slug: '' },
                         { label: data?.distributionPage?.title?.textFirst || 'Distribution', href: undefined },
                     ]} />
                     <StyledTitleContainer>

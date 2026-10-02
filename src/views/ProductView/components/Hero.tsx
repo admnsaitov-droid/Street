@@ -15,6 +15,7 @@ import Image from "next/image"
 import { getMediaStrapiPath } from "@/utils/getMediaStrapiPath"
 
 
+import { useUiStrings } from "@/components/UiStrings/UiStringsProvider"
 interface HeroProps {
     data: any
     colors: {
@@ -28,12 +29,13 @@ interface HeroProps {
 }
 
 export const Hero = ({ data, colors, accentColors = [] }: HeroProps) => {
+    const ui = useUiStrings()
     const width = useWindowWidth()
     // The quote button is desktop-only markup; the server cannot know the width,
     // so assume wide until measured or the tree changes shape during hydration.
     const mounted = useMounted()
     const quoteLink = data?.quoteButton?.link || "/contact"
-    const quoteText = data?.quoteButton?.text || "Contact us"
+    const quoteText = data?.quoteButton?.text || ui.productQuoteButton
 
     const [activeImageUrl, setActiveImageUrl] = useState<string | null>(null)
     const galleryUrls = useMemo<string[]>(
@@ -70,8 +72,8 @@ export const Hero = ({ data, colors, accentColors = [] }: HeroProps) => {
             <StyledContent>
                 <Breadcrumbs
                     items={[
-                        { label: "Home", slug: "" },
-                        { label: "Products", slug: "lines" },
+                        { label: ui.breadcrumbHome, slug: "" },
+                        { label: ui.breadcrumbProducts, slug: "lines" },
                         { label: data?.name || "", href: undefined },
                     ]}
                 />
@@ -84,17 +86,17 @@ export const Hero = ({ data, colors, accentColors = [] }: HeroProps) => {
             {activeImageUrl && (
                 <StyledImageOverlay role="dialog" aria-modal="true">
                     <div className="imageWrap">
-                        <Image src={activeImageUrl} alt="Product" fill style={{ objectFit: 'contain' }} />
+                        <Image src={activeImageUrl} alt={data?.name || ""} fill style={{ objectFit: 'contain' }} />
                     </div>
-                    <StyledOverlayClose onClick={() => setActiveImageUrl(null)} aria-label="Close">
+                    <StyledOverlayClose onClick={() => setActiveImageUrl(null)} aria-label={ui.closeLabel}>
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M6 6L18 18M18 6L6 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
                     </StyledOverlayClose>
                     {galleryUrls.length > 1 && (
                         <>
-                            <StyledOverlayArrow $side="left" onClick={goPrev} aria-label="Previous image">
+                            <StyledOverlayArrow $side="left" onClick={goPrev} aria-label={ui.galleryPreviousImage}>
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M15 18L9 12L15 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
                             </StyledOverlayArrow>
-                            <StyledOverlayArrow $side="right" onClick={goNext} aria-label="Next image">
+                            <StyledOverlayArrow $side="right" onClick={goNext} aria-label={ui.galleryNextImage}>
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
                             </StyledOverlayArrow>
                             <StyledOverlayCounter>{currentIndex + 1} / {galleryUrls.length}</StyledOverlayCounter>

@@ -8,6 +8,7 @@ import { LocationCard } from "../LocationCard/LocationCard"
 import { SelectedLocationCardMobile } from "../LocationCard/SelectedLocationCardMobile"
 import { useScroll } from "@/layouts/ScrollLayout/useScroll"
 
+import { useUiStrings } from "@/components/UiStrings/UiStringsProvider"
 interface CountryPanelMobileProps {
     activeFilterId?: string
     onFilterChange?: (filterId: string) => void
@@ -17,6 +18,16 @@ interface CountryPanelMobileProps {
 }
 
 export const CountryPanelMobile = ({ activeFilterId, onFilterChange, onLocationClick, selectedLocation, data }: CountryPanelMobileProps) => {
+    const ui = useUiStrings()
+    // Filter names stay the English keys the panel logic matches on; only the
+    // visible tab text is translated.
+    const filterLabels: Record<string, string> = {
+        All: ui.distributionFilterAll,
+        Europe: ui.distributionEurope,
+        Africa: ui.distributionAfrica,
+        America: ui.distributionAmerica,
+        Asia: ui.distributionAsia,
+    }
     const [activeFilter, setActiveFilter] = useState('All')
     const [activeCard, setActiveCard] = useState<string | null>(null)
     const [displayedLocation, setDisplayedLocation] = useState<DistributionLocation | null>(null)
@@ -198,7 +209,7 @@ export const CountryPanelMobile = ({ activeFilterId, onFilterChange, onLocationC
                         className={`filter ${activeFilter === filter ? 'active' : ''}`} 
                         onClick={() => handleFilterClick(filter)}
                     >
-                        {filter}
+                        {filterLabels[filter] ?? filter}
                     </div>
                 ))}
             </StyledTopContainer>

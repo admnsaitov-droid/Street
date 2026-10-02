@@ -27,6 +27,7 @@ exception and are marked as such.
 | `localizedUrl(...)` | Builds a locale-prefixed URL. |
 | `locales.ts` | `getLocaleCodes`, `getDefaultLocale`, `getStrapiLocales` — locale list with `src/config/locales.ts` as the static fallback. |
 | `sitemap.ts` | Sitemap data + XML: `fetchStaticPageDates`, `fetchLines`, `fetchArticles`, `fetchPackages` (per-locale `updatedAt`, each also returns the `loaded` locale set), `listedIn` (emit a URL only in locales that list the item), `pickDate`/`maxDate`/`maxOverItems`, `buildUrlset`/`buildSitemapIndex`. Fetches are cached and tagged `strapi`. See [[seo-metadata]]. |
+| `../config/uiStrings.ts` | `UI_STRING_DEFAULTS` (English fallback for every Strapi interface text), `UiStrings` type, `resolveUiStrings(raw)` (non-empty Strapi values over defaults), `fillTemplate("{title} …", vars)`. Keep the defaults in step with the Strapi seed's `en` block. ADR-0119 |
 | `../config/cache.ts` | `CONTENT_REVALIDATE` (300s) and `CONTENT_CACHE_TAG` (`strapi`) — the one TTL/tag shared by `fetchStrapi`, `getStrapiData` and the sitemap (ADR-0117). |
 
 ## Maths & animation

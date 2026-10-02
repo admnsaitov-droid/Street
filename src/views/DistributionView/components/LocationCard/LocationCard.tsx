@@ -4,6 +4,7 @@ import styled from "styled-components"
 import { Location as DistributionLocation } from "../../data/distributionData"
 import { BlueButton } from "@/components/Ui/buttons/BlueButton"
 
+import { useUiStrings } from "@/components/UiStrings/UiStringsProvider"
 interface LocationCardProps {
   location: DistributionLocation
   onClick?: () => void
@@ -13,6 +14,7 @@ interface LocationCardProps {
 }
 
 export const LocationCard = ({ location, onClick, isExpanded = false, locationText, websiteText }: LocationCardProps) => {
+  const ui = useUiStrings()
   const handleClick = () => {
     if (onClick) {
       onClick()
@@ -53,7 +55,7 @@ export const LocationCard = ({ location, onClick, isExpanded = false, locationTe
       </StyledDetails>
       {location.websiteItem && (
         <StyledButtonContainer $isExpanded={isExpanded}>
-          <BlueButton link={location?.websiteItem} isSvg className="button">VISIT WEBSITE</BlueButton>
+          <BlueButton link={location?.websiteItem} isSvg className="button">{ui.distributionVisitWebsite}</BlueButton>
         </StyledButtonContainer>
       )}
       {isExpanded && (

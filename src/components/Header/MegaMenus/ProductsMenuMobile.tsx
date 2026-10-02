@@ -11,6 +11,7 @@ import { AnimLink } from "@/layouts/AnimatedRouterLayout/AnimatedRouterLayout";
 import { animated, useSpring } from "@react-spring/web";
 import useLoadingStore from "@/store/store";
 
+import { useUiStrings } from "@/components/UiStrings/UiStringsProvider"
 interface ProductsMenuMobileProps {
     isOpen: boolean;
     setIsOpen: (isOpen: boolean) => void;
@@ -18,6 +19,8 @@ interface ProductsMenuMobileProps {
 }
 
 export const ProductsMenuMobile = ({ isOpen, setIsOpen, setMenuOpen }: ProductsMenuMobileProps) => {
+
+    const ui = useUiStrings()
 
     const locale = useLocale();
     const [productsData, setProductsData] = useState<any>(null);
@@ -81,7 +84,7 @@ export const ProductsMenuMobile = ({ isOpen, setIsOpen, setMenuOpen }: ProductsM
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M15 6L9 12L15 18" stroke="black" strokeWidth="2"/>
                         </svg>
-                        <span>Back</span>
+                        <span>{ui.menuBack}</span>
                     </StyledBackButton>
                 </StyledStickyHeader>
                 <StyledPackages>

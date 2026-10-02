@@ -17,6 +17,7 @@ import { useTouchDevice } from "@/hooks/useTouchDevice"
 import { useMounted } from "@/hooks/useMounted"
 import { SceneGestureHint } from "@/components/Scene/SceneGestureHint"
 
+import { useUiStrings } from "@/components/UiStrings/UiStringsProvider"
 interface ProductSceneProps {
     data?: any
     colors: {
@@ -94,6 +95,7 @@ const CameraLerp = ({ controlsRef, cameraRef, desiredDistanceRef, desiredTargetR
 }
 
 export const ProductScene = ({ data, colors, accentColors }: ProductSceneProps) => {
+    const ui = useUiStrings()
     const lazyScene = useLazyScene('product', {
         threshold: 0.2,
         rootMargin: '100px'
@@ -225,7 +227,7 @@ export const ProductScene = ({ data, colors, accentColors }: ProductSceneProps) 
                     </svg>
                 </div>
                 <div className="buttonWrapper zoomIn" onClick={handleZoomIn}>
-                    {showZoomHint && <div className="tooltip">Zoom in</div>}
+                    {showZoomHint && <div className="tooltip">{ui.sceneZoomIn}</div>}
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M13.5957 2.01172C18.1863 2.24437 21.8369 6.04008 21.8369 10.6885L21.8262 11.1348C21.5937 15.7253 17.7976 19.3756 13.1494 19.376L12.7021 19.3652C10.8507 19.2714 9.15288 18.5967 7.78516 17.5215L2.48633 22.8223L1.31641 21.6523L6.58691 16.3799C5.35446 14.96 4.57408 13.1374 4.47266 11.1348L4.46094 10.6885C4.46094 5.89016 8.3511 2 13.1494 2L13.5957 2.01172ZM13.1494 3.65527C9.26507 3.65527 6.11621 6.80413 6.11621 10.6885C6.11641 14.5727 9.26519 17.7217 13.1494 17.7217C17.0333 17.7213 20.1824 14.5724 20.1826 10.6885C20.1826 6.80436 17.0334 3.65565 13.1494 3.65527ZM13.9766 9.86133H16.8721V11.5156H13.9766V14.4121H12.3213V11.5156H9.42578V9.86133H12.3213V6.96484H13.9766V9.86133Z" fill="currentColor"/>
                     </svg>

@@ -54,6 +54,15 @@ Every content request carries `?locale=`. Strapi holds a translation per locale;
 `src/utils/locales.ts` can read the list from Strapi, with
 `src/config/locales.ts` as the static fallback. See [[routing-views]].
 
+**Interface texts** live in the Strapi single type `ui-string` ("Тексты
+интерфейса", localized, no draft/publish — edits are live). The Strapi repo
+seeds it on every boot from `src/api/ui-string/seed/ui-strings.json`: only
+**empty** fields of each configured locale are filled, admin edits are never
+overwritten, missing locales are created, public `find` is granted. So a deploy
+of a new field is translated in all locales with no manual entry. Clearing a
+field in the admin means it is refilled from the seed on the next boot.
+ADR-0119.
+
 ## Media
 
 - Strapi serves media over **plain HTTP** from a fixed IP, so:

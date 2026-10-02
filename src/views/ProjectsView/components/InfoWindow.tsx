@@ -2,6 +2,7 @@ import { rm } from "@/styles"
 import { getMediaStrapiPath } from "@/utils/getMediaStrapiPath"
 import styled from "styled-components"
 
+import { useUiStrings } from "@/components/UiStrings/UiStringsProvider"
 interface InfoWindowProps {
     image: string
     title: string
@@ -120,6 +121,8 @@ export const InfoWindow = ({
     placeId
 }: InfoWindowProps) => {
 
+    const ui = useUiStrings()
+
     console.log(image);
 
     // Generate Google Maps URL based on available data
@@ -161,9 +164,9 @@ export const InfoWindow = ({
                             href={mapsUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            aria-label="Open in Google Maps"
+                            aria-label={ui.mapOpenInGoogleMaps}
                         >
-                            Adjust the route
+                            {ui.mapRouteButton}
                         </GoogleMapsButton>
                     )}
                 </ButtonContainer>

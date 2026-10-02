@@ -7,6 +7,8 @@ import { useRef } from "react"
 import { StyledCookieAndPrivacyPolicy, StyledDot } from "../CookiePolicyView/CookiePolicyView";
 import Breadcrumbs from "@/components/Breadcrumbs/Breadcrumbs";
 
+import { useUiStrings } from "@/components/UiStrings/UiStringsProvider"
+import { useLocale } from "next-intl"
 const FlexSpan = styled.span`
     display: inline-flex;
     align-items: center;
@@ -21,7 +23,9 @@ const TextWrapper = styled.p`
     gap: 4px;
 `;
 
-export default function PrivacyPolicyView({ data }: any) {
+export default function PrivacyPolicyView({ data, updatedAt }: any) {
+  const ui = useUiStrings()
+  const locale = useLocale()
   const triggerRef = useRef<HTMLDivElement>(null);
   
   console.log(data)
@@ -77,17 +81,24 @@ export default function PrivacyPolicyView({ data }: any) {
     <StyledCookieAndPrivacyPolicy ref={triggerRef}>
         <Breadcrumbs
             items={[
-                { label: "Home", slug: "" },
-                { label: "Privacy policy", slug: "privacy-policy" },
+                { label: ui.breadcrumbHome, slug: "" },
+                { label: ui.breadcrumbPrivacyPolicy, slug: "privacy-policy" },
             ]}
         />
       <div className="cookie-policy-wrapper">
         <div className="cookie-policy">
           <h1 className="title">{data?.title}</h1>
           {data?.policy?.map((block: any, i: number) => renderBlock(block, i))}
-          <div className="last-update">
-            Last updated: {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
-          </div>
+          {/*
+            The real date the page was last changed in Strapi, in the page's
+            language. It used to print *today's* date, in US English, on every
+            visit. UTC keeps server and browser formatting identical.
+          */}
+          {updatedAt && (
+            <div className="last-update">
+              {ui.policyLastUpdated} {new Intl.DateTimeFormat(locale, { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' }).format(new Date(updatedAt))}
+            </div>
+          )}
         </div>
       </div>
     </StyledCookieAndPrivacyPolicy>

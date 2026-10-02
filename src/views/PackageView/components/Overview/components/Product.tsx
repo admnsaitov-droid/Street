@@ -10,6 +10,7 @@ import { AnimLink } from "@/layouts/AnimatedRouterLayout/AnimatedRouterLayout"
 import { useWindowWidth } from "@react-hook/window-size"
 import { useMounted } from "@/hooks/useMounted"
 
+import { useUiStrings } from "@/components/UiStrings/UiStringsProvider"
 interface ProductProps {
     product: any
     index: number
@@ -18,6 +19,7 @@ interface ProductProps {
 }
 
 export const Product = ({ product, index, onMouseEnter, onMouseLeave }: ProductProps) => {
+    const ui = useUiStrings()
     const activeIndex = useProductPreview(state => state.index)
     const setUrl = useProductPreview(state => state.setUrl)
     const setPoster = useProductPreview(state => state.setPoster)
@@ -81,7 +83,7 @@ export const Product = ({ product, index, onMouseEnter, onMouseLeave }: ProductP
                     {product?.name && <StyledProductName as="h5">{product?.name}</StyledProductName>}
                 </div>
                 {(!mounted || width > 768) && <StyledExploreButton style={exploreSpring}>
-                    <UnderlineLink href={`/products/${product.slug}`} lineColor="#0040DD" text="Explore"></UnderlineLink>
+                    <UnderlineLink href={`/products/${product.slug}`} lineColor="#0040DD" text={ui.packageExplore}></UnderlineLink>
                 </StyledExploreButton>}
             </StyledTopContainer>
             <StyledDescriptionContainer>
@@ -91,7 +93,7 @@ export const Product = ({ product, index, onMouseEnter, onMouseLeave }: ProductP
                     </p>
                 }
                 {mounted && width <= 768 && <StyledExploreButton>
-                    <UnderlineLink href={`/products/${product.slug}`} lineColor="#0040DD" text="Explore"></UnderlineLink>
+                    <UnderlineLink href={`/products/${product.slug}`} lineColor="#0040DD" text={ui.packageExplore}></UnderlineLink>
                 </StyledExploreButton>}
             </StyledDescriptionContainer>
         </StyledProduct>

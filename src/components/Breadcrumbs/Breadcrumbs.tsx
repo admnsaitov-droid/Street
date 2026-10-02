@@ -8,6 +8,7 @@ import { usePathname } from "next/navigation";
 import { generateBreadcrumbSchema } from "@/utils/generateStructuredData";
 import { StructuredData } from "@/components/StructuredData/StructuredData";
 
+import { useUiStrings } from "@/components/UiStrings/UiStringsProvider"
 export interface BreadcrumbItem {
   label: string;
   /**
@@ -36,6 +37,7 @@ interface BreadcrumbsProps {
 
 export function Breadcrumbs({ items, className, separator = "·", tone = 'light' }: BreadcrumbsProps) {
   const pathname = usePathname();
+  const ui = useUiStrings()
   const locale = getFirstPathSegment(pathname) || "en";
 
   // Generate BreadcrumbList schema for SEO
@@ -54,7 +56,7 @@ export function Breadcrumbs({ items, className, separator = "·", tone = 'light'
   return (
     <>
       <StructuredData schemas={[breadcrumbSchema]} />
-      <StyledBreadcrumbs className={className} aria-label="Breadcrumb" $tone={tone}>
+      <StyledBreadcrumbs className={className} aria-label={ui.breadcrumbAriaLabel} $tone={tone}>
         {items.map((item, idx) => {
           const isLast = idx === items.length - 1;
           const href = item.href ?? withLocale(locale, item.slug);

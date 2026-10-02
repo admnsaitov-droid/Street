@@ -6,6 +6,7 @@ import { colors as tokens, media, rm } from '@/styles'
 import { fontGolosText } from '@/styles/fonts'
 import { useColorStore } from '@/store/store'
 
+import { useUiStrings } from "@/components/UiStrings/UiStringsProvider"
 interface ColorPaletreCompactProps {
     mainColors: { name: string; color: string }[]
     accentColors: { name: string; color: string }[]
@@ -21,6 +22,7 @@ interface ColorPaletreCompactProps {
  * as one button that opens a sheet; picking a colour applies it and closes.
  */
 export const ColorPaletreCompact = ({ mainColors, accentColors, className }: ColorPaletreCompactProps) => {
+    const ui = useUiStrings()
     const {
         activeMainColor,
         activeAccentColor,
@@ -78,7 +80,7 @@ export const ColorPaletreCompact = ({ mainColors, accentColors, className }: Col
                 onClick={() => setIsOpen((open) => !open)}
                 aria-expanded={isOpen}
                 aria-haspopup="listbox"
-                aria-label={`${hasAccentColor ? (colorMode === 'main' ? 'Main colour' : 'Accent colour') : 'Colour'}: ${activeColor?.name || 'choose a colour'}`}
+                aria-label={`${hasAccentColor ? (colorMode === 'main' ? ui.productMainColor : ui.productAccentColor) : ui.productColourLabel}: ${activeColor?.name || ui.productChooseColour}`}
             >
                 <span className="swatch" style={{ backgroundColor: activeColor?.color || 'transparent' }} />
                 {/*
@@ -89,14 +91,14 @@ export const ColorPaletreCompact = ({ mainColors, accentColors, className }: Col
                   highlight — which reads as the switch being broken.
                 */}
                 <span className="label">
-                    {hasAccentColor ? `${colorMode === 'main' ? 'Main' : 'Accent'} · ` : ''}
-                    {activeColor?.name || 'Choose colour'}
+                    {hasAccentColor ? `${colorMode === 'main' ? ui.productMainShort : ui.productAccentShort} · ` : ''}
+                    {activeColor?.name || ui.productChooseColour}
                 </span>
                 <span className={`chevron${isOpen ? ' -open' : ''}`} aria-hidden="true" />
             </StyledTrigger>
 
             {isOpen && (
-                <StyledSheet role="listbox" aria-label="Colours">
+                <StyledSheet role="listbox" aria-label={ui.productColoursAriaLabel}>
                     {hasAccentColor && (
                         <StyledModes>
                             <button
@@ -104,14 +106,14 @@ export const ColorPaletreCompact = ({ mainColors, accentColors, className }: Col
                                 className={colorMode === 'main' ? '-active' : ''}
                                 onClick={() => setColorMode('main')}
                             >
-                                Main
+                                {ui.productMainShort}
                             </button>
                             <button
                                 type="button"
                                 className={colorMode === 'accent' ? '-active' : ''}
                                 onClick={() => setColorMode('accent')}
                             >
-                                Accent
+                                {ui.productAccentShort}
                             </button>
                         </StyledModes>
                     )}

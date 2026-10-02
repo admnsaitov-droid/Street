@@ -13,7 +13,10 @@ import { getMediaStrapiPath } from "@/utils/getMediaStrapiPath"
 import useLoadingStore from "@/store/store"
 import { AnimLink } from "@/layouts/AnimatedRouterLayout/AnimatedRouterLayout"
 
+import { useUiStrings } from "@/components/UiStrings/UiStringsProvider"
+import { fillTemplate } from "@/config/uiStrings"
 export const PackageMenu = ({ previewText, allText }: { previewText: string, allText: string }) => {
+    const ui = useUiStrings()
     const [isHovered, setIsHovered] = useState(false)
     const [packagesData, setPackagesData] = useState<any>(null);
     const [loading, setLoading] = useState(true);
@@ -178,7 +181,7 @@ export const PackageMenu = ({ previewText, allText }: { previewText: string, all
                                         $isActive={currentPackage?.id === item?.id}
                                         onClick={handleLinkClick}
                                     >
-                                        0{index + 1}.<span>{item?.title} layout</span>
+                                        0{index + 1}.<span>{fillTemplate(ui.packageMenuItem, { title: item?.title })}</span>
                                     </StyledPackage>
                                 ))}
                             </StyledPackages>

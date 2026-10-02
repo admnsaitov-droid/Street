@@ -1,5 +1,8 @@
 import Link from 'next/link'
 import { Metadata } from 'next'
+import { getLocale } from 'next-intl/server'
+import { getStrapiData } from '@/utils/strapi'
+import { resolveUiStrings } from '@/config/uiStrings'
 
 export const metadata: Metadata = {
   title: '404 - Page Not Found | Street Barbell',
@@ -10,9 +13,16 @@ export const metadata: Metadata = {
   },
 }
 
-export default function NotFound() {
-  // For the locale-specific not-found page, we can use a fallback locale
-  const locale = 'en'; // This will be the fallback
+export default async function NotFound() {
+  // The visitor's locale (the link used to be hard-wired to /en) and that
+  // locale's interface texts from Strapi; English if either is unavailable.
+  let locale = 'en';
+  try {
+    locale = await getLocale();
+  } catch {
+    // keep the default
+  }
+  const ui = resolveUiStrings((await getStrapiData('get-ui-strings', locale))?.data);
 
   return (
     <>
@@ -47,7 +57,7 @@ export default function NotFound() {
         marginBottom: '1rem',
         color: '#ccc'
       }}>
-        Page Not Found
+        {ui.notFoundTitle}
       </h1>
       <p style={{
         fontSize: '1rem',
@@ -56,7 +66,7 @@ export default function NotFound() {
         lineHeight: '1.6',
         color: '#999'
       }}>
-        Sorry, we couldn&apos;t find the page you&apos;re looking for. The page may have been moved, deleted, or you may have entered an incorrect URL.
+        {ui.notFoundText}
       </p>
       <Link 
         href={`/${locale}`}
@@ -72,7 +82,7 @@ export default function NotFound() {
           transition: 'all 0.2s ease',
         }}
       >
-        Return to Homepage
+        {ui.notFoundButton}
       </Link>
     </div>
     </>

@@ -33,7 +33,13 @@ locale-prefixed (`/en`, `/es`, `/fr`, `/de`, `/fi`).
 ## Shell endpoints
 
 Fetched once in `src/app/[locale]/layout.tsx` and passed down as `initialData`:
-`get-header-data`, `get-footer-data`.
+`get-header-data`, `get-footer-data`. Also `get-ui-strings` (Strapi
+`ui-string`, ADR-0119), resolved against English defaults and provided to every
+client component through `UiStringsProvider`.
+
+`/[locale]/[...rest]` is a catch-all that calls `notFound()`, so an unknown URL
+inside a locale renders the translated `[locale]/not-found` inside the site
+layout (status 404) instead of the English-only root not-found.
 
 `get-contact-data` exists as a route but **nothing calls it** — the only dead
 endpoint in the API layer.

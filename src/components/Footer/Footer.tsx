@@ -10,7 +10,9 @@ import { getStrapiData } from "@/utils/strapi"
 import { AnimLink } from "@/layouts/AnimatedRouterLayout/AnimatedRouterLayout"
 import AnimatedLink from "../animated/AnimatedLink/AnimatedLink"
 
+import { useUiStrings } from "@/components/UiStrings/UiStringsProvider"
 export const Footer = ({ initialData }: { initialData?: any }) => {
+    const ui = useUiStrings()
     const [footerData, setFooterData] = useState<any>(initialData ?? null);
     const locale = useLocale();
 
@@ -144,8 +146,8 @@ export const Footer = ({ initialData }: { initialData?: any }) => {
                     ))}
                 </div>
                 <div className="third">
-                    <span>© STREET BARBELL {new Date().getFullYear()} . All rights reserved</span>
-                    <span className="developed">Developed by <a href="https://textura.agency" target="_blank" rel="noopener noreferrer">textura.agency</a></span>
+                    <span>© STREET BARBELL {new Date().getFullYear()}. {ui.footerRightsReserved}</span>
+                    <span className="developed">{ui.footerDevelopedBy} <a href="https://textura.agency" target="_blank" rel="noopener noreferrer">textura.agency</a></span>
                 </div>
             </StyledBottomContainer>
         </StyledFooter>

@@ -13,6 +13,31 @@ mattered. Link the ADR when there is one.
 
 ---
 
+## 2026-10-02 (2) — Interface texts moved to Strapi, auto-translated on deploy
+
+- **~55 hardcoded English UI strings → Strapi `ui-string`** ("Тексты
+  интерфейса"), read via `useUiStrings()` (ADR-0119). Strapi seeds en/es/de/fr/fi
+  on boot (empty fields only), so a deploy needs no manual translation.
+- **"Last updated:"** on the policy pages showed today's date in US English on
+  every visit; now the page's real Strapi `updatedAt` in the page's locale.
+- **Distributor filter tabs** ("All/Europe/Africa/…") and "VISIT WEBSITE" were
+  English on every locale — translated (logic still keys on the English names).
+- **Mobile menu** "Packages/Products" now use Strapi's existing translated
+  `packagesText`/`productsText`.
+- **404:** `/[locale]/[...rest]` catch-all sends unknown paths to the
+  translated locale 404 (with header/footer); its home link no longer hard-codes
+  `/en`.
+- **Product References title**: an existing-but-empty `referencesTitle` object
+  rendered an empty heading; now falls back to the translated default.
+- **SEO/a11y:** CMS images use Strapi `alternativeText` (was `alt="Poster"` on
+  every image); cookie banner privacy link is locale-prefixed.
+- Verified end to end against a local Strapi with the new type: seeding (55
+  fields/locale; a cleared field refilled, an edited one kept), API per locale,
+  Spanish pages render Spanish with no English leaks, missing locale falls back
+  to English.
+
+---
+
 ## 2026-10-02 — Production audit fixes: hydration, html lang, titles, mobile distributor cards
 
 Found by checking the live deploy (810/810 sitemap URLs 200 on prod) and a

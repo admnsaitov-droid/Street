@@ -8,6 +8,7 @@ import { minHeightLvh } from '@/styles/utils'
 import { AnimLink } from '@/layouts/AnimatedRouterLayout/AnimatedRouterLayout'
 import { SimpleButton } from '@/components/Ui/buttons/SimpleButton'
 
+import { useUiStrings } from "@/components/UiStrings/UiStringsProvider"
 /** Where a "report this" click goes. Set NEXT_PUBLIC_SUPPORT_EMAIL to change it. */
 const SUPPORT_EMAIL = process.env.NEXT_PUBLIC_SUPPORT_EMAIL || 'info@streetbarbell.com'
 
@@ -26,6 +27,7 @@ export default function LocaleError({
     error: Error & { digest?: string }
     reset: () => void
 }) {
+    const ui = useUiStrings()
     useEffect(() => {
         // eslint-disable-next-line no-console
         console.error('Route error:', error)
@@ -50,23 +52,23 @@ export default function LocaleError({
             <div className="inner">
                 <StyledEyebrow>Error 500</StyledEyebrow>
                 <StyledTitle>
-                    <span className="first">Something</span>{' '}
-                    <span className="second">broke</span>
+                    <span className="first">{ui.errorTitleFirst}</span>{' '}
+                    <span className="second">{ui.errorTitleSecond}</span>
                 </StyledTitle>
-                <StyledCopy>This page didn&apos;t load.</StyledCopy>
+                <StyledCopy>{ui.errorText}</StyledCopy>
 
                 <StyledActions>
                     <SimpleButton isSvg onClick={reset}>
-                        Try again
+                        {ui.errorTryAgain}
                     </SimpleButton>
                     <AnimLink href="/" className="home-link">
-                        Back to home
+                        {ui.errorBackHome}
                     </AnimLink>
                 </StyledActions>
 
-                <StyledReport href={reportHref}>Report this</StyledReport>
+                <StyledReport href={reportHref}>{ui.errorReport}</StyledReport>
 
-                {error?.digest && <StyledDigest>Reference {error.digest}</StyledDigest>}
+                {error?.digest && <StyledDigest>{ui.errorReference} {error.digest}</StyledDigest>}
             </div>
         </StyledError>
     )

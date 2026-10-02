@@ -6,16 +6,18 @@ import { History } from "./screens/History/History"
 import { Purpose } from "./screens/Purpose/Purpose"
 import Breadcrumbs from "@/components/Breadcrumbs/Breadcrumbs"
 
+import { useUiStrings } from "@/components/UiStrings/UiStringsProvider"
 interface AboutViewProps {
     data: any
 }
 
 export const AboutView = ({ data }: AboutViewProps) => {
+    const ui = useUiStrings()
     return (
         <StyledAboutView>
             <StyledBreadcrumbsWrapper>
                 <Breadcrumbs items={[
-                    { label: 'Home', slug: '' },
+                    { label: ui.breadcrumbHome, slug: '' },
                     { label: data?.aboutPage?.hero?.title || 'About', href: undefined },
                 ]} />
             </StyledBreadcrumbsWrapper>

@@ -28,6 +28,6 @@ export default async function PrivacyPolicyPage({
     const data = await getStrapiData('get-privacy-policy-page-data', locale)
 
     return (
-      <PrivacyPolicyView data={data?.privacyPolicyPage?.content} />
+      <PrivacyPolicyView data={data?.privacyPolicyPage?.content} updatedAt={data?.privacyPolicyPage?.updatedAt} />
     );
   } 

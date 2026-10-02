@@ -30,6 +30,6 @@ export default async function CookiePolicyPage({
     console.log(data)
 
     return (
-      <CookiePolicyView data={data?.cookiePolicyPage?.content} />
+      <CookiePolicyView data={data?.cookiePolicyPage?.content} updatedAt={data?.cookiePolicyPage?.updatedAt} />
     );
   } 

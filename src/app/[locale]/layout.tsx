@@ -14,6 +14,8 @@ import { AnimatedRouterLayout } from "@/layouts/AnimatedRouterLayout/AnimatedRou
 import { Header } from "@/components/Header/Header";
 import { getLocaleCodes } from "@/utils/locales";
 import { getStrapiData } from "@/utils/strapi";
+import { resolveUiStrings } from "@/config/uiStrings";
+import { UiStringsProvider } from "@/components/UiStrings/UiStringsProvider";
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import { ContactForm } from "@/components/ContactForm/ContactForm";
@@ -44,10 +46,13 @@ export default async function RootLayout({
   const { locale } = await params;
   const messages = await getMessages();
 
-  const [headerData, footerData] = await Promise.all([
+  const [headerData, footerData, uiStringsData] = await Promise.all([
     getStrapiData('get-header-data', locale),
     getStrapiData('get-footer-data', locale),
+    getStrapiData('get-ui-strings', locale),
   ]);
+  // Interface texts from Strapi; any missing/empty value falls back to English.
+  const uiStrings = resolveUiStrings(uiStringsData?.data);
   
   // Generate structured data for the site with error handling
   let organizationSchema = null;
@@ -93,6 +98,7 @@ export default async function RootLayout({
     <>
       {schemas.length > 0 && <StructuredData schemas={schemas} />}
       <NextIntlClientProvider messages={messages}>
+          <UiStringsProvider value={uiStrings}>
             <StyledComponentsLayout>
               <ScrollLayout>
                 <SmartCSSGrid />
@@ -117,6 +123,7 @@ export default async function RootLayout({
                 </AssetsLoaderLayout>
               </ScrollLayout>
             </StyledComponentsLayout>
+          </UiStringsProvider>
           </NextIntlClientProvider>
     </>
   );
