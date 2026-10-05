@@ -39,7 +39,14 @@ const nextConfig = {
   },
 
   images: {
-    formats: ['image/avif', 'image/webp'],
+    // WebP only. AVIF was first in this list, so every modern browser got
+    // AVIF — and sharp encodes AVIF 5–10x slower than WebP on this server
+    // (measured on production: a 2752px reference photo took 10–22s cold as
+    // AVIF vs ~0.9s as WebP, and the AVIF was not even smaller). Hostinger's
+    // CDN does not cache /_next/image (x-hcdn-cache-status: DYNAMIC) and each
+    // deploy starts with an empty optimiser cache, so that encode cost was
+    // paid by real visitors. See ADR-0120.
+    formats: ['image/webp'],
     // Strapi serves /uploads with `Cache-Control: max-age=300`, and Next
     // derives its optimised-image cache TTL from the upstream header. Without
     // this the optimiser re-fetched and re-encoded the originals every five

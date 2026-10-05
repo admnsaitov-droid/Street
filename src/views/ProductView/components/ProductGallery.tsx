@@ -209,7 +209,7 @@ export const ProductGallery = ({ images = [], model3D, colors = [], accentColors
                             }
                         }}
                     >
-                        <PlaceholderImage src={url} alt={img?.alternativeText || img?.name || "Product image"} fill sizes="(max-width: 768px) 100vw, 60vw" />
+                        <PlaceholderImage src={url} alt={img?.alternativeText || img?.name || "Product image"} fill sizes="96px" />
                     </StyledThumbButton>
                 )
             })}

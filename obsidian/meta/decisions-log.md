@@ -1037,3 +1037,29 @@ new text was the obstacle.
   home link uses the visitor's locale, `/[locale]/[...rest]` routes unknown
   paths to the translated 404, CMS images use Strapi `alternativeText` instead
   of `alt="Poster"`, the cookie banner's privacy link is locale-prefixed.
+
+## ADR-0120 — Image optimiser emits WebP only
+
+**Date.** 2026-10-05 · **Status.** Accepted.
+
+**Context.** Product References and the product gallery stayed slow after the
+media-cache work (ADR-0118). Production timing of `/_next/image` showed cold
+AVIF encodes of 10–22s for the 2752px reference photos (5s at 1080w), against
+~0.8–0.9s for WebP at the same widths, with the AVIF output no smaller. The
+CDN in front of the app reports `x-hcdn-cache-status: DYNAMIC` for
+`/_next/image` (not cached at the edge), and the optimiser's disk cache starts
+empty on each deploy, so first visitors to each image and width pay the encode.
+Two slots made it worse by requesting far larger widths than they render:
+the References slides (no `sizes` → 100vw → 3840w) and the 80px gallery
+thumbnails (`60vw`).
+
+**Decision.** `images.formats: ['image/webp']` in `next.config.mjs`; give the
+References slides, the gallery thumbnails and the hero gallery image `sizes`
+that match their slots.
+
+**Consequences.** Cold image responses drop from seconds to under a second;
+WebP files are about the same size as the AVIF ones for this content. It also
+keeps the optimiser off the AVIF code path that carries the remaining Next 14
+optimiser advisory. Any new `fill` image must pass a `sizes` matching its slot
+(`MediaComponent` defaults to `100vw`, correct only for full-width slots).
+

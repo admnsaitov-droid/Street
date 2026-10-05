@@ -1,6 +1,6 @@
 ---
 tags: [meta, changelog]
-updated: 2026-10-02
+updated: 2026-10-05
 ---
 
 # Changelog
@@ -12,6 +12,18 @@ Format: `## YYYY-MM-DD — short title` followed by what changed and why it
 mattered. Link the ADR when there is one.
 
 ---
+
+## 2026-10-05 — Product gallery and References images: WebP only, real slot sizes
+
+- **`images.formats` → WebP only** (ADR-0120). Measured on production, a cold
+  AVIF encode of a 2752px reference photo took 10–22s (WebP ~0.9s, same size).
+  Hostinger's CDN does not cache `/_next/image` and each deploy empties the
+  optimiser cache, so visitors paid that cost on every new image/width.
+- **References slider** (`SwiperBlock`) passed no `sizes`, so slides ~32vw wide
+  requested the 3840w variant; now `(max-width: 768px) 90vw, 34vw`.
+- **Product gallery thumbnails** (80px buttons next to the 3D toggle) asked for
+  `60vw` (~1920w on retina); now `96px`. The opened gallery image in the product
+  hero got `sizes="(max-width: 768px) 100vw, 100vh"` (was the 100vw default).
 
 ## 2026-10-02 (2) — Interface texts moved to Strapi, auto-translated on deploy
 

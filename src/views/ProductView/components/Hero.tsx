@@ -86,7 +86,7 @@ export const Hero = ({ data, colors, accentColors = [] }: HeroProps) => {
             {activeImageUrl && (
                 <StyledImageOverlay role="dialog" aria-modal="true">
                     <div className="imageWrap">
-                        <Image src={activeImageUrl} alt={data?.name || ""} fill style={{ objectFit: 'contain' }} />
+                        <Image src={activeImageUrl} alt={data?.name || ""} fill sizes="(max-width: 768px) 100vw, 100vh" style={{ objectFit: 'contain' }} />
                     </div>
                     <StyledOverlayClose onClick={() => setActiveImageUrl(null)} aria-label={ui.closeLabel}>
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M6 6L18 18M18 6L6 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>

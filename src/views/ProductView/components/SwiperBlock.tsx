@@ -160,7 +160,7 @@ export const SwiperBlock = ({ images, title }: SwiperBlockProps) => {
                         {images!.map((image, index) => (
                             <SwiperSlide key={index} style={{ width: 'auto' }}>
                                 <StyledSwiperSlideContainer>
-                                    <MediaComponent media={image} className="image" imageGallery={galleryUrls} />
+                                    <MediaComponent media={image} className="image" imageGallery={galleryUrls} sizes="(max-width: 768px) 90vw, 34vw" />
                                 </StyledSwiperSlideContainer>
                             </SwiperSlide>
                         ))}
