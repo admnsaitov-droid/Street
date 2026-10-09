@@ -14,6 +14,7 @@ import { rm } from '@/styles'
 import { colors } from "@/styles";
 import { Loader } from "./Loader";
 import { create } from "zustand";
+import { useRobot } from "@/components/Robot/Robot";
 interface Props {
     loading: boolean,
     loaded: boolean
@@ -75,6 +76,9 @@ export const AssetsLoaderLayout = ({
 }: {
     children: React.ReactNode;
 }) => {
+    // Robot form: no curtain and the page visible in the server HTML — it
+    // never hydrates, so nothing would ever lift either.
+    const robot = Boolean(useRobot())
     const [delayedLoading, setDelayedLoading] = useState(true)
     const [fullyLoaded, setFullyLoaded] = useState(false)
     const [skipLoader, setSkipLoader] = useState(false)
@@ -110,7 +114,7 @@ export const AssetsLoaderLayout = ({
         }
     }, [])
 
-    const transitions = useTransition(!skipLoader && !fullyLoaded, {
+    const transitions = useTransition(!robot && !skipLoader && !fullyLoaded, {
         from: { transform: 'translateY(0%)' },
         enter: { transform: 'translateY(0%)' },
         leave: { transform: 'translateY(100%)' },
@@ -130,13 +134,13 @@ export const AssetsLoaderLayout = ({
       but with no duration there is nothing to wait for.
     */
     const wrapperValues = useSpring({
-        opacity: skipLoader || fullyLoaded ? 1 : 0,
+        opacity: robot || skipLoader || fullyLoaded ? 1 : 0,
         config: { duration: 0 }
     })
 
     return (
         <>
-            {!skipLoader && transitions((styles, item) => item && (
+            {!robot && !skipLoader && transitions((styles, item) => item && (
                 <StyledLoader style={styles}>
                     <Loader setFullyLoaded={setFullyLoaded} progress={progress} isFullyLoaded={fullyLoaded}/>
                 </StyledLoader>
@@ -147,8 +151,8 @@ export const AssetsLoaderLayout = ({
                         loading,
                         progress,
                         currentFile,
-                        loaded: !delayedLoading,
-                        fullyLoaded,
+                        loaded: robot || !delayedLoading,
+                        fullyLoaded: robot || fullyLoaded,
                     } as Props}
                 >
                     {children}

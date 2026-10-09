@@ -3,6 +3,7 @@
 import styled from 'styled-components'
 import { colors } from '@/styles/colors'
 import { SkeletonLoader } from './SkeletonLoader'
+import { useRobot } from '@/components/Robot/Robot'
 
 interface MediaPlaceholderProps {
     /** Hidden (faded out) once the real media can be shown. */
@@ -28,11 +29,16 @@ interface MediaPlaceholderProps {
  * It positions itself absolutely, so **the parent must be positioned**. Every
  * `fill` image already satisfies that, because next/image requires it.
  */
-export const MediaPlaceholder = ({ $hidden = false, tone = 'light', className }: MediaPlaceholderProps) => (
-    <StyledPlaceholder aria-hidden="true" className={className} $hidden={$hidden} $tone={tone}>
-        <SkeletonLoader />
-    </StyledPlaceholder>
-)
+export const MediaPlaceholder = ({ $hidden = false, tone = 'light', className }: MediaPlaceholderProps) => {
+    // Robot form: nothing would ever hide it (that takes the image's onLoad).
+    const robot = useRobot()
+    if (robot) return null
+    return (
+        <StyledPlaceholder aria-hidden="true" className={className} $hidden={$hidden} $tone={tone}>
+            <SkeletonLoader />
+        </StyledPlaceholder>
+    )
+}
 
 const StyledPlaceholder = styled.div<{ $hidden: boolean; $tone: 'light' | 'dark' }>`
     position: absolute;

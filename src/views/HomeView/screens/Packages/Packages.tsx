@@ -9,6 +9,7 @@ import { WhiteButton } from "@/components/Ui/buttons/WhiteButton";
 import Image from "next/image";
 import { getMediaStrapiPath } from "@/utils/getMediaStrapiPath";
 import { useTransition, useSpring, animated } from "@react-spring/web";
+import { useRobot } from "@/components/Robot/Robot";
 import { MediaComponent } from "@/components/MediaComponent/MediaComponent";
 import { useWindowWidth } from "@react-hook/window-size";
 
@@ -21,6 +22,7 @@ const transitionConfig = { tension: 300, friction: 30 }
 const AnimatedAutoHeight = ({ children, deps = [] }: { children: ReactNode; deps?: unknown[] }) => {
     const contentRef = useRef<HTMLDivElement>(null)
     const isFirstRender = useRef(true)
+    const robot = useRobot()
     const [{ height }, api] = useSpring(() => ({ height: 0 }))
 
     useEffect(() => {
@@ -43,6 +45,9 @@ const AnimatedAutoHeight = ({ children, deps = [] }: { children: ReactNode; deps
         return () => resizeObserver.disconnect()
     }, [api, ...deps])
 
+    // Robot form: never measured, so let the content set its own height.
+    if (robot) return <div><div>{children}</div></div>
+
     return (
         <animated.div style={{ height, overflow: 'hidden' }}>
             <div ref={contentRef}>{children}</div>
@@ -51,9 +56,13 @@ const AnimatedAutoHeight = ({ children, deps = [] }: { children: ReactNode; deps
 }
 
 export const Packages = ({ packagesData }: PackagesProps) => {
-    const [sizes, setSizes] = useState<string[]>([]);
-    const [activeSize, setActiveSize] = useState<string>('');
-    const [activePackage, setActivePackage] = useState<any>(null);
+    // Robot form: the first package at rest in the server HTML (people get it
+    // from the effect below, under the loader curtain).
+    const robot = useRobot();
+    const robotPackages = robot ? packagesData?.packages : undefined;
+    const [sizes, setSizes] = useState<string[]>(() => robotPackages?.map((pkg: any) => pkg.size) ?? []);
+    const [activeSize, setActiveSize] = useState<string>(() => robotPackages?.[0]?.size ?? '');
+    const [activePackage, setActivePackage] = useState<any>(() => robotPackages?.[0] ?? null);
     const hasMountedRef = useRef<boolean>(false);
     const activeSizeRef = useRef<string>('');
     const progressRef = useRef<number>(0);
@@ -72,6 +81,7 @@ export const Packages = ({ packagesData }: PackagesProps) => {
         from: { opacity: 0, transform: 'translateY(30px)' },
         enter: { opacity: 1, transform: 'translateY(0px)' },
         leave: { opacity: 0, transform: 'translateY(-30px)' },
+        initial: robot ? null : undefined,
         config: transitionConfig
     });
 
@@ -79,6 +89,7 @@ export const Packages = ({ packagesData }: PackagesProps) => {
         from: { opacity: 0, transform: 'translateY(30px)' },
         enter: { opacity: 1, transform: 'translateY(0px)' },
         leave: { opacity: 0, transform: 'translateY(-30px)' },
+        initial: robot ? null : undefined,
         config: transitionConfig
     });
 
@@ -415,7 +426,7 @@ const StyledMidContent = styled.div`
     .description{
         ${fontGolosText(400)};
         line-height: 130%;
-        color: ${colors.blue90};
+        color: ${colors.blue90OnBlue};
         font-size: ${rm(20)};
         text-align: center;
         margin: 0;
@@ -473,7 +484,7 @@ const StyledSizeContainer = styled.div<{ isActive: boolean }>`
 
     .text{
         font-size: ${rm(20)};
-        color: ${({ isActive }) => isActive ? colors.white100 : colors.blue90};
+        color: ${({ isActive }) => isActive ? colors.white100 : colors.blue90OnBlue};
         ${fontGolosText(400)};
         text-transform: uppercase;
         line-height: 110%;

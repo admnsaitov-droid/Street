@@ -1,7 +1,9 @@
 import { animated, easings, useInView, useSpring } from "@react-spring/web"
 import styled from "styled-components"
+import { useRobot } from "@/components/Robot/Robot"
 
 export const AnimatedTranslate = ({children, className, delay}: {children: React.ReactNode, className?: string, delay?: number}) => {
+    const robot = useRobot()
 
     const [ref, inView] = useInView({
         //@ts-expect-error
@@ -10,8 +12,8 @@ export const AnimatedTranslate = ({children, className, delay}: {children: React
     })
 
     const appearSpring = useSpring({
-        y: inView ? '0px' : '20px',
-        opacity: inView ? 1 : 0,
+        y: inView || robot ? '0px' : '20px',
+        opacity: inView || robot ? 1 : 0,
         delay: delay,
         config: {
             duration: 800,

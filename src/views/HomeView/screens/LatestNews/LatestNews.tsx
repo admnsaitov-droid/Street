@@ -3,6 +3,8 @@ import { colors } from "@/styles/colors";
 import styled from "styled-components"
 import { media, rm } from "@/styles";
 import { BlueButton } from "@/components/Ui/buttons/BlueButton";
+import { useUiStrings } from "@/components/UiStrings/UiStringsProvider";
+import { useRobot, useRobotViewport } from "@/components/Robot/Robot";
 import { ArticleCard } from "./components/ArticleCard";
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination } from 'swiper/modules';
@@ -24,8 +26,9 @@ interface LatestNewsProps {
 
 // Individual animated slide component
 const AnimatedSlide = ({ children, index, isInView }: { children: React.ReactNode, index: number, isInView: boolean }) => {
+    const robot = useRobot()
     const slideSpring = useSpring({
-        y: isInView ? '0%' : '-40%',
+        y: isInView || robot ? '0%' : '-40%',
         delay: index * 150, // Staggered delay: 0ms, 150ms, 300ms, etc.
         config: {
             tension: 120,
@@ -45,7 +48,7 @@ export const LatestNews = ({ latestNewsData }: LatestNewsProps) => {
     const [isBeginning, setIsBeginning] = useState(true);
     const [isEnd, setIsEnd] = useState(false);
 
-    const width = useWindowWidth()
+    const windowWidth = useWindowWidth()
 
     // Width-conditional markup must agree with the server on the first render,
 
@@ -53,7 +56,9 @@ export const LatestNews = ({ latestNewsData }: LatestNewsProps) => {
 
     // mounted we render as if wide, which is what the server assumed.
 
-    const mounted = useMounted()
+    const { mounted, width } = useRobotViewport(useMounted(), windowWidth)
+    const ui = useUiStrings()
+    const robot = useRobot()
     
     // Detect when swiper container is in view
     const [swiperInViewRef, swiperInView] = useInView({
@@ -65,7 +70,7 @@ export const LatestNews = ({ latestNewsData }: LatestNewsProps) => {
     });
 
     const buttonsSpring = useSpring({
-        y: buttonsInView ? '0%' : '-100%',
+        y: buttonsInView || robot ? '0%' : '-100%',
         config: {
             tension: 300,
             friction: 35,
@@ -149,6 +154,7 @@ export const LatestNews = ({ latestNewsData }: LatestNewsProps) => {
                                 <StyledSwipeButton 
                                     onClick={handlePrevClick}
                                     disabled={isBeginning}
+                                    aria-label={ui.sliderPrevious}
                                 >
                                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M15 6L9 12L15 18" stroke="black" strokeWidth="2"/>
@@ -157,6 +163,7 @@ export const LatestNews = ({ latestNewsData }: LatestNewsProps) => {
                                 <StyledSwipeButton 
                                     onClick={handleNextClick}
                                     disabled={isEnd}
+                                    aria-label={ui.sliderNext}
                                 >
                                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M9 6L15 12L9 18" stroke="black" strokeWidth="2"/>

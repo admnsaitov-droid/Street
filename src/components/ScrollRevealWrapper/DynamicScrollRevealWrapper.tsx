@@ -5,6 +5,7 @@ import { useScroll } from "@/layouts/ScrollLayout/useScroll";
 import styled from "styled-components";
 import { useWindowWidth } from "@react-hook/window-size";
 import { useMounted } from "@/hooks/useMounted";
+import { useRobot } from "@/components/Robot/Robot";
 
 const BlurOverlay = styled.div`
   position: fixed;
@@ -46,6 +47,7 @@ export const DynamicScrollRevealWrapper = ({ children }: ScrollRevealWrapperProp
     Assume desktop until measured, which is what the server assumed.
   */
   const mounted = useMounted();
+  const robot = useRobot();
   const isMobile = mounted && width <= 768;
 
   useEffect(() => {
@@ -128,8 +130,10 @@ export const DynamicScrollRevealWrapper = ({ children }: ScrollRevealWrapperProp
     };
   }, [lenis, contentHeight]);
 
-  // Return early for mobile devices
-  if (isMobile) {
+  // Return early for mobile devices — and on the robot form, which never
+  // measures the content, so the 0px-tall wrapper would float the footer
+  // over the page.
+  if (isMobile || robot) {
     return <>{children}</>;
   }
 

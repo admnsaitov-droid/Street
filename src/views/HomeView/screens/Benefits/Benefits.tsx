@@ -136,7 +136,7 @@ const StyledBenefits = styled.div`
             .description{
                 ${fontGolosText(400)};
                 line-height: 130%;
-                color: ${colors.blue90};
+                color: ${colors.blue90OnBlue};
                 font-size: ${rm(20)};
 
                 ${media.lg`

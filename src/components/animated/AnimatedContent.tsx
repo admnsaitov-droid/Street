@@ -5,6 +5,7 @@ import { animated, useInView } from "@react-spring/web";
 import styled from "styled-components";
 import { Spring } from "../Springs/Spring";
 import { createRoot } from "react-dom/client";
+import { useRobot } from "@/components/Robot/Robot";
 
 interface AnimationSettings {
   from?: Record<string, any>;
@@ -156,6 +157,29 @@ const extractTextContent = (element: React.ReactNode): string => {
   return '';
 };
 
+// The resting copy of an AnimatedGrid for the robot form: each child keeps its
+// cell style, words wrap like ordinary text.
+const renderAtRest = (
+  node: React.ReactNode,
+  cellConfigs: { [key: string]: CellConfig }
+): React.ReactNode =>
+  Children.toArray(node).map((child, i) => {
+    if (typeof child === "string" || typeof child === "number") return `${child} `;
+    if (!React.isValidElement(child)) return null;
+    if (child.type === "br") return <br key={`br-${i}`} />;
+    const props = child.props as { id?: string; style?: React.CSSProperties; className?: string; children?: React.ReactNode };
+    const config = props.id ? cellConfigs[props.id] || {} : {};
+    const className = [props.className, config.className].filter(Boolean).join(" ") || undefined;
+    if (child.type === "a" || child.type === "img") return <React.Fragment key={i}>{child} </React.Fragment>;
+    return (
+      <React.Fragment key={i}>
+        <span id={props.id} className={className} style={{ ...props.style, ...config.style }}>
+          {renderAtRest(props.children, cellConfigs)}
+        </span>{" "}
+      </React.Fragment>
+    );
+  });
+
 const SAFETY_MARGIN = 15;
 
 const AnimatedGrid: React.FC<AnimatedGridProps> = ({
@@ -177,6 +201,7 @@ const AnimatedGrid: React.FC<AnimatedGridProps> = ({
   elementAppearanceView,
   tag = "div",
 }) => {
+  const robot = useRobot();
   const [ref, inViewInternal] = useInView({ once, amount: 0.3 });
   const inView = typeof elementAppearanceView === "boolean" ? elementAppearanceView : inViewInternal;
 
@@ -603,6 +628,17 @@ const processNode = (node: React.ReactNode): React.ReactNode[] => {
   }, [animatedElements.elements.length, children]);
 
   const showSeoCopy = Boolean(seoText) && animatedRows.length === 0;
+
+  // Robot form: no client ever measures the rows, so lay the words out as
+  // plain inline text at their resting style — same words, same cell styles.
+  if (robot) {
+    const Outer = tag === "span" ? MainContainerSpan : MainContainer;
+    return (
+      <Outer className={containerClassName} style={style} $isSpan={tag === "span"}>
+        {renderAtRest(children, cellConfigs)}
+      </Outer>
+    );
+  }
 
   if (tag === "span") {
     return (

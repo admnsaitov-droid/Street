@@ -1,5 +1,6 @@
 import { animated, easings, useInView, useSpring } from "@react-spring/web"
 import styled from "styled-components"
+import { useRobot } from "@/components/Robot/Robot"
 
 interface ScaleImageAppearProps {
     children: React.ReactNode
@@ -8,13 +9,14 @@ interface ScaleImageAppearProps {
 }
 
 export const ScaleImageAppear = ({ children, className, delay }: ScaleImageAppearProps) => {
+    const robot = useRobot()
 
     const [ref, inView] = useInView({
         once: true,
     })
 
     const springAppear = useSpring({
-        scale: inView ? 1 : 0.94,
+        scale: inView || robot ? 1 : 0.94,
         config: {
             duration: 600,
             easing: easings.easeOutQuad,

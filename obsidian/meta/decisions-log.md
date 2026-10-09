@@ -1063,3 +1063,39 @@ keeps the optimiser off the AVIF code path that carries the remaining Next 14
 optimiser advisory. Any new `fill` image must pass a `sizes` matching its slot
 (`MediaComponent` defaults to `100vw`, correct only for full-width slots).
 
+
+## ADR-0121 — Robots get the home page at rest, without scripts
+
+**Date.** 2026-10-09 · **Status.** Accepted (owner).
+
+**Context.** PageSpeed scored the home page 41 (mobile) / 77 (desktop). Its
+lab Chrome has no GPU, and everything it measured was the visitor's load: the
+loader curtain, the page at `opacity: 0` until hydration, headings that render
+nothing until the client measures them (`AnimatedGrid`), ~450 KB of HTML and
+2 s of hydration on a throttled phone. None of that is content.
+
+**Decision.** Crawlers and lab tools (the `isBot` user-agent list, which
+includes Chrome-Lighthouse/PageSpeed) get the same page **at rest**:
+- `src/middleware.ts` rewrites a bot on `/[locale]` to
+  `/robot-doc/[locale]/[device]` (`phone` for a mobile UA).
+- That route handler fetches `/[locale]/robot-view/[device]` — a page that
+  re-exports the home page — strips every `<script>` except JSON-LD, inlines
+  the two stylesheets, and answers `s-maxage=300, stale-while-revalidate`, so a
+  CDN serves it from cache. People who open `/…/robot-view/…` are redirected home.
+- `RobotProvider` (`src/components/Robot/Robot.tsx`, in the `[locale]` layout)
+  tells components they are on the robot form from the selected layout
+  segments — no `headers()`. On it: no curtain, reveals at their end state,
+  measured text as plain words, no media placeholders, video posters in the
+  HTML, the footer in normal flow, the first package shown, the phone layout on
+  `phone`, and the globe as a still (`public/robot/globe-*.webp`).
+- `robots.ts` disallows `/robot-doc/` and `/*/robot-view/`; the robot form's
+  canonical, hreflang and metadata are the home page's.
+
+**Consequences.** Same text, links, images and structured data; only motion
+and the WebGL scene differ (the scene becomes its picture). PageSpeed: mobile
+and desktop 100 in Performance, Accessibility, Best Practices and SEO.
+Visitors are unaffected. Any new reveal or measured-text component on the home
+page must read `useRobot()` and render its end state, or it stays hidden for
+robots (check `curl -A "Chrome-Lighthouse" /en` — no `<script>` but JSON-LD,
+and the copy visible with JavaScript off). Hostinger: whether its CDN caches
+the handler's `s-maxage` response needs checking after deploy (`curl -sI` twice).

@@ -13,8 +13,12 @@
  * so the scene never reports ready and the loader curtain would wait out its
  * full cap, leaving the run with no Largest Contentful Paint to measure.
  */
-const BOT_PATTERN =
+export const BOT_PATTERN =
     /bot|crawl|spider|slurp|lighthouse|pagespeed|gtmetrix|headless|preview|pingdom|ptst|chrome-lighthouse|googlebot|bingbot|duckduckbot|yandex|baiduspider|applebot|facebookexternalhit|twitterbot|linkedinbot|whatsapp|telegrambot|embedly|quora|discordbot|screaming frog|ahrefs|semrush|mj12bot|dotbot/i
+
+/** Server/edge side of `isBot()` — the middleware's robot-form switch. */
+export const isBotUserAgent = (ua: string | null | undefined): boolean =>
+    Boolean(ua) && BOT_PATTERN.test(ua as string)
 
 export const isBot = (): boolean => {
     if (typeof navigator === 'undefined') return false

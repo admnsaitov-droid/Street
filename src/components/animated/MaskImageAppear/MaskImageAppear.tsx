@@ -1,14 +1,16 @@
 import { animated, easings, useInView, useSpring } from "@react-spring/web"
 import styled from "styled-components"
+import { useRobot } from "@/components/Robot/Robot"
 
 export const MaskImageAppear = ({ children, className, delay, duration, enabled=true }: { children: React.ReactNode, className?: string, delay?: number, duration?: number, enabled?: boolean }) => {
+    const robot = useRobot()
 
     const [ref, inView] = useInView({
         once: true,
     })
 
     const springAppear = useSpring({
-        y: inView || !enabled ? '0%' : '-100%',
+        y: inView || robot || !enabled ? '0%' : '-100%',
         config: {
             duration: duration || 900,
             easing: easings.easeOutQuad,
@@ -17,7 +19,7 @@ export const MaskImageAppear = ({ children, className, delay, duration, enabled=
     })
 
     const springAddition = useSpring({
-        y: inView || !enabled ? '0%' : '50%',
+        y: inView || robot || !enabled ? '0%' : '50%',
         config: {
             duration: duration || 900,
             easing: easings.easeOutQuad,

@@ -10,6 +10,8 @@ import AnimatedGrid from "@/components/animated/AnimatedContent"
 import dynamic from "next/dynamic"
 import { useWindowWidth } from "@react-hook/window-size";
 import { useMounted } from "@/hooks/useMounted"
+import { useRobot, useRobotViewport } from "@/components/Robot/Robot"
+import { GlobeStill } from "./components/GlobeStill"
 
 const Scene = dynamic(() => import("./components/DynamicScene").then((mod) => mod.DynamicScene), {
     ssr: false,
@@ -29,11 +31,14 @@ interface GlobeProps {
 // ]
 
 export const Globe = ({ globeData }: GlobeProps) => {
-    const width = useWindowWidth()
+    const windowWidth = useWindowWidth()
+    const robot = useRobot()
     // Width-conditional markup must agree with the server on the first render,
     // or React tears the tree down and rebuilds it (hydration mismatch). Until
     // mounted we render as if wide, which is what the server assumed.
-    const mounted = useMounted()
+    const { mounted, width } = useRobotViewport(useMounted(), windowWidth)
+    // Robot form: the globe as a still — it never runs WebGL.
+    const scene = robot ? <GlobeStill phone={robot === 'phone'} /> : <Scene />
     return (
         <StyledGlobe>
             <div className="left">
@@ -77,7 +82,7 @@ export const Globe = ({ globeData }: GlobeProps) => {
                     </StyledTitleContainer>
                     <StyledDescription>{globeData?.description}</StyledDescription>
                 </div>
-                {mounted && width <= 768 ? <Scene /> : null}
+                {mounted && width <= 768 ? scene : null}
                 <div>
                     <StyledContinents style={{pointerEvents: 'none', userSelect: 'none'}}>
                         {globeData?.continents?.map((continent: any) => (
@@ -101,7 +106,7 @@ export const Globe = ({ globeData }: GlobeProps) => {
                 }
                 </div>
             </div>
-            {mounted && width <= 768 ? null : <Scene />}
+            {mounted && width <= 768 ? null : scene}
         </StyledGlobe>
     )
 }

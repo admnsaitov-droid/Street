@@ -77,8 +77,11 @@ export const Composition = ({ scale, position, inView, rotationXSpeed, rotationZ
         }
 
         // Touch event handlers for mobile support
+        // Passive, and no preventDefault: the canvas fills the screen on a
+        // phone, so swallowing every touch made it a scroll trap — a fling
+        // stopped dead at the globe. `touch-action: pan-y` (set below) lets the
+        // browser own vertical swipes; horizontal drags still rotate.
         const handleTouchStart = (event: TouchEvent) => {
-            event.preventDefault() // Prevent scrolling
             setIsDragging(true)
             const touch = event.touches[0]
             dragStart.current.x = touch.clientX
@@ -87,7 +90,6 @@ export const Composition = ({ scale, position, inView, rotationXSpeed, rotationZ
 
         const handleTouchMove = (event: TouchEvent) => {
             if (!isDragging) return
-            event.preventDefault() // Prevent scrolling
 
             const touch = event.touches[0]
             const deltaX = touch.clientX - dragStart.current.x
@@ -106,8 +108,7 @@ export const Composition = ({ scale, position, inView, rotationXSpeed, rotationZ
             dragStart.current.y = touch.clientY
         }
 
-        const handleTouchEnd = (event: TouchEvent) => {
-            event.preventDefault() // Prevent scrolling
+        const handleTouchEnd = () => {
             setIsDragging(false)
         }
 
@@ -117,9 +118,11 @@ export const Composition = ({ scale, position, inView, rotationXSpeed, rotationZ
         window.addEventListener('mouseup', handleMouseUp)
         
         // Touch events
-        canvas.addEventListener('touchstart', handleTouchStart, { passive: false })
-        canvas.addEventListener('touchmove', handleTouchMove, { passive: false })
-        canvas.addEventListener('touchend', handleTouchEnd, { passive: false })
+        canvas.style.touchAction = 'pan-y'
+        canvas.addEventListener('touchstart', handleTouchStart, { passive: true })
+        canvas.addEventListener('touchmove', handleTouchMove, { passive: true })
+        canvas.addEventListener('touchend', handleTouchEnd, { passive: true })
+        canvas.addEventListener('touchcancel', handleTouchEnd, { passive: true })
         
         // Set initial cursor
         canvas.style.cursor = 'grab'
@@ -134,6 +137,7 @@ export const Composition = ({ scale, position, inView, rotationXSpeed, rotationZ
             canvas.removeEventListener('touchstart', handleTouchStart)
             canvas.removeEventListener('touchmove', handleTouchMove)
             canvas.removeEventListener('touchend', handleTouchEnd)
+            canvas.removeEventListener('touchcancel', handleTouchEnd)
         }
     }, [isDragging, gl])
 

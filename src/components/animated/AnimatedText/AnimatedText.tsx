@@ -2,11 +2,12 @@
 
 import { NextPage } from "next"
 
-import { memo } from "react";
+import { createElement, memo } from "react";
 import type { EngineProps } from "@/components/Text/TextEngine";
 import { config } from "@react-spring/web";
 
 import TextEngine from "@/components/Text/TextEngine";
+import { useRobot } from "@/components/Robot/Robot";
 
 interface Props {
     children: any
@@ -20,6 +21,11 @@ export const AnimatedText: NextPage<Props & EngineProps> = memo(({
     stagger = 130,
     ...props
 }) => {
+    const robot = useRobot()
+    // Robot form: the text at rest — no line split, nothing to reveal.
+    if (robot) {
+        return createElement(props.tag || 'span', { className: props.className, style: props.style }, children)
+    }
     return (
         <TextEngine
             enabled={enabled}

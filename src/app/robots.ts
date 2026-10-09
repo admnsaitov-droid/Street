@@ -12,6 +12,9 @@ export default function robots(): MetadataRoute.Robots {
         '/admin/',
         '/login/',
         '/dashboard/',
+        // The robot form's internal paths (ADR-0121); crawlers read it under /[locale].
+        '/robot-doc/',
+        '/*/robot-view/',
       ],
     },
     sitemap: `${baseUrl}/sitemap.xml`,

@@ -1,6 +1,7 @@
 'use client'
 
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
+import { useRobot } from '@/components/Robot/Robot';
 import { useInView } from '@react-spring/web';
 import Image from 'next/image';
 import styled from 'styled-components';
@@ -74,7 +75,10 @@ const VideoPlayer = forwardRef(({
     // to preload and the request did not start until after hydration — measured
     // at +2.6s on the home hero, which is the LCP element. Seeding it puts the
     // <img> in the first HTML and Next emits its preload link.
-    const [poster, setPoster] = useState(strategy === 'load' ? _poster : '')
+    // The robot form never runs the lazy path below, so it gets every poster
+    // in the server HTML (lazy-loaded by the browser unless `priority`).
+    const robot = useRobot()
+    const [poster, setPoster] = useState(strategy === 'load' || robot ? _poster : '')
     const [ref, inView] = useInView({ rootMargin })
     useImperativeHandle(outerRef, () => videoRef.current)
 

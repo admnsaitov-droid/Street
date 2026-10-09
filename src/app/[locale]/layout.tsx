@@ -27,6 +27,7 @@ import { FullScreenPlayer } from "@/components/FullScreenPlayer/FullScreenPlayer
 import { FadeContainer } from "@/components/Header/MegaMenus/FadeContainer";
 import { StructuredData } from "@/components/StructuredData";
 import { generateOrganizationSchema, generateWebSiteSchema } from "@/utils/generateStructuredData";
+import { RobotProvider } from "@/components/Robot/Robot";
 
 export const metadata: Metadata = generateMetadata({});
 
@@ -99,6 +100,7 @@ export default async function RootLayout({
       {schemas.length > 0 && <StructuredData schemas={schemas} />}
       <NextIntlClientProvider messages={messages}>
           <UiStringsProvider value={uiStrings}>
+            <RobotProvider>
             <StyledComponentsLayout>
               <ScrollLayout>
                 <SmartCSSGrid />
@@ -123,6 +125,7 @@ export default async function RootLayout({
                 </AssetsLoaderLayout>
               </ScrollLayout>
             </StyledComponentsLayout>
+            </RobotProvider>
           </UiStringsProvider>
           </NextIntlClientProvider>
     </>

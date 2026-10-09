@@ -17,6 +17,7 @@ import { Lines } from "./screens/Lines/Lines";
 import { useWindowWidth } from "@react-hook/window-size";
 import { useMounted } from "@/hooks/useMounted"
 import { PackagesMobile } from "./screens/Packages/PackagedMobile";
+import { useRobotViewport } from "@/components/Robot/Robot";
 
 const StyledHomeView = styled.div`
   display: flex;
@@ -36,7 +37,7 @@ export const HomeView = ({ homeData, footerData }: { homeData: any, footerData: 
   const latestNewsData = homeData?.latestNews;
   const linesData = homeData?.linesBlock;
 
-  const width = useWindowWidth()
+  const windowWidth = useWindowWidth()
 
   // Width-conditional markup must agree with the server on the first render,
 
@@ -44,7 +45,7 @@ export const HomeView = ({ homeData, footerData }: { homeData: any, footerData: 
 
   // mounted we render as if wide, which is what the server assumed.
 
-  const mounted = useMounted()
+  const { mounted, width } = useRobotViewport(useMounted(), windowWidth)
 
   // The globe is NOT gated on the curtain. It sits seven sections down, so
   // holding a full-screen curtain for it delays the hero for every visitor —

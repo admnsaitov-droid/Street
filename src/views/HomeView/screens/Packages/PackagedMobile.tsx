@@ -24,7 +24,7 @@ export const PackagesMobile = ({ packagesData }: PackagesProps) => {
                     <div className="left">
                         <StyledMidContent>
                             <div className="title-container">
-                                <h3 className="title">{item?.title}</h3>
+                                <h2 className="title">{item?.title}</h2>
                             </div>
                             <div className="description-container">
                                 <p className="description">{item?.description}</p>
@@ -178,7 +178,7 @@ const StyledMidContent = styled.div`
     .description{
         ${fontGolosText(400)};
         line-height: 130%;
-        color: ${colors.blue90};
+        color: ${colors.blue90OnBlue};
         font-size: ${rm(20)};
         text-align: center;
         margin: 0;
@@ -236,7 +236,7 @@ const StyledSizeContainer = styled.div<{ isActive: boolean }>`
 
     .text{
         font-size: ${rm(20)};
-        color: ${({ isActive }) => isActive ? colors.white100 : colors.blue90};
+        color: ${({ isActive }) => isActive ? colors.white100 : colors.blue90OnBlue};
         ${fontGolosText(400)};
         text-transform: uppercase;
         line-height: 110%;

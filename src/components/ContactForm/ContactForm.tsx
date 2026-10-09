@@ -405,7 +405,7 @@ const StyledTitleSecond = styled.div`
 
 const StyledNote = styled.p`
     ${fontGolosText(400)}
-    color: ${colors.gray};
+    color: ${colors.grayText};
     font-size: ${rm(20)};
     line-height: 130%;
     letter-spacing: -0.01em;
@@ -503,7 +503,7 @@ export const StyledBottom = styled.div`
 
         .texts{
             ${fontGolosText(400)};
-            color: ${colors.gray};
+            color: ${colors.grayText};
             font-size: ${rm(20)};
             line-height: 130%;
             display: flex;

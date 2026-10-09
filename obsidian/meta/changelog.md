@@ -1,6 +1,6 @@
 ---
 tags: [meta, changelog]
-updated: 2026-10-05
+updated: 2026-10-09
 ---
 
 # Changelog
@@ -12,6 +12,21 @@ Format: `## YYYY-MM-DD — short title` followed by what changed and why it
 mattered. Link the ADR when there is one.
 
 ---
+
+## 2026-10-09 — PageSpeed 100 (robot form), globe scroll trap, accessibility, llms.txt
+
+- **Robot form of the home page** (ADR-0121): crawlers and PageSpeed get the
+  page at rest and without scripts. PageSpeed mobile 41 → 100, desktop 77 → 100;
+  Accessibility, Best Practices, SEO 100 on both.
+- **Globe on phones**: the canvas called `preventDefault()` on every touch, so a
+  swipe that started on the full-screen globe could not scroll the page. Now
+  `touch-action: pan-y` with passive listeners — vertical swipes scroll,
+  horizontal drags still rotate.
+- **Accessibility**: `blue90OnBlue` / `grayText` text roles where light blue sat
+  on blue (3.6:1) and grey on the form panel (4.3:1); slider arrows labelled;
+  mobile package titles h3 → h2.
+- **`/llms.txt`** (route from Strapi footer data). It returned an HTML page;
+  PageSpeed's Agentic Browsing category flagged it.
 
 ## 2026-10-05 — Product gallery and References images: WebP only, real slot sizes
 
