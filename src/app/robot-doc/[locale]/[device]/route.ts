@@ -1,5 +1,4 @@
 import { NextRequest } from 'next/server'
-import { CONTENT_REVALIDATE } from '@/config/cache'
 import { ROBOT_FETCH_HEADER, inlineStylesheets, stripScripts } from '@/utils/robotDocument'
 
 /**
@@ -9,12 +8,26 @@ import { ROBOT_FETCH_HEADER, inlineStylesheets, stripScripts } from '@/utils/rob
  * every script but JSON-LD. Robots read the same content and layout; they
  * don't download, parse or hydrate the client runtime.
  *
- * The response is CDN-cacheable for as long as the content cache
- * (`CONTENT_REVALIDATE`), so a robot's request is a cache hit, not a render.
+ * The response is CDN-cacheable
+ * (an hour), so a robot's request is a cache hit, not a render.
  */
 export const dynamic = 'force-dynamic'
 
 const FETCH_TIMEOUT_MS = 8000
+/** The request's own origin / the local port either answer at once or not at all. */
+const LOCAL_TIMEOUT_MS = 1500
+/**
+ * Robots may read a document up to an hour old (stale-while-revalidate for a
+ * day): a cache miss is the slow path, and content changes are rare.
+ */
+const ROBOT_CACHE_SECONDS = 3600
+
+/**
+ * The origin that answered last time, tried first. On Hostinger the first two
+ * candidates fail; without this every cache miss paid for both (2.6–4 s TTFB
+ * against 0.2 s from cache — PageSpeed's Speed Index 6.7 s).
+ */
+let workingOrigin: string | null = null
 
 /**
  * Where this server can reach itself. Behind Vercel the request's own origin
@@ -27,6 +40,7 @@ const candidateOrigins = (request: NextRequest) =>
     Array.from(
         new Set(
             [
+                workingOrigin,
                 request.nextUrl.origin,
                 `http://127.0.0.1:${process.env.PORT || 3000}`,
                 process.env.NEXT_PUBLIC_BASEURL,
@@ -42,28 +56,40 @@ export async function GET(
     const device = params.device === 'phone' ? 'phone' : 'desktop'
     const path = `/${params.locale}/robot-view/${device}`
     const errors: string[] = []
+    const timings: string[] = []
+    const publicOrigins = [process.env.NEXT_PUBLIC_BASEURL, process.env.NEXT_PUBLIC_BASE_URL]
 
-    for (const origin of candidateOrigins(request)) {
+    const origins = candidateOrigins(request)
+    for (let i = 0; i < origins.length; i++) {
+        const origin = origins[i]
+        const started = Date.now()
+        const timeout = origin === workingOrigin || publicOrigins.includes(origin) ? FETCH_TIMEOUT_MS : LOCAL_TIMEOUT_MS
         try {
             const res = await fetch(new URL(path, origin), {
                 headers: { [ROBOT_FETCH_HEADER]: '1', 'user-agent': request.headers.get('user-agent') ?? '' },
                 cache: 'no-store',
-                signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+                signal: AbortSignal.timeout(timeout),
             })
             if (!res.ok) {
                 errors.push(`${new URL(origin).host}: ${res.status}`)
+                timings.push(`try${i};dur=${Date.now() - started};desc="${new URL(origin).host} ${res.status}"`)
                 continue
             }
+            workingOrigin = origin
             const html = await inlineStylesheets(stripScripts(await res.text()), origin)
+            timings.push(`try${i};dur=${Date.now() - started};desc="${new URL(origin).host} ok"`)
             return new Response(html, {
                 headers: {
                     'content-type': 'text/html; charset=utf-8',
-                    'cache-control': `public, max-age=0, s-maxage=${CONTENT_REVALIDATE}, stale-while-revalidate=86400`,
+                    'cache-control': `public, max-age=0, s-maxage=${ROBOT_CACHE_SECONDS}, stale-while-revalidate=86400`,
                     'x-robot-origin': new URL(origin).host,
+                    'server-timing': timings.join(', '),
                 },
             })
         } catch (error) {
+            if (origin === workingOrigin) workingOrigin = null
             errors.push(`${new URL(origin).host}: ${error instanceof Error ? error.name : 'error'}`)
+            timings.push(`try${i};dur=${Date.now() - started};desc="${new URL(origin).host} ${error instanceof Error ? error.name : 'error'}"`)
         }
     }
 
