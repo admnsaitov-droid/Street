@@ -8,62 +8,66 @@ import { ROBOT_FETCH_HEADER, inlineStylesheets, stripScripts } from '@/utils/rob
  * every script but JSON-LD. Robots read the same content and layout; they
  * don't download, parse or hydrate the client runtime.
  *
- * The response is CDN-cacheable
- * (an hour), so a robot's request is a cache hit, not a render.
+ * The finished document is kept in memory for an hour and refreshed in the
+ * background after that, so a robot never waits for a render: PageSpeed lands
+ * on cold CDN edges (Hostinger's answers DYNAMIC), and a render plus the
+ * self-fetch cost it 2–3 s of Speed Index. The response is also CDN-cacheable.
  */
 export const dynamic = 'force-dynamic'
 
 const FETCH_TIMEOUT_MS = 8000
-/** The request's own origin / the local port either answer at once or not at all. */
+/** The local port either answers at once or not at all. */
 const LOCAL_TIMEOUT_MS = 1500
-/**
- * Robots may read a document up to an hour old (stale-while-revalidate for a
- * day): a cache miss is the slow path, and content changes are rare.
- */
+/** Robots may read a document up to an hour old; content changes are rare. */
 const ROBOT_CACHE_SECONDS = 3600
 
+interface CachedDocument {
+    html: string
+    origin: string
+    at: number
+}
+
+/** Per process: `/en/robot-view/phone` → its finished document. */
+const documents = new Map<string, CachedDocument>()
+/** Background refreshes in flight, so a burst of robots renders once. */
+const refreshing = new Map<string, Promise<CachedDocument>>()
+
 /**
- * The origin that answered last time, tried first. On Hostinger the first two
- * candidates fail; without this every cache miss paid for both (2.6–4 s TTFB
- * against 0.2 s from cache — PageSpeed's Speed Index 6.7 s).
+ * The origin that answered last time, tried first. On Hostinger the request
+ * origin (`0.0.0.0:3000`) and the local port don't answer; each miss used to
+ * retry both (~1 s each).
  */
 let workingOrigin: string | null = null
 
 /**
  * Where this server can reach itself. Behind Vercel the request's own origin
- * is the deployment; behind Hostinger's proxy it is not reachable from the
- * server (the self-fetch failed and every robot got a 500), so fall back to the
- * local port and then the public base URL — the same route the Strapi proxy
- * self-calls already take there.
+ * is the deployment. Behind Hostinger's proxy it is `0.0.0.0` and the local
+ * port refuses too, so the public base URL — the route the Strapi proxy
+ * self-calls already take there — comes before the local port.
  */
-const candidateOrigins = (request: NextRequest) =>
-    Array.from(
+const candidateOrigins = (request: NextRequest) => {
+    const own = request.nextUrl.hostname === '0.0.0.0' ? null : request.nextUrl.origin
+    return Array.from(
         new Set(
             [
                 workingOrigin,
-                request.nextUrl.origin,
-                `http://127.0.0.1:${process.env.PORT || 3000}`,
+                own,
                 process.env.NEXT_PUBLIC_BASEURL,
                 process.env.NEXT_PUBLIC_BASE_URL,
+                `http://127.0.0.1:${process.env.PORT || 3000}`,
             ].filter((o): o is string => Boolean(o))
         )
     )
+}
 
-export async function GET(
-    request: NextRequest,
-    { params }: { params: { locale: string; device: string } }
-) {
-    const device = params.device === 'phone' ? 'phone' : 'desktop'
-    const path = `/${params.locale}/robot-view/${device}`
+const render = async (path: string, request: NextRequest, timings: string[]): Promise<CachedDocument> => {
     const errors: string[] = []
-    const timings: string[] = []
-    const publicOrigins = [process.env.NEXT_PUBLIC_BASEURL, process.env.NEXT_PUBLIC_BASE_URL]
-
     const origins = candidateOrigins(request)
     for (let i = 0; i < origins.length; i++) {
         const origin = origins[i]
+        const host = new URL(origin).host
         const started = Date.now()
-        const timeout = origin === workingOrigin || publicOrigins.includes(origin) ? FETCH_TIMEOUT_MS : LOCAL_TIMEOUT_MS
+        const timeout = origin.includes('127.0.0.1') ? LOCAL_TIMEOUT_MS : FETCH_TIMEOUT_MS
         try {
             const res = await fetch(new URL(path, origin), {
                 headers: { [ROBOT_FETCH_HEADER]: '1', 'user-agent': request.headers.get('user-agent') ?? '' },
@@ -71,33 +75,78 @@ export async function GET(
                 signal: AbortSignal.timeout(timeout),
             })
             if (!res.ok) {
-                errors.push(`${new URL(origin).host}: ${res.status}`)
-                timings.push(`try${i};dur=${Date.now() - started};desc="${new URL(origin).host} ${res.status}"`)
+                errors.push(`${host}: ${res.status}`)
+                timings.push(`try${i};dur=${Date.now() - started};desc="${host} ${res.status}"`)
                 continue
             }
             workingOrigin = origin
             const html = await inlineStylesheets(stripScripts(await res.text()), origin)
-            timings.push(`try${i};dur=${Date.now() - started};desc="${new URL(origin).host} ok"`)
-            return new Response(html, {
-                headers: {
-                    'content-type': 'text/html; charset=utf-8',
-                    'cache-control': `public, max-age=0, s-maxage=${ROBOT_CACHE_SECONDS}, stale-while-revalidate=86400`,
-                    'x-robot-origin': new URL(origin).host,
-                    'server-timing': timings.join(', '),
-                },
-            })
+            timings.push(`try${i};dur=${Date.now() - started};desc="${host} ok"`)
+            return { html, origin: host, at: Date.now() }
         } catch (error) {
             if (origin === workingOrigin) workingOrigin = null
-            errors.push(`${new URL(origin).host}: ${error instanceof Error ? error.name : 'error'}`)
-            timings.push(`try${i};dur=${Date.now() - started};desc="${new URL(origin).host} ${error instanceof Error ? error.name : 'error'}"`)
+            const name = error instanceof Error ? error.name : 'error'
+            errors.push(`${host}: ${name}`)
+            timings.push(`try${i};dur=${Date.now() - started};desc="${host} ${name}"`)
         }
     }
+    throw new Error(errors.join('; '))
+}
 
-    // Never a 500 for a robot: the at-rest page with its scripts is still the
-    // right content (the middleware lets bots through to it).
-    console.error('[robot-doc] self-fetch failed:', errors.join('; '))
-    return new Response(null, {
-        status: 307,
-        headers: { location: path, 'cache-control': 'no-store', 'x-robot-doc-error': errors.join('; ').slice(0, 300) },
+/** One render per path at a time; the result replaces the cached document. */
+const refresh = (path: string, request: NextRequest, timings: string[]) => {
+    let pending = refreshing.get(path)
+    if (!pending) {
+        pending = render(path, request, timings)
+            .then((doc) => {
+                documents.set(path, doc)
+                return doc
+            })
+            .finally(() => refreshing.delete(path))
+        refreshing.set(path, pending)
+    }
+    return pending
+}
+
+const respond = (doc: CachedDocument, cache: string, timings: string[]) =>
+    new Response(doc.html, {
+        headers: {
+            'content-type': 'text/html; charset=utf-8',
+            'cache-control': `public, max-age=0, s-maxage=${ROBOT_CACHE_SECONDS}, stale-while-revalidate=86400`,
+            'x-robot-origin': doc.origin,
+            'x-robot-cache': cache,
+            ...(timings.length ? { 'server-timing': timings.join(', ') } : {}),
+        },
     })
+
+export async function GET(
+    request: NextRequest,
+    { params }: { params: { locale: string; device: string } }
+) {
+    const device = params.device === 'phone' ? 'phone' : 'desktop'
+    const path = `/${params.locale}/robot-view/${device}`
+    const timings: string[] = []
+
+    const cached = documents.get(path)
+    if (cached) {
+        // Stale after an hour: serve it now, re-render behind the response.
+        if (Date.now() - cached.at > ROBOT_CACHE_SECONDS * 1000) {
+            refresh(path, request, []).catch((error) => console.error('[robot-doc] refresh failed:', error))
+            return respond(cached, 'stale', timings)
+        }
+        return respond(cached, 'hit', timings)
+    }
+
+    try {
+        return respond(await refresh(path, request, timings), 'miss', timings)
+    } catch (error) {
+        // Never a 500 for a robot: the at-rest page with its scripts is still
+        // the right content (the middleware lets bots through to it).
+        const message = error instanceof Error ? error.message : String(error)
+        console.error('[robot-doc] self-fetch failed:', message)
+        return new Response(null, {
+            status: 307,
+            headers: { location: path, 'cache-control': 'no-store', 'x-robot-doc-error': message.slice(0, 300) },
+        })
+    }
 }
