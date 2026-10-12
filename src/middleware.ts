@@ -30,8 +30,9 @@ export default function middleware(request: NextRequest) {
   }
 
   // The at-rest render is for /robot-doc's own fetch only; people go home.
+  // (Bots may land here too: /robot-doc's fallback when its fetch fails.)
   const robotView = pathname.match(ROBOT_VIEW);
-  if (robotView && request.headers.get(ROBOT_FETCH_HEADER) !== '1') {
+  if (robotView && request.headers.get(ROBOT_FETCH_HEADER) !== '1' && !isBotUserAgent(request.headers.get('user-agent'))) {
     return NextResponse.redirect(new URL(`/${robotView[1]}`, request.url));
   }
 
