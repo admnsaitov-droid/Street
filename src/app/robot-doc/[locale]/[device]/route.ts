@@ -11,7 +11,13 @@ import { ROBOT_FETCH_HEADER, inlineStylesheets, stripScripts } from '@/utils/rob
  * The finished document is kept in memory for an hour and refreshed in the
  * background after that, so a robot never waits for a render: PageSpeed lands
  * on cold CDN edges (Hostinger's answers DYNAMIC), and a render plus the
- * self-fetch cost it 2–3 s of Speed Index. The response is also CDN-cacheable.
+ * self-fetch cost it 2–3 s of Speed Index.
+ *
+ * The response must NEVER be shared-cacheable. It answers the same URL as the
+ * people's home page (`/en`, via a middleware rewrite), and Hostinger's CDN
+ * keys on the URL alone — with `s-maxage` it stored the robot form and served
+ * it to visitors: no scripts, so no hero text, logo or images until a scroll
+ * (2026-10-19, ADR-0122). `private, no-store` + `Vary: User-Agent`.
  */
 export const dynamic = 'force-dynamic'
 
@@ -112,7 +118,8 @@ const respond = (doc: CachedDocument, cache: string, timings: string[]) =>
     new Response(doc.html, {
         headers: {
             'content-type': 'text/html; charset=utf-8',
-            'cache-control': `public, max-age=0, s-maxage=${ROBOT_CACHE_SECONDS}, stale-while-revalidate=86400`,
+            'cache-control': 'private, no-store, max-age=0',
+            vary: 'User-Agent',
             'x-robot-origin': doc.origin,
             'x-robot-cache': cache,
             ...(timings.length ? { 'server-timing': timings.join(', ') } : {}),

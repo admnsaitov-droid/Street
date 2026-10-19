@@ -1099,3 +1099,23 @@ page must read `useRobot()` and render its end state, or it stays hidden for
 robots (check `curl -A "Chrome-Lighthouse" /en` — no `<script>` but JSON-LD,
 and the copy visible with JavaScript off). Hostinger: whether its CDN caches
 the handler's `s-maxage` response needs checking after deploy (`curl -sI` twice).
+
+## ADR-0122 — The robot form is never shared-cacheable
+
+**Date.** 2026-10-19 · **Status.** Accepted. Amends ADR-0121.
+
+**Context.** ADR-0121 made `/robot-doc` CDN-cacheable (`s-maxage=3600`). The
+robot form is served at the *people's* URL via a middleware rewrite, and
+Hostinger's CDN keys its cache on the URL, not the user agent. Production
+showed one edge returning `x-middleware-rewrite: /robot-doc/en/desktop` with a
+growing `age` to an ordinary Chrome UA — visitors got the script-less page.
+
+**Decision.** `/robot-doc` responds `Cache-Control: private, no-store, max-age=0`
+and `Vary: User-Agent`. Speed for robots comes from the per-process document
+cache (1 h, refreshed behind), not from the CDN. Any response chosen by user
+agent at a shared URL must follow the same rule.
+
+**Consequences.** Bots pay the origin round-trip (~tens of ms, document already
+in memory). After deploying, the CDN cache must be purged once, because edges
+may still hold the old robot form for up to a day (stale-while-revalidate).
+

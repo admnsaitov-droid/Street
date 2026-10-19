@@ -1,6 +1,6 @@
 ---
 tags: [meta, changelog]
-updated: 2026-10-09
+updated: 2026-10-19
 ---
 
 # Changelog
@@ -12,6 +12,15 @@ Format: `## YYYY-MM-DD — short title` followed by what changed and why it
 mattered. Link the ADR when there is one.
 
 ---
+
+## 2026-10-19 — Fix: visitors were served the robot form of the home page
+
+- `/robot-doc` answered with `public, s-maxage=3600, stale-while-revalidate=86400`.
+  It is reached by a middleware rewrite of the people's URL (`/en`), and
+  Hostinger's CDN caches by URL only, so an edge (`fra-edge10`) stored the
+  script-less robot form and served it to visitors: no hero text, logo or images
+  until a scroll. Now `private, no-store` + `Vary: User-Agent` (ADR-0122); the
+  in-memory document cache keeps robots fast. **Purge the CDN cache after deploy.**
 
 ## 2026-10-09 — PageSpeed 100 (robot form), globe scroll trap, accessibility, llms.txt
 
