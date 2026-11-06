@@ -62,7 +62,7 @@ when you are already editing its file.
 | `"use client"` on a view | 10 | **Real.** `HomeView`, `AboutView`, `ArticlesView`, `ContactView` and several `ProductView` pieces are client components wholesale. Each one drags its entire subtree into the bundle. Split the leaf that needs interactivity when you next touch one; do not add an eleventh. |
 | `console.log` in source | ~40 | Was mostly `src/app/sitemap.ts` (deleted 2026-09-29 with its logging; the route-based sitemap replaced it) and the middleware. `removeConsole` strips the rest in production builds — noise hygiene, not a leak. |
 | Click handler on a non-interactive element | 11 | **Real accessibility bug.** The 3D zoom controls in `ProductScene`/`PackageScene`, the menu items in `Header/Menu.tsx`, and the policy checkbox rows in both contact forms are `div`/`span` with `onClick` — not keyboard reachable. Make them `<button>`. |
-| Raw `<a>` for an internal link | 1 | `src/components/Cookie.tsx:68` → `/privacy-policy`. Also missing the locale prefix. Use `next/link`. |
+| Raw `<a>` for an internal link | 1 | `src/app/global-error.tsx` "Back to home" — deliberate: global-error replaces the root layout, so a full reload is the right recovery. (The cookie banner's link went with the banner, 2026-11-06, ADR-0123.) |
 | Hex literal in source | ~25 | `not-found.tsx` and `global-error.tsx` style themselves inline on purpose — they must render when the app shell is broken. Acceptable; the rest are WebGL material colours, which the rule explicitly allows. |
 | TODO / FIXME | 3 | `SwiperFrameByFrame.tsx`, `Degree360.tsx`, `useDynamicInView.ts`. |
 

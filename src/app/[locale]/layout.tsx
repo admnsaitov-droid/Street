@@ -8,7 +8,6 @@ import { generateMetadata } from "@/utils/generateMetadata";
 // import { AnimatedRouterLayout } from "@/layouts/AnimatedRouterLayout/AnimatedRouterLayout";
 import { StyledComponentsLayout } from "@/layouts/StyledComponentsLayout";
 import { AssetsLoaderLayout } from "@/layouts/AssetsLoaderLayout/AssetsLoaderLayout";
-import { Cookie } from "@/components/Cookie";
 import { ScrollLayout } from "@/layouts/ScrollLayout/ScrollLayout";
 import { AnimatedRouterLayout } from "@/layouts/AnimatedRouterLayout/AnimatedRouterLayout";
 import { Header } from "@/components/Header/Header";
@@ -107,7 +106,6 @@ export default async function RootLayout({
                 <Lvh />
                 <GlobalStyles />
                 <AssetsLoaderLayout>
-                  <Cookie />
                   <AnimatedRouterLayout>
                     <Header initialData={headerData} />
                     <FadeContainer />

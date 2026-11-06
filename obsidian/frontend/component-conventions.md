@@ -62,7 +62,7 @@ reach across into another view's folder.
 - Older translated UI strings still live next to their component in a
   `*Translations.ts` file (`contactFormTranslations.ts`,
   `successModalTranslations.ts`, `errorModalTranslations.ts`,
-  `cookieTranslations.ts`, `sameLineProductsTranslations.ts`) — translated, but
+  `sameLineProductsTranslations.ts`) — translated, but
   not editable in the admin. Don't add new ones; move them to the Strapi type
   when you touch them.
 - Every async surface needs `loading` / `error` / `empty` states. The `Skeleton/`

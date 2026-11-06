@@ -21,7 +21,6 @@
         "next": "14.2.35",
         "next-intl": "^4.3.4",
         "react": "^18",
-        "react-cookie-consent": "^9.0.0",
         "react-dom": "^18",
         "resend": "^4.7.0",
         "resize-observer-polyfill": "^1.5.1",

@@ -84,7 +84,6 @@ Built **on** the engine; this is where project-specific motion belongs.
 | `LinesGrid/` | the lines grid + `LineCard` / `LinesInfoCard`, shared by home and the lines page |
 | `FrameByFrame/` | scroll- and drag-driven frame sequences: `FrameByFrame`, `Degree360`, `SwiperFrameByFrame`, canvas 2D/WebGL painters, `Placeholder` |
 | `Clouds/SphereClouds` | the cloud shell used by both globes |
-| `Cookie` | cookie-consent banner (styled in `GlobalStyles`) |
 | `HtmlLangSetter` | syncs `<html lang>` with the active locale |
 | `UiStrings/UiStringsProvider` | `UiStringsProvider` + `useUiStrings()`: the locale's interface texts from Strapi `ui-string`, resolved server-side in the `[locale]` layout (English defaults for anything missing). Use it for every button/label/aria text — ADR-0119 |
 

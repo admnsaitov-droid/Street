@@ -1,6 +1,6 @@
 ---
 tags: [meta, changelog]
-updated: 2026-10-19
+updated: 2026-11-06
 ---
 
 # Changelog
@@ -12,6 +12,18 @@ Format: `## YYYY-MM-DD — short title` followed by what changed and why it
 mattered. Link the ADR when there is one.
 
 ---
+
+## 2026-11-06 — Old cookie banner removed
+
+- The `react-cookie-consent` banner (`src/components/Cookie.tsx`,
+  `cookieTranslations.ts`, its `GlobalStyles` block, the `cookiePrivacyAriaLabel`
+  UI string) was visual only: Accept/Decline set a cookie and gated nothing.
+  Removed with the dependency. Consent moves to a CMP loaded through GTM
+  (ADR-0123). **GTM (`NEXT_PUBLIC_GTM_ID`) still loads unconditionally** until
+  that CMP is configured in the container.
+- Footer publishing investigated: it works; changes appear after the data
+  cache expires (two 5-min layers, ADR-0117) because `REVALIDATE_SECRET` and the
+  Strapi webhook are still not configured on production.
 
 ## 2026-10-19 — Fix: visitors were served the robot form of the home page
 

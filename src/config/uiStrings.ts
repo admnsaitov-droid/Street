@@ -63,7 +63,6 @@ export const UI_STRING_DEFAULTS = {
   errorBackHome: "Back to home",
   errorReport: "Report this",
   errorReference: "Reference",
-  cookiePrivacyAriaLabel: "Go to Privacy Policy",
 } as const;
 
 export type UiStrings = { -readonly [K in keyof typeof UI_STRING_DEFAULTS]: string };

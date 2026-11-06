@@ -86,7 +86,6 @@ ADR-0109.
 | `axios` | 1.20 | Only `src/utils/locales.ts` now. Content reads moved to cached `fetch` (ADR-0117); never put it in `serverComponentsExternalPackages` (ADR-0106) |
 | `resend` | 4.7 | Contact-form email |
 | `swiper` | 11.2 | Galleries and mobile carousels |
-| `react-cookie-consent` | 9.0 | Cookie banner, styled in `GlobalStyles` |
 | `@googlemaps/js-api-loader` | 1.16 | Contact-page map — see `GOOGLE_MAPS_SETUP.md` |
 | `sharp` | 0.34 | Image optimisation in the standalone build |
 

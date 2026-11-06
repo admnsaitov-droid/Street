@@ -1119,3 +1119,24 @@ agent at a shared URL must follow the same rule.
 in memory). After deploying, the CDN cache must be purged once, because edges
 may still hold the old robot form for up to a day (stale-while-revalidate).
 
+## ADR-0123 — Cookie consent is owned by a CMP in GTM, not by the app
+
+**Date.** 2026-11-06 · **Status.** Accepted.
+
+**Context.** The app shipped a `react-cookie-consent` banner whose buttons only
+wrote `newProjectCookie` and logged; GTM (`GTM-MNBT7ZTB`) loaded on every page
+regardless, so the banner implied a choice it never enforced, and offered no
+way to reopen preferences. The client's analytics consultant is setting up
+analytics through GTM with a CMP (CookieYes proposed).
+
+**Decision.** Remove the in-app banner and its dependency. Consent (banner,
+preference centre, Google Consent Mode v2 defaults/updates, regional rules) is
+configured in GTM by the CMP; the app only loads GTM. If the client chooses a
+free self-hosted route instead, implement Consent Mode v2 (`consent default`
+denied for EEA/UK before GTM, `update` on choice, a footer "Cookie settings"
+link) — not a revival of the old banner.
+
+**Consequences.** Until the CMP tag is live in the container, GTM runs without
+consent gating — the same as before, but no longer disguised by a banner. The
+`cookiePrivacyAriaLabel` key remains in the Strapi seed (unused, harmless).
+
